@@ -66,6 +66,13 @@ const DatePicker = ({ containerOnTop, value, name }) => {
     }
   };
 
+  // update pickup date with current date
+  useEffect(() => {
+    if (value && name === "pickupDate" && !pickupDate) {
+      setPickupDate(new Date(value));
+    }
+  }, []);
+
   // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {
     if (
