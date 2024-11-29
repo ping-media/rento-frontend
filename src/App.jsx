@@ -10,6 +10,9 @@ const LoggedInLayout = lazy(() => import("./components/Layout/LoggedInLayout"));
 const Profile = lazy(() => import("./components/Account/Profile"));
 const MyRides = lazy(() => import("./components/Account/MyRides"));
 const RidesSummary = lazy(() => import("./Pages/RidesSummary"));
+const ErrorPageNotFound = lazy(() =>
+  import("./components/Error/ErrorPageNotFound")
+);
 
 const App = () => {
   return (
@@ -36,6 +39,7 @@ const App = () => {
               />
             </Route>
           </Route>
+          <Route path="*" exact element={<ErrorPageNotFound />} />
         </Routes>
       </Suspense>
     </Router>

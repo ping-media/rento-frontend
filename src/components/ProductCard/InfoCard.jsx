@@ -1,7 +1,11 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import scooterImg from "../../assets/images/scooter-image.png";
 import bikeImg from "../../assets/images/bike-image.png";
-import { getDurationInDays, handleErrorImage } from "../../utils";
+import {
+  formatDateTimeForUser,
+  getDurationInDays,
+  handleErrorImage,
+} from "../../utils";
 
 const InfoCard = ({
   vehicleBrand,
@@ -12,12 +16,20 @@ const InfoCard = ({
   vehicleId,
   freeKms,
   stationName,
-  dropoff,
-  pickup,
-  pickupTime,
-  dropoffTime,
+  BookingStartDateAndTime,
+  BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
+  const [bookingStartDateTime, setBookingStartDateTime] = useState(
+    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime)
+  );
+  const [bookingEndDateTime, setBookingEndDateTime] = useState(
+    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime)
+  );
+  console.log(
+    formatDateTimeForUser(BookingStartDateAndTime),
+    formatDateTimeForUser(BookingEndDateAndTime)
+  );
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
       {vehicleImage ? (
@@ -97,16 +109,16 @@ const InfoCard = ({
             <div>
               <label htmlFor="pickup">Pickup</label>
               <div id="pickup" className="border-2 rounded-lg p-2">
-                <p className="font-semibold">{pickup}</p>
-                <p className="font-semibold">{pickupTime}</p>
+                <p className="font-semibold">{bookingStartDateTime?.date}</p>
+                <p className="font-semibold">{bookingStartDateTime?.time}</p>
               </div>
             </div>
             <p>TO</p>
             <div>
               <label htmlFor="drop">Drop</label>
               <div id="drop" className="border-2 rounded-lg p-2">
-                <p className="font-semibold">{dropoff}</p>
-                <p className="font-semibold">{dropoffTime}</p>
+                <p className="font-semibold">{bookingEndDateTime?.date}</p>
+                <p className="font-semibold">{bookingEndDateTime?.time}</p>
               </div>
             </div>
           </div>
@@ -129,7 +141,11 @@ const InfoCard = ({
           </span>
           Booked For:
           <span className="font-semibold">
-            {getDurationInDays(pickup, dropoff)} Day
+            {getDurationInDays(
+              bookingStartDateTime?.date,
+              bookingEndDateTime?.date
+            )}{" "}
+            Day
           </span>
         </div>
         {freeKms ? (

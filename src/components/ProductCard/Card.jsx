@@ -3,21 +3,16 @@ import bikeImage from "../../assets/logo/bike.png";
 import scooterImage from "../../assets/logo/scooter.png";
 import { useRef, useState } from "react";
 import { handleErrorImage } from "../../utils";
-import Overlay from "../skeleton/Overlay";
 
 const Card = ({
-  vehicleImage,
-  vehicleBrand,
-  vehicleName,
   perDayCost,
-  stationName,
-  vehicleId,
+  vehicleMasterData,
   vehicleModel,
-  vehicleType,
   freeKms,
   extraKmsCharges,
   vehicleColor,
-  isBooked,
+  stationData,
+  _id,
 }) => {
   const [queryParms] = useSearchParams();
   const productImageRef = useRef(null);
@@ -26,15 +21,9 @@ const Card = ({
 
   return (
     <Link
-      to={
-        !isBooked &&
-        `/booking/summary/${vehicleId}?pickup=${queryParmsData?.pickup}&pickupTime=${queryParmsData?.pickupTime}&dropoff=${queryParmsData?.dropoff}&dropoffTime=${queryParmsData?.dropoffTime}`
-      }
+      to={`/booking/summary/${_id}?BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`}
       className="relative"
     >
-      {isBooked && (
-        <Overlay message={"Booked. Next Available on 25 Nov, 2024"} />
-      )}
       <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
         {/* modal & color of vehicle  */}
         <div className="top-4 right-0 absolute">
@@ -55,23 +44,32 @@ const Card = ({
         <div className="px-3 py-2">
           <div className="w-full h-48 rounded-lg mb-3">
             <img
-              src={vehicleImage}
+              src={vehicleMasterData?.vehicleImage}
               className="w-full h-full object-contain"
-              alt={vehicleName}
-              onError={() => handleErrorImage(vehicleType, productImageRef)}
+              alt={vehicleMasterData?.vehicleName}
+              onError={() =>
+                handleErrorImage(
+                  vehicleMasterData?.vehicleType,
+                  productImageRef
+                )
+              }
               ref={productImageRef}
             />
           </div>
           <div className="mb-2.5">
             <h2 className="font-semibold truncate uppercase">
-              {vehicleBrand} {vehicleName}
+              {vehicleMasterData?.vehicleBrand} {vehicleMasterData?.vehicleName}
             </h2>
           </div>
           <div className="flex items-center mb-1">
             <div className="w-8 h-8 mr-1">
               <img
-                src={vehicleType === "gear" ? bikeImage : scooterImage}
-                alt={vehicleType}
+                src={
+                  vehicleMasterData?.vehicleType === "gear"
+                    ? bikeImage
+                    : scooterImage
+                }
+                alt={vehicleMasterData?.vehicleType}
               />
             </div>
             <p>
@@ -91,7 +89,10 @@ const Card = ({
             </button>
           </div>
           <p className="text-gray-600">
-            Pickup at <span className="text-theme truncate">{stationName}</span>
+            Pickup at{" "}
+            <span className="text-theme truncate">
+              {stationData?.stationName}
+            </span>
           </p>
         </div>
       </div>

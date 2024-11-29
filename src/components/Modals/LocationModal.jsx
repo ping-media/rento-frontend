@@ -11,6 +11,7 @@ import Spinner from "../Spinner/Spinner";
 const LocationModal = () => {
   const dispatch = useDispatch();
   const { isLocationModalActive } = useSelector((state) => state.modals);
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const [loading, setLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
 
@@ -28,8 +29,16 @@ const LocationModal = () => {
         setLoading(true);
         const result = await fetchingData("/getLocationData");
         if (result.status == 200) {
-          // console.log(result?.data);
           setLoading(false);
+          // if no location is select than by default select the first one
+          if (Object.keys(selectedLocation)?.length == 0) {
+            dispatch(
+              addLocation({
+                locationName: result?.data[0]?.locationName,
+                locationId: result?.data[0]?._id,
+              })
+            );
+          }
           return setLocationList(result?.data);
         }
       } catch (error) {
@@ -45,7 +54,7 @@ const LocationModal = () => {
           !isLocationModalActive && "hidden"
         } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
       >
-        <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-2xl">
+        <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-2xl h-96">
           <div className="flex items-center justify-between px-4 py-2">
             <h2 className="font-bold text-2xl uppercase">
               Choose <span className="text-theme">Location</span>
@@ -76,6 +85,7 @@ const LocationModal = () => {
                 locationList?.length > 0 &&
                 locationList.map((item) => (
                   <button
+                    className="w-full h-40"
                     onClick={() =>
                       handleChangeLocation({
                         locationName: item?.locationName,
@@ -86,7 +96,7 @@ const LocationModal = () => {
                   >
                     <img
                       src={item?.locationImage}
-                      className="w-full h-[80%] object-cover rounded-lg"
+                      className="object-cover rounded-lg"
                       alt="SEARCH_LOCATION"
                     />
                     <h2 className="text-gray-600 font-semibold mt-2">

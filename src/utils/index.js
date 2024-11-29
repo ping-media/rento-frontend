@@ -184,6 +184,91 @@ const calculateTax = (amount, taxPercentage) => {
   return taxAmount;
 };
 
+const convertToISOString = (dropoffDate, dropoffTime) => {
+  // Step 1: Parse the date string ("28 Nov 2024") into a JavaScript Date object
+  const dateParts = dropoffDate.split(" ");
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const day = parseInt(dateParts[0], 10); // Convert day to integer
+  const month = monthNames.indexOf(dateParts[1]); // Get the month index
+  const year = parseInt(dateParts[2], 10); // Convert year to integer
+
+  // Create the initial date object in UTC time
+  const date = new Date(Date.UTC(year, month, day));
+
+  // Step 2: Parse the time string ("6:00 PM") into 24-hour format
+  const timeParts = dropoffTime.split(" ");
+  const [hour, minute] = timeParts[0].split(":"); // Split the time into hour and minute
+  let hours = parseInt(hour, 10); // Convert hour to integer
+  const ampm = timeParts[1]; // AM or PM
+
+  // Convert 12-hour time to 24-hour time
+  if (ampm === "PM" && hours !== 12) {
+    hours += 12; // Convert PM hour to 24-hour format, except for 12 PM (noon)
+  } else if (ampm === "AM" && hours === 12) {
+    hours = 0; // 12 AM is midnight, so set hours to 0
+  }
+
+  // Step 3: Set the time (hours and minutes) in the Date object in UTC
+  date.setUTCHours(hours, parseInt(minute, 10), 0, 0); // Set the time (hours, minutes, seconds, milliseconds)
+
+  // Step 4: Convert the Date object to an ISO string and remove milliseconds
+  const isoString = date.toISOString().slice(0, 19) + "Z"; // Remove milliseconds and append 'Z' for UTC
+
+  return isoString;
+};
+
+const removeAfterSecondSlash = (pathname) => {
+  // Find the index of the second slash
+  const secondSlashIndex = pathname.indexOf("/", pathname.indexOf("/") + 1);
+
+  // If there is no second slash, return the pathname as is
+  if (secondSlashIndex === -1) return pathname;
+
+  // Otherwise, slice the pathname up to the second slash
+  return pathname.slice(0, secondSlashIndex);
+};
+
+const formatDateTimeForUser = (input) => {
+  const [dateStr, timeStr] = input.split(" ");
+
+  // Parse the date string into a Date object
+  const date = new Date(dateStr);
+
+  // Format the date to the desired format (29 Nov, 2024)
+  const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
+  const formattedDate = date.toLocaleDateString("en-GB", dateOptions);
+
+  // Format the time to the desired format (5:00 PM)
+  const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
+
+  // Use UTC methods to get the time in UTC (not local time)
+  const formattedTime = date.toLocaleTimeString("en-GB", {
+    ...timeOptions,
+    timeZone: "UTC",
+  });
+
+  // Return the formatted string
+  // return `date:${formattedDate} time:${formattedTime}`;
+  return {
+    date: formattedDate,
+    time: formattedTime,
+  };
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -198,4 +283,7 @@ export {
   getDurationInDays,
   formatDateToSlash,
   calculateTax,
+  convertToISOString,
+  removeAfterSecondSlash,
+  formatDateTimeForUser,
 };

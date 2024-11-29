@@ -11,6 +11,7 @@ import {
   addStationData,
   fetchingStation,
 } from "../../Redux/StationSlice/StationSlice";
+import { convertToISOString, removeAfterSecondSlash } from "../../utils";
 
 const SearchRide = () => {
   const navigate = useNavigate();
@@ -19,10 +20,6 @@ const SearchRide = () => {
   const searchRideContainerRef = useRef(null);
   const [containerOnTop, setContainerOnTop] = useState(false);
   const [isHomePage, setIsHomePage] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [currentTime, setCurrentTime] = useState(
-    new Date().toLocaleTimeString()
-  );
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation
@@ -30,12 +27,23 @@ const SearchRide = () => {
 
   const handleSearchRide = (e) => {
     e.preventDefault();
-    if (location.pathname == "/") {
+    if (
+      location.pathname == "/" ||
+      removeAfterSecondSlash(location.pathname) == "/search"
+    ) {
       const response = new FormData(e.target);
       const result = Object.fromEntries(response.entries());
       if (result?.pickupLocationId != "") {
         return navigate(
-          `/search/${result?.pickupLocationId}?pickup=${result?.pickupDate}&pickupTime=${result?.pickupTime}&dropoff=${result?.dropoffDate}&dropoffTime=${result?.dropoffTime}`
+          `/search/${
+            result?.pickupLocationId
+          }?BookingStartDateAndTime=${convertToISOString(
+            result?.pickupDate,
+            result?.pickupTime
+          )}&BookingEndDateAndTime=${convertToISOString(
+            result?.dropoffDate,
+            result?.dropoffTime
+          )}`
         );
       }
     }
@@ -141,7 +149,7 @@ const SearchRide = () => {
           <TimePicker
             containerOnTop={containerOnTop}
             labelId="pickup-time"
-            value={currentTime}
+            value={new Date().toLocaleTimeString()}
             name={"pickupTime"}
           />
         </div>
@@ -163,7 +171,7 @@ const SearchRide = () => {
           <TimePicker
             containerOnTop={containerOnTop}
             labelId="dropoff-time"
-            value={currentTime}
+            value={new Date().toLocaleTimeString()}
             name={"dropoffTime"}
           />
         </div>

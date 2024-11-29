@@ -43,7 +43,9 @@ const BookingSummary = () => {
   useEffect(() => {
     (async () => {
       dispatch(fetchingVehicles());
-      const result = await fetchingData(`/getVehicleTblData?vehicleId=${id}`);
+      const result = await fetchingData(
+        `/getVehicleTblData?vehicleId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+      );
       console.log(result);
       dispatch(addVehiclesData(result.data));
     })();
@@ -56,14 +58,8 @@ const BookingSummary = () => {
     const data = {
       vehicleTableId: vehicles[0]?._id,
       userId: currentUser?._id,
-      BookingStartDateAndTime: {
-        startDate: formatDateToSlash(queryParmsData?.pickup),
-        startTime: queryParmsData?.pickupTime,
-      },
-      BookingEndDateAndTime: {
-        endDate: formatDateToSlash(queryParmsData?.dropoff),
-        endTime: queryParmsData?.dropoffTime,
-      },
+      BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
+      BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
       extraAddon: "",
       discountPrice: vehicles[0]?.perDayCost,
       bookingPrice: {

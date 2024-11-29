@@ -37,6 +37,7 @@ const Search = () => {
       selectedLocation,
       id
     );
+    console.log(vehicles);
   }, [location.href]);
 
   useEffect(() => {

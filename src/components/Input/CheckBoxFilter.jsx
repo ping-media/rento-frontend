@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 
 const CheckboxFilter = () => {
-  const { filter } = useSelector((state) => state.filter);
-  return filter ? (
+  const { filter, filterLoading } = useSelector((state) => state.filter);
+  return !filterLoading ? (
     filter.length > 0 ? (
       <div>
         {filter?.map((item, index) => (
@@ -41,10 +41,10 @@ const CheckboxFilter = () => {
         ))}
       </div>
     ) : (
-      <div className="text-gray-400 italic">loading...</div>
+      <div className="text-gray-400 italic">No Plans found.</div>
     )
   ) : (
-    <div className="text-gray-400 italic">No plan Found.</div>
+    <div className="text-gray-400 italic">loading...</div>
   );
 };
 

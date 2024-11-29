@@ -34,7 +34,9 @@ const handleSearchVehicleData = async (
         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}`
       );
     } else {
-      result = await fetchingData(`/getVehicleTblData?stationId=${id}`);
+      result = await fetchingData(
+        `/getVehicleTblData?stationId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+      );
     }
   } else {
     const locationId = selectedLocation?.locationId;

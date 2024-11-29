@@ -54,17 +54,23 @@ const DatePicker = ({ containerOnTop, value, name }) => {
   };
 
   // update the dropoffDate when pickup value change
-  const handleChangeDate = (name, dateValue) => {
-    if (name === "pickupDate") {
-      const newValue = new Date(dateValue);
-      newValue.setDate(newValue.getDate() + 1);
-      if (!isNaN(newValue)) {
-        setDropoffDate(newValue);
-      }
-    } else if (name === "dropoffDate") {
-      setDropoffDate(dateValue);
-    }
-  };
+  // const handleChangeDate = (name, dateValue) => {
+  //   if (name === "pickupDate") {
+  //     const newValue = new Date(dateValue);
+  //     newValue.setDate(newValue.getDate() + 1);
+  //     if (!isNaN(newValue)) {
+  //       setDropoffDate(newValue);
+  //     }
+  //   } else if (name === "dropoffDate") {
+  //     setDropoffDate(dateValue);
+  //   }
+  // };
+
+  // update pickup date with current date
+  useEffect(() => {
+    setPickupDate(new Date(value));
+    setDropoffDate(new Date(value));
+  }, []);
 
   // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {
@@ -114,8 +120,11 @@ const DatePicker = ({ containerOnTop, value, name }) => {
             type="text"
             className="outline-none w-full cursor-pointer"
             placeholder="Select date"
-            value={formatDate(value)}
-            onChange={(e) => handleChangeDate(e.target.name, e.target.value)}
+            value={
+              name == "pickupDate"
+                ? formatDate(pickupDate)
+                : formatDate(dropoffDate)
+            }
             readOnly
             name={name}
           />

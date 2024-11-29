@@ -25,7 +25,9 @@ const LoginModal = () => {
     if (result) {
       // console.log(result);
       const response = await handleUser("/sendOtp", result);
-      if (response.status == 200) {
+      if (response.status != 200) {
+        handleAsyncError(dispatch, response?.message);
+      } else {
         setInputNumber(result?.contact);
         setIsOtpSend(true);
         handleAsyncError(dispatch, response?.message, "success");
