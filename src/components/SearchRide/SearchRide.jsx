@@ -11,7 +11,11 @@ import {
   addStationData,
   fetchingStation,
 } from "../../Redux/StationSlice/StationSlice";
-import { convertToISOString, removeAfterSecondSlash } from "../../utils";
+import {
+  convertToISOString,
+  nextDayFromCurrent,
+  removeAfterSecondSlash,
+} from "../../utils";
 
 const SearchRide = () => {
   const navigate = useNavigate();
@@ -160,7 +164,7 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Drop-off Date"}
-            value={new Date().toLocaleDateString()}
+            value={nextDayFromCurrent(new Date())}
             name={"dropoffDate"}
           />
         </div>

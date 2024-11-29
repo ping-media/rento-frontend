@@ -269,6 +269,13 @@ const formatDateTimeForUser = (input) => {
   };
 };
 
+const nextDayFromCurrent = (date) => {
+  const nextDay = date;
+  nextDay.setDate(nextDay.getDate() + 1); // Increment the day by 1
+
+  return nextDay.toLocaleDateString();
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -286,4 +293,5 @@ export {
   convertToISOString,
   removeAfterSecondSlash,
   formatDateTimeForUser,
+  nextDayFromCurrent,
 };
