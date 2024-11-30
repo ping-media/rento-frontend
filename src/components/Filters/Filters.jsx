@@ -20,9 +20,25 @@ const Filters = () => {
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
   const dispatch = useDispatch();
-
-  const brands = ["Honda", "TVS", "Hero", "Yahama", "royalenfield"];
   const navigate = useNavigate();
+
+  const brands = [
+    "Vespa",
+    "Honda",
+    "Yamaha",
+    "Suzuki",
+    "KTM",
+    "BMW",
+    "TVS",
+    "Bajaj",
+    "Hero",
+    "Ather",
+    "Ola",
+    "Mahindra",
+    "Royal Enfield",
+    "Harley-Davidson",
+  ];
+  // const navigate = useNavigate();
   const [queryParms, setQueryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
 
@@ -41,8 +57,9 @@ const Filters = () => {
   const handleFilters = (e) => {
     e.preventDefault();
     if (inputCategory != "" && inputbrand != "Choose Brand") {
+      console.log("entered");
       //add new parameter in existing URL
-      queryParms.set("category", inputCategory);
+      queryParms.set("category", inputCategory.toLowerCase());
       queryParms.set("brand", inputbrand);
       setQueryParms(queryParms);
     } else if (inputbrand != "Choose Brand") {
@@ -57,7 +74,7 @@ const Filters = () => {
       if (queryParms.get("brand")) {
         queryParms.delete("brand");
       }
-      queryParms.set("category", inputCategory);
+      queryParms.set("category", inputCategory.toLowerCase());
       setQueryParms(queryParms);
     }
     if (isFilterActive === true) {
@@ -70,11 +87,11 @@ const Filters = () => {
       <form onSubmit={handleFilters}>
         <div className="mb-5">
           <h2 className="font-semibold mb-3">Categories</h2>
-          <div className="flex items-center justify-around">
+          <div className="flex items-center justify-between">
             {Categories.map((item, index) => (
               <button
                 type="button"
-                className={`w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer py-1 ${
+                className={`w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
                   inputCategory == item?.CategoryTitle
                     ? "bg-theme text-gray-100 border-theme"
                     : ""
@@ -82,17 +99,17 @@ const Filters = () => {
                 onClick={() => setInputCategory(item?.CategoryTitle)}
                 key={index}
               >
-                <div className="w-12 h-12 mb-1 mx-auto">
+                <div className="w-10 h-10 mb-1 mx-auto">
                   <img
                     src={item.categoryImage}
                     className={`w-full h-full object-cover group-hover:invert transition duration-200 ease-in-out ${
                       inputCategory == item?.CategoryTitle ? "invert" : ""
                     }`}
-                    alt={item.CategoryTitle}
+                    alt={item?.CategoryTitle}
                   />
                 </div>
                 <h3 className="text-center group-hover:text-gray-100 transition duration-200 ease-in-out text-sm">
-                  {item.CategoryTitle}
+                  {item?.CategoryTitle}
                 </h3>
               </button>
             ))}

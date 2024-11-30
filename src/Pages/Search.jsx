@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductSkeleton from "../components/skeleton/ProductSkeleton";
 import ErrorNotFound from "../components/Error/ErrorNotFound";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { formatDateTimeForUser, handlePreviousPage } from "../utils";
 import {
   toggleFilter,
@@ -25,18 +30,21 @@ const Search = () => {
   //for showing pickup & dropoff date
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropOff] = useState(null);
+  const customLocation = useLocation();
 
   useEffect(() => {
     //this function help to search data
+    const newQueryParmsData = Object.fromEntries(queryParms.entries());
     handleSearchVehicleData(
       dispatch,
-      queryParmsData,
+      newQueryParmsData,
       location,
       selectedLocation,
       id
     );
-    console.log(vehicles);
-  }, [location.href]);
+    console.log(customLocation?.search);
+    // console.log(vehicles);
+  }, [customLocation]);
 
   // picking date from url and convert the data to show date in mobile view
   useEffect(() => {

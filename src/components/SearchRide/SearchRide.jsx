@@ -3,7 +3,7 @@ import DatePicker from "../DatePicker/DatePicker";
 import TimePicker from "../TimePicker/TimePicker";
 import Button from "../Button/Button";
 import DropDownButtonWithIcon from "../DropdownButton/DropDownButtonWithIcon";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSearchUpdate } from "../../Redux/ModalSlice/ModalSlice";
 import { fetchingData } from "../../Data";
@@ -28,6 +28,18 @@ const SearchRide = () => {
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation
   );
+  const [queryParms] = useSearchParams();
+  const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
+  const [queryPickupDate, setQueryPickupDate] = useState(null);
+  const [queryDropoffDate, setQueryDropoffDate] = useState(null);
+  const [queryPickupTime, setQueryPickupTime] = useState(null);
+  const [queryDropoffTime, setQueryDropoffTime] = useState(null);
+  // if searchFilter modal is active than run this
+  const handletoggleSearchUpdate = () => {
+    if (isSearchUpdatesActive) {
+      dispatch(toggleSearchUpdate());
+    }
+  };
 
   const handleSearchRide = (e) => {
     e.preventDefault();
@@ -61,7 +73,7 @@ const SearchRide = () => {
     if (searchRideContainerRef.current.getBoundingClientRect().top < 100) {
       setContainerOnTop(!containerOnTop);
     }
-  }, [location.pathname]);
+  }, [location.href]);
 
   useEffect(() => {
     const searchData = async () => {
@@ -82,6 +94,30 @@ const SearchRide = () => {
     };
     searchData();
   }, [selectedLocation]);
+
+  useEffect(() => {
+    if (
+      queryParmsData?.BookingStartDateAndTime &&
+      queryParmsData?.BookingEndDateAndTime
+    ) {
+      const pickupDate = new Date(
+        queryParmsData?.BookingStartDateAndTime
+      )?.toLocaleDateString();
+      const pickupTime = new Date(
+        queryParmsData?.BookingStartDateAndTime
+      )?.toLocaleTimeString();
+      const dropoffDate = new Date(
+        queryParmsData?.BookingEndDateAndTime
+      )?.toLocaleDateString();
+      const dropoffTime = new Date(
+        queryParmsData?.BookingEndDateAndTime
+      )?.toLocaleTimeString();
+      setQueryPickupDate(pickupDate);
+      setQueryPickupTime(pickupTime);
+      setQueryDropoffDate(dropoffDate);
+      setQueryDropoffTime(dropoffTime);
+    }
+  }, []);
 
   return (
     <div
@@ -142,7 +178,7 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Pick-up Date"}
-            value={new Date().toLocaleDateString()}
+            value={queryPickupDate != null || new Date().toLocaleDateString()}
             name={"pickupDate"}
           />
         </div>
@@ -153,7 +189,7 @@ const SearchRide = () => {
           <TimePicker
             containerOnTop={containerOnTop}
             labelId="pickup-time"
-            value={new Date().toLocaleTimeString()}
+            value={queryPickupTime != null || new Date().toLocaleTimeString()}
             name={"pickupTime"}
           />
         </div>
@@ -164,8 +200,7 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Drop-off Date"}
-            // value={new Date().toLocaleTimeString()}
-            value={nextDayFromCurrent(new Date())}
+            value={queryDropoffDate != null || nextDayFromCurrent(new Date())}
             name={"dropoffDate"}
           />
         </div>
@@ -176,11 +211,14 @@ const SearchRide = () => {
           <TimePicker
             containerOnTop={containerOnTop}
             labelId="dropoff-time"
-            value={new Date().toLocaleTimeString()}
+            value={queryDropoffTime != null || new Date().toLocaleTimeString()}
             name={"dropoffTime"}
           />
         </div>
-        <Button buttonMessage={"Find"} />
+        <Button
+          buttonMessage={"Find"}
+          handleStateChange={handletoggleSearchUpdate}
+        />
       </form>
     </div>
   );

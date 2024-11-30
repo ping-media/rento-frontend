@@ -21,6 +21,7 @@ const handleSearchVehicleData = async (
   if (location.pathname !== "/explore") {
     const category = queryParmsData?.category;
     const brand = queryParmsData?.brand;
+    console.log(queryParmsData, location);
     if (category != undefined && brand != undefined) {
       result = await fetchingData(
         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
@@ -33,7 +34,7 @@ const handleSearchVehicleData = async (
       result = await fetchingData(
         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
-    } else {
+    } else if (!category && !brand) {
       result = await fetchingData(
         `/getVehicleTblData?stationId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
@@ -44,7 +45,7 @@ const handleSearchVehicleData = async (
   }
   if (result) {
     // console.log(result);
-    dispatch(addVehiclesData(result.data));
+    dispatch(addVehiclesData(result?.data));
   }
 };
 
