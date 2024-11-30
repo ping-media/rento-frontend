@@ -8,14 +8,10 @@ import {
 } from "../../utils";
 
 const InfoCard = ({
-  vehicleBrand,
-  vehicleImage,
-  vehicleName,
+  station,
+  vehicleMaster,
   perDayCost,
-  vehicleType,
-  vehicleId,
   freeKms,
-  stationName,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
 }) => {
@@ -32,34 +28,36 @@ const InfoCard = ({
   );
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
-      {vehicleImage ? (
+      {vehicleMaster?.vehicleImage ? (
         <div className="w-52 h-40 mx-auto lg:mx-0">
           <img
-            src={vehicleImage}
+            src={vehicleMaster?.vehicleImage}
             className="w-full h-full object-contain rounded-lg"
-            alt={vehicleName}
-            onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
+            alt={vehicleMaster?.vehicleName}
+            onError={() =>
+              handleErrorImage(vehicleMaster?.vehicleType, vehicleImageRef)
+            }
             ref={vehicleImageRef}
           />
         </div>
       ) : (
         <div className="w-52 h-40 mx-auto lg:mx-0 bg-opacity-50 rounded-lg">
           <img
-            src={vehicleType == "gear" ? bikeImg : scooterImg}
+            src={vehicleMaster?.vehicleType == "gear" ? bikeImg : scooterImg}
             className="w-full h-full object-cover"
-            alt={vehicleName}
+            alt={vehicleMaster?.vehicleName}
           />
         </div>
       )}
       <div className="max-w-sm mx-auto lg:mx-0">
-        {vehicleBrand && vehicleName ? (
+        {vehicleMaster?.vehicleBrand && vehicleMaster?.vehicleName ? (
           <h2 className="font-semibold mb-3 uppercase">
-            {vehicleBrand} {vehicleName}
+            {vehicleMaster?.vehicleBrand} {vehicleMaster?.vehicleName}
           </h2>
         ) : (
           <div className="h-4 w-32 bg-gray-400 rounded mb-3"></div>
         )}
-        {stationName ? (
+        {station?.stationName ? (
           <div className="flex gap-2 mb-3">
             <span>
               <svg
@@ -78,7 +76,7 @@ const InfoCard = ({
             </span>
             <div>
               <p>Pickup Location</p>
-              <p>{stationName}</p>
+              <p>{station?.stationName}</p>
             </div>
           </div>
         ) : (

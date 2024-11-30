@@ -1,11 +1,31 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { handlePreviousPage } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
+import { useEffect } from "react";
+import { addRidesData, fetchingRides } from "../Redux/RidesSlice/RideSlice";
+import { fetchingData } from "../Data";
+import { useDispatch, useSelector } from "react-redux";
+import PreLoader from "../components/skeleton/PreLoader";
 
 const RidesSummary = () => {
   const navigate = useNavigate();
-  return (
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const { rides, loading } = useSelector((state) => state.rides);
+
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        dispatch(fetchingRides());
+        const result = await fetchingData(`/getBookings?bookingId=${id}`);
+        // console.log(result);
+        dispatch(addRidesData(result?.data));
+      })();
+    }
+  }, []);
+
+  return !loading ? (
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
       <div className="mb-1 flex items-center gap-3">
         <button
@@ -34,17 +54,21 @@ const RidesSummary = () => {
       <div className="px-4 py-3.5 -mx-4 bg-lighter-gray flex items-center justify-between mb-5 text-sm">
         <div className="flex items-center">
           <p className="font-semibold w-full lg:w-auto text-gray-600">
-            <span className="block lg:inline">Booking Id: #435678</span>
+            <span className="block lg:inline">
+              Booking Id: {rides[0]?.bookingId}
+            </span>
             <span className="mx-1 hidden lg:inline">|</span>
-            BookingDate: 12 Nov, 2024 06:39 PM
+            BookingDate: {rides[0]?.BookingStartDateAndTime}
           </p>
         </div>
-        <button
+        <div
           type="button"
-          className="bg-theme text-gray-100 p-1 lg:px-4 lg:py-2.5 border rounded-md hover:bg-theme-dark"
+          className={`${
+            rides[0]?.bookingStatus == "completed" ? "bg-green-500" : "bg-theme"
+          } text-gray-100 p-1 lg:px-4 lg:py-2.5 border rounded-md hover:bg-theme-dark`}
         >
-          Booking Status: Confirmed
-        </button>
+          Booking Status: {rides[0]?.bookingStatus}
+        </div>
       </div>
       <div className="lg:overflow-hidden lg:hover:overflow-y-auto lg:max-h-96 no-scrollbar">
         <div className="mb-5">
@@ -67,7 +91,7 @@ const RidesSummary = () => {
             </span>
             Vehicle Details
           </h2>
-          <RideCard />
+          <RideCard item={rides[0]} />
         </div>
         <div className="mb-5">
           <h2 className="font-semibold mb-3 flex items-center gap-1">
@@ -88,7 +112,7 @@ const RidesSummary = () => {
             </span>
             Station Details
           </h2>
-          <LocationCard />
+          <LocationCard stationName={rides[0]?.stationName} />
         </div>
         <div className="mb-5">
           <h2 className="font-semibold mb-3 flex items-center gap-1">
@@ -110,7 +134,36 @@ const RidesSummary = () => {
             </span>
             Fare Details
           </h2>
-          <RideCard />
+          <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
+            {/* <ul className="w-full"> */}
+            {rides[0] && (
+              <>
+                <ul className="w-full leading-8">
+                  {/* Iterate over all the fields except the totalPrice */}
+                  {Object.entries(rides[0]?.bookingPrice)
+                    .filter(([key]) => key !== "totalPrice") // Exclude totalPrice
+                    .map(([key, value]) => (
+                      <li
+                        key={key}
+                        className="flex items-center justify-between"
+                      >
+                        <p className="font-semibold uppercase">{key}</p>
+                        <p>₹{value}</p>
+                      </li>
+                    ))}
+
+                  {/* Display the totalPrice last */}
+                  {rides[0]?.bookingPrice.totalPrice && (
+                    <li className="flex items-center justify-between border-t-2 mt-1">
+                      <p className="font-semibold uppercase">Total Price</p>
+                      <p>₹{rides[0]?.bookingPrice.totalPrice}</p>
+                    </li>
+                  )}
+                </ul>
+              </>
+            )}
+            {/* </ul> */}
+          </div>
         </div>
         <div>
           <button className="w-full bg-theme text-gray-100 px-4 py-2.5 rounded-md">
@@ -119,6 +172,8 @@ const RidesSummary = () => {
         </div>
       </div>
     </div>
+  ) : (
+    <PreLoader />
   );
 };
 

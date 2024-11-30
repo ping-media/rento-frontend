@@ -1,15 +1,16 @@
 import { Outlet } from "react-router-dom";
+import { lazy, useEffect } from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
-import LoginModal from "../Modals/LoginModal";
-import RegisterModal from "../Modals/RegisterModal";
-import LocationModal from "../Modals/LocationModal";
-import Sidebar from "../Sidebar/Sidebar";
-import Alert from "../Alert/Alert";
+// lazy loading the below components
+const LoginModal = lazy(() => import("../Modals/LoginModal"));
+const RegisterModal = lazy(() => import("../Modals/RegisterModal"));
+const LocationModal = lazy(() => import("../Modals/LocationModal"));
+const SignOutModal = lazy(() => import("../Modals/SignOutModal"));
+const Alert = lazy(() => import("../Alert/Alert"));
+const Sidebar = lazy(() => import("../Sidebar/Sidebar"));
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
-import SignOutModal from "../Modals/SignOutModal";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
@@ -34,7 +35,7 @@ const Layout = () => {
       {/* for displaying error or success message  */}
       {message != null && <Alert error={message} errorType={type} />}
       {/* main section  */}
-      <header>
+      <header className="sticky top-0 z-20">
         <TopHeader
           email={"someone@example.com"}
           phoneNumber={"+91 9087654321"}

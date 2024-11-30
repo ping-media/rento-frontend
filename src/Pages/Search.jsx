@@ -1,14 +1,12 @@
 import SearchRide from "../components/SearchRide/SearchRide";
 import Filters from "../components/Filters/Filters";
 import Card from "../components/ProductCard/Card";
-// import { items } from "../Data/dummyData";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductSkeleton from "../components/skeleton/ProductSkeleton";
-// import PreLoader from "../components/skeleton/PreLoader";
 import ErrorNotFound from "../components/Error/ErrorNotFound";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { formatDateWithDayName, handlePreviousPage } from "../utils";
+import { formatDateTimeForUser, handlePreviousPage } from "../utils";
 import {
   toggleFilter,
   toggleSearchUpdate,
@@ -25,8 +23,8 @@ const Search = () => {
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
   //for showing pickup & dropoff date
-  const [pickup, setPickup] = useState("");
-  const [dropoff, setDropOff] = useState("");
+  const [pickup, setPickup] = useState(null);
+  const [dropoff, setDropOff] = useState(null);
 
   useEffect(() => {
     //this function help to search data
@@ -40,12 +38,13 @@ const Search = () => {
     console.log(vehicles);
   }, [location.href]);
 
+  // picking date from url and convert the data to show date in mobile view
   useEffect(() => {
-    const pickUpDate = queryParmsData?.pickup;
-    const dropoffDate = queryParmsData?.dropoff;
-    if (pickUpDate && dropoffDate) {
-      setPickup(pickUpDate);
-      setDropOff(dropoffDate);
+    const pickUpDateAndTime = queryParmsData?.BookingStartDateAndTime;
+    const dropoffDateAndTime = queryParmsData?.BookingEndDateAndTime;
+    if (pickUpDateAndTime && dropoffDateAndTime) {
+      setPickup(formatDateTimeForUser(pickUpDateAndTime));
+      setDropOff(formatDateTimeForUser(dropoffDateAndTime));
     }
   }, []);
 
@@ -72,18 +71,15 @@ const Search = () => {
           >
             <path d="M19 12H6M12 5l-7 7 7 7" />
           </svg>
-          <span className="text-sm">Back</span>
         </button>
         <button
           className="px-4 py-2 border-2 border-theme rounded-lg font-semibold"
           type="button"
           onClick={() => dispatch(toggleSearchUpdate())}
         >
-          {/* <span>Sat, 09 Nov</span> */}
-          <span>{pickup && formatDateWithDayName(pickup)}</span>
+          <span>{pickup?.date}</span>
           <span className="mx-1 text-theme">To</span>
-          {/* <span>Sat, 09 Nov</span> */}
-          <span>{dropoff && formatDateWithDayName(dropoff)}</span>
+          <span>{dropoff?.date}</span>
         </button>
         <button type="button" onClick={() => dispatch(toggleFilter())}>
           <svg

@@ -44,13 +44,13 @@ const BookingSummary = () => {
     (async () => {
       dispatch(fetchingVehicles());
       const result = await fetchingData(
-        `/getVehicleTblData?vehicleId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+        `/getVehicleTblData?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
-      console.log(result);
-      dispatch(addVehiclesData(result.data));
+      // console.log(result);
+      dispatch(addVehiclesData(result?.data));
     })();
   }, []);
-  console.log(vehicles);
+  // console.log(vehicles);
 
   const handleCreateBooking = async (e) => {
     e.preventDefault();
@@ -58,25 +58,33 @@ const BookingSummary = () => {
     const data = {
       vehicleTableId: vehicles[0]?._id,
       userId: currentUser?._id,
+      vehicleMasterId: vehicles[0]?.vehicleMasterId,
       BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
       BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
       extraAddon: "",
-      discountPrice: vehicles[0]?.perDayCost,
+      // discountPrice: vehicles[0]?.perDayCost,
       bookingPrice: {
-        totalPrice: vehicles[0]?.perDayCost,
-        bookingPrice: vehicles[0]?.perDayCost,
+        totalPrice:
+          Number(calculateTax(vehicles[0]?.perDayCost, 18)) +
+          Number(vehicles[0]?.perDayCost),
+        bookingPrice: Number(vehicles[0]?.perDayCost),
         tax: calculateTax(vehicles[0]?.perDayCost, 18),
         roundPrice: 0,
         extraAddonPrice: 0,
         vehiclePrice: vehicles[0]?.perDayCost,
       },
-      bookingStatus: "pending",
+      vehicleName: vehicles[0]?.vehicleMaster?.vehicleName,
+      vehicleBrand: vehicles[0]?.vehicleMaster?.vehicleBrand,
+      vehicleImage: vehicles[0]?.vehicleMaster?.vehicleImage,
+      stationName: vehicles[0]?.station?.stationName,
+      bookingStatus: "completed",
       paymentStatus: "pending",
       rideStatus: "pending",
       paymentMethod: "cash",
       payInitFrom: "Razor pay",
       paySuccessId: "assa",
     };
+    // console.log(data);
 
     try {
       const response = await handlebooking(data);
@@ -94,7 +102,7 @@ const BookingSummary = () => {
 
   return !loading ? (
     vehicles.length > 0 ? (
-      <div className="w-[90%] mx-auto my-1">
+      <div className="w-[90%] mx-auto my-3.5 lg:my-1">
         <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
           <div className="col-span-7">
             <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-1">

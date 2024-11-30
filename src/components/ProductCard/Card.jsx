@@ -6,12 +6,12 @@ import { handleErrorImage } from "../../utils";
 
 const Card = ({
   perDayCost,
-  vehicleMasterData,
+  vehicleMaster,
   vehicleModel,
   freeKms,
   extraKmsCharges,
   vehicleColor,
-  stationData,
+  station,
   _id,
 }) => {
   const [queryParms] = useSearchParams();
@@ -44,32 +44,29 @@ const Card = ({
         <div className="px-3 py-2">
           <div className="w-full h-48 rounded-lg mb-3">
             <img
-              src={vehicleMasterData?.vehicleImage}
+              src={vehicleMaster?.vehicleImage}
               className="w-full h-full object-contain"
-              alt={vehicleMasterData?.vehicleName}
+              alt={vehicleMaster?.vehicleName}
               onError={() =>
-                handleErrorImage(
-                  vehicleMasterData?.vehicleType,
-                  productImageRef
-                )
+                handleErrorImage(vehicleMaster?.vehicleType, productImageRef)
               }
               ref={productImageRef}
             />
           </div>
           <div className="mb-2.5">
             <h2 className="font-semibold truncate uppercase">
-              {vehicleMasterData?.vehicleBrand} {vehicleMasterData?.vehicleName}
+              {vehicleMaster?.vehicleBrand} {vehicleMaster?.vehicleName}
             </h2>
           </div>
           <div className="flex items-center mb-1">
             <div className="w-8 h-8 mr-1">
               <img
                 src={
-                  vehicleMasterData?.vehicleType === "gear"
+                  vehicleMaster?.vehicleType === "gear"
                     ? bikeImage
                     : scooterImage
                 }
-                alt={vehicleMasterData?.vehicleType}
+                alt={vehicleMaster?.vehicleType}
               />
             </div>
             <p>
@@ -90,9 +87,7 @@ const Card = ({
           </div>
           <p className="text-gray-600">
             Pickup at{" "}
-            <span className="text-theme truncate">
-              {stationData?.stationName}
-            </span>
+            <span className="text-theme truncate">{station?.stationName}</span>
           </p>
         </div>
       </div>

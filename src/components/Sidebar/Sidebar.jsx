@@ -28,7 +28,7 @@ const Sidebar = () => {
     <div
       className={`${
         isMainSideBarActive ? "left-0" : "left-[-100%]"
-      } absolute top-0 left-0 w-full h-full bg-black bg-opacity-40 z-30 transition-all duration-300 ease-in-out`}
+      } absolute top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 transition-all duration-300 ease-in-out`}
     >
       <div className="w-[80%] bg-white h-full">
         <div className="bg-theme-black px-4 py-2.5 flex items-center justify-between mb-3">

@@ -9,6 +9,7 @@ import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
 import errorReducer from "./ErrorSlice/ErrorSlice.js";
 import filterReducer from "./FiltersSlice/FiltersSlice.js";
+import RideReducer from "./RidesSlice/RideSlice.js";
 
 const userPersistConfig = {
   key: "user",
@@ -51,6 +52,7 @@ const store = configureStore({
     selectedLocation: persistedLocationReducer,
     error: errorReducer,
     filter: filterReducer,
+    rides: RideReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

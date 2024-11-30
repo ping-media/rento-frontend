@@ -4,8 +4,8 @@ const PriceCard = ({ perDayCost }) => {
   const priceDetails = [
     { title: "Vehicle Rental Cost", price: Number(perDayCost) },
     { title: "Extra Helmet Price", price: 50 },
-    { title: "CGST(14% Applied)", price: 60 },
-    { title: "SGST(14% Applied)", price: 60 },
+    { title: "CGST(14% Applied)", price: 0 },
+    { title: "SGST(14% Applied)", price: 0 },
   ];
 
   const [totalPrice, setTotalPrice] = useState(0);

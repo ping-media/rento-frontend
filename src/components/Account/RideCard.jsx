@@ -34,25 +34,25 @@ const RideCard = ({ item }) => {
             <span>Booking ID: {item?.bookingId}</span>
             <span className="mx-1">|</span>
             <span>
-              Booking Date: {item?.bookingDate} {item?.bookingTime}
+              Booking Date And Time: {item?.bookingDate}{" "}
+              {item?.BookingStartDateAndTime}
             </span>
           </p>
           <p className="text-sm text-gray-400 mb-2">
-            Station Details: {item?.station}
+            Station Details: {item?.stationName}
           </p>
           <p className="text-sm text-gray-400 mb-2">
-            Rent Period: {item?.rentDuration}
+            {/* Rent Period: {getDurationInDays(startDate?.date, endDate?.date)} */}
           </p>
           <p className="text-sm text-gray-400 mb-2">
-            {item?.AmountToPay
-              ? `Booking Amount: ₹${item?.AmountToPay}`
-              : `Amount Paid: ₹${item?.amountPaid}`}
+            {item?.bookingPrice &&
+              `Amount Paid: ₹${item?.bookingPrice?.totalPrice}`}
           </p>
         </div>
       </div>
       {isPageActive ? (
         <Link
-          to={`/my-rides/summary/${item?.vehicleId}`}
+          to={`/my-rides/summary/${item?.bookingId}`}
           className="order-1 lg:order-2 text-right w-full lg:w-auto"
         >
           <button type="button" className="uppercase font-semibold text-theme">

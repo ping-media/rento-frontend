@@ -72,6 +72,8 @@ const DatePicker = ({ containerOnTop, value, name }) => {
     setDropoffDate(new Date(value));
   }, []);
 
+  useEffect(() => {}, [pickupDate]);
+
   // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {
     if (

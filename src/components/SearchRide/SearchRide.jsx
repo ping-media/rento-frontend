@@ -90,7 +90,7 @@ const SearchRide = () => {
       } shadow-lg ${
         !isHomePage
           ? isSearchUpdatesActive
-            ? "absolute w-full top-0 h-full"
+            ? "absolute w-full top-0 h-full z-50"
             : "relative hidden lg:block"
           : "relative rounded-lg"
       }`}
