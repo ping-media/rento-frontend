@@ -117,7 +117,7 @@ const SearchRide = () => {
       setQueryDropoffDate(dropoffDate);
       setQueryDropoffTime(dropoffTime);
     }
-  }, []);
+  }, [location?.href]);
 
   return (
     <div
@@ -178,7 +178,12 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Pick-up Date"}
-            value={queryPickupDate != null || new Date().toLocaleDateString()}
+            value={
+              queryPickupDate != null
+                ? queryPickupDate
+                : new Date().toLocaleDateString()
+            }
+            // value={queryPickupDate != null || new Date().toLocaleDateString()}
             name={"pickupDate"}
           />
         </div>
@@ -189,7 +194,12 @@ const SearchRide = () => {
           <TimePicker
             containerOnTop={containerOnTop}
             labelId="pickup-time"
-            value={queryPickupTime != null || new Date().toLocaleTimeString()}
+            value={
+              queryPickupTime != null
+                ? queryPickupTime
+                : new Date().toLocaleTimeString()
+            }
+            // value={queryPickupTime != null || new Date().toLocaleTimeString()}
             name={"pickupTime"}
           />
         </div>
@@ -200,7 +210,12 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Drop-off Date"}
-            value={queryDropoffDate != null || nextDayFromCurrent(new Date())}
+            value={
+              queryDropoffDate != null
+                ? queryDropoffDate
+                : nextDayFromCurrent(new Date())
+            }
+            // value={queryDropoffDate != null || nextDayFromCurrent(new Date())}
             name={"dropoffDate"}
           />
         </div>
@@ -211,7 +226,12 @@ const SearchRide = () => {
           <TimePicker
             containerOnTop={containerOnTop}
             labelId="dropoff-time"
-            value={queryDropoffTime != null || new Date().toLocaleTimeString()}
+            value={
+              queryDropoffTime != null
+                ? queryDropoffTime
+                : new Date().toLocaleTimeString()
+            }
+            // value={queryDropoffTime != null || new Date().toLocaleTimeString()}
             name={"dropoffTime"}
           />
         </div>
