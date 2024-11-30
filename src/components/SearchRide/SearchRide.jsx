@@ -164,6 +164,7 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Drop-off Date"}
+            // value={new Date().toLocaleTimeString()}
             value={nextDayFromCurrent(new Date())}
             name={"dropoffDate"}
           />

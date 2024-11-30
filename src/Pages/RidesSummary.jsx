@@ -135,7 +135,6 @@ const RidesSummary = () => {
             Fare Details
           </h2>
           <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
-            {/* <ul className="w-full"> */}
             {rides[0] && (
               <>
                 <ul className="w-full leading-8">
@@ -162,7 +161,6 @@ const RidesSummary = () => {
                 </ul>
               </>
             )}
-            {/* </ul> */}
           </div>
         </div>
         <div>

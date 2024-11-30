@@ -6,12 +6,15 @@ import { handleErrorImage } from "../../utils";
 
 const Card = ({
   perDayCost,
-  vehicleMaster,
+  vehicleImage,
+  vehicleName,
+  vehicleType,
+  vehicleBrand,
+  stationName,
   vehicleModel,
   freeKms,
   extraKmsCharges,
   vehicleColor,
-  station,
   _id,
 }) => {
   const [queryParms] = useSearchParams();
@@ -44,29 +47,23 @@ const Card = ({
         <div className="px-3 py-2">
           <div className="w-full h-48 rounded-lg mb-3">
             <img
-              src={vehicleMaster?.vehicleImage}
+              src={vehicleImage}
               className="w-full h-full object-contain"
-              alt={vehicleMaster?.vehicleName}
-              onError={() =>
-                handleErrorImage(vehicleMaster?.vehicleType, productImageRef)
-              }
+              alt={vehicleName}
+              onError={() => handleErrorImage(vehicleType, productImageRef)}
               ref={productImageRef}
             />
           </div>
           <div className="mb-2.5">
             <h2 className="font-semibold truncate uppercase">
-              {vehicleMaster?.vehicleBrand} {vehicleMaster?.vehicleName}
+              {vehicleBrand} {vehicleName}
             </h2>
           </div>
           <div className="flex items-center mb-1">
             <div className="w-8 h-8 mr-1">
               <img
-                src={
-                  vehicleMaster?.vehicleType === "gear"
-                    ? bikeImage
-                    : scooterImage
-                }
-                alt={vehicleMaster?.vehicleType}
+                src={vehicleType === "gear" ? bikeImage : scooterImage}
+                alt={vehicleType}
               />
             </div>
             <p>
@@ -86,8 +83,7 @@ const Card = ({
             </button>
           </div>
           <p className="text-gray-600">
-            Pickup at{" "}
-            <span className="text-theme truncate">{station?.stationName}</span>
+            Pickup at <span className="text-theme truncate">{stationName}</span>
           </p>
         </div>
       </div>

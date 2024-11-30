@@ -21,7 +21,7 @@ const Filters = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const brands = ["Honda", "TVS", "Hero", "yahama", "royalenfield"];
+  const brands = ["Honda", "TVS", "Hero", "Yahama", "royalenfield"];
   const navigate = useNavigate();
   const [queryParms, setQueryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
@@ -42,7 +42,7 @@ const Filters = () => {
     e.preventDefault();
     if (inputCategory != "" && inputbrand != "Choose Brand") {
       //add new parameter in existing URL
-      queryParms.set("category", inputCategory.toLowerCase());
+      queryParms.set("category", inputCategory);
       queryParms.set("brand", inputbrand);
       setQueryParms(queryParms);
     } else if (inputbrand != "Choose Brand") {
@@ -50,14 +50,14 @@ const Filters = () => {
       if (queryParms.get("category")) {
         queryParms.delete("category");
       }
-      queryParms.set("brand", inputbrand.toLowerCase());
+      queryParms.set("brand", inputbrand);
       setQueryParms(queryParms);
     } else {
       // if it is present if not than do nothing
       if (queryParms.get("brand")) {
         queryParms.delete("brand");
       }
-      queryParms.set("category", inputCategory.toLowerCase());
+      queryParms.set("category", inputCategory);
       setQueryParms(queryParms);
     }
     if (isFilterActive === true) {

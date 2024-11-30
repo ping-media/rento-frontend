@@ -19,19 +19,19 @@ const handleSearchVehicleData = async (
   dispatch(fetchingVehicles());
   let result;
   if (location.pathname !== "/explore") {
-    const category = queryParmsData?.category?.toLowerCase();
-    const brand = queryParmsData?.brand?.toLowerCase();
+    const category = queryParmsData?.category;
+    const brand = queryParmsData?.brand;
     if (category != undefined && brand != undefined) {
       result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}`
+        `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
     } else if (category != undefined) {
       result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&vehicleType=${category}`
+        `/getVehicleTblData?stationId=${id}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
     } else if (brand != undefined) {
       result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}`
+        `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
     } else {
       result = await fetchingData(

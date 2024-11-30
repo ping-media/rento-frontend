@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { formatDate } from "../../utils";
+import { formatDate, nextDayFromCurrent } from "../../utils";
 
 const DatePicker = ({ containerOnTop, value, name }) => {
   const datePickerRef = useRef(null);
@@ -72,7 +72,12 @@ const DatePicker = ({ containerOnTop, value, name }) => {
     setDropoffDate(new Date(value));
   }, []);
 
-  useEffect(() => {}, [pickupDate]);
+  useEffect(() => {
+    // if (name == "dropoffDate" && pickupDate) {
+    //   console.log(new Date(nextDayFromCurrent(pickupDate)));
+    //   setDropoffDate(nextDayFromCurrent(new Date(value)));
+    // }
+  }, [pickupDate]);
 
   // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {

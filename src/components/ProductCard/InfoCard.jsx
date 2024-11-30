@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import scooterImg from "../../assets/images/scooter-image.png";
 import bikeImg from "../../assets/images/bike-image.png";
 import {
@@ -8,56 +8,52 @@ import {
 } from "../../utils";
 
 const InfoCard = ({
-  station,
-  vehicleMaster,
+  vehicleImage,
+  vehicleName,
+  vehicleType,
+  vehicleBrand,
+  stationName,
   perDayCost,
   freeKms,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
-  const [bookingStartDateTime, setBookingStartDateTime] = useState(
-    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime)
-  );
-  const [bookingEndDateTime, setBookingEndDateTime] = useState(
-    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime)
-  );
-  console.log(
-    formatDateTimeForUser(BookingStartDateAndTime),
-    formatDateTimeForUser(BookingEndDateAndTime)
-  );
+  //converting time into readable format
+  const bookingStartDateTime =
+    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
+  const bookingEndDateTime =
+    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
-      {vehicleMaster?.vehicleImage ? (
+      {vehicleImage ? (
         <div className="w-52 h-40 mx-auto lg:mx-0">
           <img
-            src={vehicleMaster?.vehicleImage}
+            src={vehicleImage}
             className="w-full h-full object-contain rounded-lg"
-            alt={vehicleMaster?.vehicleName}
-            onError={() =>
-              handleErrorImage(vehicleMaster?.vehicleType, vehicleImageRef)
-            }
+            alt={vehicleName}
+            onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
             ref={vehicleImageRef}
           />
         </div>
       ) : (
         <div className="w-52 h-40 mx-auto lg:mx-0 bg-opacity-50 rounded-lg">
           <img
-            src={vehicleMaster?.vehicleType == "gear" ? bikeImg : scooterImg}
+            src={vehicleType == "gear" ? bikeImg : scooterImg}
             className="w-full h-full object-cover"
-            alt={vehicleMaster?.vehicleName}
+            alt={vehicleName}
           />
         </div>
       )}
       <div className="max-w-sm mx-auto lg:mx-0">
-        {vehicleMaster?.vehicleBrand && vehicleMaster?.vehicleName ? (
-          <h2 className="font-semibold mb-3 uppercase">
-            {vehicleMaster?.vehicleBrand} {vehicleMaster?.vehicleName}
+        {vehicleBrand && vehicleName ? (
+          <h2 className="font-semibold mb-3 uppercase text-xl">
+            {vehicleBrand} {vehicleName}
           </h2>
         ) : (
           <div className="h-4 w-32 bg-gray-400 rounded mb-3"></div>
         )}
-        {station?.stationName ? (
+        {stationName ? (
           <div className="flex gap-2 mb-3">
             <span>
               <svg
@@ -76,7 +72,7 @@ const InfoCard = ({
             </span>
             <div>
               <p>Pickup Location</p>
-              <p>{station?.stationName}</p>
+              <p>{stationName}</p>
             </div>
           </div>
         ) : (
@@ -85,7 +81,7 @@ const InfoCard = ({
             <div className="h-4 w-52 bg-gray-400 rounded mb-1"></div>
           </div>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-2 cursor-pointer">
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
