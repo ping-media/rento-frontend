@@ -9,7 +9,6 @@ const PromoCard = () => {
           type="text"
           placeholder="Enter Promo Coupon Here"
           className="w-full px-3 py-2 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1"
-          required
         />
       </div>
     </div>

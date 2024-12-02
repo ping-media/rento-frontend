@@ -7,6 +7,7 @@ import {
   toggleLicenseModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import IdentityModal from "../Modals/IdentityModal";
+import SelectDropDown from "../DropdownButton/SelectDropDown";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -22,12 +23,20 @@ const Profile = () => {
       <IdentityModal />
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
         <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center justify-between">
-          <h2 className="font-semibold text-xl uppercase">
+          <h2 className="font-bold text-lg lg:text-xl uppercase">
             User <span className="text-theme">Profile</span>
           </h2>
-          <h2>
+          <h2 className="text-xs lg:text-sm">
             <span className="font-semibold mr-1">KYC Status:</span>
-            {currentUser?.kycApproved == "yes" ? "Verified" : "Not Verified"}
+            <span
+              className={`${
+                currentUser?.kycApproved == "yes"
+                  ? "bg-green-500"
+                  : "bg-red-500"
+              } text-white px-1 lg:px-4 py-1 rounded-sm`}
+            >
+              {currentUser?.kycApproved == "yes" ? "Verified" : "Not Verified"}
+            </span>
           </h2>
         </div>
         <form onSubmit={handleProfileUpdate}>
@@ -60,11 +69,11 @@ const Profile = () => {
                 labelId={"dob"}
                 type="date"
               />
-              <InputWithLabel
+              <SelectDropDown
                 name={"gender"}
-                placeholderDesc={"Choose Gender"}
                 labelDesc={"Gender"}
                 labelId={"gender"}
+                value={currentUser?.gender}
               />
             </div>
             <div className="w-full lg:flex-1">
@@ -108,7 +117,7 @@ const Profile = () => {
       </div>
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white">
         <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center flex-wrap gap-2 lg:gap-0 justify-between">
-          <h2 className="font-semibold text-xl uppercase w-full lg:w-auto">
+          <h2 className="font-bold text-xl uppercase w-full lg:w-auto">
             upload <span className="text-theme">documents</span>
           </h2>
           <div className="flex items-center gap-2">

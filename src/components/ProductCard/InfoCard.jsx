@@ -24,6 +24,7 @@ const InfoCard = ({
     BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
   const bookingEndDateTime =
     BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
+
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
       {vehicleImage ? (

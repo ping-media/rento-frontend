@@ -42,7 +42,7 @@ const Search = () => {
       selectedLocation,
       id
     );
-    console.log(customLocation?.search);
+    // console.log(customLocation?.search);
     // console.log(vehicles);
   }, [customLocation]);
 

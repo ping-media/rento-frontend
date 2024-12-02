@@ -1,11 +1,51 @@
 import { useEffect, useState } from "react";
+import {
+  calculateTax,
+  formatDateTimeForUser,
+  getDurationInDays,
+} from "../../utils";
 
-const PriceCard = ({ perDayCost }) => {
+const PriceCard = ({
+  perDayCost,
+  BookingStartDateAndTime,
+  BookingEndDateAndTime,
+}) => {
+  const bookingStartDateTime =
+    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
+  const bookingEndDateTime =
+    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
+
   const priceDetails = [
-    { title: "Vehicle Rental Cost", price: Number(perDayCost) },
-    { title: "Extra Helmet Price", price: 50 },
-    { title: "CGST(14% Applied)", price: 0 },
-    { title: "SGST(14% Applied)", price: 0 },
+    {
+      title: "Vehicle Rental Cost",
+      name: "bookingPrice",
+      price:
+        Number(perDayCost) *
+        Number(
+          getDurationInDays(
+            bookingStartDateTime?.date,
+            bookingEndDateTime?.date
+          )
+        ),
+    },
+    { title: "Extra Helmet Price", name: "extraAddonPrice", price: 50 },
+    {
+      title: "GST(18% Applied)",
+      name: "tax",
+      price: Number(
+        calculateTax(
+          Number(perDayCost) *
+            Number(
+              getDurationInDays(
+                bookingStartDateTime?.date,
+                bookingEndDateTime?.date
+              )
+            ),
+          18
+        )
+      ),
+    },
+    // { title: "SGST(14% Applied)", price: 0 },
   ];
 
   const [totalPrice, setTotalPrice] = useState(0);
@@ -19,7 +59,7 @@ const PriceCard = ({ perDayCost }) => {
         }
         return total + item.price;
       }, 0);
-      setTotalPrice(totalPrice);
+      setTotalPrice(totalPrice.toFixed(2));
     })();
   }, [isExtraChecked]);
 
@@ -30,16 +70,28 @@ const PriceCard = ({ perDayCost }) => {
           {priceDetails.map((item, index) => (
             <li
               className={`${
-                item?.title.includes("Helmet") & !isExtraChecked && "hidden"
+                item?.title.includes("Helmet") & !isExtraChecked ? "hidden" : ""
               } flex items-center justify-between`}
               key={index}
             >
+              <input
+                type="hidden"
+                name={item?.name}
+                value={
+                  item?.title?.includes("Helmet")
+                    ? isExtraChecked
+                      ? item?.price
+                      : ""
+                    : item?.price
+                }
+              />
               <span className="text-gray-500">{item?.title}</span>{" "}
               <span className="font-semibold">₹{item?.price}</span>
             </li>
           ))}
         </ul>
         <div className="flex items-center justify-between py-2">
+          <input type="hidden" name="totalPrice" value={totalPrice} />
           <span className="text-gray-500">Payable Amount</span>
           <span className="font-semibold">₹{totalPrice}</span>
         </div>

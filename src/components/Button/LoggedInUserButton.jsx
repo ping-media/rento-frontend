@@ -37,7 +37,7 @@ const LoggedInUserButton = () => {
   }, []);
   return (
     <button
-      className="hidden lg:flex relative hover:shadow-none shadow-md bg-lighter-gray rounded-xl cursor-pointer items-center gap-2 px-3 py-2"
+      className="hidden lg:flex relative hover:shadow-none shadow-md bg-lighter-gray rounded-xl cursor-pointer items-center gap-1 px-3 py-1.5"
       ref={adminRef}
       onClick={handleToggleVisibility}
     >
@@ -61,7 +61,7 @@ const LoggedInUserButton = () => {
         </h2>
       </div>
       {isVisible && (
-        <div className="absolute w-40 top-16 right-0 bg-white flex flex-col items-center text-left gap-2 border border-gray-200 rounded-xl p-2 shadow-xl z-50">
+        <div className="absolute w-40 top-14 right-0 bg-white flex flex-col items-center text-left gap-2 border border-gray-200 rounded-xl p-2 shadow-xl z-50">
           <Link
             className="py-1.5 px-1.5 hover:bg-theme rounded-md hover:text-white transition duration-200 ease-in-ou w-full"
             to={"/profile"}

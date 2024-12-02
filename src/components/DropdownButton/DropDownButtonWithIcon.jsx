@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
-// import { searchLocationList } from "../../Data/dummyData";
 
 const DropDownButtonWithIcon = ({ labelId, containerOnTop }) => {
   const [isOpened, setIsOpened] = useState(false);
@@ -45,7 +44,7 @@ const DropDownButtonWithIcon = ({ labelId, containerOnTop }) => {
 
   return (
     <button
-      className="border-2 px-5 py-3 lg:3.5 focus:border-theme rounded-lg relative w-full"
+      className="border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full"
       onClick={() => setIsOpened(!isOpened)}
       type="button"
       id={labelId}
@@ -55,7 +54,7 @@ const DropDownButtonWithIcon = ({ labelId, containerOnTop }) => {
       <input type="hidden" name={labelId} value={selectedValueId || ""} />
       <div>
         <div className="flex items-center justify-between gap-2 truncate">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5">
             <span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +70,7 @@ const DropDownButtonWithIcon = ({ labelId, containerOnTop }) => {
                 <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
               </svg>
             </span>
-            <span>{selectedValue}</span>
+            <span className="capitalize">{selectedValue}</span>
           </div>
           <span>
             <svg
@@ -100,7 +99,7 @@ const DropDownButtonWithIcon = ({ labelId, containerOnTop }) => {
                   station.map((item) => (
                     <li
                       key={item?.stationId}
-                      className="w-full text-left py-1 hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3"
+                      className="w-full text-left py-1 hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3 capitalize"
                       onClick={() => {
                         handleLocationChange(
                           item?.stationId,

@@ -6,7 +6,6 @@ import DropDownButtonWithIcon from "../DropdownButton/DropDownButtonWithIcon";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSearchUpdate } from "../../Redux/ModalSlice/ModalSlice";
-import { fetchingData } from "../../Data";
 import {
   addStationData,
   fetchingStation,
@@ -16,6 +15,7 @@ import {
   nextDayFromCurrent,
   removeAfterSecondSlash,
 } from "../../utils";
+import { searchData } from "../../Data/Functions";
 
 const SearchRide = () => {
   const navigate = useNavigate();
@@ -28,10 +28,13 @@ const SearchRide = () => {
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation
   );
+  //setting pickup&dropoffdate
+  const [pickupDate, setPickupDate] = useState(new Date().toLocaleDateString());
+  const [dropoffDate, setDropoffDate] = useState(
+    nextDayFromCurrent(new Date())
+  );
   const [queryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
-  const [queryPickupDate, setQueryPickupDate] = useState(null);
-  const [queryDropoffDate, setQueryDropoffDate] = useState(null);
   const [queryPickupTime, setQueryPickupTime] = useState(null);
   const [queryDropoffTime, setQueryDropoffTime] = useState(null);
   // if searchFilter modal is active than run this
@@ -65,64 +68,53 @@ const SearchRide = () => {
     }
   };
 
+  // this code is to change the direction of opening the option dropdown whether it goes up or down
   useEffect(() => {
     if (location.pathname == "/") {
       setIsHomePage(!isHomePage);
     }
-    // this code is to change the direction of opening the option dropdown whether it goes up or down
     if (searchRideContainerRef.current.getBoundingClientRect().top < 100) {
       setContainerOnTop(!containerOnTop);
     }
   }, [location.href]);
 
+  // this function is fetching station based on location id
   useEffect(() => {
-    const searchData = async () => {
-      try {
-        if (!loading && Object.entries(selectedLocation).length > 0) {
-          dispatch(fetchingStation());
-          const result = await fetchingData(
-            `/getStationData?locationId=${selectedLocation?.locationId}`
-          );
-          if (result) {
-            // console.log(result?.data);
-            return dispatch(addStationData(result?.data));
-          }
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    searchData();
+    searchData(
+      dispatch,
+      selectedLocation,
+      fetchingStation,
+      addStationData,
+      loading
+    );
   }, [selectedLocation]);
 
   useEffect(() => {
-    if (
-      queryParmsData?.BookingStartDateAndTime &&
-      queryParmsData?.BookingEndDateAndTime
-    ) {
-      const pickupDate = new Date(
-        queryParmsData?.BookingStartDateAndTime
-      )?.toLocaleDateString();
-      const pickupTime = new Date(
-        queryParmsData?.BookingStartDateAndTime
-      )?.toLocaleTimeString();
-      const dropoffDate = new Date(
-        queryParmsData?.BookingEndDateAndTime
-      )?.toLocaleDateString();
-      const dropoffTime = new Date(
-        queryParmsData?.BookingEndDateAndTime
-      )?.toLocaleTimeString();
-      setQueryPickupDate(pickupDate);
-      setQueryPickupTime(pickupTime);
-      setQueryDropoffDate(dropoffDate);
-      setQueryDropoffTime(dropoffTime);
+    const { BookingStartDateAndTime, BookingEndDateAndTime } =
+      queryParmsData || {};
+
+    if (BookingStartDateAndTime && BookingEndDateAndTime) {
+      const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+      const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
+
+      setPickupDate(formatDate(BookingStartDateAndTime));
+      setQueryPickupTime(formatTime(BookingStartDateAndTime));
+      setDropoffDate(formatDate(BookingEndDateAndTime));
+      setQueryDropoffTime(formatTime(BookingEndDateAndTime));
     }
   }, [location?.href]);
 
+  //  through this we are changing the dropoffdate by one when user change the pickupvalue
+  useEffect(() => {
+    if (pickupDate) {
+      setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
+    }
+  }, [pickupDate]);
+
   return (
     <div
-      className={`w-[95%] lg:w-[90%] mx-auto px-4 py-1 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
-        isHomePage && "-mt-36 md:-mt-28 lg:-mt-14"
+      className={`w-[95%] lg:w-[90%] mx-auto px-4 py-2.5 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
+        isHomePage && "-mt-32 md:-mt-28 lg:-mt-14"
       } shadow-lg ${
         !isHomePage
           ? isSearchUpdatesActive
@@ -178,12 +170,8 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Pick-up Date"}
-            value={
-              queryPickupDate != null
-                ? queryPickupDate
-                : new Date().toLocaleDateString()
-            }
-            // value={queryPickupDate != null || new Date().toLocaleDateString()}
+            value={pickupDate}
+            setValueChanger={setPickupDate}
             name={"pickupDate"}
           />
         </div>
@@ -199,7 +187,6 @@ const SearchRide = () => {
                 ? queryPickupTime
                 : new Date().toLocaleTimeString()
             }
-            // value={queryPickupTime != null || new Date().toLocaleTimeString()}
             name={"pickupTime"}
           />
         </div>
@@ -210,12 +197,8 @@ const SearchRide = () => {
           <DatePicker
             containerOnTop={containerOnTop}
             placeholderMessage={"Select Drop-off Date"}
-            value={
-              queryDropoffDate != null
-                ? queryDropoffDate
-                : nextDayFromCurrent(new Date())
-            }
-            // value={queryDropoffDate != null || nextDayFromCurrent(new Date())}
+            value={dropoffDate}
+            setValueChanger={setDropoffDate}
             name={"dropoffDate"}
           />
         </div>
@@ -231,7 +214,6 @@ const SearchRide = () => {
                 ? queryDropoffTime
                 : new Date().toLocaleTimeString()
             }
-            // value={queryDropoffTime != null || new Date().toLocaleTimeString()}
             name={"dropoffTime"}
           />
         </div>

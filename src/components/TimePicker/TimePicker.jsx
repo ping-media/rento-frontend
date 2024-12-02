@@ -63,10 +63,10 @@ const TimePicker = ({ containerOnTop, labelId, value, name }) => {
     <div className="relative" ref={timePickerRef}>
       <button
         type="button"
-        className="flex items-center justify-between border-2 px-5 py-3 lg:3.5 focus:border-theme rounded-lg relative w-full lg:w-auto rounded-lg"
+        className="flex items-center justify-between border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full lg:w-auto rounded-lg"
         onClick={() => setTimeVisible(!timeVisible)}
       >
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex items-center gap-0.5">
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"

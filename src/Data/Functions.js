@@ -21,7 +21,7 @@ const handleSearchVehicleData = async (
   if (location.pathname !== "/explore") {
     const category = queryParmsData?.category;
     const brand = queryParmsData?.brand;
-    console.log(queryParmsData, location);
+    // console.log(queryParmsData, location);
     if (category != undefined && brand != undefined) {
       result = await fetchingData(
         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
@@ -70,4 +70,27 @@ const fetchingPlansFilters = async (dispatch, id) => {
   }
 };
 
-export { handleSearchVehicleData, fetchingPlansFilters };
+const searchData = async (
+  dispatch,
+  selectedLocation,
+  fetchingStation,
+  addStationData,
+  loading
+) => {
+  try {
+    if (!loading && Object.entries(selectedLocation).length > 0) {
+      dispatch(fetchingStation());
+      const result = await fetchingData(
+        `/getStationData?locationId=${selectedLocation?.locationId}`
+      );
+      if (result) {
+        // console.log(result?.data);
+        return dispatch(addStationData(result?.data));
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export { handleSearchVehicleData, fetchingPlansFilters, searchData };

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { formatDate, nextDayFromCurrent } from "../../utils";
+import { formatDate } from "../../utils";
 
-const DatePicker = ({ containerOnTop, value, name }) => {
+const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
   const datePickerRef = useRef(null);
-  const [pickupDate, setPickupDate] = useState(null);
-  const [dropoffDate, setDropoffDate] = useState(null);
   const [calendarVisible, setCalendarVisible] = useState(false);
 
   // Current date to generate the calendar
@@ -34,11 +32,7 @@ const DatePicker = ({ containerOnTop, value, name }) => {
 
   // Handle selecting a date
   const handleDateSelect = (date) => {
-    if (name == "dropoffDate") {
-      setDropoffDate(date);
-    } else {
-      setPickupDate(date);
-    }
+    setValueChanger(date);
     setCalendarVisible(false);
   };
 
@@ -52,32 +46,6 @@ const DatePicker = ({ containerOnTop, value, name }) => {
       setCurrentYear((prev) => (currentMonth === 11 ? prev + 1 : prev));
     }
   };
-
-  // update the dropoffDate when pickup value change
-  // const handleChangeDate = (name, dateValue) => {
-  //   if (name === "pickupDate") {
-  //     const newValue = new Date(dateValue);
-  //     newValue.setDate(newValue.getDate() + 1);
-  //     if (!isNaN(newValue)) {
-  //       setDropoffDate(newValue);
-  //     }
-  //   } else if (name === "dropoffDate") {
-  //     setDropoffDate(dateValue);
-  //   }
-  // };
-
-  // update pickup date with current date
-  useEffect(() => {
-    setPickupDate(new Date(value));
-    setDropoffDate(new Date(value));
-  }, []);
-
-  useEffect(() => {
-    // if (name == "dropoffDate" && pickupDate) {
-    //   console.log(new Date(nextDayFromCurrent(pickupDate)));
-    //   setDropoffDate(nextDayFromCurrent(new Date(value)));
-    // }
-  }, [pickupDate]);
 
   // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {
@@ -103,10 +71,10 @@ const DatePicker = ({ containerOnTop, value, name }) => {
     <div className="relative" ref={datePickerRef}>
       <button
         type="button"
-        className="flex items-center justify-between border-2 px-5 py-3 lg:3.5 focus:border-theme rounded-lg relative w-full rounded-lg"
+        className="flex items-center justify-between border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full rounded-lg"
         onClick={() => setCalendarVisible(!calendarVisible)}
       >
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex items-center gap-0.5">
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -127,11 +95,7 @@ const DatePicker = ({ containerOnTop, value, name }) => {
             type="text"
             className="outline-none w-full cursor-pointer"
             placeholder="Select date"
-            value={
-              name == "pickupDate"
-                ? formatDate(pickupDate)
-                : formatDate(dropoffDate)
-            }
+            value={formatDate(new Date(value))}
             readOnly
             name={name}
           />
@@ -197,13 +161,8 @@ const DatePicker = ({ containerOnTop, value, name }) => {
                 className={`p-2 text-center rounded-full disabled:text-gray-300 ${
                   day ? "hover:bg-theme hover:text-gray-100" : ""
                 } ${
-                  name == "pickupDate"
-                    ? pickupDate.getDate() === day &&
-                      pickupDate.getMonth() === currentMonth
-                      ? "bg-theme text-white"
-                      : ""
-                    : dropoffDate.getDate() === day &&
-                      dropoffDate.getMonth() === currentMonth
+                  new Date(value).getDate() === day &&
+                  new Date(value).getMonth() === currentMonth
                     ? "bg-theme text-white"
                     : ""
                 }`}
@@ -218,7 +177,7 @@ const DatePicker = ({ containerOnTop, value, name }) => {
                   // (selectedDate &&
                   //   new Date(currentYear, currentMonth, day) < selectedDate)
                   (name === "dropoffDate" &&
-                    new Date(currentYear, currentMonth, day) < dropoffDate)
+                    new Date(currentYear, currentMonth, day) < new Date(value))
                 }
               >
                 {day}

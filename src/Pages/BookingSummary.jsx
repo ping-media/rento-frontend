@@ -55,6 +55,9 @@ const BookingSummary = () => {
   const handleCreateBooking = async (e) => {
     e.preventDefault();
     if (currentUser == null) dispatch(toggleLoginModal());
+    const response = new FormData(e.target);
+    const result = Object.fromEntries(response.entries());
+
     const data = {
       vehicleTableId: vehicles[0]?._id,
       userId: currentUser?._id,
@@ -62,16 +65,14 @@ const BookingSummary = () => {
       BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
       BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
       extraAddon: "",
-      // discountPrice: vehicles[0]?.perDayCost,
       bookingPrice: {
-        totalPrice:
-          Number(calculateTax(vehicles[0]?.perDayCost, 18)) +
-          Number(vehicles[0]?.perDayCost),
-        bookingPrice: Number(vehicles[0]?.perDayCost),
-        tax: calculateTax(vehicles[0]?.perDayCost, 18),
+        totalPrice: Number(result?.totalPrice),
+        bookingPrice: Number(result?.bookingPrice),
+        tax: Number(result?.tax),
         roundPrice: 0,
-        extraAddonPrice: 0,
-        vehiclePrice: vehicles[0]?.perDayCost,
+        extraAddonPrice:
+          result?.extraAddonPrice == "" ? 0 : Number(result?.extraAddonPrice),
+        vehiclePrice: Number(result?.bookingPrice),
       },
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,
@@ -103,53 +104,59 @@ const BookingSummary = () => {
   return !loading ? (
     vehicles.length > 0 ? (
       <div className="w-[90%] mx-auto my-3.5 lg:my-1">
-        <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
-          <div className="col-span-7">
-            <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-1">
-              <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
-                <h2 className="font-semibold">Booking Summary</h2>
-                <h2 className="font-semibold hidden lg:block">Price</h2>
+        <form onSubmit={handleCreateBooking}>
+          <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
+            <div className="col-span-7">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-1">
+                <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
+                  <h2 className="font-semibold">Booking Summary</h2>
+                  <h2 className="font-semibold hidden lg:block">Price</h2>
+                </div>
+                <InfoCard {...vehicles[0]} {...queryParmsData} />
+                <DetailsCard extraKmCharge={vehicles[0]?.extraKmsCharges} />
               </div>
-              <InfoCard {...vehicles[0]} {...queryParmsData} />
-              <DetailsCard extraKmCharge={vehicles[0]?.extraKmsCharges} />
+              <PromoCard />
             </div>
-            <PromoCard />
-          </div>
 
-          <div className="flex flex-wrap col-span-3">
-            <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full">
-              <div className="py-3 border-b-2 border-gray-300">
-                <h2 className="font-semibold">Total Price</h2>
+            <div className="flex flex-wrap col-span-3">
+              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full">
+                <div className="py-3 border-b-2 border-gray-300">
+                  <h2 className="font-semibold">Total Price</h2>
+                </div>
+                <PriceCard
+                  perDayCost={vehicles[0]?.perDayCost}
+                  {...queryParmsData}
+                />
               </div>
-              <PriceCard perDayCost={vehicles[0]?.perDayCost} />
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3">
+                <Checkbox
+                  labelId={"terms"}
+                  ref={termsRef}
+                  setValue={setIsTermsChecked}
+                  Message={
+                    "Confirm that you are above 18 years of age and you agree to all Terms & Conditions"
+                  }
+                />
+                <Checkbox
+                  labelId={"driving"}
+                  ref={drivingRef}
+                  setValue={setIsDrivingChecked}
+                  Message={
+                    "The original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of dropping the vehicle."
+                  }
+                />
+              </div>
+              <button
+                className="bg-theme px-4 py-2.5 w-full mt-1 text-gray-100 rounded-lg disabled:bg-gray-400 order-5"
+                disabled={!isAllFieldChecked ? true : false}
+                type="submit"
+                // onClick={handleCreateBooking}
+              >
+                Continue Booking
+              </button>
             </div>
-            <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3">
-              <Checkbox
-                labelId={"terms"}
-                ref={termsRef}
-                setValue={setIsTermsChecked}
-                Message={
-                  "Confirm that you are above 18 years of age and you agree to all Terms & Conditions"
-                }
-              />
-              <Checkbox
-                labelId={"driving"}
-                ref={drivingRef}
-                setValue={setIsDrivingChecked}
-                Message={
-                  "The original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of dropping the vehicle."
-                }
-              />
-            </div>
-            <button
-              className="bg-theme px-4 py-2.5 w-full mt-1 text-gray-100 rounded-lg disabled:bg-gray-400 order-5"
-              disabled={!isAllFieldChecked ? true : false}
-              onClick={handleCreateBooking}
-            >
-              Continue Booking
-            </button>
           </div>
-        </div>
+        </form>
       </div>
     ) : (
       <div className="w-[90%] mx-auto my-10">

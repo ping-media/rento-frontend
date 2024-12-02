@@ -23,6 +23,7 @@ const LocationModal = () => {
     }
   };
 
+  //  setting the default location for new user
   useEffect(() => {
     (async () => {
       try {
@@ -32,12 +33,18 @@ const LocationModal = () => {
           setLoading(false);
           // if no location is select than by default select the first one
           if (Object.keys(selectedLocation)?.length == 0) {
-            dispatch(
-              addLocation({
-                locationName: result?.data[0]?.locationName,
-                locationId: result?.data[0]?._id,
-              })
-            );
+            // check whether Bangalore is present or not and if present than make it default
+            const isData = result?.data?.filter(
+              (item) => item?.locationName == "Bangalore"
+            )[0];
+            if (isData) {
+              dispatch(
+                addLocation({
+                  locationName: isData?.locationName,
+                  locationId: isData?._id,
+                })
+              );
+            }
           }
           return setLocationList(result?.data);
         }
@@ -96,7 +103,7 @@ const LocationModal = () => {
                   >
                     <img
                       src={item?.locationImage}
-                      className="object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
                       alt="SEARCH_LOCATION"
                     />
                     <h2 className="text-gray-600 font-semibold mt-2">

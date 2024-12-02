@@ -1,8 +1,6 @@
 import bikeImg from "../assets/images/bike-image.png";
 import scooterImg from "../assets/images/scooter-image.png";
 import CryptoJS from "crypto-js";
-import { clearError, setError } from "../Redux/ErrorSlice/ErrorSlice";
-import { handleAsyncError } from "./handleAsyncError";
 
 const handleErrorImage = (type, ref) => {
   if (type == "gear") {
@@ -51,16 +49,29 @@ const decryptData = (encryptedData) => {
   return JSON.parse(decryptedData);
 };
 
+// const formatDate = (dateStr) => {
+//   const date = new Date(dateStr);
+
+//   const formattedDate = new Intl.DateTimeFormat("en-GB", {
+//     day: "2-digit",
+//     month: "short",
+//     year: "numeric",
+//   }).format(date);
+
+//   return formattedDate.replace(/ /g, " ").replace(",", "");
+// };
+
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
 
   const formattedDate = new Intl.DateTimeFormat("en-GB", {
+    weekday: "short",
     day: "2-digit",
     month: "short",
     year: "numeric",
   }).format(date);
 
-  return formattedDate.replace(/ /g, " ").replace(",", "");
+  return formattedDate.replace(/^(\w{3}) (\d{2} \w{3} \d{4})$/, "$1, $2");
 };
 
 const formatTimeWithoutSeconds = (timeStr) => {
@@ -181,12 +192,13 @@ const calculateTax = (amount, taxPercentage) => {
   // Calculate the tax based on the given percentage
   const taxAmount = (taxPercentage / 100) * amount;
 
-  return taxAmount;
+  // Round the result to 2 decimal places and return it
+  return taxAmount.toFixed(2); // This will return a string, but it ensures two decimal places
 };
 
 const convertToISOString = (dropoffDate, dropoffTime) => {
-  // Step 1: Parse the date string ("28 Nov 2024") into a JavaScript Date object
-  const dateParts = dropoffDate.split(" ");
+  // Step 1: Parse the date string ("Mon, 02 Dec 2024") into a JavaScript Date object
+  const dateParts = dropoffDate.split(",")[1].trim().split(" "); // Remove weekday and split the date part
   const monthNames = [
     "Jan",
     "Feb",

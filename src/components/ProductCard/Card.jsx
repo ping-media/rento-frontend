@@ -36,16 +36,16 @@ const Card = ({
           >
             {vehicleModel}
           </p>
-          <div className="bg-theme-black text-gray-100 px-2 py-1 rounded-l-lg">
+          {/* <div className="bg-theme-black text-gray-100 px-2 py-1 rounded-l-lg">
             <p
               className="w-5 h-5 rounded-full mx-auto"
               style={{ backgroundColor: vehicleColor }}
               title="vehicle Color"
             ></p>
-          </div>
+          </div> */}
         </div>
-        <div className="px-3 py-2">
-          <div className="w-full h-48 rounded-lg mb-3">
+        <div className="px-3 py-1.5">
+          <div className="w-full h-48 rounded-lg mb-2.5">
             <img
               src={vehicleImage}
               className="w-full h-full object-contain"
@@ -54,8 +54,8 @@ const Card = ({
               ref={productImageRef}
             />
           </div>
-          <div className="mb-2.5">
-            <h2 className="font-semibold truncate uppercase">
+          <div className="mb-2">
+            <h2 className="font-bold truncate uppercase">
               {vehicleBrand} {vehicleName}
             </h2>
           </div>
@@ -70,7 +70,7 @@ const Card = ({
               <span className="font-semibold">{freeKms}</span> KM Limit
             </p>
           </div>
-          <p className="text-sm mb-5">
+          <p className="text-xs mb-5">
             (After Limit {extraKmsCharges}/KM + GST)
           </p>
           <div className="flex items-center justify-between mb-2">
@@ -83,7 +83,10 @@ const Card = ({
             </button>
           </div>
           <p className="text-gray-600">
-            Pickup at <span className="text-theme truncate">{stationName}</span>
+            Pickup at{" "}
+            <span className="text-theme truncate capitalize">
+              {stationName}
+            </span>
           </p>
         </div>
       </div>
