@@ -6,6 +6,7 @@ const InputWithIconAndLabel = ({
   placeholderDesc,
   labelDesc,
   value,
+  required = false,
 }) => {
   const [inputValue, setInputValue] = useState(value && value);
   return (
@@ -26,7 +27,7 @@ const InputWithIconAndLabel = ({
             className="w-full pl-[3.5rem] pr-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            required
+            required={required}
           />
         </div>
       </div>

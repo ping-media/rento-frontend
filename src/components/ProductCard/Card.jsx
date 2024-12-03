@@ -14,7 +14,6 @@ const Card = ({
   vehicleModel,
   freeKms,
   extraKmsCharges,
-  vehicleColor,
   _id,
 }) => {
   const [queryParms] = useSearchParams();

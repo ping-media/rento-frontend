@@ -47,31 +47,20 @@ const IdentityModal = () => {
               className="flex flex-wrap gap-4"
               onSubmit={handleUploadIdentity}
             >
-              <div className="w-full lg:flex-1 order-2 lg:order-1">
-                <div className="mb-5">
-                  <InputFile
-                    name={"frontAadhaarImage"}
-                    labelDesc={"Front Aadhaar Card Image"}
-                    labelId={"aadharFrontImage"}
-                  />
-                </div>
-                <div className="text-left mb-5">
-                  <button
-                    className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                    disabled
-                  >
-                    Upload
-                  </button>
-                </div>
-              </div>
               <div className="w-full lg:flex-1 order-1 lg:order-2">
                 <div className="mb-5">
                   <InputFile
-                    name={"backAadhaarImage"}
-                    labelDesc={"Back Aadhaar Card Image"}
-                    labelId={"aadhaarBackImage"}
+                    name={"image"}
+                    labelDesc={"Aadhaar Image"}
+                    labelId={"aadhaarImage"}
                   />
                 </div>
+                <button
+                  className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
+                  disabled
+                >
+                  Upload Aadhaar
+                </button>
               </div>
             </form>
           </div>

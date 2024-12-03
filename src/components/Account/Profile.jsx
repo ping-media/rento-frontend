@@ -15,6 +15,9 @@ const Profile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    const response = new FormData(e.target);
+    const result = Object.fromEntries(response.entries());
+    console.log(result);
   };
   return (
     <>
@@ -47,7 +50,8 @@ const Profile = () => {
                 placeholderDesc={"Enter First Name"}
                 labelDesc={"First Name"}
                 labelId={"first_name"}
-                value={currentUser?.firstName}
+                value={currentUser?.firstName || ""}
+                required={true}
               />
             </div>
             <div className="w-full lg:flex-1">
@@ -56,7 +60,8 @@ const Profile = () => {
                 placeholderDesc={"Enter Last Name"}
                 labelDesc={"Last Name"}
                 labelId={"last_name"}
-                value={currentUser?.lastName}
+                value={currentUser?.lastName || ""}
+                required={true}
               />
             </div>
           </div>
@@ -68,12 +73,14 @@ const Profile = () => {
                 labelDesc={"Date Of Birth"}
                 labelId={"dob"}
                 type="date"
+                required={true}
               />
               <SelectDropDown
                 name={"gender"}
                 labelDesc={"Gender"}
                 labelId={"gender"}
-                value={currentUser?.gender}
+                value={currentUser?.gender || ""}
+                required={true}
               />
             </div>
             <div className="w-full lg:flex-1">
@@ -83,7 +90,8 @@ const Profile = () => {
                 labelDesc={"Email Address"}
                 labelId={"email"}
                 type="email"
-                value={currentUser?.email}
+                value={currentUser?.email || ""}
+                required={true}
               />
             </div>
           </div>
@@ -94,7 +102,8 @@ const Profile = () => {
                 labelId={"phoneNumer"}
                 labelDesc={"Contact Number"}
                 placeholderDesc={"Enter Phone Number"}
-                value={currentUser?.contact}
+                value={currentUser?.contact || ""}
+                required={true}
               />
             </div>
             <div className="w-full lg:flex-1">
@@ -109,7 +118,7 @@ const Profile = () => {
           <button
             type="submit"
             className="bg-theme px-4 py-2 text-gray-100 rounded-lg hover:bg-theme-dark transition duration-200 ease-in-out disabled:bg-gray-400 w-full lg:w-auto"
-            disabled
+            // disabled
           >
             Update Profile
           </button>

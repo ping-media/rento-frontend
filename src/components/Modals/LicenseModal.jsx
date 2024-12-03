@@ -55,53 +55,20 @@ const LicenseModal = () => {
               className="flex flex-wrap gap-4"
               onSubmit={handleUploadLicense}
             >
-              <div className="w-full lg:flex-1 order-2 lg:order-1">
-                <div className="mb-5">
-                  <Input
-                    name={"licenseNumber"}
-                    placeholderDesc={"Enter Driving License Number"}
-                    modalRef={licenseNumberRef}
-                    type="text"
-                  />
-                </div>
-                <div className="mb-5">
-                  <Input
-                    name={"expiryDate"}
-                    placeholderDesc={"Enter Expiry Date"}
-                    type="date"
-                  />
-                </div>
-                <ul className="leading-10 px-4 text-gray-600 mb-5 list-decimal">
-                  {pointsToRemember.map((item, index) => (
-                    <li key={index} className="font-semibold text-sm text-left">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="text-left mb-5">
-                  <button
-                    className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                    disabled
-                  >
-                    Upload
-                  </button>
-                </div>
-              </div>
               <div className="w-full lg:flex-1 order-1 lg:order-2">
                 <div className="mb-5">
                   <InputFile
-                    name={"frontLicenseImage"}
+                    name={"image"}
                     labelDesc={"Front License Image"}
                     labelId={"licenseFrontImage"}
                   />
                 </div>
-                <div className="mb-5">
-                  <InputFile
-                    name={"backLicenseImage"}
-                    labelDesc={"Back License Image"}
-                    labelId={"licenseBackImage"}
-                  />
-                </div>
+                <button
+                  className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
+                  disabled
+                >
+                  Upload Driving License
+                </button>
               </div>
             </form>
           </div>

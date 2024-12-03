@@ -29,7 +29,8 @@ const SearchRide = () => {
     (state) => state.selectedLocation
   );
   //setting pickup&dropoffdate
-  const [pickupDate, setPickupDate] = useState(new Date().toLocaleDateString());
+  // const [pickupDate, setPickupDate] = useState(new Date().toLocaleDateString());
+  const [pickupDate, setPickupDate] = useState(new Date());
   const [dropoffDate, setDropoffDate] = useState(
     nextDayFromCurrent(new Date())
   );
@@ -94,7 +95,8 @@ const SearchRide = () => {
       queryParmsData || {};
 
     if (BookingStartDateAndTime && BookingEndDateAndTime) {
-      const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+      // const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+      const formatDate = (dateStr) => new Date(dateStr);
       const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
       setPickupDate(formatDate(BookingStartDateAndTime));
