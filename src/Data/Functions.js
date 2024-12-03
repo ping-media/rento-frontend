@@ -89,7 +89,7 @@ const searchData = async (
       }
     }
   } catch (error) {
-    console.log(error.message);
+    return error.message;
   }
 };
 

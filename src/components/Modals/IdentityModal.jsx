@@ -1,13 +1,41 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleIdentityModal } from "../../Redux/ModalSlice/ModalSlice";
 import InputFile from "../Input/InputFile";
+import { handleuploadDocument } from "../../Data";
+import { useState } from "react";
+import Spinner from "../Spinner/Spinner";
+import { handleAsyncError } from "../../utils/handleAsyncError";
 
 const IdentityModal = () => {
   const dispatch = useDispatch();
   const { isIdentityModalActive } = useSelector((state) => state.modals);
+  const { currentUser } = useSelector((state) => state.user);
+  const [formLoading, setFormLoading] = useState(false);
+  const [image, setImage] = useState(null);
 
-  const handleUploadIdentity = (e) => {
+  const handleUploadIdentity = async (e) => {
+    setFormLoading(true);
     e.preventDefault();
+    const response = new FormData(e.target);
+    let result = Object.fromEntries(response.entries());
+    result = Object.assign(result, {
+      userId: currentUser?._id,
+      documentType: "aadhar",
+    });
+
+    try {
+      const response = await handleuploadDocument(result);
+      if (response?.status == 200) {
+        handleAsyncError(dispatch, response?.message, "success");
+        setImage(null);
+        dispatch(toggleIdentityModal());
+      } else {
+        handleAsyncError(dispatch, response?.message);
+      }
+    } catch (error) {
+      handleAsyncError(dispatch, error?.message);
+    }
+    return setFormLoading(false);
   };
 
   return (
@@ -53,13 +81,19 @@ const IdentityModal = () => {
                     name={"image"}
                     labelDesc={"Aadhaar Image"}
                     labelId={"aadhaarImage"}
+                    image={image}
+                    setImage={setImage}
                   />
                 </div>
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                  disabled
+                  disabled={formLoading}
                 >
-                  Upload Aadhaar
+                  {formLoading ? (
+                    <Spinner message={"loading.."} />
+                  ) : (
+                    "Upload Aadhaar"
+                  )}
                 </button>
               </div>
             </form>

@@ -1,21 +1,41 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleLicenseModal } from "../../Redux/ModalSlice/ModalSlice";
-import Input from "../Input/Input";
-import { useRef } from "react";
 import InputFile from "../Input/InputFile";
+import { handleAsyncError } from "../../utils/handleAsyncError";
+import { handleuploadDocument } from "../../Data";
+import { useState } from "react";
+import Spinner from "../Spinner/Spinner";
 
 const LicenseModal = () => {
   const dispatch = useDispatch();
   const { isLicenseModalActive } = useSelector((state) => state.modals);
-  const licenseNumberRef = useRef(null);
+  const { currentUser } = useSelector((state) => state.user);
+  const [formLoading, setFormLoading] = useState(false);
+  const [image, setImage] = useState(null);
 
-  const pointsToRemember = [
-    "Please upload clear images of both the front and back sides of the original driving license.",
-    "Ensure that the license number, photo, and date of birth are clearly visible in the images.",
-  ];
-
-  const handleUploadLicense = (e) => {
+  const handleUploadLicense = async (e) => {
+    setFormLoading(true);
     e.preventDefault();
+    const response = new FormData(e.target);
+    let result = Object.fromEntries(response.entries());
+    result = Object.assign(result, {
+      userId: currentUser?._id,
+      documentType: "license",
+    });
+
+    try {
+      const response = await handleuploadDocument(result);
+      if (response?.status == 200) {
+        handleAsyncError(dispatch, response?.message, "success");
+        setImage(null);
+        dispatch(toggleLicenseModal());
+      } else {
+        handleAsyncError(dispatch, response?.message);
+      }
+    } catch (error) {
+      handleAsyncError(dispatch, error?.message);
+    }
+    return setFormLoading(false);
   };
 
   return (
@@ -61,13 +81,19 @@ const LicenseModal = () => {
                     name={"image"}
                     labelDesc={"Front License Image"}
                     labelId={"licenseFrontImage"}
+                    image={image}
+                    setImage={setImage}
                   />
                 </div>
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                  disabled
+                  disabled={formLoading}
                 >
-                  Upload Driving License
+                  {formLoading ? (
+                    <Spinner message={"loading..."} />
+                  ) : (
+                    "Upload Driving License"
+                  )}
                 </button>
               </div>
             </form>

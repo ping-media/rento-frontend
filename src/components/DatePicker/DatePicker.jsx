@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { formatDate } from "../../utils";
+import { formatDate, nextDayFromCurrent } from "../../utils";
 
 const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
   const datePickerRef = useRef(null);
@@ -119,7 +119,7 @@ const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
       {calendarVisible && (
         <div
           className={`absolute bg-white shadow-md rounded-md mt-1 z-50 border border-gray-300 w-full lg:w-72 ${
-            !containerOnTop && "mt-[-23rem]"
+            !containerOnTop ?? "mt-[-23rem]"
           }`}
         >
           <div className="flex justify-between items-center p-2 border-b">
@@ -171,13 +171,12 @@ const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
                   handleDateSelect(new Date(currentYear, currentMonth, day))
                 }
                 disabled={
-                  (day &&
-                    new Date(currentYear, currentMonth, day) <
-                      new Date().setHours(0, 0, 0, 0)) ||
-                  // (selectedDate &&
-                  //   new Date(currentYear, currentMonth, day) < selectedDate)
-                  (name === "dropoffDate" &&
-                    new Date(currentYear, currentMonth, day) < new Date(value))
+                  day &&
+                  new Date(currentYear, currentMonth, day) <
+                    new Date().setHours(0, 0, 0, 0)
+                  // (name === "dropoffDate" &&
+                  //   new Date(currentYear, currentMonth, day) ==
+                  //     nextDayFromCurrent(new Date(value)))
                 }
               >
                 {day}

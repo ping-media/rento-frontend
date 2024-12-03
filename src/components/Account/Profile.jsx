@@ -1,23 +1,38 @@
 import { useDispatch, useSelector } from "react-redux";
+import { lazy, useState } from "react";
 import InputWithIconAndLabel from "../Input/InputWithIconAndLabel";
 import InputWithLabel from "../Input/InputWithLabel";
-import LicenseModal from "../Modals/LicenseModal";
-import {
-  toggleIdentityModal,
-  toggleLicenseModal,
-} from "../../Redux/ModalSlice/ModalSlice";
-import IdentityModal from "../Modals/IdentityModal";
 import SelectDropDown from "../DropdownButton/SelectDropDown";
+import { handleupdateUser } from "../../Data";
+import { handleAsyncError } from "../../utils/handleAsyncError.js";
+import Spinner from "../Spinner/Spinner.jsx";
+import UserDocument from "./UserDocument.jsx";
+const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
+const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 
 const Profile = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const [formLoading, setFormLoading] = useState(false);
 
   const handleProfileUpdate = async (e) => {
+    setFormLoading(true);
     e.preventDefault();
     const response = new FormData(e.target);
-    const result = Object.fromEntries(response.entries());
-    console.log(result);
+    let result = Object.fromEntries(response.entries());
+    result = Object.assign(result, { _id: currentUser?._id });
+    try {
+      const response = await handleupdateUser(result);
+      if (response?.status == 200) {
+        handleAsyncError(dispatch, response?.message, "success");
+      } else {
+        handleAsyncError(dispatch, response?.message);
+      }
+      return setFormLoading(false);
+    } catch (error) {
+      setFormLoading(false);
+      return error?.message;
+    }
   };
   return (
     <>
@@ -68,9 +83,10 @@ const Profile = () => {
           <div className="flex flex-wrap items-center gap-2 mb-5">
             <div className="flex-1 flex items-center flex-wrap lg:flex-nowrap gap-2">
               <InputWithLabel
-                name={"dateOfBirth"}
+                name={"dateofbirth"}
                 placeholderDesc={"Enter Date Of Birth"}
                 labelDesc={"Date Of Birth"}
+                value={currentUser?.dateofbirth || ""}
                 labelId={"dob"}
                 type="date"
                 required={true}
@@ -81,6 +97,7 @@ const Profile = () => {
                 labelId={"gender"}
                 value={currentUser?.gender || ""}
                 required={true}
+                options={["male", "female"]}
               />
             </div>
             <div className="w-full lg:flex-1">
@@ -118,62 +135,13 @@ const Profile = () => {
           <button
             type="submit"
             className="bg-theme px-4 py-2 text-gray-100 rounded-lg hover:bg-theme-dark transition duration-200 ease-in-out disabled:bg-gray-400 w-full lg:w-auto"
-            // disabled
+            disabled={formLoading}
           >
-            Update Profile
+            {formLoading ? <Spinner message={"loading.."} /> : "Update Profile"}
           </button>
         </form>
       </div>
-      <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white">
-        <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center flex-wrap gap-2 lg:gap-0 justify-between">
-          <h2 className="font-bold text-xl uppercase w-full lg:w-auto">
-            upload <span className="text-theme">documents</span>
-          </h2>
-          <div className="flex items-center gap-2">
-            <button
-              className="bg-theme px-4 py-2 rounded-lg text-gray-100 flex items-center hover:bg-theme-dark transition duration-200 ease-in-out"
-              onClick={() => dispatch(toggleLicenseModal())}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 4.2v10.3" />
-              </svg>
-              <span className="ml-1">License</span>
-            </button>
-            <button
-              className="bg-theme-black px-4 py-2 rounded-lg text-gray-100 flex items-center hover:bg-theme transition duration-200 ease-in-out"
-              onClick={() => dispatch(toggleIdentityModal())}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 4.2v10.3" />
-              </svg>
-              <span className="ml-1">Aadhaar</span>
-            </button>
-          </div>
-        </div>
-        <div className="px-4 py-2">
-          <p className="text-center font-semibold italic uppercase text-gray-400 text-sm">
-            No document uploaded yet.
-          </p>
-        </div>
-      </div>
+      <UserDocument />
     </>
   );
 };

@@ -95,7 +95,6 @@ const SearchRide = () => {
       queryParmsData || {};
 
     if (BookingStartDateAndTime && BookingEndDateAndTime) {
-      // const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
       const formatDate = (dateStr) => new Date(dateStr);
       const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
@@ -157,7 +156,7 @@ const SearchRide = () => {
         onSubmit={handleSearchRide}
       >
         <div className="w-full lg:col-span-2">
-          <label htmlFor="pickupLocation" className="text-gray-400 block mb-1">
+          <label htmlFor="pickupLocation" className="text-gray-500 block mb-1">
             Pick-up Location
           </label>
           <DropDownButtonWithIcon
@@ -166,7 +165,7 @@ const SearchRide = () => {
           />
         </div>
         <div className="w-full">
-          <label htmlFor="pickup-date" className="text-gray-400 block mb-1">
+          <label htmlFor="pickup-date" className="text-gray-500 block mb-1">
             Pick-up Date
           </label>
           <DatePicker
@@ -178,7 +177,7 @@ const SearchRide = () => {
           />
         </div>
         <div className="w-full">
-          <label htmlFor="pickup-time" className="text-gray-400 block mb-1">
+          <label htmlFor="pickup-time" className="text-gray-500 block mb-1">
             Pick-up Time
           </label>
           <TimePicker
@@ -193,7 +192,7 @@ const SearchRide = () => {
           />
         </div>
         <div className="w-full">
-          <label htmlFor="dropoff-date" className="text-gray-400 block mb-1">
+          <label htmlFor="dropoff-date" className="text-gray-500 block mb-1">
             Drop-off Date
           </label>
           <DatePicker
@@ -205,7 +204,7 @@ const SearchRide = () => {
           />
         </div>
         <div className="w-full">
-          <label htmlFor="dropoff-time" className="text-gray-400 block mb-1">
+          <label htmlFor="dropoff-time" className="text-gray-500 block mb-1">
             Drop-off Time
           </label>
           <TimePicker

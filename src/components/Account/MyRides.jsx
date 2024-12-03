@@ -16,7 +16,7 @@ const MyRides = () => {
     (async () => {
       dispatch(fetchingRides());
       const result = await fetchingData(
-        `/getBookings?userId=${currentUser?._id}`
+        `/getBookings?userId=${currentUser && currentUser?._id}`
       );
       // console.log(result);
       dispatch(addRidesData(result?.data));

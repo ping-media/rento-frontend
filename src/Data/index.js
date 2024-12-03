@@ -14,26 +14,6 @@ const fetchingData = async (endpoint) => {
   }
 };
 
-// const signUpUser = async (data) => {
-//   try {
-//     const response = await axios.post(
-//       `${import.meta.env.VITE_BACKEND_URL}/signup`,
-//       data,
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     return {
-//       message: `Something went wrong while registering new user`,
-//       type: "error",
-//     };
-//   }
-// };
-
 const createBooking = async (data) => {
   try {
     const response = await axios.post(
@@ -65,10 +45,10 @@ const handleUser = async (endpoint, data) => {
         },
       }
     );
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     return {
-      message: "something went wrong while siginning in or user verification",
+      message: error?.message,
       type: "error",
     };
   }
@@ -94,4 +74,51 @@ const handlebooking = async (data) => {
   }
 };
 
-export { fetchingData, createBooking, handleUser, handlebooking };
+const handleupdateUser = async (data) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/signup`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    return {
+      message: "something went wrong while updating user",
+      type: "error",
+    };
+  }
+};
+
+const handleuploadDocument = async (data) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/uploadDocument`,
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    return {
+      message: error?.message,
+      type: "error",
+    };
+  }
+};
+
+export {
+  fetchingData,
+  createBooking,
+  handleUser,
+  handlebooking,
+  handleupdateUser,
+  handleuploadDocument,
+};

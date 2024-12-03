@@ -23,8 +23,7 @@ const LoginModal = () => {
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
     if (result) {
-      // console.log(result);
-      const response = await handleUser("/sendOtp", result);
+      const response = await handleUser("/optGernet", result);
       if (response.status != 200) {
         handleAsyncError(dispatch, response?.message);
       } else {

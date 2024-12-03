@@ -26,10 +26,10 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
     //submit trigger
     const combinedOtp = newOtp.join("");
     // console.log(combinedOtp);
-    if (combinedOtp.length == length) setOnOtpSubmit(combinedOtp);
+    if (combinedOtp.length == 6) setOnOtpSubmit(combinedOtp);
 
     // move to next input if current field is filled
-    if (value && index < length - 1 && inputRef.current[index + 1]) {
+    if (value && index < 6 - 1 && inputRef.current[index + 1]) {
       inputRef.current[index + 1].focus();
     }
   };
@@ -72,7 +72,7 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
       inputRef.current[0].focus();
     }
     // autofill otp only for dev mode
-    handleOtpDev();
+    // handleOtpDev();
   }, []);
 
   // useEffect(() => {
@@ -92,18 +92,19 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
     setLoading(true);
     e.preventDefault();
     const response = await handleUser("/verifyOtp", {
-      otp: otp,
+      otp: onOtpSubmit,
       contact: phone,
-      type: "contact",
     });
-    if (response.status == 200) {
+    if (response?.status == 200) {
       handleAsyncError(dispatch, response?.message, "success");
       dispatch(handleSignIn(response?.data));
+      setOtpValue(false);
+      setInputValue("");
+      dispatch(toggleLoginModal());
+    } else {
+      handleAsyncError(dispatch, response?.message);
     }
-    setOtpValue(false);
-    setInputValue("");
-    dispatch(toggleLoginModal());
-    setLoading(false);
+    return setLoading(false);
   };
 
   return (
