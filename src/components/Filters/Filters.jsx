@@ -57,7 +57,7 @@ const Filters = () => {
   const handleFilters = (e) => {
     e.preventDefault();
     if (inputCategory != "" && inputbrand != "Choose Brand") {
-      console.log("entered");
+      // console.log("entered");
       //add new parameter in existing URL
       queryParms.set("category", inputCategory.toLowerCase());
       queryParms.set("brand", inputbrand);
@@ -82,11 +82,35 @@ const Filters = () => {
     }
   };
 
+  const handleClearFilters = () => {
+    // Delete 'category' if it exists
+    if (queryParms.get("category")) {
+      queryParms.delete("category");
+    }
+
+    // Delete 'brand' if it exists
+    if (queryParms.get("brand")) {
+      queryParms.delete("brand");
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleFilters}>
         <div className="mb-5">
-          <h2 className="font-semibold mb-3">Categories</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold mb-3">Categories</h2>
+            {queryParms.get("brand") ||
+              (queryParms.get("category") && (
+                <button
+                  className="px-1 py-1 border hover:border-theme hover:text-theme rounded"
+                  type="button"
+                  onClick={handleClearFilters}
+                >
+                  Rest All
+                </button>
+              ))}
+          </div>
           <div className="flex items-center justify-between">
             {Categories.map((item, index) => (
               <button
