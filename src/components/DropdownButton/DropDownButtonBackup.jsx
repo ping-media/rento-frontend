@@ -2,14 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 
-const DropDownButtonWithIcon = ({ labelId }) => {
+const DropDownButtonWithIcon = ({ labelId, containerOnTop }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueId, setSelectedValueId] = useState("");
-  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
   const dropdownRef = useRef(null);
-  const buttonRef = useRef(null);
 
   useEffect(() => {
     if (!loading) {
@@ -27,55 +25,31 @@ const DropDownButtonWithIcon = ({ labelId }) => {
     setSelectedValue(value);
   };
 
-  // For closing the dropdown menu when the user clicks outside anywhere on screen
+  // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsOpened(false);
     }
   };
 
-  // Detect dropdown position relative to the viewport
-  const checkDropdownPosition = () => {
-    if (buttonRef.current) {
-      const buttonRect = buttonRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - buttonRect.bottom;
-      const spaceAbove = buttonRect.top;
-
-      // Set position based on available space
-      if (spaceBelow < 150 && spaceAbove > spaceBelow) {
-        setDropdownPosition("top"); // Position above the button
-      } else {
-        setDropdownPosition("bottom"); // Position below the button
-      }
-    }
-  };
-
   useEffect(() => {
-    // Bind the event listener for clicking outside the dropdown
+    // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Check dropdown position when it opens
-    if (isOpened) {
-      checkDropdownPosition();
-    }
 
     // Cleanup the event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpened]);
+  }, []);
 
   return (
     <button
       className="border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full"
-      onClick={() => {
-        setIsOpened(!isOpened);
-        checkDropdownPosition(); // Check position when toggling
-      }}
+      onClick={() => setIsOpened(!isOpened)}
       type="button"
       id={labelId}
       disabled={!loading && station?.length > 0 ? false : true}
-      ref={buttonRef}
+      ref={dropdownRef}
     >
       <input type="hidden" name={labelId} value={selectedValueId || ""} />
       <div>
@@ -116,9 +90,8 @@ const DropDownButtonWithIcon = ({ labelId }) => {
         {isOpened && (
           <div
             className={`absolute z-40 left-0 bg-white w-full transition duration-200 ease-in-out border rounded-lg max-h-32 overflow-hidden hover:overflow-y-auto ${
-              dropdownPosition === "bottom" ? "top-14" : "bottom-14"
+              !containerOnTop ? "bottom-14" : "top-14"
             }`}
-            ref={dropdownRef}
           >
             <ul className="py-1">
               {!loading ? (

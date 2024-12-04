@@ -3,17 +3,28 @@ import { lazy, useState } from "react";
 import InputWithIconAndLabel from "../Input/InputWithIconAndLabel";
 import InputWithLabel from "../Input/InputWithLabel";
 import SelectDropDown from "../DropdownButton/SelectDropDown";
-import { handleupdateUser } from "../../Data";
 import { handleAsyncError } from "../../utils/handleAsyncError.js";
 import Spinner from "../Spinner/Spinner.jsx";
 import UserDocument from "./UserDocument.jsx";
+import PreLoader from "../skeleton/PreLoader.jsx";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading } = useSelector((state) => state.user);
   const [formLoading, setFormLoading] = useState(false);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     dispatch(handleLoadingUserData());
+  //     const result = await fetchingData(
+  //       `/getAllUsers?_id=${currentUser && currentUser?._id}`
+  //     );
+  //     // console.log(result);
+  //     dispatch(handleUpdateCurrentUser(result?.data));
+  //   })();
+  // }, []);
 
   const handleProfileUpdate = async (e) => {
     setFormLoading(true);
@@ -34,7 +45,7 @@ const Profile = () => {
       return error?.message;
     }
   };
-  return (
+  return currentUser ? (
     <>
       {/* modals  */}
       <LicenseModal />
@@ -143,6 +154,8 @@ const Profile = () => {
       </div>
       <UserDocument />
     </>
+  ) : (
+    <PreLoader />
   );
 };
 

@@ -9,7 +9,7 @@ import {
 } from "../../Redux/UserSlice/UserSlice";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 
-const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
+const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue, modalChange }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
   const [onOtpSubmit, setOnOtpSubmit] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,11 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
     //submit trigger
     const combinedOtp = newOtp.join("");
     // console.log(combinedOtp);
-    if (combinedOtp.length == 6) setOnOtpSubmit(combinedOtp);
+    // after all field are filled auto submit
+    if (combinedOtp.length == 6) {
+      setOnOtpSubmit(combinedOtp);
+      handleLogin(combinedOtp);
+    }
 
     // move to next input if current field is filled
     if (value && index < 6 - 1 && inputRef.current[index + 1]) {
@@ -88,11 +92,11 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
   //   return () => clearInterval(interval);
   // }, [isTimerActive, seconds]);
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e, otp) => {
     setLoading(true);
-    e.preventDefault();
+    e && e.preventDefault();
     const response = await handleUser("/verifyOtp", {
-      otp: onOtpSubmit,
+      otp: otp,
       contact: phone,
     });
     if (response?.status == 200) {
@@ -100,7 +104,7 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue }) => {
       dispatch(handleSignIn(response?.data));
       setOtpValue(false);
       setInputValue("");
-      dispatch(toggleLoginModal());
+      dispatch(modalChange());
     } else {
       handleAsyncError(dispatch, response?.message);
     }

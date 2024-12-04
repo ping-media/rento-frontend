@@ -22,18 +22,14 @@ const SearchRide = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const searchRideContainerRef = useRef(null);
-  const [containerOnTop, setContainerOnTop] = useState(false);
+  // const [containerOnTop, setContainerOnTop] = useState(false);
   const [isHomePage, setIsHomePage] = useState(false);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation
   );
-  //setting pickup&dropoffdate
-  // const [pickupDate, setPickupDate] = useState(new Date().toLocaleDateString());
-  const [pickupDate, setPickupDate] = useState(new Date());
-  const [dropoffDate, setDropoffDate] = useState(
-    nextDayFromCurrent(new Date())
-  );
+  const [pickupDate, setPickupDate] = useState(null);
+  const [dropoffDate, setDropoffDate] = useState(null);
   const [queryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const [queryPickupTime, setQueryPickupTime] = useState(null);
@@ -74,9 +70,9 @@ const SearchRide = () => {
     if (location.pathname == "/") {
       setIsHomePage(!isHomePage);
     }
-    if (searchRideContainerRef.current.getBoundingClientRect().top < 100) {
-      setContainerOnTop(!containerOnTop);
-    }
+    // if (searchRideContainerRef.current.getBoundingClientRect().top < 100) {
+    //   setContainerOnTop(!containerOnTop);
+    // }
   }, [location.href]);
 
   // this function is fetching station based on location id
@@ -91,26 +87,32 @@ const SearchRide = () => {
   }, [selectedLocation]);
 
   useEffect(() => {
-    const { BookingStartDateAndTime, BookingEndDateAndTime } =
-      queryParmsData || {};
+    // Destructure BookingStartDateAndTime and BookingEndDateAndTime
+    const { BookingStartDateAndTime, BookingEndDateAndTime } = queryParmsData;
+
+    // Function to format dates
+    const formatDate = (dateStr) => new Date(dateStr);
+    const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
     if (BookingStartDateAndTime && BookingEndDateAndTime) {
-      const formatDate = (dateStr) => new Date(dateStr);
-      const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
-
+      // Set state with formatted values
       setPickupDate(formatDate(BookingStartDateAndTime));
-      setQueryPickupTime(formatTime(BookingStartDateAndTime));
       setDropoffDate(formatDate(BookingEndDateAndTime));
+      setQueryPickupTime(formatTime(BookingStartDateAndTime));
       setQueryDropoffTime(formatTime(BookingEndDateAndTime));
+    } else {
+      // Set default dates if data not found
+      setPickupDate(new Date());
+      setDropoffDate(nextDayFromCurrent(new Date()));
     }
-  }, [location?.href]);
+  }, [location?.href, queryParmsData]); // Ensure proper dependencies
 
   //  through this we are changing the dropoffdate by one when user change the pickupvalue
-  useEffect(() => {
-    if (pickupDate) {
-      setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
-    }
-  }, [pickupDate]);
+  // useEffect(() => {
+  //   if (pickupDate) {
+  //     setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
+  //   }
+  // }, [pickupDate]);
 
   return (
     <div
@@ -159,17 +161,13 @@ const SearchRide = () => {
           <label htmlFor="pickupLocation" className="text-gray-500 block mb-1">
             Pick-up Location
           </label>
-          <DropDownButtonWithIcon
-            containerOnTop={containerOnTop}
-            labelId={"pickupLocationId"}
-          />
+          <DropDownButtonWithIcon labelId={"pickupLocationId"} />
         </div>
         <div className="w-full">
           <label htmlFor="pickup-date" className="text-gray-500 block mb-1">
             Pick-up Date
           </label>
           <DatePicker
-            containerOnTop={containerOnTop}
             placeholderMessage={"Select Pick-up Date"}
             value={pickupDate}
             setValueChanger={setPickupDate}
@@ -181,7 +179,6 @@ const SearchRide = () => {
             Pick-up Time
           </label>
           <TimePicker
-            containerOnTop={containerOnTop}
             labelId="pickup-time"
             value={
               queryPickupTime != null
@@ -196,7 +193,6 @@ const SearchRide = () => {
             Drop-off Date
           </label>
           <DatePicker
-            containerOnTop={containerOnTop}
             placeholderMessage={"Select Drop-off Date"}
             value={dropoffDate}
             setValueChanger={setDropoffDate}
@@ -208,7 +204,6 @@ const SearchRide = () => {
             Drop-off Time
           </label>
           <TimePicker
-            containerOnTop={containerOnTop}
             labelId="dropoff-time"
             value={
               queryDropoffTime != null

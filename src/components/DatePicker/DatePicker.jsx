@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { formatDate, nextDayFromCurrent } from "../../utils";
+import { formatDate } from "../../utils";
 
-const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
+const DatePicker = ({ value, name, setValueChanger }) => {
   const datePickerRef = useRef(null);
   const [calendarVisible, setCalendarVisible] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
 
   // Current date to generate the calendar
   const currentDate = new Date();
@@ -57,15 +58,36 @@ const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
     }
   };
 
+  // Detect dropdown position relative to the viewport
+  const checkDropdownPosition = () => {
+    if (datePickerRef.current) {
+      const rect = datePickerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      // Set position based on available space
+      if (spaceBelow < 300 && spaceAbove > spaceBelow) {
+        setDropdownPosition("top"); // Position above input
+      } else {
+        setDropdownPosition("bottom"); // Position below input
+      }
+    }
+  };
+
   useEffect(() => {
     // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
+
+    // Check dropdown position when the calendar becomes visible
+    if (calendarVisible) {
+      checkDropdownPosition();
+    }
 
     // Cleanup the event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [calendarVisible]);
 
   return (
     <div className="relative" ref={datePickerRef}>
@@ -119,7 +141,7 @@ const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
       {calendarVisible && (
         <div
           className={`absolute bg-white shadow-md rounded-md mt-1 z-50 border border-gray-300 w-full lg:w-72 ${
-            !containerOnTop ?? "mt-[-23rem]"
+            dropdownPosition === "top" ? "bottom-full mb-2" : "top-full"
           }`}
         >
           <div className="flex justify-between items-center p-2 border-b">
@@ -174,9 +196,6 @@ const DatePicker = ({ containerOnTop, value, name, setValueChanger }) => {
                   day &&
                   new Date(currentYear, currentMonth, day) <
                     new Date().setHours(0, 0, 0, 0)
-                  // (name === "dropoffDate" &&
-                  //   new Date(currentYear, currentMonth, day) ==
-                  //     nextDayFromCurrent(new Date(value)))
                 }
               >
                 {day}

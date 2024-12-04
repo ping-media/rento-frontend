@@ -5,10 +5,11 @@ const fetchingData = async (endpoint) => {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
     );
+    console.log(response);
     return response?.data;
   } catch (error) {
     return {
-      message: `Something went wrong while fetching data: ${error}`,
+      message: `no data found.`,
       type: "error",
     };
   }
@@ -45,10 +46,11 @@ const handleUser = async (endpoint, data) => {
         },
       }
     );
+    console.log(response);
     return response?.data || response;
   } catch (error) {
     return {
-      message: error?.message,
+      message: "user not found.",
       type: "error",
     };
   }

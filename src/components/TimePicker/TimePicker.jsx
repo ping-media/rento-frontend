@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { formatTimeWithoutSeconds, parseTime } from "../../utils";
 
-const TimePicker = ({ containerOnTop, labelId, value, name }) => {
+const TimePicker = ({ value, name }) => {
   const [selectedTime, setSelectedTime] = useState("");
   const [timeVisible, setTimeVisible] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
   const timePickerRef = useRef(null);
+  const buttonRef = useRef(null);
 
   // Handle selecting a time
   const handleTimeSelect = (time) => {
@@ -59,12 +61,39 @@ const TimePicker = ({ containerOnTop, labelId, value, name }) => {
     };
   }, []);
 
+  // Detect dropdown position relative to the viewport
+  const checkDropdownPosition = () => {
+    if (buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+
+      // Set position based on available space
+      if (spaceBelow < 150 && spaceAbove > spaceBelow) {
+        setDropdownPosition("top"); // Position above the button
+      } else {
+        setDropdownPosition("bottom"); // Position below the button
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Check dropdown position when it opens
+    if (timeVisible) {
+      checkDropdownPosition();
+    }
+  }, [timeVisible]);
+
   return (
     <div className="relative" ref={timePickerRef}>
       <button
         type="button"
-        className="flex items-center justify-between border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full lg:w-auto rounded-lg"
-        onClick={() => setTimeVisible(!timeVisible)}
+        className="flex items-center justify-between border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full lg:w-auto"
+        onClick={() => {
+          setTimeVisible(!timeVisible);
+          checkDropdownPosition(); // Check position when toggling
+        }}
+        ref={buttonRef}
       >
         <div className="inline-flex items-center gap-0.5">
           <span>
@@ -112,7 +141,7 @@ const TimePicker = ({ containerOnTop, labelId, value, name }) => {
       {timeVisible && (
         <div
           className={`absolute bg-white shadow-md rounded-md mt-1 z-50 border border-gray-300 w-full lg:w-72 ${
-            !containerOnTop && "mt-[-19rem]"
+            dropdownPosition === "bottom" ? "top-14" : "bottom-14"
           }`}
         >
           <div className="p-2 max-h-60 overflow-y-auto">

@@ -92,6 +92,8 @@ const Filters = () => {
     if (queryParms.get("brand")) {
       queryParms.delete("brand");
     }
+
+    return setQueryParms(queryParms);
   };
 
   return (
@@ -100,16 +102,28 @@ const Filters = () => {
         <div className="mb-5">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold mb-3">Categories</h2>
-            {queryParms.get("brand") ||
-              (queryParms.get("category") && (
-                <button
-                  className="px-1 py-1 border hover:border-theme hover:text-theme rounded"
-                  type="button"
-                  onClick={handleClearFilters}
+            {(queryParms.get("brand") || queryParms.get("category")) && (
+              <button
+                className="px-1 py-1 border hover:border-theme hover:text-theme rounded"
+                type="button"
+                onClick={handleClearFilters}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
                 >
-                  Rest All
-                </button>
-              ))}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
           <div className="flex items-center justify-between">
             {Categories.map((item, index) => (
