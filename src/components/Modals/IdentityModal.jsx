@@ -20,7 +20,7 @@ const IdentityModal = () => {
     let result = Object.fromEntries(response.entries());
     result = Object.assign(result, {
       userId: currentUser?._id,
-      documentType: "aadhar",
+      docType: "aadhar",
     });
 
     try {

@@ -20,7 +20,7 @@ const LicenseModal = () => {
     let result = Object.fromEntries(response.entries());
     result = Object.assign(result, {
       userId: currentUser?._id,
-      documentType: "license",
+      docType: "license",
     });
 
     try {
