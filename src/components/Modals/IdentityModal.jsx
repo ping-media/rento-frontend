@@ -78,7 +78,7 @@ const IdentityModal = () => {
               <div className="w-full lg:flex-1 order-1 lg:order-2">
                 <div className="mb-5">
                   <InputFile
-                    name={"image"}
+                    name={"images"}
                     labelDesc={"Aadhaar Image"}
                     labelId={"aadhaarImage"}
                     image={image}
