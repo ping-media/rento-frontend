@@ -19,24 +19,24 @@ const UserDocument = () => {
     (state) => state.user
   );
 
-  useEffect(() => {
-    (async () => {
-      dispatch(handleLoadingUserData());
-      try {
-        const response = await fetchingData(
-          `/getDocument?userId=${currentUser && currentUser?._id}`
-        );
-        if (response?.status == 200) {
-          dispatch(handleAddUserDocument(response?.data));
-        } else {
-          dispatch(restLoading());
-          handleAsyncError(dispatch, response?.message);
-        }
-      } catch (error) {
-        return handleAsyncError(dispatch, error?.message);
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     dispatch(handleLoadingUserData());
+  //     try {
+  //       const response = await fetchingData(
+  //         `/getDocument?userId=${currentUser && currentUser?._id}`
+  //       );
+  //       if (response?.status == 200) {
+  //         dispatch(handleAddUserDocument(response?.data));
+  //       } else {
+  //         dispatch(restLoading());
+  //         handleAsyncError(dispatch, response?.message);
+  //       }
+  //     } catch (error) {
+  //       return handleAsyncError(dispatch, error?.message);
+  //     }
+  //   })();
+  // }, []);
 
   return !loading ? (
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white">

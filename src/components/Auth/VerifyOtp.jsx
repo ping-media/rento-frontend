@@ -29,7 +29,7 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue, modalChange }) => {
     // after all field are filled auto submit
     if (combinedOtp.length == 6) {
       setOnOtpSubmit(combinedOtp);
-      handleLogin(combinedOtp);
+      handleLogin(null, combinedOtp);
     }
 
     // move to next input if current field is filled
@@ -94,7 +94,7 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue, modalChange }) => {
 
   const handleLogin = async (e, otp) => {
     setLoading(true);
-    e && e.preventDefault();
+    if (e) e.preventDefault();
     const response = await handleUser("/verifyOtp", {
       otp: otp,
       contact: phone,

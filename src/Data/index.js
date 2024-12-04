@@ -5,7 +5,7 @@ const fetchingData = async (endpoint) => {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
     );
-    console.log(response);
+    // console.log(response);
     return response?.data;
   } catch (error) {
     return {
@@ -46,7 +46,7 @@ const handleUser = async (endpoint, data) => {
         },
       }
     );
-    console.log(response);
+    // console.log(response);
     return response?.data || response;
   } catch (error) {
     return {

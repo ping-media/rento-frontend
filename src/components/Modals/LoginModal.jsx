@@ -24,7 +24,7 @@ const LoginModal = () => {
     let result = Object.fromEntries(response.entries());
     if (result) {
       const response = await handleUser("/optGernet", result);
-      console.log(response);
+      // console.log(response);
       if (response.status != 200) {
         handleRegisterModal();
         handleAsyncError(dispatch, response?.message);

@@ -70,6 +70,9 @@ const SearchRide = () => {
     if (location.pathname == "/") {
       setIsHomePage(!isHomePage);
     }
+    // if (searchRideContainerRef.current.getBoundingClientRect().top < 100) {
+    //   setContainerOnTop(!containerOnTop);
+    // }
   }, [location.href]);
 
   // this function is fetching station based on location id

@@ -20,7 +20,7 @@ const TimePicker = ({ value, name }) => {
     // Outer loop for AM and PM periods
     for (let period of ["AM", "PM"]) {
       for (let h = 1; h <= 12; h++) {
-        for (let m = 0; m < 60; m += 60) {
+        for (let m = 0; m < 60; m += 30) {
           // Formatting hours and minutes
           const hour = h < 10 ? `0${h}` : h;
           const minute = m === 0 ? "00" : m < 10 ? `0${m}` : m;

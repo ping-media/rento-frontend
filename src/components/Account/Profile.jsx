@@ -7,6 +7,7 @@ import { handleAsyncError } from "../../utils/handleAsyncError.js";
 import Spinner from "../Spinner/Spinner.jsx";
 import UserDocument from "./UserDocument.jsx";
 import PreLoader from "../skeleton/PreLoader.jsx";
+import { handleupdateUser } from "../../Data/index.js";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 
