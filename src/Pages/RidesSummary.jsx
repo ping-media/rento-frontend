@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { handlePreviousPage } from "../utils";
+import { formatDateTimeForUser, handlePreviousPage } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
 import { useEffect } from "react";
@@ -58,19 +58,21 @@ const RidesSummary = () => {
               Booking Id: {rides[0]?.bookingId}
             </span>
             <span className="mx-1 hidden lg:inline">|</span>
-            BookingDate: {rides[0]?.BookingStartDateAndTime}
+            BookingDate:{" "}
+            {formatDateTimeForUser(rides[0]?.BookingStartDateAndTime)?.date}
           </p>
         </div>
         <div
           type="button"
           className={`${
             rides[0]?.bookingStatus == "completed" ? "bg-green-500" : "bg-theme"
-          } text-gray-100 p-1 lg:px-4 lg:py-2.5 border rounded-md hover:bg-theme-dark`}
+          } text-gray-100 p-1 lg:px-4 lg:py-2.5 border rounded-md cursor-pointer`}
         >
           Booking Status: {rides[0]?.bookingStatus}
         </div>
       </div>
-      <div className="lg:overflow-hidden lg:hover:overflow-y-auto lg:max-h-96 no-scrollbar">
+      {/* lg:max-h-96 */}
+      <div className="lg:overflow-hidden lg:hover:overflow-y-auto no-scrollbar">
         <div className="mb-5">
           <h2 className="font-semibold mb-3 flex items-center gap-1">
             <span>
@@ -163,11 +165,11 @@ const RidesSummary = () => {
             )}
           </div>
         </div>
-        <div>
+        {/* <div>
           <button className="w-full bg-theme text-gray-100 px-4 py-2.5 rounded-md">
             Extend
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   ) : (

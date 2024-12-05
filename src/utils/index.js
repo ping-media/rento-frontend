@@ -289,6 +289,12 @@ const nextDayFromCurrent = (date) => {
   return nextDay;
 };
 
+const isValidPhoneNumber = (phone) => {
+  const indiaPhoneRegex = /^(?:\+91[-\s]?)?[789]\d{9}$/;
+  // Test the phone number against the regex
+  return indiaPhoneRegex.test(phone);
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -307,4 +313,5 @@ export {
   removeAfterSecondSlash,
   formatDateTimeForUser,
   nextDayFromCurrent,
+  isValidPhoneNumber,
 };

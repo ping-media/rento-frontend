@@ -1,27 +1,26 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-  handleRestAll,
   toggleLoginModal,
   toggleRegisterModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import InputWithIcon from "../Input/InputwithIcon";
 import Input from "../Input/Input";
 import { handleUser } from "../../Data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "../Spinner/Spinner";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import VerifyOtp from "../Auth/VerifyOtp";
+import { removeTempContact } from "../../Redux/UserSlice/UserSlice";
 
 const RegisterModal = () => {
   const dispatch = useDispatch();
   const { isRegisterModalActive } = useSelector((state) => state.modals);
   const [isverfiyOtpActive, setIsVerfiyOtpActive] = useState(false);
   const [inputNumber, setInputNumber] = useState(null);
-  // const [isOtpSend, setIsOtpSend] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadings, setLoadings] = useState(false);
 
   const handleRegisterUser = async (e) => {
-    setLoading(true);
+    setLoadings(true);
     e.preventDefault();
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
@@ -29,7 +28,6 @@ const RegisterModal = () => {
       if (result) {
         const dataResponse = await handleUser("/signup", result);
         if (dataResponse.status == 200) {
-          setLoading(false);
           const response = await handleUser("/optGernet", {
             contact: result?.contact,
           });
@@ -42,23 +40,31 @@ const RegisterModal = () => {
           }
           // handleLoginModal();
         } else {
-          setLoading(false);
           handleAsyncError(dispatch, dataResponse?.message);
         }
+        setLoadings(false);
       } else {
-        setLoading(false);
+        setLoadings(false);
         handleAsyncError(dispatch, "all fields are required.");
       }
     } catch (error) {
-      setLoading(false);
+      setLoadings(false);
       return handleAsyncError(dispatch, error?.message);
     }
   };
 
+  //this function is to change for login to signup
   const handleLoginModal = () => {
     dispatch(toggleRegisterModal());
     dispatch(toggleLoginModal());
   };
+
+  // remove the tempnumber after close the register modal
+  useEffect(() => {
+    if (isRegisterModalActive == false) {
+      dispatch(removeTempContact());
+    }
+  }, [isRegisterModalActive]);
 
   return (
     <div
@@ -123,9 +129,9 @@ const RegisterModal = () => {
                 </div>
                 <button
                   className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-gray-400 uppercase"
-                  disabled={loading}
+                  disabled={loadings}
                 >
-                  {loading ? <Spinner message={"Signing Up"} /> : " Sign up"}
+                  {loadings ? <Spinner message={"Signing Up"} /> : " Sign up"}
                 </button>
                 <p className="mt-4 text-sm text-gray-600">
                   By signing up, I accept the{" "}

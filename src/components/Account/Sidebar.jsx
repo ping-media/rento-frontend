@@ -16,7 +16,7 @@ const SideBar = () => {
 
   // to change active page class
   useEffect(() => {
-    setCurrentPage(location.pathname);
+    setCurrentPage(location.pathname.substring(0, 9));
   }, [location.pathname]);
 
   return (

@@ -1,15 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { handleCheckValidation } from "../../utils";
+import { useSelector } from "react-redux";
 
 const InputWithIcon = ({ name, modalRef }) => {
   const inputRef = useRef(null);
+  const { tempContact } = useSelector((state) => state.user);
+  const [inputValue, setInputValue] = useState(null);
   const [error, setError] = useState("");
 
+  //wh
   useEffect(() => {
     if (modalRef && inputRef.current) {
       inputRef.current.focus();
     }
+    // through help to make field blank if user close the modal and reopening it
+    if (modalRef == false) {
+      setInputValue(null);
+    }
   }, [modalRef]);
+
+  // setting the contact number if already present
+  useEffect(() => {
+    setInputValue(tempContact);
+  }, [tempContact]);
 
   return (
     <>
@@ -21,21 +34,25 @@ const InputWithIcon = ({ name, modalRef }) => {
           type="number"
           name={name}
           ref={inputRef}
+          value={
+            inputValue == null || inputValue == 0 ? "" : Number(inputValue)
+          }
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter Phone Number"
           className={`w-full pl-[3.5rem] pr-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1 ${
             error != "" && "border-red-500"
           }`}
-          onBlur={() => handleCheckValidation(inputRef, setError)}
+          // onBlur={() => handleCheckValidation(inputRef, setError)}
           required
         />
       </div>
-      <div
+      {/* <div
         className={`text-red-500 text-left capitalize ${
           error != "" ? "" : "hidden"
         }`}
       >
         <p>{error != "" && error}</p>
-      </div>
+      </div> */}
     </>
   );
 };

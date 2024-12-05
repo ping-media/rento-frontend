@@ -29,7 +29,9 @@ const BookingSummary = () => {
   const { loading, vehicles } = useSelector((state) => state.vehicles);
   // for getting queryparms value
   const [queryParms] = useSearchParams();
-  const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
+  const [queryParmsData, setQueryParmsData] = useState(
+    Object.fromEntries(queryParms.entries())
+  );
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -42,6 +44,7 @@ const BookingSummary = () => {
 
   useEffect(() => {
     (async () => {
+      setQueryParmsData(Object.fromEntries(queryParms.entries()));
       dispatch(fetchingVehicles());
       const result = await fetchingData(
         `/getVehicleTblData?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
@@ -107,7 +110,7 @@ const BookingSummary = () => {
         <form onSubmit={handleCreateBooking}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-1">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1">
                 <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
                   <h2 className="font-semibold">Booking Summary</h2>
                   <h2 className="font-semibold hidden lg:block">Price</h2>
@@ -119,7 +122,7 @@ const BookingSummary = () => {
             </div>
 
             <div className="flex flex-wrap col-span-3">
-              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full">
+              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full relative">
                 <div className="py-3 border-b-2 border-gray-300">
                   <h2 className="font-semibold">Total Price</h2>
                 </div>
@@ -128,7 +131,7 @@ const BookingSummary = () => {
                   {...queryParmsData}
                 />
               </div>
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 lg:max-h-40">
                 <Checkbox
                   labelId={"terms"}
                   ref={termsRef}
@@ -146,14 +149,16 @@ const BookingSummary = () => {
                   }
                 />
               </div>
-              <button
-                className="bg-theme px-4 py-2.5 w-full mt-1 text-gray-100 rounded-lg disabled:bg-gray-400 order-5"
-                disabled={!isAllFieldChecked ? true : false}
-                type="submit"
-                // onClick={handleCreateBooking}
-              >
-                Continue Booking
-              </button>
+              <div className="mt-1 lg:-mt-10 order-5 w-full">
+                <button
+                  className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
+                  disabled={!isAllFieldChecked ? true : false}
+                  type="submit"
+                  // onClick={handleCreateBooking}
+                >
+                  Continue Booking
+                </button>
+              </div>
             </div>
           </div>
         </form>

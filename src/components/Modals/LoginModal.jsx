@@ -9,6 +9,8 @@ import VerifyOtp from "../Auth/VerifyOtp";
 import Spinner from "../Spinner/Spinner";
 import { handleUser } from "../../Data";
 import { handleAsyncError } from "../../utils/handleAsyncError";
+import { addTempContact } from "../../Redux/UserSlice/UserSlice";
+import { isValidPhoneNumber } from "../../utils";
 
 const LoginModal = () => {
   const dispatch = useDispatch();
@@ -22,12 +24,17 @@ const LoginModal = () => {
     e.preventDefault();
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
+    const isValidContact = isValidPhoneNumber(Number(result?.contact));
+    if (!isValidContact) {
+      setLoading(false);
+      return handleAsyncError(dispatch, "invalid phone number");
+    }
     if (result) {
       const response = await handleUser("/optGernet", result);
       // console.log(response);
       if (response.status != 200) {
+        dispatch(addTempContact(result?.contact));
         handleRegisterModal();
-        handleAsyncError(dispatch, response?.message);
       } else {
         setInputNumber(result?.contact);
         setIsOtpSend(true);
@@ -37,6 +44,7 @@ const LoginModal = () => {
     }
   };
 
+  //this function is to change for login to signup
   const handleRegisterModal = () => {
     dispatch(toggleLoginModal());
     dispatch(toggleRegisterModal());

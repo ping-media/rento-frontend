@@ -28,7 +28,18 @@ const PriceCard = ({
           )
         ),
     },
-    { title: "Extra Helmet Price", name: "extraAddonPrice", price: 50 },
+    {
+      title: "Extra Helmet Price",
+      name: "extraAddonPrice",
+      price:
+        50 *
+        Number(
+          getDurationInDays(
+            bookingStartDateTime?.date,
+            bookingEndDateTime?.date
+          )
+        ),
+    },
     {
       title: "GST(18% Applied)",
       name: "tax",
@@ -65,7 +76,7 @@ const PriceCard = ({
 
   return (
     <>
-      <div className="mt-6 mb-4 mb-5">
+      <div className="mt-6 mb-14 lg:mb-1">
         <ul className="leading-10 pb-3 border-b-2 border-gray-300">
           {priceDetails.map((item, index) => (
             <li
@@ -96,7 +107,7 @@ const PriceCard = ({
           <span className="font-semibold">₹{totalPrice}</span>
         </div>
       </div>
-      <div className="bg-yellow-200 -mx-4 px-4 pt-2 -mb-2 rounded-b-lg">
+      <div className="bg-yellow-200 -mx-4 px-4 pt-2 -mb-2 rounded-b-lg absolute bottom-2 w-full">
         <div className="mb-1">
           <label
             htmlFor="hr"
@@ -130,7 +141,7 @@ const PriceCard = ({
           </label>
         </div>
         <small className="italic text-gray-600">
-          Extra cost <span className="font-semibold">₹50</span> will apply for
+          Extra cost <span className="font-bold">₹50/day</span> will apply for
           extra helmet
         </small>
       </div>

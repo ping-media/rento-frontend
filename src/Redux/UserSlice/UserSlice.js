@@ -6,6 +6,7 @@ const UserSlice = createSlice({
   initialState: {
     user: null,
     currentUser: null,
+    tempContact: null,
     userDocument: null,
     loading: false,
     error: null,
@@ -22,6 +23,13 @@ const UserSlice = createSlice({
     handleCurrentUser: (state, action) => {
       const decryptedUser = decryptData(action.payload);
       state.currentUser = decryptedUser;
+      state.loading = false;
+    },
+    addTempContact: (state, action) => {
+      state.tempContact = action.payload;
+    },
+    removeTempContact: (state) => {
+      state.tempContact = null;
       state.loading = false;
     },
     handleUpdateCurrentUser: (state, action) => {
@@ -49,6 +57,8 @@ export const {
   handleSignIn,
   handleCurrentUser,
   handleUpdateCurrentUser,
+  addTempContact,
+  removeTempContact,
   handleAddUserDocument,
   restLoading,
   handleSignOut,

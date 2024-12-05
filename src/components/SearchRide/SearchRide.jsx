@@ -31,7 +31,9 @@ const SearchRide = () => {
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
   const [queryParms] = useSearchParams();
-  const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
+  const [queryParmsData, setQueryParmsData] = useState(
+    Object.fromEntries(queryParms.entries())
+  );
   const [queryPickupTime, setQueryPickupTime] = useState(null);
   const [queryDropoffTime, setQueryDropoffTime] = useState(null);
   // if searchFilter modal is active than run this
@@ -85,14 +87,22 @@ const SearchRide = () => {
 
   useEffect(() => {
     // Destructure BookingStartDateAndTime and BookingEndDateAndTime
+    setQueryParmsData(Object.fromEntries(queryParms.entries()));
     const { BookingStartDateAndTime, BookingEndDateAndTime } = queryParmsData;
 
     // Function to format dates
     const formatDate = (dateStr) => new Date(dateStr);
-    const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
+    const formatTime = (dateStr) => {
+      const date = new Date(dateStr);
+      return new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: "UTC", // or another time zone
+      }).format(date);
+    };
 
     if (BookingStartDateAndTime && BookingEndDateAndTime) {
-      console.log(BookingStartDateAndTime, BookingEndDateAndTime);
       // Set state with formatted values
       setPickupDate(formatDate(BookingStartDateAndTime));
       setDropoffDate(formatDate(BookingEndDateAndTime));
@@ -103,7 +113,7 @@ const SearchRide = () => {
       setPickupDate(new Date());
       setDropoffDate(nextDayFromCurrent(new Date()));
     }
-  }, [location?.href, queryParmsData]); // Ensure proper dependencies
+  }, [location?.href]); // Ensure proper dependencies
 
   //  through this we are changing the dropoffdate by one when user change the pickupvalue
   // useEffect(() => {
@@ -150,12 +160,12 @@ const SearchRide = () => {
         </button>
       </div>
       <form
-        className={`flex flex-wrap lg:grid grid-cols-7 gap-3 lg:gap-4 ${
+        className={`flex flex-wrap lg:grid grid-cols-6 gap-3 lg:gap-4 ${
           isSearchUpdatesActive ? "mt-5" : "mt-1"
         } lg:mt-0`}
         onSubmit={handleSearchRide}
       >
-        <div className="w-full lg:col-span-2">
+        <div className="w-full">
           <label htmlFor="pickupLocation" className="text-gray-500 block mb-1">
             Pick-up Location
           </label>
