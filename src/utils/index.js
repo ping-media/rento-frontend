@@ -255,7 +255,7 @@ const removeAfterSecondSlash = (pathname) => {
 };
 
 const formatDateTimeForUser = (input) => {
-  const [dateStr, timeStr] = input.split(" ");
+  const [dateStr, timeStr] = input?.split(" ");
 
   // Parse the date string into a Date object
   const date = new Date(dateStr);
@@ -295,6 +295,40 @@ const isValidPhoneNumber = (phone) => {
   return indiaPhoneRegex.test(phone);
 };
 
+const getRoundedDateTime = (value) => {
+  // Get the current local date and time
+  const currentDate = value;
+
+  // Get current local minutes
+  const localMinutes = currentDate.getMinutes();
+
+  // Round minutes to the nearest 30
+  let roundedMinutes;
+  if (localMinutes < 15) {
+    roundedMinutes = 0; // Round down to the hour (e.g., 4:00)
+  } else if (localMinutes < 45) {
+    roundedMinutes = 30; // Round to the next 30 minutes (e.g., 4:30)
+  } else {
+    roundedMinutes = 0; // Round up to the next hour (e.g., 5:00)
+    currentDate.setHours(currentDate.getHours() + 1); // Increment the hour
+  }
+
+  // Set the rounded minutes and reset seconds to 0
+  currentDate.setMinutes(roundedMinutes);
+  currentDate.setSeconds(0); // Reset seconds to 0
+
+  // Convert local time to UTC (by manually adjusting)
+  const utcDate = new Date(
+    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
+  );
+
+  // Convert to ISO string and return the result
+  const isoString = utcDate.toISOString();
+
+  // Return the ISO string without milliseconds and 'Z' appended
+  return isoString.split(".")[0] + "Z";
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -314,4 +348,5 @@ export {
   formatDateTimeForUser,
   nextDayFromCurrent,
   isValidPhoneNumber,
+  getRoundedDateTime,
 };

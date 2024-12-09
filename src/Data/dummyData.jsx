@@ -1,5 +1,12 @@
 import scooterImage from "../assets/logo/scooter.png";
 import bikeImage from "../assets/logo/bike.png";
+import { getRoundedDateTime } from "../utils";
+
+//for setting currentDatePlusOne and sending for explore
+const currentDatePlusOne = new Date();
+currentDatePlusOne.setDate(currentDatePlusOne.getDate() + 1);
+const dateAndTime = getRoundedDateTime(new Date());
+const nextDayAndTime = getRoundedDateTime(currentDatePlusOne);
 
 const items = [
   {
@@ -126,18 +133,14 @@ const items = [
 
 const menuList = [
   { title: "home", link: "/", isPhone: false },
-  { title: "explore", link: "/explore", isPhone: false },
+  {
+    title: "explore",
+    link: `/explore?BookingStartDateAndTime=${dateAndTime}&BookingEndDateAndTime=${nextDayAndTime}`,
+    isPhone: false,
+  },
   { title: "Profile", link: "/profile", isPhone: true },
   { title: "My Rides", link: "/my-rides", isPhone: true },
   { title: "Logout", link: "", isPhone: true },
-];
-
-const searchLocationList = [
-  "Lorem ipsum, dolor sit amet",
-  "sadar bazzar",
-  "agra cantt",
-  "sanjay palace",
-  "pratappura",
 ];
 
 const Categories = [
@@ -145,7 +148,22 @@ const Categories = [
   { categoryImage: bikeImage, CategoryTitle: "Gear" },
 ];
 
-const brands = ["Choose Brand", "Honda", "TVS", "Hero"];
+const brands = [
+  "Vespa",
+  "Honda",
+  "Yamaha",
+  "Suzuki",
+  "KTM",
+  "BMW",
+  "TVS",
+  "Bajaj",
+  "Hero",
+  "Ather",
+  "Ola",
+  "Mahindra",
+  "Royal Enfield",
+  "Harley-Davidson",
+];
 const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
-export { items, searchLocationList, Categories, brands, Modal, menuList };
+export { items, Categories, brands, Modal, menuList };

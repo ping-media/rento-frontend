@@ -42,7 +42,6 @@ const Search = () => {
       selectedLocation,
       id
     );
-    // console.log(customLocation?.search);
     // console.log(vehicles);
   }, [customLocation]);
 
@@ -146,7 +145,7 @@ const Search = () => {
           <div className="col-span-4 lg:col-span-3 px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {!loading ? (
-                vehicles.length > 0 ? (
+                vehicles?.length > 0 ? (
                   vehicles?.map((item, index) => <Card {...item} key={index} />)
                 ) : (
                   <div className="col-span-3">

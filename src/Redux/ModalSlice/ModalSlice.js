@@ -12,6 +12,7 @@ const ModalSlice = createSlice({
     isLicenseModalActive: false,
     isIdentityModalActive: false,
     isMainSideBarActive: false,
+    isEmailVerifyModalActive: false,
   },
   reducers: {
     toggleLoginModal: (state) => {
@@ -41,6 +42,9 @@ const ModalSlice = createSlice({
     toggleSearchUpdate: (state) => {
       state.isSearchUpdatesActive = !state.isSearchUpdatesActive;
     },
+    toggleEmailVerifyModal: (state) => {
+      state.isEmailVerifyModalActive = !state.isEmailVerifyModalActive;
+    },
     handleRestAll: (state) => {
       state.isLoginModalActive = false;
       state.isRegisterModalActive = false;
@@ -50,6 +54,7 @@ const ModalSlice = createSlice({
       state.isLicenseModalActive = false;
       state.isIdentityModalActive = false;
       state.isMainSideBarActive = false;
+      state.isEmailVerifyModalActive = false;
     },
   },
 });
@@ -64,6 +69,7 @@ export const {
   toggleLicenseModal,
   toggleIdentityModal,
   toggleSideBarModal,
+  toggleEmailVerifyModal,
   handleRestAll,
 } = ModalSlice.actions;
 

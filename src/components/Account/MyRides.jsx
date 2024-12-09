@@ -4,6 +4,7 @@ import { fetchingData } from "../../Data";
 import { useDispatch, useSelector } from "react-redux";
 import { addRidesData, fetchingRides } from "../../Redux/RidesSlice/RideSlice";
 import PreLoader from "../skeleton/PreLoader";
+import RideNotFound from "../skeleton/RideNotFound";
 
 const MyRides = () => {
   // State to track the selected tab
@@ -42,7 +43,7 @@ const MyRides = () => {
   return (
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
       <div className="mb-1">
-        <h2 className="font-semibold text-xl uppercase py-2">
+        <h2 className="font-bold text-xl uppercase py-2">
           My <span className="text-theme">Rides</span>
         </h2>
       </div>
@@ -75,9 +76,7 @@ const MyRides = () => {
                   <RideCard item={item} key={index} />
                 ))
               ) : (
-                <p className="text-center text-gray-400 italic">
-                  No Rides Found.
-                </p>
+                <RideNotFound />
               )}
             </div>
           </div>

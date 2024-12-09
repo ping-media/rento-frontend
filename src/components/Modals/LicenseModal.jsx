@@ -18,6 +18,7 @@ const LicenseModal = () => {
     e.preventDefault();
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
+    if (!result) return handleAsyncError(dispatch, "choose vaild image first!");
     result = Object.assign(result, {
       userId: currentUser?._id,
       docType: "license",
@@ -87,7 +88,7 @@ const LicenseModal = () => {
                 </div>
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                  disabled={formLoading}
+                  disabled={formLoading || image != null ? false : true}
                 >
                   {formLoading ? (
                     <Spinner message={"loading..."} />

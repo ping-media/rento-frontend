@@ -1,43 +1,22 @@
 import { useEffect, useState } from "react";
-import bikeImage from "../../assets/logo/bike.png";
-import scooterImage from "../../assets/logo/scooter.png";
 import DropDownButton from "../DropdownButton/DropDownButton";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleFilter } from "../../Redux/ModalSlice/ModalSlice";
 import CheckboxFilter from "../Input/CheckBoxFilter";
 import { fetchingPlansFilters } from "../../Data/Functions";
+import { brands, Categories } from "../../Data/dummyData";
 
 const Filters = () => {
-  const Categories = [
-    { categoryImage: scooterImage, CategoryTitle: "Non-Gear" },
-    { categoryImage: bikeImage, CategoryTitle: "Gear" },
-  ];
-
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const [inputCategory, setInputCategory] = useState("");
   const [inputbrand, setInputbrand] = useState("");
   const [inputPlanId, setInputPlanId] = useState("");
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const brands = [
-    "Vespa",
-    "Honda",
-    "Yamaha",
-    "Suzuki",
-    "KTM",
-    "BMW",
-    "TVS",
-    "Bajaj",
-    "Hero",
-    "Ather",
-    "Ola",
-    "Mahindra",
-    "Royal Enfield",
-    "Harley-Davidson",
-  ];
   // const navigate = useNavigate();
   const [queryParms, setQueryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
@@ -51,16 +30,22 @@ const Filters = () => {
       setInputbrand(brand);
     }
     // for fetching plan filters
-    fetchingPlansFilters(dispatch, id);
+    const commonId = id ? id : selectedLocation?.locationId;
+    fetchingPlansFilters(dispatch, commonId);
   }, []);
 
   const handleFilters = (e) => {
     e.preventDefault();
-    if (inputCategory != "" && inputbrand != "Choose Brand") {
+    if (
+      inputCategory != "" &&
+      inputbrand != "Choose Brand" &&
+      inputPlanId != ""
+    ) {
       // console.log("entered");
       //add new parameter in existing URL
       queryParms.set("category", inputCategory.toLowerCase());
       queryParms.set("brand", inputbrand);
+      queryParms.set("vehiclePlan", inputPlanId);
       setQueryParms(queryParms);
     } else if (inputbrand != "Choose Brand") {
       // if it is present if not than do nothing
@@ -68,6 +53,13 @@ const Filters = () => {
         queryParms.delete("category");
       }
       queryParms.set("brand", inputbrand);
+      setQueryParms(queryParms);
+    } else if (inputPlanId != "") {
+      // if it is present if not than do nothing
+      if (queryParms.get("vehiclePlan")) {
+        queryParms.delete("vehiclePlan");
+      }
+      queryParms.set("vehiclePlan", inputPlanId);
       setQueryParms(queryParms);
     } else {
       // if it is present if not than do nothing
@@ -82,6 +74,7 @@ const Filters = () => {
     }
   };
 
+  // delete applied filters
   const handleClearFilters = () => {
     // Delete 'category' if it exists
     if (queryParms.get("category")) {
@@ -91,6 +84,11 @@ const Filters = () => {
     // Delete 'brand' if it exists
     if (queryParms.get("brand")) {
       queryParms.delete("brand");
+    }
+
+    // Delete 'vehiclePlan' if it exists
+    if (queryParms.get("vehiclePlan")) {
+      queryParms.delete("vehiclePlan");
     }
 
     return setQueryParms(queryParms);
@@ -114,7 +112,7 @@ const Filters = () => {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="size-6"
+                  className="size-4"
                 >
                   <path
                     strokeLinecap="round"
@@ -163,7 +161,7 @@ const Filters = () => {
         </div>
         <h2 className="font-semibold mb-2">Choose Packages</h2>
         <div className="mb-5">
-          <CheckboxFilter />
+          <CheckboxFilter setPlanIdChanger={setInputPlanId} />
         </div>
         <button
           type="submit"

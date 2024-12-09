@@ -57,7 +57,9 @@ const BookingSummary = () => {
 
   const handleCreateBooking = async (e) => {
     e.preventDefault();
-    if (currentUser == null) dispatch(toggleLoginModal());
+    // if user is not login than don't let user to book the ride
+    if (currentUser == null) return dispatch(toggleLoginModal());
+
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
 
@@ -93,7 +95,7 @@ const BookingSummary = () => {
     try {
       const response = await handlebooking(data);
       if (response.status == 200) {
-        console.log(response?.data);
+        // console.log(response?.data);
         handleAsyncError(dispatch, response?.message, "success");
         navigate(`/my-rides/summary/${response?.data?.bookingId}`);
       } else {
@@ -106,7 +108,7 @@ const BookingSummary = () => {
 
   return !loading ? (
     vehicles.length > 0 ? (
-      <div className="w-[90%] mx-auto my-3.5 lg:my-1">
+      <div className="w-[90%] mx-auto my-4.5 lg:my:3 xl:my-4">
         <form onSubmit={handleCreateBooking}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
@@ -131,7 +133,7 @@ const BookingSummary = () => {
                   {...queryParmsData}
                 />
               </div>
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 lg:max-h-40">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 lg:max-h-44 xl:max-h-40">
                 <Checkbox
                   labelId={"terms"}
                   ref={termsRef}

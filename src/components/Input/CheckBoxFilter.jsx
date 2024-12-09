@@ -1,7 +1,16 @@
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
-const CheckboxFilter = () => {
+const CheckboxFilter = ({ setPlanIdChanger }) => {
   const { filter, filterLoading } = useSelector((state) => state.filter);
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
+
+  const handleCheckboxChange = (planId) => {
+    // Set the selected plan ID, uncheck if already selected
+    setSelectedPlanId((prev) => (prev === planId ? null : planId));
+    setPlanIdChanger(planId); // Update parent component with the selected plan ID
+  };
+
   return !filterLoading ? (
     filter.length > 0 ? (
       <div>
@@ -16,6 +25,8 @@ const CheckboxFilter = () => {
                 type="checkbox"
                 className="peer hidden"
                 value={item?._id}
+                checked={selectedPlanId === item?._id}
+                onChange={() => handleCheckboxChange(item?._id)}
               />
               <div
                 htmlFor={item?.planName || item}

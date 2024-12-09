@@ -24,7 +24,7 @@ const InputWithIconAndLabel = ({
             name={name}
             id={labelId}
             placeholder={placeholderDesc}
-            className="w-full pl-[3.5rem] pr-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1 disabled:bg-gray-300 disabled:bg-opacity-50"
+            className="w-full pl-[3.5rem] pr-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1 disabled:bg-gray-300 disabled:bg-opacity-30"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             required={required}

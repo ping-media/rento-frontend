@@ -58,8 +58,8 @@ const RidesSummary = () => {
               Booking Id: {rides[0]?.bookingId}
             </span>
             <span className="mx-1 hidden lg:inline">|</span>
-            BookingDate:{" "}
-            {formatDateTimeForUser(rides[0]?.BookingStartDateAndTime)?.date}
+            BookingDate:{rides[0]?.BookingStartDateAndTime}
+            {/* {formatDateTimeForUser(rides[0]?.BookingStartDateAndTime)?.date} */}
           </p>
         </div>
         <div

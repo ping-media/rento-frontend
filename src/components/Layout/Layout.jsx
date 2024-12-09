@@ -36,10 +36,7 @@ const Layout = () => {
       {message != null && <Alert error={message} errorType={type} />}
       {/* main section  */}
       <header className="sticky top-0 z-20">
-        <TopHeader
-          email={"someone@example.com"}
-          phoneNumber={"+91 9087654321"}
-        />
+        <TopHeader email={"support@rento.com"} phoneNumber={"+91 9087654321"} />
         <Header />
       </header>
       <main>

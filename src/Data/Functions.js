@@ -9,6 +9,48 @@ import {
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
 
+// const handleSearchVehicleData = async (
+//   dispatch,
+//   queryParmsData,
+//   location,
+//   selectedLocation,
+//   id
+// ) => {
+//   dispatch(fetchingVehicles());
+//   let result;
+//   if (location.pathname !== "/explore") {
+//     const category = queryParmsData?.category;
+//     const brand = queryParmsData?.brand;
+//     // console.log(queryParmsData, location);
+//     if (category != undefined && brand != undefined) {
+//       result = await fetchingData(
+//         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+//       );
+//     } else if (category != undefined) {
+//       result = await fetchingData(
+//         `/getVehicleTblData?stationId=${id}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+//       );
+//     } else if (brand != undefined) {
+//       result = await fetchingData(
+//         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+//       );
+//     } else if (!category && !brand) {
+//       result = await fetchingData(
+//         `/getVehicleTblData?stationId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+//       );
+//     }
+//   } else {
+//     const locationId = selectedLocation?.locationId;
+//     result = await fetchingData(
+//       `/getVehicleTblData?locationId=${locationId}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+//     );
+//   }
+//   if (result) {
+//     // console.log(result);
+//     dispatch(addVehiclesData(result?.data));
+//   }
+// };
+
 const handleSearchVehicleData = async (
   dispatch,
   queryParmsData,
@@ -16,36 +58,51 @@ const handleSearchVehicleData = async (
   selectedLocation,
   id
 ) => {
+  // Dispatch loading action
   dispatch(fetchingVehicles());
-  let result;
-  if (location.pathname !== "/explore") {
-    const category = queryParmsData?.category;
-    const brand = queryParmsData?.brand;
-    // console.log(queryParmsData, location);
-    if (category != undefined && brand != undefined) {
-      result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-      );
-    } else if (category != undefined) {
-      result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-      );
-    } else if (brand != undefined) {
-      result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-      );
-    } else if (!category && !brand) {
-      result = await fetchingData(
-        `/getVehicleTblData?stationId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-      );
+
+  const {
+    category,
+    brand,
+    BookingStartDateAndTime,
+    BookingEndDateAndTime,
+    vehiclePlan,
+  } = queryParmsData;
+
+  try {
+    let result;
+    let url = "/getVehicleTblData?";
+
+    // Common parameters
+    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}`;
+
+    if (location.pathname !== "/explore") {
+      // For non-explore path
+      url += `stationId=${id}&${commonParams}`;
+
+      if (category) url += `&vehicleType=${category}`;
+      if (brand) url += `&vehicleBrand=${brand}`;
+      if (vehiclePlan) url += `&vehiclePlan=${vehiclePlan}`;
+    } else {
+      // For explore path
+      const locationId = selectedLocation?.locationId;
+      url += `locationId=${locationId}&${commonParams}`;
+      if (category) url += `&vehicleType=${category}`;
+      if (brand) url += `&vehicleBrand=${brand}`;
+      if (vehiclePlan) url += `&vehiclePlan=${vehiclePlan}`;
     }
-  } else {
-    const locationId = selectedLocation?.locationId;
-    result = await fetchingData(`/getVehicleTblData?locationId=${locationId}`);
-  }
-  if (result) {
-    // console.log(result);
-    dispatch(addVehiclesData(result?.data));
+
+    // Fetch the data from API
+    result = await fetchingData(url);
+
+    if (result) {
+      // Dispatch the result if available
+      dispatch(addVehiclesData(result?.data));
+    }
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching vehicle data:", error);
+    // Optionally dispatch an error state if you want to show error messages
   }
 };
 
@@ -94,4 +151,31 @@ const searchData = async (
   }
 };
 
-export { handleSearchVehicleData, fetchingPlansFilters, searchData };
+const getUserDocuments = async (
+  handleLoadingUserData,
+  currentUser,
+  handleAddUserDocument,
+  dispatch,
+  handleAsyncError
+) => {
+  dispatch(handleLoadingUserData());
+  try {
+    const response = await fetchingData(
+      `/getDocument?userId=${currentUser && currentUser?._id}`
+    );
+    // disabling the loading
+    if (response?.status == 404) {
+      dispatch(handleAddUserDocument([]));
+    }
+    dispatch(handleAddUserDocument(response?.data));
+  } catch (error) {
+    return handleAsyncError(dispatch, error?.message);
+  }
+};
+
+export {
+  handleSearchVehicleData,
+  fetchingPlansFilters,
+  searchData,
+  getUserDocuments,
+};

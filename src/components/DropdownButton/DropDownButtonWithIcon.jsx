@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 
-const DropDownButtonWithIcon = ({ labelId }) => {
+const DropDownButtonWithIcon = ({ labelId, isDisabled }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
   const [selectedValue, setSelectedValue] = useState("");
@@ -69,15 +69,21 @@ const DropDownButtonWithIcon = ({ labelId }) => {
     <button
       className="border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full"
       onClick={() => {
-        setIsOpened(!isOpened);
-        checkDropdownPosition(); // Check position when toggling
+        if (!isDisabled) {
+          setIsOpened(!isOpened);
+          checkDropdownPosition(); // Check position when toggling
+        }
       }}
       type="button"
       id={labelId}
-      disabled={!loading && station?.length > 0 ? false : true}
+      disabled={isDisabled || (!loading && station?.length > 0) ? false : true}
       ref={buttonRef}
     >
-      <input type="hidden" name={labelId} value={selectedValueId || ""} />
+      <input
+        type="hidden"
+        name={labelId}
+        value={!isDisabled ? selectedValueId || "" : ""}
+      />
       <div>
         <div className="flex items-center justify-between gap-2 truncate">
           <div className="flex items-center gap-0.5">
@@ -96,7 +102,9 @@ const DropDownButtonWithIcon = ({ labelId }) => {
                 <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
               </svg>
             </span>
-            <span className="capitalize">{selectedValue}</span>
+            <span className="capitalize">
+              {!isDisabled ? selectedValue : "All Station"}
+            </span>
           </div>
           <span>
             <svg

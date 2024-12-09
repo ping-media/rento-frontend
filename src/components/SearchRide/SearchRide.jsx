@@ -45,12 +45,12 @@ const SearchRide = () => {
 
   const handleSearchRide = (e) => {
     e.preventDefault();
+    const response = new FormData(e.target);
+    const result = Object.fromEntries(response.entries());
     if (
       location.pathname == "/" ||
       removeAfterSecondSlash(location.pathname) == "/search"
     ) {
-      const response = new FormData(e.target);
-      const result = Object.fromEntries(response.entries());
       if (result?.pickupLocationId != "") {
         return navigate(
           `/search/${
@@ -64,6 +64,16 @@ const SearchRide = () => {
           )}`
         );
       }
+    } else if (location.pathname == "/explore") {
+      return navigate(
+        `/explore?BookingStartDateAndTime=${convertToISOString(
+          result?.pickupDate,
+          result?.pickupTime
+        )}&BookingEndDateAndTime=${convertToISOString(
+          result?.dropoffDate,
+          result?.dropoffTime
+        )}`
+      );
     }
   };
 
@@ -169,7 +179,10 @@ const SearchRide = () => {
           <label htmlFor="pickupLocation" className="text-gray-500 block mb-1">
             Pick-up Location
           </label>
-          <DropDownButtonWithIcon labelId={"pickupLocationId"} />
+          <DropDownButtonWithIcon
+            labelId={"pickupLocationId"}
+            isDisabled={location.pathname == "/explore" ? true : false}
+          />
         </div>
         <div className="w-full">
           <label htmlFor="pickup-date" className="text-gray-500 block mb-1">

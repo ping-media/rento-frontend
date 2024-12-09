@@ -59,9 +59,9 @@ const LocationModal = () => {
       <div
         className={`fixed ${
           !isLocationModalActive && "hidden"
-        } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
+        } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4 h-96 overflow-y-auto`}
       >
-        <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-2xl h-96">
+        <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-2xl">
           <div className="flex items-center justify-between px-4 py-2">
             <h2 className="font-bold text-2xl uppercase">
               Choose <span className="text-theme">Location</span>

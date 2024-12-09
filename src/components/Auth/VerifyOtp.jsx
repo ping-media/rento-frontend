@@ -1,15 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import Spinner from "../Spinner/Spinner";
-import { toggleLoginModal } from "../../Redux/ModalSlice/ModalSlice";
+// import { toggleLoginModal } from "../../Redux/ModalSlice/ModalSlice";
 import { handleUser } from "../../Data";
 import {
-  handleLoadingUserData,
+  // handleLoadingUserData,
   handleSignIn,
 } from "../../Redux/UserSlice/UserSlice";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 
-const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue, modalChange }) => {
+const VerifyOtp = ({
+  phone,
+  otp,
+  setOtpValue,
+  setInputValue,
+  modalChange,
+  email = "",
+}) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
   const [onOtpSubmit, setOnOtpSubmit] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -92,7 +99,7 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue, modalChange }) => {
   //   return () => clearInterval(interval);
   // }, [isTimerActive, seconds]);
 
-  const handleLogin = async (e, otp) => {
+  const handleLogin = async (e, otp, email) => {
     setLoading(true);
     if (e) e.preventDefault();
     const response = await handleUser("/verifyOtp", {
@@ -115,7 +122,7 @@ const VerifyOtp = ({ phone, otp, setOtpValue, setInputValue, modalChange }) => {
     <form onSubmit={handleLogin}>
       <>
         <p className="text-gray-400 lg:text-gray-600 text-center mb-4">
-          Code sent to +91-({phone}){/* Code sent to +91-() */}
+          Code sent to {email != "" ? email : `+91-(${phone})`}
         </p>
         <div className="flex items-center justify-around gap-2 lg:gap-4 mx-auto mt-2 mb-4">
           {otpInput.map((value, index) => (

@@ -8,12 +8,14 @@ import Spinner from "../Spinner/Spinner.jsx";
 import UserDocument from "./UserDocument.jsx";
 import PreLoader from "../skeleton/PreLoader.jsx";
 import { handleupdateUser } from "../../Data/index.js";
+import InputWithVerifyButton from "../Input/InputWithVerifyButton.jsx";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
+const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { currentUser, loading } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
   const [formLoading, setFormLoading] = useState(false);
 
   // useEffect(() => {
@@ -51,6 +53,7 @@ const Profile = () => {
       {/* modals  */}
       <LicenseModal />
       <IdentityModal />
+      <EmailVerifyModal />
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
         <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center justify-between">
           <h2 className="font-bold text-lg lg:text-xl uppercase">
@@ -109,17 +112,18 @@ const Profile = () => {
                 labelId={"gender"}
                 value={currentUser?.gender || ""}
                 required={true}
-                options={["male", "female"]}
+                options={["male", "female", "others"]}
               />
             </div>
             <div className="w-full lg:flex-1">
-              <InputWithLabel
+              <InputWithVerifyButton
                 name={"email"}
                 placeholderDesc={"Enter Email Address"}
                 labelDesc={"Email Address"}
                 labelId={"email"}
                 type="email"
                 value={currentUser?.email || ""}
+                status={currentUser?.isEmailVerified || ""}
                 required={true}
               />
             </div>
@@ -153,6 +157,7 @@ const Profile = () => {
           </button>
         </form>
       </div>
+      {/* dcoument upload  */}
       <UserDocument />
     </>
   ) : (
