@@ -99,8 +99,7 @@ const SearchRide = () => {
       addStationData,
       loading
     );
-    // }, [selectedLocation]);
-  }, [location.pathname]);
+  }, [location.pathname, selectedLocation]);
 
   useEffect(() => {
     // Destructure BookingStartDateAndTime and BookingEndDateAndTime

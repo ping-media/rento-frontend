@@ -329,6 +329,17 @@ const getRoundedDateTime = (value) => {
   return isoString.split(".")[0] + "Z";
 };
 
+function addDaysToDate(dateString, daysToAdd) {
+  // Parse the input date string into a Date object
+  const date = new Date(dateString);
+
+  // Add the specified number of days
+  date.setUTCDate(date.getUTCDate() + daysToAdd);
+
+  // Return the new date in ISO string format (with 'Z' indicating UTC time)
+  return date.toISOString();
+}
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -349,4 +360,5 @@ export {
   nextDayFromCurrent,
   isValidPhoneNumber,
   getRoundedDateTime,
+  addDaysToDate,
 };

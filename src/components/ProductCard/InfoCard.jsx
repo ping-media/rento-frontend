@@ -1,13 +1,15 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import scooterImg from "../../assets/images/scooter-image.png";
 import bikeImg from "../../assets/images/bike-image.png";
 import {
+  addDaysToDate,
   formatDateTimeForUser,
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
 
 const InfoCard = ({
+  vehiclePlanData,
   vehicleImage,
   vehicleName,
   vehicleType,
@@ -19,11 +21,38 @@ const InfoCard = ({
   BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
+  // const navigate = useNavigate();
+  // const [queryParms] = useSearchParams();
+  // const [queryParmsData, setQueryParmsData] = useState(
+  //   Object.fromEntries(queryParms.entries())
+  // );
+
   //converting time into readable format
   const bookingStartDateTime =
     BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
   const bookingEndDateTime =
     BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
+
+  // useEffect(() => {
+  //   setQueryParmsData(Object.fromEntries(queryParms.entries()));
+  //   console.log(queryParmsData?.BookingStartDateAndTime);
+  //   // pickup date & time
+  //   bookingStartDateTime = formatDateTimeForUser(
+  //     queryParmsData?.BookingStartDateAndTime
+  //   );
+  //   // dropoff date and time
+  //   if (vehiclePlanData != null) {
+  //     const updatedBookingEndDateAndTime = addDaysToDate(
+  //       queryParmsData?.BookingEndDateAndTime,
+  //       Number(vehiclePlanData?.planDuration)
+  //     );
+  //     bookingEndDateTime = formatDateTimeForUser(updatedBookingEndDateAndTime);
+  //   } else {
+  //     bookingEndDateTime = formatDateTimeForUser(
+  //       queryParmsData?.BookingEndDateAndTime
+  //     );
+  //   }
+  // }, []);
 
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
@@ -136,10 +165,12 @@ const InfoCard = ({
           </span>
           Booked For:
           <span className="font-semibold">
-            {getDurationInDays(
-              bookingStartDateTime?.date,
-              bookingEndDateTime?.date
-            )}{" "}
+            {vehiclePlanData != null
+              ? vehiclePlanData?.planDuration
+              : getDurationInDays(
+                  bookingStartDateTime?.date,
+                  bookingEndDateTime?.date
+                )}{" "}
             Day
           </span>
         </div>

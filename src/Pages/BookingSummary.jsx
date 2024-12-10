@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
 import ErrorImg from "../assets/logo/error.svg";
 import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
-import { calculateTax, formatDateToSlash } from "../utils";
+// import { calculateTax, formatDateToSlash } from "../utils";
 import { handleAsyncError } from "../utils/handleAsyncError";
 
 const BookingSummary = () => {
@@ -32,6 +32,8 @@ const BookingSummary = () => {
   const [queryParmsData, setQueryParmsData] = useState(
     Object.fromEntries(queryParms.entries())
   );
+  const [vehicleLoading, setVehicleLoading] = useState(false);
+  const [vehiclePlanData, setVehiclePlanData] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -42,9 +44,11 @@ const BookingSummary = () => {
     }
   }, [isTermsChecked, isDrivingChecked]);
 
+  //fetching the vehicle info based on vehicleId from url and if vehicle plan id present than search that too
   useEffect(() => {
+    setQueryParmsData(Object.fromEntries(queryParms.entries()));
+
     (async () => {
-      setQueryParmsData(Object.fromEntries(queryParms.entries()));
       dispatch(fetchingVehicles());
       const result = await fetchingData(
         `/getVehicleTblData?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
@@ -52,6 +56,19 @@ const BookingSummary = () => {
       // console.log(result);
       dispatch(addVehiclesData(result?.data));
     })();
+
+    // only when vehiclePlan id present
+    if (queryParmsData?.vehiclePlan) {
+      (async () => {
+        setVehicleLoading(true);
+        const result = await fetchingData(
+          `/getPlanData?_id=${queryParmsData?.vehiclePlan}`
+        );
+        console.log(result);
+        setVehiclePlanData(result?.data);
+        return setVehicleLoading(false);
+      })();
+    }
   }, []);
   // console.log(vehicles);
 
@@ -107,7 +124,7 @@ const BookingSummary = () => {
     }
   };
 
-  return !loading ? (
+  return !loading && !vehicleLoading ? (
     vehicles.length > 0 ? (
       <div className="w-[90%] mx-auto my-4.5 lg:my:3 xl:my-4">
         <form onSubmit={handleCreateBooking}>
@@ -118,7 +135,11 @@ const BookingSummary = () => {
                   <h2 className="font-semibold">Booking Summary</h2>
                   <h2 className="font-semibold hidden lg:block">Price</h2>
                 </div>
-                <InfoCard {...vehicles[0]} {...queryParmsData} />
+                <InfoCard
+                  {...vehicles[0]}
+                  vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
+                  {...queryParmsData}
+                />
                 <DetailsCard extraKmCharge={vehicles[0]?.extraKmsCharges} />
               </div>
               <PromoCard />
@@ -131,10 +152,11 @@ const BookingSummary = () => {
                 </div>
                 <PriceCard
                   perDayCost={vehicles[0]?.perDayCost}
+                  vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
                   {...queryParmsData}
                 />
               </div>
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 lg:max-h-44 xl:max-h-40">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 lg:max-h-48 xl:max-h-40">
                 <Checkbox
                   labelId={"terms"}
                   ref={termsRef}

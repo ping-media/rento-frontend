@@ -44,7 +44,11 @@ const Profile = () => {
     e.preventDefault();
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
-    result = Object.assign(result, { _id: currentUser?._id });
+    result = Object.assign(result, {
+      _id: currentUser?._id,
+      userType: "customer",
+    });
+    // console.log(result);
     try {
       const response = await handleupdateUser(result);
       if (response?.status == 200) {

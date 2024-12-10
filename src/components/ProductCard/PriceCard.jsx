@@ -7,6 +7,7 @@ import {
 
 const PriceCard = ({
   perDayCost,
+  vehiclePlanData,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
 }) => {
@@ -20,23 +21,31 @@ const PriceCard = ({
       title: "Vehicle Rental Cost",
       name: "bookingPrice",
       price:
-        Number(perDayCost) *
-        Number(
-          getDurationInDays(
-            bookingStartDateTime?.date,
-            bookingEndDateTime?.date
-          )
-        ),
+        vehiclePlanData != null
+          ? Number(vehiclePlanData?.planPrice)
+          : Number(perDayCost) *
+            Number(
+              getDurationInDays(
+                bookingStartDateTime?.date,
+                bookingEndDateTime?.date
+              )
+            ),
     },
     {
-      title: "Extra Helmet Price",
+      title: "Extra Helmet Price(GST Applied)",
       name: "extraAddonPrice",
       price:
-        50 *
+        50 +
         Number(
-          getDurationInDays(
-            bookingStartDateTime?.date,
-            bookingEndDateTime?.date
+          calculateTax(
+            50 *
+              Number(
+                getDurationInDays(
+                  bookingStartDateTime?.date,
+                  bookingEndDateTime?.date
+                )
+              ),
+            18
           )
         ),
     },
@@ -45,18 +54,19 @@ const PriceCard = ({
       name: "tax",
       price: Number(
         calculateTax(
-          Number(perDayCost) *
-            Number(
-              getDurationInDays(
-                bookingStartDateTime?.date,
-                bookingEndDateTime?.date
-              )
-            ),
+          vehiclePlanData != null
+            ? Number(vehiclePlanData?.planPrice)
+            : Number(perDayCost) *
+                Number(
+                  getDurationInDays(
+                    bookingStartDateTime?.date,
+                    bookingEndDateTime?.date
+                  )
+                ),
           18
         )
       ),
     },
-    // { title: "SGST(14% Applied)", price: 0 },
   ];
 
   const [totalPrice, setTotalPrice] = useState(0);
