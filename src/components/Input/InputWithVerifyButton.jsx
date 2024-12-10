@@ -14,7 +14,6 @@ const InputWithVerifyButton = ({
 }) => {
   const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState(value && value);
-
   // openning the email verfiy modal
   const handleEmailSubmit = () => {
     return dispatch(toggleEmailVerifyModal());
@@ -40,11 +39,15 @@ const InputWithVerifyButton = ({
 
         <button
           className={`${
-            status == "yes" ? "bg-green-400 border-green-400 text-gray-100" : ""
-          } absolute top-8 right-2 border-2 px-2.5 py-1 rounded-md disabled:bg-gray-300 disabled:bg-opacity-50`}
+            status == "yes"
+              ? "bg-green-400 border-green-400 text-white cursor-pointer capitalize"
+              : ""
+          } absolute top-8 right-2 border-2 px-2.5 py-1 rounded-md`}
           type="button"
           onClick={handleEmailSubmit}
-          disabled={inputValue != "" ? false : true}
+          disabled={
+            status == "yes" ? true : false || inputValue != "" ? false : true
+          }
         >
           {status == "no" ? "verify" : "verified"}
         </button>

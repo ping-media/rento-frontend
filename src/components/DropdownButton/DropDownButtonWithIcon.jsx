@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 
-const DropDownButtonWithIcon = ({ labelId, isDisabled }) => {
+const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
   const [selectedValue, setSelectedValue] = useState("");
@@ -13,7 +13,13 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled }) => {
 
   useEffect(() => {
     if (!loading) {
-      if (station.length > 0) {
+      if (station.length > 0 && value) {
+        const stationDataById = station?.filter(
+          (item) => item?.stationId == value
+        );
+        setSelectedValue(stationDataById[0]?.stationName);
+        setSelectedValueId(stationDataById[0]?.stationId);
+      } else if (station.length > 0) {
         setSelectedValue(station[0]?.stationName);
         setSelectedValueId(station[0]?.stationId);
       } else {

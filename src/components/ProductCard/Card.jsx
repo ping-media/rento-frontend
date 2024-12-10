@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
 import bikeImage from "../../assets/logo/bike.png";
 import scooterImage from "../../assets/logo/scooter.png";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { handleErrorImage } from "../../utils";
 
 const Card = ({
@@ -18,14 +18,31 @@ const Card = ({
 }) => {
   const [queryParms] = useSearchParams();
   const productImageRef = useRef(null);
+  const [bookingUrl, setBookingUrl] = useState("");
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
 
+  // Function to update the URL dynamically with query parameters
+  const updateQueryParams = () => {
+    // Create a new searchParams object
+    const params = new URLSearchParams();
+    // Loop through the queryParmsData object and append to params
+    Object.entries(queryParmsData).forEach(([key, value]) => {
+      if (value) {
+        params.append(key, value);
+      }
+    });
+    // Construct the new URL with dynamic query parameters
+    const newUrl = `/booking/summary/${_id}?${params.toString()}`;
+    return newUrl;
+  };
+
+  useEffect(() => {
+    setBookingUrl(updateQueryParams());
+  }, []);
+
   return (
-    <Link
-      to={`/booking/summary/${_id}?BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`}
-      className="relative"
-    >
+    <Link to={bookingUrl} className="relative">
       <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
         {/* modal & color of vehicle  */}
         <div className="top-4 right-0 absolute">

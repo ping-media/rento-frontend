@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { lazy, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import InputWithIconAndLabel from "../Input/InputWithIconAndLabel";
 import InputWithLabel from "../Input/InputWithLabel";
 import SelectDropDown from "../DropdownButton/SelectDropDown";
@@ -7,8 +7,12 @@ import { handleAsyncError } from "../../utils/handleAsyncError.js";
 import Spinner from "../Spinner/Spinner.jsx";
 import UserDocument from "./UserDocument.jsx";
 import PreLoader from "../skeleton/PreLoader.jsx";
-import { handleupdateUser } from "../../Data/index.js";
+import { fetchingData, handleupdateUser } from "../../Data/index.js";
 import InputWithVerifyButton from "../Input/InputWithVerifyButton.jsx";
+import {
+  handleLoadingUserData,
+  handleSignIn,
+} from "../../Redux/UserSlice/UserSlice.js";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));
@@ -16,19 +20,25 @@ const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));
 const Profile = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const { isEmailVerifyModalActive } = useSelector((state) => state.modals);
   const [formLoading, setFormLoading] = useState(false);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     dispatch(handleLoadingUserData());
-  //     const result = await fetchingData(
-  //       `/getAllUsers?_id=${currentUser && currentUser?._id}`
-  //     );
-  //     // console.log(result);
-  //     dispatch(handleUpdateCurrentUser(result?.data));
-  //   })();
-  // }, []);
+  // fetching updated user details
+  useEffect(() => {
+    if (currentUser && isEmailVerifyModalActive === false) {
+      (async () => {
+        dispatch(handleLoadingUserData());
+        const result = await fetchingData(
+          `/getAllUsers?_id=${currentUser && currentUser?._id}`
+        );
+        if (result?.status == 200) {
+          return dispatch(handleSignIn(result?.data[0]));
+        }
+      })();
+    }
+  }, [isEmailVerifyModalActive]);
 
+  // updating user profile
   const handleProfileUpdate = async (e) => {
     setFormLoading(true);
     e.preventDefault();
@@ -48,6 +58,7 @@ const Profile = () => {
       return error?.message;
     }
   };
+
   return currentUser ? (
     <>
       {/* modals  */}

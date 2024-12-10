@@ -55,6 +55,7 @@ const BookingSummary = () => {
   }, []);
   // console.log(vehicles);
 
+  // this function is creating new booking
   const handleCreateBooking = async (e) => {
     e.preventDefault();
     // if user is not login than don't let user to book the ride

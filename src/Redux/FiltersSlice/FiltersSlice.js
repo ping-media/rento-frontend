@@ -15,6 +15,9 @@ const FiltersSlice = createSlice({
       state.filter = action.payload;
       state.filterLoading = false;
     },
+    restFilterLoading: (state) => {
+      state.filterLoading = false;
+    },
     resetFilters: (state) => {
       state.filter = [];
       state.filterLoading = false;
@@ -23,7 +26,11 @@ const FiltersSlice = createSlice({
   },
 });
 
-export const { addingFilters, hanldeAddFilters, resetFilters } =
-  FiltersSlice.actions;
+export const {
+  addingFilters,
+  hanldeAddFilters,
+  restFilterLoading,
+  resetFilters,
+} = FiltersSlice.actions;
 
 export default FiltersSlice.reducer;

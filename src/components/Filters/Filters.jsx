@@ -21,20 +21,28 @@ const Filters = () => {
   const [queryParms, setQueryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
 
+  // for fetching plan filters & setting up the value if present in url
   useEffect(() => {
-    const category = queryParmsData?.category;
-    const brand = queryParmsData?.brand;
+    const category = queryParms?.category;
+    const brand = queryParms?.brand;
+    const vehiclePlan = queryParms?.vehiclePlan;
 
-    if (category != undefined || brand != undefined) {
-      setInputCategory(category.toLowerCase());
+    if (
+      category != undefined ||
+      brand != undefined ||
+      vehiclePlan != undefined
+    ) {
+      setInputCategory(category?.toLowerCase());
       setInputbrand(brand);
+      setInputPlanId(vehiclePlan);
     }
     // for fetching plan filters
     const commonId = id ? id : selectedLocation?.locationId;
     fetchingPlansFilters(dispatch, commonId);
-  }, []);
+  }, [location.pathname]);
 
-  const handleFilters = (e) => {
+  // this function will run after user apply any filter
+  const handleSubmitFilters = (e) => {
     e.preventDefault();
     if (
       inputCategory != "" &&
@@ -79,16 +87,19 @@ const Filters = () => {
     // Delete 'category' if it exists
     if (queryParms.get("category")) {
       queryParms.delete("category");
+      setInputCategory("");
     }
 
     // Delete 'brand' if it exists
     if (queryParms.get("brand")) {
       queryParms.delete("brand");
+      setInputbrand("");
     }
 
     // Delete 'vehiclePlan' if it exists
     if (queryParms.get("vehiclePlan")) {
       queryParms.delete("vehiclePlan");
+      setInputPlanId("");
     }
 
     return setQueryParms(queryParms);
@@ -96,11 +107,13 @@ const Filters = () => {
 
   return (
     <>
-      <form onSubmit={handleFilters}>
+      <form onSubmit={handleSubmitFilters}>
         <div className="mb-5">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold mb-3">Categories</h2>
-            {(queryParms.get("brand") || queryParms.get("category")) && (
+            {(queryParms.get("brand") ||
+              queryParms.get("category") ||
+              queryParms.get("vehiclePlan")) && (
               <button
                 className="px-1 py-1 border hover:border-theme hover:text-theme rounded"
                 type="button"
@@ -127,7 +140,7 @@ const Filters = () => {
             {Categories.map((item, index) => (
               <button
                 type="button"
-                className={`w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
+                className={`w-24 lg:w-24 xl:w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
                   inputCategory == item?.CategoryTitle
                     ? "bg-theme text-gray-100 border-theme"
                     : ""

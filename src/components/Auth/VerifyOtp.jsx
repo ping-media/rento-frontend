@@ -10,7 +10,7 @@ import {
 import { handleAsyncError } from "../../utils/handleAsyncError";
 
 const VerifyOtp = ({
-  phone,
+  phone = 0,
   otp,
   setOtpValue,
   setInputValue,
@@ -99,18 +99,28 @@ const VerifyOtp = ({
   //   return () => clearInterval(interval);
   // }, [isTimerActive, seconds]);
 
-  const handleLogin = async (e, otp, email) => {
+  const handleLogin = async (e, otp) => {
     setLoading(true);
     if (e) e.preventDefault();
-    const response = await handleUser("/verifyOtp", {
-      otp: otp,
-      contact: phone,
-    });
+    let response;
+    if (phone != 0) {
+      response = await handleUser("/verifyOtp", {
+        otp: otp,
+        contact: phone,
+      });
+    } else if (email != "") {
+      response = await handleUser("/emailverify", {
+        otp: otp,
+        email: email,
+      });
+    }
     if (response?.status == 200) {
       handleAsyncError(dispatch, response?.message, "success");
-      dispatch(handleSignIn(response?.data));
-      setOtpValue(false);
-      setInputValue("");
+      if (phone != 0) {
+        dispatch(handleSignIn(response?.data));
+      }
+      setOtpValue && setOtpValue(false);
+      setInputValue && setInputValue("");
       dispatch(modalChange());
     } else {
       handleAsyncError(dispatch, response?.message);

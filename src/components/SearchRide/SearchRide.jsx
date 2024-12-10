@@ -3,7 +3,12 @@ import DatePicker from "../DatePicker/DatePicker";
 import TimePicker from "../TimePicker/TimePicker";
 import Button from "../Button/Button";
 import DropDownButtonWithIcon from "../DropdownButton/DropDownButtonWithIcon";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSearchUpdate } from "../../Redux/ModalSlice/ModalSlice";
 import {
@@ -22,7 +27,7 @@ const SearchRide = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const searchRideContainerRef = useRef(null);
-  // const [containerOnTop, setContainerOnTop] = useState(false);
+  const { id } = useParams();
   const [isHomePage, setIsHomePage] = useState(false);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
   const { loading, selectedLocation } = useSelector(
@@ -36,6 +41,7 @@ const SearchRide = () => {
   );
   const [queryPickupTime, setQueryPickupTime] = useState(null);
   const [queryDropoffTime, setQueryDropoffTime] = useState(null);
+
   // if searchFilter modal is active than run this
   const handletoggleSearchUpdate = () => {
     if (isSearchUpdatesActive) {
@@ -93,7 +99,8 @@ const SearchRide = () => {
       addStationData,
       loading
     );
-  }, [selectedLocation]);
+    // }, [selectedLocation]);
+  }, [location.pathname]);
 
   useEffect(() => {
     // Destructure BookingStartDateAndTime and BookingEndDateAndTime
@@ -182,6 +189,7 @@ const SearchRide = () => {
           <DropDownButtonWithIcon
             labelId={"pickupLocationId"}
             isDisabled={location.pathname == "/explore" ? true : false}
+            value={id || ""}
           />
         </div>
         <div className="w-full">

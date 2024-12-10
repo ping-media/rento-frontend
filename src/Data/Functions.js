@@ -3,6 +3,7 @@ import {
   addingFilters,
   hanldeAddFilters,
   resetFilters,
+  restFilterLoading,
 } from "../Redux/FiltersSlice/FiltersSlice";
 import {
   addVehiclesData,
@@ -97,7 +98,7 @@ const handleSearchVehicleData = async (
 
     if (result) {
       // Dispatch the result if available
-      dispatch(addVehiclesData(result?.data));
+      return dispatch(addVehiclesData(result?.data));
     }
   } catch (error) {
     // Handle errors
@@ -120,11 +121,13 @@ const fetchingPlansFilters = async (dispatch, id) => {
     const response = await fetchingData(endpoint);
     if (response.status == 200) {
       // console.log(response?.data);
-      dispatch(hanldeAddFilters(response?.data));
+      return dispatch(hanldeAddFilters(response?.data));
+    } else {
+      return dispatch(hanldeAddFilters([]));
     }
   } catch (error) {
     dispatch(resetFilters());
-    console.log(error?.message);
+    // console.log(error?.message);
   }
 };
 
@@ -155,6 +158,7 @@ const getUserDocuments = async (
   handleLoadingUserData,
   currentUser,
   handleAddUserDocument,
+  restLoading,
   dispatch,
   handleAsyncError
 ) => {
@@ -163,11 +167,11 @@ const getUserDocuments = async (
     const response = await fetchingData(
       `/getDocument?userId=${currentUser && currentUser?._id}`
     );
-    // disabling the loading
-    if (response?.status == 404) {
-      dispatch(handleAddUserDocument([]));
+    if (response?.status !== 200) {
+      // console.log(response);
+      return dispatch(restLoading());
     }
-    dispatch(handleAddUserDocument(response?.data));
+    return dispatch(handleAddUserDocument(response?.data));
   } catch (error) {
     return handleAsyncError(dispatch, error?.message);
   }

@@ -5,7 +5,7 @@ const fetchingData = async (endpoint) => {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
     );
-    // console.log(response);
+    // console.log(response?.data);
     return response?.data;
   } catch (error) {
     return {
@@ -51,6 +51,27 @@ const handleUser = async (endpoint, data) => {
   } catch (error) {
     return {
       message: "user not found.",
+      type: "error",
+    };
+  }
+};
+
+const handlePostData = async (endpoint, data) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // console.log(response);
+    return response?.data || response;
+  } catch (error) {
+    return {
+      message: error?.message,
       type: "error",
     };
   }
@@ -123,4 +144,5 @@ export {
   handlebooking,
   handleupdateUser,
   handleuploadDocument,
+  handlePostData,
 };

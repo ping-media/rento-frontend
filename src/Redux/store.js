@@ -16,7 +16,7 @@ const userPersistConfig = {
   version: "1",
   storage,
   whitelist: ["user"],
-  blacklist: ["currentUser", "loading", "error"],
+  blacklist: ["currentUser", "tempContact", "userDocument", "loading", "error"],
 };
 
 const locationPersistConfig = {
