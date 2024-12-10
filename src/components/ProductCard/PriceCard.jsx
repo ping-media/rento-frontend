@@ -16,73 +16,121 @@ const PriceCard = ({
   const bookingEndDateTime =
     BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
 
-  const priceDetails = [
-    {
-      title: "Vehicle Rental Cost",
-      name: "bookingPrice",
-      price:
-        vehiclePlanData != null
-          ? Number(vehiclePlanData?.planPrice)
-          : Number(perDayCost) *
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [isExtraChecked, setIsExtraChecked] = useState(false);
+  const [vehicleRentCost, setVehicleRentCost] = useState(0);
+  const [extraAddOnCost, setExtraAddOnCost] = useState(0);
+  const [gSTCost, setGSTCost] = useState(0);
+
+  // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
+  useEffect(() => {
+    if (vehiclePlanData != null) {
+      if (perDayCost) {
+        setVehicleRentCost(Number(vehiclePlanData?.planPrice));
+      }
+      setExtraAddOnCost(50 * Number(vehiclePlanData?.planDuration));
+      //setting gst price if helemet is selected or not
+      if (isExtraChecked && extraAddOnCost) {
+        setGSTCost(
+          Number(
+            calculateTax(
+              Number(vehiclePlanData?.planPrice) + extraAddOnCost,
+              18
+            )
+          )
+        );
+      } else {
+        setGSTCost(
+          Number(calculateTax(Number(vehiclePlanData?.planPrice), 18))
+        );
+      }
+    } else {
+      if (perDayCost) {
+        setVehicleRentCost(
+          Number(perDayCost) *
             Number(
               getDurationInDays(
                 bookingStartDateTime?.date,
                 bookingEndDateTime?.date
               )
-            ),
-    },
-    {
-      title: "Extra Helmet Price(GST Applied)",
-      name: "extraAddonPrice",
-      price:
-        50 +
-        Number(
-          calculateTax(
-            50 *
-              Number(
-                getDurationInDays(
-                  bookingStartDateTime?.date,
-                  bookingEndDateTime?.date
-                )
-              ),
-            18
+            )
+        );
+      }
+      setExtraAddOnCost(
+        50 *
+          Number(
+            getDurationInDays(
+              bookingStartDateTime?.date,
+              bookingEndDateTime?.date
+            )
           )
-        ),
-    },
-    {
-      title: "GST(18% Applied)",
-      name: "tax",
-      price: Number(
-        calculateTax(
-          vehiclePlanData != null
-            ? Number(vehiclePlanData?.planPrice)
-            : Number(perDayCost) *
+      );
+      if (isExtraChecked && extraAddOnCost) {
+        setGSTCost(
+          Number(
+            calculateTax(
+              Number(perDayCost) *
+                Number(
+                  getDurationInDays(
+                    bookingStartDateTime?.date,
+                    bookingEndDateTime?.date
+                  )
+                ) +
+                Number(extraAddOnCost),
+              18
+            )
+          )
+        );
+      } else {
+        setGSTCost(
+          Number(
+            calculateTax(
+              Number(perDayCost) *
                 Number(
                   getDurationInDays(
                     bookingStartDateTime?.date,
                     bookingEndDateTime?.date
                   )
                 ),
-          18
-        )
-      ),
+              18
+            )
+          )
+        );
+      }
+    }
+  }, [isExtraChecked]);
+
+  const priceDetails = [
+    {
+      title: "Vehicle Rental Cost",
+      name: "bookingPrice",
+      price: vehicleRentCost,
+    },
+    {
+      title: "Extra Helmet Price",
+      name: "extraAddonPrice",
+      price: extraAddOnCost,
+    },
+    {
+      title: "GST(18% Applied)",
+      name: "tax",
+      price: gSTCost,
     },
   ];
 
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [isExtraChecked, setIsExtraChecked] = useState(false);
-
   useEffect(() => {
     (() => {
-      const totalPrice = priceDetails.reduce((total, item) => {
-        if (item?.title.includes("Helmet") & !isExtraChecked) {
-          return total; // Do not add the extra helmet price
-        }
-        return total + item.price;
-      }, 0);
-      setTotalPrice(totalPrice.toFixed(2));
+      if (vehicleRentCost != 0 && extraAddOnCost != 0 && gSTCost != 0) {
+        const totalPrice = priceDetails.reduce((total, item) => {
+          if (item?.title.includes("Helmet") & !isExtraChecked) {
+            return total; // Do not add the extra helmet price
+          }
+          return total + item.price;
+        }, 0);
+        setTotalPrice(totalPrice?.toFixed(2));
+      }
     })();
-  }, [isExtraChecked]);
+  }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
 
   return (
     <>

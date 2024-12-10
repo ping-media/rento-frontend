@@ -254,27 +254,62 @@ const removeAfterSecondSlash = (pathname) => {
   return pathname.slice(0, secondSlashIndex);
 };
 
+// const formatDateTimeForUser = (input) => {
+//   const [dateStr, timeStr] = input?.split(" ");
+
+//   // Parse the date string into a Date object
+//   const date = new Date(dateStr);
+
+//   // Format the date to the desired format (29 Nov, 2024)
+//   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
+//   const formattedDate = date.toLocaleDateString("en-GB", dateOptions);
+
+//   // Format the time to the desired format (5:00 PM)
+//   const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
+
+//   // Use UTC methods to get the time in UTC (not local time)
+//   const formattedTime = date.toLocaleTimeString("en-GB", {
+//     ...timeOptions,
+//     timeZone: "UTC",
+//   });
+
+//   // Return the formatted string
+//   // return `date:${formattedDate} time:${formattedTime}`;
+//   return {
+//     date: formattedDate,
+//     time: formattedTime,
+//   };
+// };
+
 const formatDateTimeForUser = (input) => {
-  const [dateStr, timeStr] = input?.split(" ");
+  // Create a Date object from the input (ISO 8601 format)
+  const date = new Date(input);
 
-  // Parse the date string into a Date object
-  const date = new Date(dateStr);
+  // Extract the UTC date components
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth(); // 0-based index
+  const day = date.getUTCDate();
 
-  // Format the date to the desired format (29 Nov, 2024)
+  // Format the date to the desired format (e.g. '11 Dec 2024')
   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
-  const formattedDate = date.toLocaleDateString("en-GB", dateOptions);
+  const formattedDate = new Date(Date.UTC(year, month, day)).toLocaleDateString(
+    "en-GB",
+    dateOptions
+  );
 
-  // Format the time to the desired format (5:00 PM)
+  // Extract and format the UTC time components
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
   const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
 
-  // Use UTC methods to get the time in UTC (not local time)
-  const formattedTime = date.toLocaleTimeString("en-GB", {
+  // Format the time as per the desired format (e.g. '10:00 pm')
+  const formattedTime = new Date(
+    Date.UTC(year, month, day, hours, minutes)
+  ).toLocaleTimeString("en-GB", {
     ...timeOptions,
-    timeZone: "UTC",
+    timeZone: "UTC", // Explicitly use UTC
   });
 
-  // Return the formatted string
-  // return `date:${formattedDate} time:${formattedTime}`;
   return {
     date: formattedDate,
     time: formattedTime,
