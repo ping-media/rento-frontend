@@ -74,31 +74,56 @@ const formatDate = (dateStr) => {
   return formattedDate.replace(/^(\w{3}) (\d{2} \w{3} \d{4})$/, "$1, $2");
 };
 
+// const formatTimeWithoutSeconds = (timeStr) => {
+//   // Step 1: Parse the time string into a Date object
+//   const [time, period] = timeStr.split(" "); // Split time and AM/PM
+//   let [hours, minutes] = time.split(":").map(Number); // Split hours and minutes
+
+//   // Convert to 24-hour time for easier manipulation
+//   if (period === "PM" && hours !== 12) {
+//     hours += 12; // Convert PM times except 12 PM to 24-hour format
+//   } else if (period === "AM" && hours === 12) {
+//     hours = 0; // Convert 12 AM to 0 hour
+//   }
+
+//   // Step 2: Round the minutes to the nearest half hour
+//   if (minutes >= 45) {
+//     minutes = 0; // Round to the next hour if minutes are 45 or greater
+//     hours = (hours + 1) % 24; // Ensure hours wrap around correctly (i.e., 23 becomes 0)
+//   } else {
+//     minutes = 0; // Round down to 00 if minutes are less than 15
+//   }
+
+//   // Step 3: Convert back to 12-hour format and return the time string
+//   let formattedHour = hours % 12; // Convert back to 12-hour format
+//   formattedHour = formattedHour === 0 ? 12 : formattedHour; // 0 hour should be 12 in 12-hour format
+//   const formattedMinute = minutes < 10 ? `0${minutes}` : minutes; // Format minutes
+//   const formattedPeriod = hours >= 12 ? "PM" : "AM"; // Determine AM/PM period
+
+//   return `${formattedHour}:${formattedMinute} ${formattedPeriod}`; // Return the formatted time string
+// };
+
 const formatTimeWithoutSeconds = (timeStr) => {
   // Step 1: Parse the time string into a Date object
-  const [time, period] = timeStr.split(" "); // Split time and AM/PM
-  let [hours, minutes] = time.split(":").map(Number); // Split hours and minutes
+  const [time, period] = timeStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
 
   // Convert to 24-hour time for easier manipulation
   if (period === "PM" && hours !== 12) {
-    hours += 12; // Convert PM times except 12 PM to 24-hour format
+    hours += 12;
   } else if (period === "AM" && hours === 12) {
-    hours = 0; // Convert 12 AM to 0 hour
+    hours = 0;
   }
-
-  // Step 2: Round the minutes to the nearest half hour
-  if (minutes >= 45) {
-    minutes = 0; // Round to the next hour if minutes are 45 or greater
-    hours = (hours + 1) % 24; // Ensure hours wrap around correctly (i.e., 23 becomes 0)
-  } else {
-    minutes = 0; // Round down to 00 if minutes are less than 15
+  // Step 2: Round the minutes to the nearest hour
+  if (minutes > 0) {
+    minutes = 0;
+    hours = (hours + 1) % 24;
   }
-
   // Step 3: Convert back to 12-hour format and return the time string
   let formattedHour = hours % 12; // Convert back to 12-hour format
-  formattedHour = formattedHour === 0 ? 12 : formattedHour; // 0 hour should be 12 in 12-hour format
-  const formattedMinute = minutes < 10 ? `0${minutes}` : minutes; // Format minutes
-  const formattedPeriod = hours >= 12 ? "PM" : "AM"; // Determine AM/PM period
+  formattedHour = formattedHour === 0 ? 12 : formattedHour;
+  const formattedMinute = minutes < 10 ? `0${minutes}` : minutes;
+  const formattedPeriod = hours >= 12 ? "PM" : "AM";
 
   return `${formattedHour}:${formattedMinute} ${formattedPeriod}`; // Return the formatted time string
 };
@@ -369,7 +394,7 @@ function addDaysToDate(dateString, daysToAdd) {
   const date = new Date(dateString);
 
   // Add the specified number of days
-  date.setUTCDate(date.getUTCDate() + daysToAdd);
+  date.setUTCDate(date.getUTCDate() + (daysToAdd - 2));
 
   // Return the new date in ISO string format (with 'Z' indicating UTC time)
   return date.toISOString();

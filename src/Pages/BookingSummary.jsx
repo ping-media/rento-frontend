@@ -15,9 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
 import ErrorImg from "../assets/logo/error.svg";
 import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
-// import { calculateTax, formatDateToSlash } from "../utils";
 import { handleAsyncError } from "../utils/handleAsyncError";
-import { addDaysToDate } from "../utils";
 
 const BookingSummary = () => {
   const termsRef = useRef(null);
@@ -178,7 +176,7 @@ const BookingSummary = () => {
                   }
                 />
               </div>
-              <div className="mt-1 lg:-mt-5 order-5 w-full">
+              <div className="mt-1 order-5 w-full">
                 <button
                   className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
                   disabled={!isAllFieldChecked ? true : false}

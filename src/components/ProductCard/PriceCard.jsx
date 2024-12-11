@@ -135,7 +135,7 @@ const PriceCard = ({
   return (
     <>
       <div className="mt-6 mb-14 lg:mb-1">
-        <ul className="leading-10 pb-3 border-b-2 border-gray-300">
+        <ul className="leading-8 pb-3 border-b-2 border-gray-300">
           {priceDetails.map((item, index) => (
             <li
               className={`${
@@ -165,7 +165,7 @@ const PriceCard = ({
           <span className="font-semibold">₹{totalPrice}</span>
         </div>
       </div>
-      <div className="bg-yellow-200 -mx-4 px-4 pt-2 -mb-2 rounded-b-lg absolute bottom-2 w-full">
+      <div className="bg-yellow-200 -mx-4 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg absolute bottom-2 w-full">
         <div className="mb-1">
           <label
             htmlFor="hr"
