@@ -17,6 +17,7 @@ import {
   toggleSearchUpdate,
 } from "../Redux/ModalSlice/ModalSlice";
 import { handleSearchVehicleData } from "../Data/Functions";
+import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 
 const Search = () => {
   const navigate = useNavigate();
@@ -53,6 +54,9 @@ const Search = () => {
       setPickup(formatDateTimeForUser(pickUpDateAndTime));
       setDropOff(formatDateTimeForUser(dropoffDateAndTime));
     }
+
+    //removing this after we are going to booking
+    dispatch(removeTempDate());
   }, []);
 
   return (

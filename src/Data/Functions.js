@@ -177,9 +177,43 @@ const getUserDocuments = async (
   }
 };
 
+const changeAccordingToPlan = (
+  vehiclePlanData,
+  BookingEndDateAndTime,
+  setUpdatedBookingEndDateAndTime,
+  dispatch,
+  addTempDate,
+  tempDate,
+  addDaysToDate,
+  queryParms,
+  setQueryParms
+) => {
+  if (vehiclePlanData != null) {
+    const updatedBookingEndDateAndTime = addDaysToDate(
+      BookingEndDateAndTime,
+      Number(vehiclePlanData?.planDuration)
+    );
+    setUpdatedBookingEndDateAndTime(
+      tempDate == "" ? updatedBookingEndDateAndTime : tempDate
+    );
+    if (updatedBookingEndDateAndTime) {
+      if (tempDate == "") {
+        dispatch(addTempDate(updatedBookingEndDateAndTime));
+      }
+      // const params = new URLSearchParams(window.location.search);
+      queryParms.set(
+        "BookingEndDateAndTime",
+        tempDate == "" ? updatedBookingEndDateAndTime : tempDate
+      );
+      setQueryParms(queryParms);
+    }
+  }
+};
+
 export {
   handleSearchVehicleData,
   fetchingPlansFilters,
   searchData,
   getUserDocuments,
+  changeAccordingToPlan,
 };

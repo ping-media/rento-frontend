@@ -33,6 +33,14 @@ const stationPersistConfig = {
   whitelist: ["station"],
 };
 
+const vehiclePersistConfig = {
+  key: "vehicles",
+  version: "1",
+  storage,
+  whitelist: ["tempDate"],
+  blacklist: ["vehicles", "loading", "error"],
+};
+
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedStationReducer = persistReducer(
   stationPersistConfig,
@@ -43,10 +51,15 @@ const persistedLocationReducer = persistReducer(
   locationReducer
 );
 
+const persistedVehiclesReducer = persistReducer(
+  vehiclePersistConfig,
+  VehicleReducer
+);
+
 const store = configureStore({
   reducer: {
     modals: ModalReducer,
-    vehicles: VehicleReducer,
+    vehicles: persistedVehiclesReducer,
     station: persistedStationReducer,
     user: persistedUserReducer,
     selectedLocation: persistedLocationReducer,

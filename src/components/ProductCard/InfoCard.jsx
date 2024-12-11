@@ -7,6 +7,10 @@ import {
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
+import { useDispatch, useSelector } from "react-redux";
+import { addTempDate } from "../../Redux/ProductSlice/ProductsSlice";
+import { changeAccordingToPlan } from "../../Data/Functions";
+import { useSearchParams } from "react-router-dom";
 
 const InfoCard = ({
   vehiclePlanData,
@@ -21,38 +25,42 @@ const InfoCard = ({
   BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
-  // const navigate = useNavigate();
-  // const [queryParms] = useSearchParams();
-  // const [queryParmsData, setQueryParmsData] = useState(
-  //   Object.fromEntries(queryParms.entries())
-  // );
+  const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
+  const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
+  const [updatedBookingEndDateAndTime, setUpdatedBookingEndDateAndTime] =
+    useState(null);
+  const dispatch = useDispatch();
+  const { tempDate } = useSelector((state) => state.vehicles);
+  const [queryParms, setQueryParms] = useSearchParams();
 
   //converting time into readable format
-  const bookingStartDateTime =
-    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
-  const bookingEndDateTime =
-    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
+  useEffect(() => {
+    if (BookingStartDateAndTime && BookingEndDateAndTime) {
+      setBookingStartDateTime(formatDateTimeForUser(BookingStartDateAndTime));
+      if (updatedBookingEndDateAndTime != null) {
+        setBookingEndDateTime(
+          formatDateTimeForUser(updatedBookingEndDateAndTime)
+        );
+      } else {
+        setBookingEndDateTime(formatDateTimeForUser(BookingEndDateAndTime));
+      }
+    }
+  }, [updatedBookingEndDateAndTime]);
 
-  // useEffect(() => {
-  //   setQueryParmsData(Object.fromEntries(queryParms.entries()));
-  //   console.log(queryParmsData?.BookingStartDateAndTime);
-  //   // pickup date & time
-  //   bookingStartDateTime = formatDateTimeForUser(
-  //     queryParmsData?.BookingStartDateAndTime
-  //   );
-  //   // dropoff date and time
-  //   if (vehiclePlanData != null) {
-  //     const updatedBookingEndDateAndTime = addDaysToDate(
-  //       queryParmsData?.BookingEndDateAndTime,
-  //       Number(vehiclePlanData?.planDuration)
-  //     );
-  //     bookingEndDateTime = formatDateTimeForUser(updatedBookingEndDateAndTime);
-  //   } else {
-  //     bookingEndDateTime = formatDateTimeForUser(
-  //       queryParmsData?.BookingEndDateAndTime
-  //     );
-  //   }
-  // }, []);
+  // if using comes to this page using plan
+  useEffect(() => {
+    changeAccordingToPlan(
+      vehiclePlanData,
+      BookingEndDateAndTime,
+      setUpdatedBookingEndDateAndTime,
+      dispatch,
+      addTempDate,
+      tempDate,
+      addDaysToDate,
+      queryParms,
+      setQueryParms
+    );
+  }, []);
 
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
@@ -77,7 +85,7 @@ const InfoCard = ({
       )}
       <div className="max-w-sm mx-auto lg:mx-0">
         {vehicleBrand && vehicleName ? (
-          <h2 className="font-semibold mb-3 uppercase text-xl">
+          <h2 className="font-bold mb-3 uppercase text-xl">
             {vehicleBrand} {vehicleName}
           </h2>
         ) : (
@@ -218,7 +226,18 @@ const InfoCard = ({
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             </svg>
           </span>
-          ₹ {Number(perDayCost)}/<span className="text-sm">day</span>
+          <div>
+            {vehiclePlanData != null && (
+              <p className="text-lg">₹{Number(vehiclePlanData?.planPrice)}</p>
+            )}
+            <p
+              className={`${
+                vehiclePlanData != null ? "text-sm line-through" : "text-lg"
+              }`}
+            >
+              ₹{Number(perDayCost)}/<span className="text-sm">day</span>
+            </p>
+          </div>
         </h2>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { fetchingData, handlebooking } from "../Data";
 import {
   addVehiclesData,
   fetchingVehicles,
+  removeTempDate,
 } from "../Redux/ProductSlice/ProductsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
@@ -16,6 +17,7 @@ import ErrorImg from "../assets/logo/error.svg";
 import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
 // import { calculateTax, formatDateToSlash } from "../utils";
 import { handleAsyncError } from "../utils/handleAsyncError";
+import { addDaysToDate } from "../utils";
 
 const BookingSummary = () => {
   const termsRef = useRef(null);
@@ -64,7 +66,7 @@ const BookingSummary = () => {
         const result = await fetchingData(
           `/getPlanData?_id=${queryParmsData?.vehiclePlan}`
         );
-        console.log(result);
+        // console.log(result);
         setVehiclePlanData(result?.data);
         return setVehicleLoading(false);
       })();
@@ -77,6 +79,8 @@ const BookingSummary = () => {
     e.preventDefault();
     // if user is not login than don't let user to book the ride
     if (currentUser == null) return dispatch(toggleLoginModal());
+    //removing this after we are going to booking
+    dispatch(removeTempDate());
 
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
@@ -156,7 +160,7 @@ const BookingSummary = () => {
                   {...queryParmsData}
                 />
               </div>
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 lg:max-h-48 xl:max-h-40">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-center justify-center lg:max-h-48">
                 <Checkbox
                   labelId={"terms"}
                   ref={termsRef}
@@ -174,7 +178,7 @@ const BookingSummary = () => {
                   }
                 />
               </div>
-              <div className="mt-1 lg:-mt-10 order-5 w-full">
+              <div className="mt-1 lg:-mt-5 order-5 w-full">
                 <button
                   className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
                   disabled={!isAllFieldChecked ? true : false}

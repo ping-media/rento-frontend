@@ -18,18 +18,23 @@ const UserDocument = () => {
   const { currentUser, userDocument, loading } = useSelector(
     (state) => state.user
   );
+  const { isLicenseModalActive, isIdentityModalActive } = useSelector(
+    (state) => state.modals
+  );
 
-  // fetching user document
+  // fetching user document & fetching updated documents
   useEffect(() => {
-    getUserDocuments(
-      handleLoadingUserData,
-      currentUser,
-      handleAddUserDocument,
-      restLoading,
-      dispatch,
-      handleAsyncError
-    );
-  }, []);
+    if (isIdentityModalActive === false && isLicenseModalActive === false) {
+      getUserDocuments(
+        handleLoadingUserData,
+        currentUser,
+        handleAddUserDocument,
+        restLoading,
+        dispatch,
+        handleAsyncError
+      );
+    }
+  }, [isLicenseModalActive, isIdentityModalActive]);
 
   return !loading ? (
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white">
@@ -39,8 +44,8 @@ const UserDocument = () => {
         </h2>
         <div className="flex items-center gap-2">
           {(userDocument == null ||
-            !userDocument[0]?.files.some(
-              (file) => file.fileName == "license"
+            !userDocument[0]?.files.some((file) =>
+              file.fileName.includes("license")
             )) && (
             <button
               className="bg-theme px-4 py-2 rounded-lg text-gray-100 flex items-center hover:bg-theme-dark transition duration-200 ease-in-out"
@@ -62,8 +67,8 @@ const UserDocument = () => {
             </button>
           )}
           {(userDocument == null ||
-            !userDocument[0]?.files.some(
-              (file) => file.fileName == "aadhar"
+            !userDocument[0]?.files.some((file) =>
+              file.fileName.includes("aadhar")
             )) && (
             <button
               className="bg-theme-black px-4 py-2 rounded-lg text-gray-100 flex items-center hover:bg-theme transition duration-200 ease-in-out"
@@ -94,7 +99,12 @@ const UserDocument = () => {
                 className="block border-2 px-3 py-1 rounded-lg"
                 key={file?._id}
               >
-                <p className="mb-2 capitalize">{file?.fileName} Image</p>
+                <p className="mb-2 capitalize">
+                  {file?.fileName?.includes("aadhar")
+                    ? "Aadhaar"
+                    : "Driving License"}{" "}
+                  Image
+                </p>
                 <div>
                   <div className="w-60 h-40">
                     <img

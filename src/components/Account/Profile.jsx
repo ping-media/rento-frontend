@@ -46,6 +46,9 @@ const Profile = () => {
     let result = Object.fromEntries(response.entries());
     result = Object.assign(result, {
       _id: currentUser?._id,
+      isEmailVerified: currentUser?.isEmailVerified,
+      isContactVerified: currentUser?.isContactVerified,
+      kycApproved: currentUser?.kycApproved,
       userType: "customer",
     });
     // console.log(result);
@@ -160,6 +163,7 @@ const Profile = () => {
                 labelId={"altPhoneNumber"}
                 labelDesc={"Alternative Contact Number"}
                 placeholderDesc={"Enter Alternative Phone Number"}
+                value={currentUser?.altContact || ""}
               />
             </div>
           </div>
