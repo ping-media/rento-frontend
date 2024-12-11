@@ -15,7 +15,6 @@ const RidesSummary = () => {
   const { id } = useParams();
   const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
   const [stationLoading, setStationLoading] = useState(false);
-  const [stationUser, setStationUser] = useState(null);
   const { rides, loading } = useSelector((state) => state.rides);
 
   // fetching booking data using booking id
@@ -24,7 +23,7 @@ const RidesSummary = () => {
       (async () => {
         dispatch(fetchingRides());
         const result = await fetchingData(`/getBookings?bookingId=${id}`);
-        console.log(result);
+        // console.log(result);
         // formatting data for user readability
         dispatch(addRidesData(result?.data));
         setFormatedDateAndTime(
@@ -33,22 +32,6 @@ const RidesSummary = () => {
       })();
     }
   }, []);
-
-  // for fetching station master details
-  // useEffect(() => {
-  //   if (rides && rides[0]?.stationId) {
-  //     (async () => {
-  //       setStationLoading(true);
-  //       const result = await fetchingData(
-  //         `/getStationData?stationId=${rides[0]?.stationId}`
-  //       );
-  //       console.log(result);
-  //       // formatting data for user readability
-  //       setStationUser(result);
-  //       setStationLoading(false);
-  //     })();
-  //   }
-  // }, [rides]);
 
   return !loading ? (
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
@@ -141,7 +124,12 @@ const RidesSummary = () => {
             </span>
             Station Details
           </h2>
-          <LocationCard stationName={rides[0]?.stationName} />
+          <LocationCard
+            stationName={rides[0]?.stationName}
+            stationMasterUserId={rides[0]?.stationMasterUserId}
+            setStationLoading={setStationLoading}
+            stationLoading={stationLoading}
+          />
         </div>
         <div className="mb-5">
           <h2 className="font-semibold mb-3 flex items-center gap-1">
