@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addRidesData, fetchingRides } from "../../Redux/RidesSlice/RideSlice";
 import PreLoader from "../skeleton/PreLoader";
 import RideNotFound from "../skeleton/RideNotFound";
+import { formatDateTimeForUser } from "../../utils";
 
 const MyRides = () => {
   // State to track the selected tab
@@ -14,15 +15,17 @@ const MyRides = () => {
   const { rides, loading } = useSelector((state) => state.rides);
 
   useEffect(() => {
-    (async () => {
-      dispatch(fetchingRides());
-      const result = await fetchingData(
-        `/getBookings?userId=${currentUser && currentUser?._id}`
-      );
-      // console.log(result);
-      dispatch(addRidesData(result?.data));
-    })();
-  }, []);
+    if (currentUser) {
+      (async () => {
+        dispatch(fetchingRides());
+        const result = await fetchingData(
+          `/getBookings?userId=${currentUser && currentUser?._id}`
+        );
+        // console.log(result);
+        dispatch(addRidesData(result?.data));
+      })();
+    }
+  }, [currentUser]);
 
   // Tab content array
   const tabs = [
@@ -73,7 +76,13 @@ const MyRides = () => {
             <div>
               {tabs[activeTab].content.length > 0 ? (
                 tabs[activeTab].content.map((item, index) => (
-                  <RideCard item={item} key={index} />
+                  <RideCard
+                    item={item}
+                    formatedDateAndTime={formatDateTimeForUser(
+                      item?.BookingStartDateAndTime
+                    )}
+                    key={index}
+                  />
                 ))
               ) : (
                 <RideNotFound />

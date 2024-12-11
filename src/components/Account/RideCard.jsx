@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const RideCard = ({ item }) => {
+const RideCard = ({ item, formatedDateAndTime = null }) => {
   const [isPageActive, setIsPageActive] = useState(false);
 
   useEffect(() => {
@@ -27,18 +27,21 @@ const RideCard = ({ item }) => {
           />
         </div>
         <div>
-          <h2 className="font-semibold capitalize mb-2 text-xl">
+          <h2 className="font-bold capitalize mb-2 text-xl">
             {item?.vehicleName}
           </h2>
           <p className="mb-2 text-sm text-gray-400">
             <span>Booking ID: {item?.bookingId}</span>
             <span className="mx-1">|</span>
             <span>
-              Booking Date And Time: {item?.bookingDate}{" "}
-              {item?.BookingStartDateAndTime}
+              Booking Date And Time:{" "}
+              {formatedDateAndTime == null
+                ? item?.bookingDate
+                : `${formatedDateAndTime?.date} :
+              ${formatedDateAndTime?.time}`}
             </span>
           </p>
-          <p className="text-sm text-gray-400 mb-2">
+          <p className="text-sm text-gray-400 mb-2 capitalize">
             Station Details: {item?.stationName}
           </p>
           <p className="text-sm text-gray-400 mb-2">

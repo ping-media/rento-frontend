@@ -148,6 +148,14 @@ const Categories = [
   { categoryImage: bikeImage, CategoryTitle: "Gear" },
 ];
 
+const priceTableKeys = {
+  bookingPrice: "booking price",
+  tax: "tax",
+  roundPrice: "round price",
+  extraAddonPrice: "extra addon price",
+  vehiclePrice: "vehicle Price",
+};
+
 const brands = [
   "Vespa",
   "Honda",
@@ -166,4 +174,4 @@ const brands = [
 ];
 const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
-export { items, Categories, brands, Modal, menuList };
+export { items, Categories, brands, Modal, menuList, priceTableKeys };

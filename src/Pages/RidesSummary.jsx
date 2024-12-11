@@ -2,16 +2,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeForUser, handlePreviousPage } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { addRidesData, fetchingRides } from "../Redux/RidesSlice/RideSlice";
 import { fetchingData } from "../Data";
 import { useDispatch, useSelector } from "react-redux";
 import PreLoader from "../components/skeleton/PreLoader";
+import { priceTableKeys } from "../Data/dummyData";
 
 const RidesSummary = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
+  const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
   const { rides, loading } = useSelector((state) => state.rides);
 
   useEffect(() => {
@@ -21,6 +23,12 @@ const RidesSummary = () => {
         const result = await fetchingData(`/getBookings?bookingId=${id}`);
         // console.log(result);
         dispatch(addRidesData(result?.data));
+        setFormatedDateAndTime(
+          formatDateTimeForUser(result?.data[0]?.BookingStartDateAndTime)
+        );
+        // console.log(
+        //   formatDateTimeForUser(result?.data[0]?.BookingStartDateAndTime)
+        // );
       })();
     }
   }, []);
@@ -47,7 +55,7 @@ const RidesSummary = () => {
           </svg>
           <span className="text-sm">Back</span>
         </button>
-        <h2 className="font-semibold text-xl uppercase py-2">
+        <h2 className="font-bold text-xl uppercase py-2">
           Booking <span className="text-theme">Information</span>
         </h2>
       </div>
@@ -58,15 +66,17 @@ const RidesSummary = () => {
               Booking Id: {rides[0]?.bookingId}
             </span>
             <span className="mx-1 hidden lg:inline">|</span>
-            BookingDate:{rides[0]?.BookingStartDateAndTime}
-            {/* {formatDateTimeForUser(rides[0]?.BookingStartDateAndTime)?.date} */}
+            BookingDate: {formatedDateAndTime?.date} :{" "}
+            {formatedDateAndTime?.time}
           </p>
         </div>
         <div
           type="button"
           className={`${
-            rides[0]?.bookingStatus == "completed" ? "bg-green-500" : "bg-theme"
-          } text-gray-100 p-1 lg:px-4 lg:py-2.5 border rounded-md cursor-pointer`}
+            rides[0]?.bookingStatus == "completed"
+              ? "bg-green-500 bg-opacity-80 hover:bg-opacity-100"
+              : "bg-theme"
+          } text-gray-100 p-1 lg:px-4 lg:py-2.5 border shadow-lg rounded-xl cursor-pointer`}
         >
           Booking Status: {rides[0]?.bookingStatus}
         </div>
@@ -93,7 +103,7 @@ const RidesSummary = () => {
             </span>
             Vehicle Details
           </h2>
-          <RideCard item={rides[0]} />
+          <RideCard item={rides[0]} formatedDateAndTime={formatedDateAndTime} />
         </div>
         <div className="mb-5">
           <h2 className="font-semibold mb-3 flex items-center gap-1">
@@ -146,18 +156,22 @@ const RidesSummary = () => {
                     .map(([key, value]) => (
                       <li
                         key={key}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between border-b-2"
                       >
-                        <p className="font-semibold uppercase">{key}</p>
+                        <p className="font-semibold uppercase">
+                          {priceTableKeys[key]}
+                        </p>
                         <p>₹{value}</p>
                       </li>
                     ))}
 
                   {/* Display the totalPrice last */}
                   {rides[0]?.bookingPrice.totalPrice && (
-                    <li className="flex items-center justify-between border-t-2 mt-1">
-                      <p className="font-semibold uppercase">Total Price</p>
-                      <p>₹{rides[0]?.bookingPrice.totalPrice}</p>
+                    <li className="flex items-center justify-between mt-1">
+                      <p className="font-bold uppercase">Total Price</p>
+                      <p className="font-bold">
+                        ₹{rides[0]?.bookingPrice.totalPrice}
+                      </p>
                     </li>
                   )}
                 </ul>
