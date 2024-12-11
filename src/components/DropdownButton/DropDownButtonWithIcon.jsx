@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
+import PreLoader from "../skeleton/PreLoader";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
+  const [changeStationLoading, setChangeLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueId, setSelectedValueId] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
@@ -13,6 +15,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
 
   useEffect(() => {
     if (!loading) {
+      setChangeLoading(true);
       if (station.length > 0 && value) {
         const stationDataById = station?.filter(
           (item) => item?.stationId == value
@@ -25,6 +28,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
       } else {
         setSelectedValue("No Station Found");
       }
+      setChangeLoading(false);
     }
   }, [loading]);
 
@@ -71,7 +75,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
     };
   }, [isOpened]);
 
-  return (
+  return !changeStationLoading ? (
     <button
       className="border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full"
       onClick={() => {
@@ -166,6 +170,8 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
         )}
       </div>
     </button>
+  ) : (
+    <PreLoader />
   );
 };
 

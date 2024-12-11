@@ -14,24 +14,41 @@ const RidesSummary = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
+  const [stationLoading, setStationLoading] = useState(false);
+  const [stationUser, setStationUser] = useState(null);
   const { rides, loading } = useSelector((state) => state.rides);
 
+  // fetching booking data using booking id
   useEffect(() => {
     if (id) {
       (async () => {
         dispatch(fetchingRides());
         const result = await fetchingData(`/getBookings?bookingId=${id}`);
-        // console.log(result);
+        console.log(result);
+        // formatting data for user readability
         dispatch(addRidesData(result?.data));
         setFormatedDateAndTime(
           formatDateTimeForUser(result?.data[0]?.BookingStartDateAndTime)
         );
-        // console.log(
-        //   formatDateTimeForUser(result?.data[0]?.BookingStartDateAndTime)
-        // );
       })();
     }
   }, []);
+
+  // for fetching station master details
+  // useEffect(() => {
+  //   if (rides && rides[0]?.stationId) {
+  //     (async () => {
+  //       setStationLoading(true);
+  //       const result = await fetchingData(
+  //         `/getStationData?stationId=${rides[0]?.stationId}`
+  //       );
+  //       console.log(result);
+  //       // formatting data for user readability
+  //       setStationUser(result);
+  //       setStationLoading(false);
+  //     })();
+  //   }
+  // }, [rides]);
 
   return !loading ? (
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">

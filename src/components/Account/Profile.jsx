@@ -25,7 +25,11 @@ const Profile = () => {
 
   // fetching updated user details
   useEffect(() => {
-    if (currentUser && isEmailVerifyModalActive === false) {
+    if (
+      currentUser &&
+      isEmailVerifyModalActive === false &&
+      formLoading == false
+    ) {
       (async () => {
         dispatch(handleLoadingUserData());
         const result = await fetchingData(
@@ -36,7 +40,7 @@ const Profile = () => {
         }
       })();
     }
-  }, [isEmailVerifyModalActive]);
+  }, [isEmailVerifyModalActive, formLoading]);
 
   // updating user profile
   const handleProfileUpdate = async (e) => {
