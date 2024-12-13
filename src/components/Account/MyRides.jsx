@@ -72,7 +72,7 @@ const MyRides = () => {
       {/* Tab content */}
       {!loading ? (
         <div className="mt-4">
-          <div className="p-4 rounded-lg hover:overflow-y-auto overflow-hidden lg:max-h-96">
+          <div className="p-4 rounded-lg hover:overflow-y-auto overflow-hidden">
             <div>
               {tabs[activeTab].content.length > 0 ? (
                 tabs[activeTab].content.map((item, index) => (

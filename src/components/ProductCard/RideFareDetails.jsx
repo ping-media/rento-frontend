@@ -1,4 +1,8 @@
-import { camelCaseToSpaceSeparated, getDurationInDays } from "../../utils";
+import {
+  camelCaseToSpaceSeparated,
+  formatPrice,
+  getDurationInDays,
+} from "../../utils";
 
 const RideFareDetails = ({ rides }) => {
   return (
@@ -56,7 +60,7 @@ const RideFareDetails = ({ rides }) => {
                     </p>
                   )}
                 </div>
-                <p>₹{value}</p>
+                <p>₹{formatPrice(value)}</p>
               </li>
             ))}
 
@@ -64,7 +68,9 @@ const RideFareDetails = ({ rides }) => {
           {rides?.bookingPrice.totalPrice && (
             <li className="flex items-center justify-between mt-1">
               <p className="font-bold uppercase">Total Price</p>
-              <p className="font-bold">₹{rides?.bookingPrice.totalPrice}</p>
+              <p className="font-bold">
+                ₹{formatPrice(rides?.bookingPrice.totalPrice)}
+              </p>
             </li>
           )}
         </ul>

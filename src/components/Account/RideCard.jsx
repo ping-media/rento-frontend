@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { formatPrice } from "../../utils";
 
 const RideCard = ({ item, formatedDateAndTime = null }) => {
   const [isPageActive, setIsPageActive] = useState(false);
@@ -27,7 +28,7 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
           />
         </div>
         <div>
-          <h2 className="font-bold uppercase mb-2 text-md md:text:lg lg:text-xl">
+          <h2 className="font-bold uppercase mb-2 text-md lg:text-lg">
             {item?.vehicleBrand} {item?.vehicleName}
           </h2>
           <p className="mb-2 text-sm text-gray-400">
@@ -50,12 +51,16 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
           <div className="flex items-center gap-2 mb-2">
             <p className="text-sm text-gray-400">
               {item?.bookingPrice &&
-                `Booking Amount: ₹${item?.bookingPrice?.bookingPrice}`}
+                `Booking Amount: ₹${formatPrice(
+                  item?.bookingPrice?.bookingPrice
+                )}`}
             </p>
             <span className="mx-1 text-sm text-gray-400">|</span>
             <p className="text-sm text-gray-400">
               {item?.bookingPrice &&
-                `Deposit Amount: ₹${item?.vehicleBasic?.refundableDeposit}`}
+                `Deposit Amount: ₹${formatPrice(
+                  item?.vehicleBasic?.refundableDeposit
+                )}`}
             </p>
           </div>
         </div>

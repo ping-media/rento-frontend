@@ -404,6 +404,10 @@ const camelCaseToSpaceSeparated = (str) => {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
 };
 
+const formatPrice = (price) => {
+  return new Intl.NumberFormat("en-US").format(price);
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -426,4 +430,5 @@ export {
   getRoundedDateTime,
   addDaysToDate,
   camelCaseToSpaceSeparated,
+  formatPrice,
 };
