@@ -3,6 +3,7 @@ import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
 import {
   addingLocation,
   addLocation,
+  handleCheckLocationChange,
 } from "../../Redux/LocationSlice/LocationSlice";
 import { useEffect, useState } from "react";
 import { fetchingData } from "../../Data";
@@ -20,6 +21,7 @@ const LocationModal = () => {
       dispatch(addingLocation());
       dispatch(addLocation(value));
       dispatch(toggleLocationModal());
+      dispatch(handleCheckLocationChange());
     }
   };
 
@@ -45,6 +47,7 @@ const LocationModal = () => {
                 })
               );
             }
+            dispatch(handleCheckLocationChange());
           }
           return setLocationList(result?.data);
         }

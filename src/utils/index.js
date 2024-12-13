@@ -389,7 +389,7 @@ const getRoundedDateTime = (value) => {
   return isoString.split(".")[0] + "Z";
 };
 
-function addDaysToDate(dateString, daysToAdd) {
+const addDaysToDate = (dateString, daysToAdd) => {
   // Parse the input date string into a Date object
   const date = new Date(dateString);
 
@@ -398,7 +398,11 @@ function addDaysToDate(dateString, daysToAdd) {
 
   // Return the new date in ISO string format (with 'Z' indicating UTC time)
   return date.toISOString();
-}
+};
+
+const camelCaseToSpaceSeparated = (str) => {
+  return str.replace(/([a-z])([A-Z])/g, "$1 $2");
+};
 
 export {
   handleErrorImage,
@@ -421,4 +425,5 @@ export {
   isValidPhoneNumber,
   getRoundedDateTime,
   addDaysToDate,
+  camelCaseToSpaceSeparated,
 };

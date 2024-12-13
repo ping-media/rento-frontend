@@ -135,7 +135,7 @@ const PriceCard = ({
   return (
     <>
       <div className="mt-6 mb-14 lg:mb-1">
-        <ul className="leading-8 pb-3 border-b-2 border-gray-300">
+        <ul className="leading-7 pb-3 border-b-2 border-gray-300">
           {priceDetails.map((item, index) => (
             <li
               className={`${
@@ -154,17 +154,34 @@ const PriceCard = ({
                     : item?.price
                 }
               />
-              <span className="text-gray-500">{item?.title}</span>{" "}
+              <div>
+                <p className="text-gray-500 ">{item?.title}</p>
+                {(item?.name == "bookingPrice" ||
+                  item?.name == "extraAddonPrice") && (
+                  <p className="text-xs text-gray-400">
+                    (
+                    {`₹${
+                      item?.name == "extraAddonPrice" ? 50 : perDayCost
+                    } x ${getDurationInDays(
+                      BookingStartDateAndTime,
+                      BookingEndDateAndTime
+                    )} day`}
+                    )
+                  </p>
+                )}
+              </div>
               <span className="font-semibold">₹{item?.price}</span>
             </li>
           ))}
         </ul>
+        {/* total price  */}
         <div className="flex items-center justify-between py-2">
           <input type="hidden" name="totalPrice" value={totalPrice} />
           <span className="text-gray-500">Payable Amount</span>
           <span className="font-semibold">₹{totalPrice}</span>
         </div>
       </div>
+      {/* extra helmet  */}
       <div className="bg-yellow-200 -mx-4 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg absolute bottom-2 w-full">
         <div className="mb-1">
           <label

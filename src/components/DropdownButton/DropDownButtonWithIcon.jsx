@@ -1,36 +1,47 @@
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 import PreLoader from "../skeleton/PreLoader";
+import { handleCheckLocationChange } from "../../Redux/LocationSlice/LocationSlice";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
+  const { isLocationChange } = useSelector((state) => state.selectedLocation);
   const [changeStationLoading, setChangeLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueId, setSelectedValueId] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
+  const dispatch = useDispatch();
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    if (!loading) {
-      setChangeLoading(true);
-      if (station.length > 0 && value) {
-        const stationDataById = station?.filter(
-          (item) => item?.stationId == value
-        );
-        setSelectedValue(stationDataById[0]?.stationName);
-        setSelectedValueId(stationDataById[0]?.stationId);
-      } else if (station.length > 0) {
-        setSelectedValue(station[0]?.stationName);
-        setSelectedValueId(station[0]?.stationId);
-      } else {
-        setSelectedValue("No Station Found");
+    try {
+      if (!loading) {
+        setChangeLoading(true);
+        if (isLocationChange == true && station.length > 0) {
+          setSelectedValue(station[0]?.stationName);
+          setSelectedValueId(station[0]?.stationId);
+          dispatch(handleCheckLocationChange());
+        } else if (station.length > 0 && value) {
+          const stationDataById = station?.filter(
+            (item) => item?.stationId == value
+          );
+          setSelectedValue(stationDataById[0]?.stationName);
+          setSelectedValueId(stationDataById[0]?.stationId);
+        } else if (station.length > 0) {
+          setSelectedValue(station[0]?.stationName);
+          setSelectedValueId(station[0]?.stationId);
+        } else {
+          setSelectedValue("No Station Found");
+        }
+        setChangeLoading(false);
       }
-      setChangeLoading(false);
+    } catch (error) {
+      return error?.message;
     }
-  }, [loading]);
+  }, [loading, station]);
 
   const handleLocationChange = (id, value) => {
     setSelectedValueId(id);

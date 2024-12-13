@@ -4,6 +4,7 @@ const LocationSlice = createSlice({
   name: "selectedLocation",
   initialState: {
     selectedLocation: {},
+    isLocationChange: false,
     loading: false,
     error: null,
   },
@@ -15,6 +16,9 @@ const LocationSlice = createSlice({
       state.selectedLocation = action.payload;
       state.loading = false;
     },
+    handleCheckLocationChange: (state) => {
+      state.isLocationChange = !state.isLocationChange;
+    },
     resetLocation: (state) => {
       state.selectedLocation = {};
       state.loading = false;
@@ -23,7 +27,11 @@ const LocationSlice = createSlice({
   },
 });
 
-export const { addingLocation, addLocation, resetLocation } =
-  LocationSlice.actions;
+export const {
+  addingLocation,
+  addLocation,
+  handleCheckLocationChange,
+  resetLocation,
+} = LocationSlice.actions;
 
 export default LocationSlice.reducer;

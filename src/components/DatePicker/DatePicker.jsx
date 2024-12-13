@@ -144,14 +144,26 @@ const DatePicker = ({ value, name, setValueChanger }) => {
             dropdownPosition === "top" ? "bottom-full mb-2" : "top-full"
           }`}
         >
-          <div className="flex justify-between items-center p-2 border-b">
+          <div className="flex justify-between items-center p-2 border-b cursor-pointer">
             <button
               onClick={() => handleMonthChange("prev")}
-              className="text-gray-500 hover:text-theme"
+              className="text-gray-500 hover:text-theme disabled:text-gray-300"
               type="button"
               disabled={new Date().getMonth() == currentMonth ? true : false}
             >
-              &lt;
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
             </button>
             <span className="text-gray-700 font-semibold">
               {new Date(currentYear, currentMonth).toLocaleString("default", {
@@ -161,10 +173,22 @@ const DatePicker = ({ value, name, setValueChanger }) => {
             </span>
             <button
               onClick={() => handleMonthChange("next")}
-              className="text-gray-500 hover:text-theme"
+              className="text-gray-500 hover:text-theme disabled:text-gray-300"
               type="button"
             >
-              &gt;
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
             </button>
           </div>
 
@@ -193,9 +217,13 @@ const DatePicker = ({ value, name, setValueChanger }) => {
                   handleDateSelect(new Date(currentYear, currentMonth, day))
                 }
                 disabled={
-                  day &&
-                  new Date(currentYear, currentMonth, day) <
-                    new Date().setHours(0, 0, 0, 0)
+                  // Disable dates before today or any date before the selected date
+                  (day &&
+                    new Date(currentYear, currentMonth, day) <
+                      new Date().setHours(0, 0, 0, 0)) ||
+                  (name === "dropoffDate" &&
+                    new Date(currentYear, currentMonth, day) <
+                      new Date(value).setHours(0, 0, 0, 0))
                 }
               >
                 {day}

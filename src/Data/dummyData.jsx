@@ -8,128 +8,128 @@ currentDatePlusOne.setDate(currentDatePlusOne.getDate() + 1);
 const dateAndTime = getRoundedDateTime(new Date());
 const nextDayAndTime = getRoundedDateTime(currentDatePlusOne);
 
-const items = [
-  {
-    productImage: "",
-    productTitle: "Yamaha Fascino 125CC",
-    price: "429",
-    pickupLocation: "agra cantt",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-  {
-    productImage: "",
-    productTitle: "Honda Activa 5G",
-    price: "429",
-    pickupLocation: "sadar bazzar",
-  },
-];
+// const items = [
+//   {
+//     productImage: "",
+//     productTitle: "Yamaha Fascino 125CC",
+//     price: "429",
+//     pickupLocation: "agra cantt",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+//   {
+//     productImage: "",
+//     productTitle: "Honda Activa 5G",
+//     price: "429",
+//     pickupLocation: "sadar bazzar",
+//   },
+// ];
 
 const menuList = [
   { title: "home", link: "/", isPhone: false },
@@ -147,14 +147,6 @@ const Categories = [
   { categoryImage: scooterImage, CategoryTitle: "Non-Gear" },
   { categoryImage: bikeImage, CategoryTitle: "Gear" },
 ];
-
-const priceTableKeys = {
-  bookingPrice: "booking price",
-  tax: "tax",
-  roundPrice: "round price",
-  extraAddonPrice: "extra addon price",
-  vehiclePrice: "vehicle Price",
-};
 
 const brands = [
   "Vespa",
@@ -174,4 +166,4 @@ const brands = [
 ];
 const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
-export { items, Categories, brands, Modal, menuList, priceTableKeys };
+export { Categories, brands, Modal, menuList };

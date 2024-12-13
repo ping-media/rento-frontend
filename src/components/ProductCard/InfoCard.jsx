@@ -14,6 +14,7 @@ import { useSearchParams } from "react-router-dom";
 
 const InfoCard = ({
   vehiclePlanData,
+  vehicleNumber,
   vehicleImage,
   vehicleName,
   vehicleType,
@@ -63,7 +64,7 @@ const InfoCard = ({
   }, []);
 
   return (
-    <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
+    <div className="flex justify-between flex-wrap mt-6 mb-4 px-4 cursor-default">
       {vehicleImage ? (
         <div className="w-52 h-40 mx-auto lg:mx-0">
           <img
@@ -84,10 +85,15 @@ const InfoCard = ({
         </div>
       )}
       <div className="max-w-sm mx-auto lg:mx-0">
-        {vehicleBrand && vehicleName ? (
-          <h2 className="font-bold mb-3 uppercase text-xl">
-            {vehicleBrand} {vehicleName}
-          </h2>
+        {vehicleBrand && vehicleName && vehicleNumber ? (
+          <div className="mb-1.5">
+            <h2 className="font-bold uppercase text-xl">
+              {vehicleBrand} {vehicleName}
+            </h2>
+            <span className="text-xs text-gray-500">
+              (Vehicle Number: {vehicleNumber})
+            </span>
+          </div>
         ) : (
           <div className="h-4 w-32 bg-gray-400 rounded mb-3"></div>
         )}
@@ -147,7 +153,7 @@ const InfoCard = ({
             </div>
             <p>TO</p>
             <div>
-              <label htmlFor="drop">Drop</label>
+              <label htmlFor="drop">Dropoff</label>
               <div id="drop" className="border-2 rounded-lg p-2">
                 <p className="font-semibold">{bookingEndDateTime?.date}</p>
                 <p className="font-semibold">{bookingEndDateTime?.time}</p>
@@ -200,7 +206,22 @@ const InfoCard = ({
               </svg>
             </span>
             Free Limit:
-            <span className="font-semibold">{freeKms}KM</span>
+            <span className="font-semibold">
+              {freeKms *
+                getDurationInDays(
+                  BookingStartDateAndTime,
+                  BookingEndDateAndTime
+                )}
+              KM
+            </span>
+            <span className="text-xs me-1 text-gray-500">
+              (
+              {`${freeKms} x ${getDurationInDays(
+                BookingStartDateAndTime,
+                BookingEndDateAndTime
+              )} days`}
+              )
+            </span>
           </div>
         ) : (
           <div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { formatTimeWithoutSeconds, parseTime } from "../../utils";
 
-const TimePicker = ({ value, name }) => {
+const TimePicker = ({ value, name, setValueChanger }) => {
   const [selectedTime, setSelectedTime] = useState("");
   const [timeVisible, setTimeVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
@@ -10,7 +10,8 @@ const TimePicker = ({ value, name }) => {
 
   // Handle selecting a time
   const handleTimeSelect = (time) => {
-    setSelectedTime(time);
+    // setSelectedTime(time);
+    setValueChanger(time);
     setTimeVisible(false);
   };
 
@@ -38,7 +39,8 @@ const TimePicker = ({ value, name }) => {
   useEffect(() => {
     if (value) {
       // console.log(value);
-      setSelectedTime(formatTimeWithoutSeconds(value));
+      // setSelectedTime(formatTimeWithoutSeconds(value));
+      setValueChanger(formatTimeWithoutSeconds(value));
     }
   }, [value]);
 
@@ -117,7 +119,7 @@ const TimePicker = ({ value, name }) => {
             type="text"
             className="outline-none w-full cursor-pointer"
             placeholder="Select time"
-            value={selectedTime}
+            value={value}
             name={name}
             readOnly
           />

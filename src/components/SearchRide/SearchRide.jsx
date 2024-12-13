@@ -39,8 +39,8 @@ const SearchRide = () => {
   const [queryParmsData, setQueryParmsData] = useState(
     Object.fromEntries(queryParms.entries())
   );
-  const [queryPickupTime, setQueryPickupTime] = useState(null);
-  const [queryDropoffTime, setQueryDropoffTime] = useState(null);
+  const [queryPickupTime, setQueryPickupTime] = useState("");
+  const [queryDropoffTime, setQueryDropoffTime] = useState("");
 
   // if searchFilter modal is active than run this
   const handletoggleSearchUpdate = () => {
@@ -128,15 +128,20 @@ const SearchRide = () => {
       // Set default dates if data not found
       setPickupDate(new Date());
       setDropoffDate(nextDayFromCurrent(new Date()));
+      setQueryPickupTime(new Date().toLocaleTimeString());
+      setQueryDropoffTime(new Date().toLocaleTimeString());
     }
-  }, [location?.href]); // Ensure proper dependencies
+  }, [location?.href]);
 
-  //  through this we are changing the dropoffdate by one when user change the pickupvalue
-  // useEffect(() => {
-  //   if (pickupDate) {
-  //     setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
-  //   }
-  // }, [pickupDate]);
+  //  through this we are changing the dropoffdate && dropOffTime by one when user change the pickupvalue
+  useEffect(() => {
+    if (pickupDate) {
+      setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
+    }
+    if (queryPickupTime != "") {
+      setQueryDropoffTime(queryPickupTime);
+    }
+  }, [pickupDate, queryPickupTime]);
 
   return (
     <div
@@ -208,11 +213,8 @@ const SearchRide = () => {
           </label>
           <TimePicker
             labelId="pickup-time"
-            value={
-              queryPickupTime != null
-                ? queryPickupTime
-                : new Date().toLocaleTimeString()
-            }
+            value={queryPickupTime}
+            setValueChanger={setQueryPickupTime}
             name={"pickupTime"}
           />
         </div>
@@ -233,11 +235,8 @@ const SearchRide = () => {
           </label>
           <TimePicker
             labelId="dropoff-time"
-            value={
-              queryDropoffTime != null
-                ? queryDropoffTime
-                : new Date().toLocaleTimeString()
-            }
+            value={queryDropoffTime}
+            setValueChanger={setQueryDropoffTime}
             name={"dropoffTime"}
           />
         </div>

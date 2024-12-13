@@ -6,9 +6,9 @@ const DetailsCard = ({ extraKmCharge }) => {
     "1 complimentary Helmet",
   ];
   return (
-    <div className="border-t-2 border-gray-300 bg-white px-4 py-2">
-      <h3 className="font-semibold mb-3">Rent Details</h3>
-      <ul className="flex flex-wrap w-full gap-3 items-center">
+    <div className="border-t-2 border-gray-300 bg-white px-4 py-1.5">
+      <h3 className="font-semibold mb-2 uppercase">Rent Details</h3>
+      <ul className="flex flex-wrap w-full gap-2 items-center">
         {details.map((item, index) => (
           <li className="flex items-center w-full lg:w-[49%] gap-2" key={index}>
             <div className="w-7 h-7 p-1 bg-green-500 rounded-full">

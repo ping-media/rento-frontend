@@ -14,7 +14,7 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
 
   return (
     <div
-      className={`px-4 py-2 rounded-lg border-2 ${
+      className={`px-4 py-2 rounded-lg border-2 cursor-pointer ${
         isPageActive ? "shadow-md hover:shadow-lg" : ""
       } flex flex-wrap justify-between mb-3`}
     >
@@ -27,11 +27,11 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
           />
         </div>
         <div>
-          <h2 className="font-bold capitalize mb-2 text-xl">
-            {item?.vehicleName}
+          <h2 className="font-bold uppercase mb-2 text-md md:text:lg lg:text-xl">
+            {item?.vehicleBrand} {item?.vehicleName}
           </h2>
           <p className="mb-2 text-sm text-gray-400">
-            <span>Booking ID: {item?.bookingId}</span>
+            <span>Booking ID: #{item?.bookingId}</span>
             <span className="mx-1">|</span>
             <span>
               Booking Date And Time:{" "}
@@ -47,10 +47,17 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
           <p className="text-sm text-gray-400 mb-2">
             {/* Rent Period: {getDurationInDays(startDate?.date, endDate?.date)} */}
           </p>
-          <p className="text-sm text-gray-400 mb-2">
-            {item?.bookingPrice &&
-              `Amount Paid: ₹${item?.bookingPrice?.totalPrice}`}
-          </p>
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-sm text-gray-400">
+              {item?.bookingPrice &&
+                `Booking Amount: ₹${item?.bookingPrice?.bookingPrice}`}
+            </p>
+            <span className="mx-1 text-sm text-gray-400">|</span>
+            <p className="text-sm text-gray-400">
+              {item?.bookingPrice &&
+                `Deposit Amount: ₹${item?.vehicleBasic?.refundableDeposit}`}
+            </p>
+          </div>
         </div>
       </div>
       {isPageActive ? (

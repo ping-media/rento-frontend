@@ -18,7 +18,6 @@ const LocationCard = ({
         const result = await fetchingData(
           `/getAllUsers?_id=${stationMasterUserId}`
         );
-        console.log(result?.data[0]);
         // formatting data for user readability
         setStationUser(result?.data[0]);
         setStationLoading(false);
@@ -54,6 +53,7 @@ const LocationCard = ({
           <li>
             <span className="font-bold mr-2">Mobile Number:</span>
             <Link
+              className="text-blue-400 hover:underline"
               to={`tel:${stationUser ? stationUser?.contact : "xxxxxxxxxx"}`}
             >
               {stationUser ? stationUser?.contact : "xxxxxxxxxx"}

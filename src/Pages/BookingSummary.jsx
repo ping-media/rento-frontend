@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
 import ErrorImg from "../assets/logo/error.svg";
 import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
-import { handleAsyncError } from "../utils/handleAsyncError";
+// import { handleAsyncError } from "../utils/handleAsyncError";
 
 const BookingSummary = () => {
   const termsRef = useRef(null);
@@ -25,7 +25,7 @@ const BookingSummary = () => {
   const [isAllFieldChecked, setIsAllFieldChecked] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
   // for getting queryparms value
   const [queryParms] = useSearchParams();
@@ -89,22 +89,29 @@ const BookingSummary = () => {
       vehicleMasterId: vehicles[0]?.vehicleMasterId,
       BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
       BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
-      extraAddon: "",
       bookingPrice: {
-        totalPrice: Number(result?.totalPrice),
         bookingPrice: Number(result?.bookingPrice),
-        tax: Number(result?.tax),
-        roundPrice: 0,
+        vehiclePrice: Number(result?.bookingPrice),
         extraAddonPrice:
           result?.extraAddonPrice == "" ? 0 : Number(result?.extraAddonPrice),
-        vehiclePrice: Number(result?.bookingPrice),
+        tax: Number(result?.tax),
+        totalPrice: Number(result?.totalPrice),
+        rentAmount: vehicles[0]?.perDayCost,
+      },
+      vehicleBasic: {
+        refundableDeposit: vehicles[0]?.refundableDeposit,
+        speedLimit: vehicles[0]?.speedLimit,
+        vehicleNumber: vehicles[0]?.vehicleNumber,
+        freeLimit: vehicles[0]?.freeKms,
+        lateFee: vehicles[0]?.lateFee,
+        extraKmCharge: vehicles[0]?.extraKmsCharges,
       },
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,
       vehicleImage: vehicles[0]?.vehicleImage,
       stationName: vehicles[0]?.stationName,
       bookingStatus: "completed",
-      paymentStatus: "pending",
+      paymentStatus: "completed",
       rideStatus: "pending",
       paymentMethod: "cash",
       payInitFrom: "Razor pay",
@@ -128,7 +135,7 @@ const BookingSummary = () => {
 
   return !loading && !vehicleLoading ? (
     vehicles.length > 0 ? (
-      <div className="w-[90%] mx-auto my-4.5 lg:my:3 xl:my-4">
+      <div className="w-[90%] mx-auto my-4.5 my-5 lg:my:3 xl:my-4">
         <form onSubmit={handleCreateBooking}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
@@ -181,7 +188,6 @@ const BookingSummary = () => {
                   className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
                   disabled={!isAllFieldChecked ? true : false}
                   type="submit"
-                  // onClick={handleCreateBooking}
                 >
                   Continue Booking
                 </button>
