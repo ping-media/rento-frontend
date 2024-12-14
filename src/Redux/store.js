@@ -10,6 +10,7 @@ import persistStore from "redux-persist/es/persistStore";
 import errorReducer from "./ErrorSlice/ErrorSlice.js";
 import filterReducer from "./FiltersSlice/FiltersSlice.js";
 import RideReducer from "./RidesSlice/RideSlice.js";
+import BookingReducer from "./BookingSlice/BookingSlice.js";
 
 const userPersistConfig = {
   key: "user",
@@ -41,6 +42,14 @@ const vehiclePersistConfig = {
   blacklist: ["vehicles", "loading", "error"],
 };
 
+const bookingPersistConfig = {
+  key: "booking",
+  version: "1",
+  storage,
+  whitelist: ["tempBookingData", "isBookingDetailsActive"],
+  blacklist: ["loading"],
+};
+
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedStationReducer = persistReducer(
   stationPersistConfig,
@@ -56,10 +65,16 @@ const persistedVehiclesReducer = persistReducer(
   VehicleReducer
 );
 
+const persistedBookingReducer = persistReducer(
+  bookingPersistConfig,
+  BookingReducer
+);
+
 const store = configureStore({
   reducer: {
     modals: ModalReducer,
     vehicles: persistedVehiclesReducer,
+    booking: persistedBookingReducer,
     station: persistedStationReducer,
     user: persistedUserReducer,
     selectedLocation: persistedLocationReducer,

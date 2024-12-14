@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const DropDownButton = ({ labelId, optionsList, setValue, defaultValue }) => {
+  // console.log(defaultValue);
   const [isOpened, setIsOpened] = useState(false);
   const [selectedValue, setSelectedValue] = useState(defaultValue);
 

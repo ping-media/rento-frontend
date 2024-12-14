@@ -394,7 +394,7 @@ const addDaysToDate = (dateString, daysToAdd) => {
   const date = new Date(dateString);
 
   // Add the specified number of days
-  date.setUTCDate(date.getUTCDate() + (daysToAdd - 2));
+  date.setUTCDate(date.getUTCDate() + (daysToAdd - 1));
 
   // Return the new date in ISO string format (with 'Z' indicating UTC time)
   return date.toISOString();
@@ -405,7 +405,10 @@ const camelCaseToSpaceSeparated = (str) => {
 };
 
 const formatPrice = (price) => {
-  return new Intl.NumberFormat("en-US").format(price);
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
 };
 
 export {

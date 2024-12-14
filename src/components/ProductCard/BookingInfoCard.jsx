@@ -1,20 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import scooterImg from "../../assets/images/scooter-image.png";
-import bikeImg from "../../assets/images/bike-image.png";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  addDaysToDate,
   formatDateTimeForUser,
-  formatPrice,
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
-import { useDispatch, useSelector } from "react-redux";
-import { addTempDate } from "../../Redux/ProductSlice/ProductsSlice";
-import { changeAccordingToPlan } from "../../Data/Functions";
-import { useSearchParams } from "react-router-dom";
 
-const InfoCard = ({
-  vehiclePlanData,
+const BookingInfoCard = ({
   vehicleNumber,
   vehicleImage,
   vehicleName,
@@ -22,6 +14,8 @@ const InfoCard = ({
   vehicleBrand,
   stationName,
   perDayCost,
+  bookingPrice,
+  vehicleBasic,
   freeKms,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
@@ -29,40 +23,17 @@ const InfoCard = ({
   const vehicleImageRef = useRef(null);
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
   const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
-  const [updatedBookingEndDateAndTime, setUpdatedBookingEndDateAndTime] =
-    useState(null);
   const dispatch = useDispatch();
-  const { tempDate } = useSelector((state) => state.vehicles);
-  const [queryParms, setQueryParms] = useSearchParams();
+  //   const [queryParms, setQueryParms] = useSearchParams();
 
   //converting time into readable format
   useEffect(() => {
     if (BookingStartDateAndTime && BookingEndDateAndTime) {
       setBookingStartDateTime(formatDateTimeForUser(BookingStartDateAndTime));
-      if (updatedBookingEndDateAndTime != null) {
-        setBookingEndDateTime(
-          formatDateTimeForUser(updatedBookingEndDateAndTime)
-        );
-      } else {
-        setBookingEndDateTime(formatDateTimeForUser(BookingEndDateAndTime));
-      }
-    }
-  }, [updatedBookingEndDateAndTime]);
 
-  // if using comes to this page using plan
-  useEffect(() => {
-    changeAccordingToPlan(
-      vehiclePlanData,
-      BookingEndDateAndTime,
-      setUpdatedBookingEndDateAndTime,
-      dispatch,
-      addTempDate,
-      tempDate,
-      addDaysToDate,
-      queryParms,
-      setQueryParms
-    );
-  }, []);
+      setBookingEndDateTime(formatDateTimeForUser(BookingEndDateAndTime));
+    }
+  }, [BookingStartDateAndTime, BookingEndDateAndTime]);
 
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4 cursor-default">
@@ -86,13 +57,13 @@ const InfoCard = ({
         </div>
       )}
       <div className="max-w-sm mx-auto lg:mx-0">
-        {vehicleBrand && vehicleName && vehicleNumber ? (
+        {vehicleBrand && vehicleName && vehicleBasic ? (
           <div className="mb-1.5">
             <h2 className="font-bold uppercase text-xl">
               {vehicleBrand} {vehicleName}
             </h2>
             <span className="text-xs text-gray-500">
-              (Vehicle Number: {vehicleNumber})
+              (Vehicle Number: {vehicleBasic?.vehicleNumber})
             </span>
           </div>
         ) : (
@@ -162,7 +133,7 @@ const InfoCard = ({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 mb-2">
+        {/* <div className="flex items-center gap-2 mb-2">
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -188,8 +159,8 @@ const InfoCard = ({
                 )}{" "}
             Day
           </span>
-        </div>
-        {freeKms ? (
+        </div> */}
+        {vehicleBasic ? (
           <div className="flex items-center gap-2">
             <span>
               <svg
@@ -208,25 +179,19 @@ const InfoCard = ({
             </span>
             Free Limit:
             <span className="font-semibold">
-              {freeKms *
-                (vehiclePlanData != null
-                  ? vehiclePlanData?.planDuration
-                  : getDurationInDays(
-                      BookingStartDateAndTime,
-                      BookingEndDateAndTime
-                    ))}
+              {vehicleBasic?.freeLimit *
+                getDurationInDays(
+                  BookingStartDateAndTime,
+                  BookingEndDateAndTime
+                )}
               KM
             </span>
             <span className="text-xs me-1 text-gray-500">
               (
-              {`${freeKms} x ${
-                vehiclePlanData != null
-                  ? vehiclePlanData?.planDuration
-                  : getDurationInDays(
-                      BookingStartDateAndTime,
-                      BookingEndDateAndTime
-                    )
-              } days`}
+              {`${vehicleBasic?.freeLimit} x ${getDurationInDays(
+                BookingStartDateAndTime,
+                BookingEndDateAndTime
+              )} days`}
               )
             </span>
           </div>
@@ -255,17 +220,16 @@ const InfoCard = ({
             </svg>
           </span>
           <div>
-            {vehiclePlanData != null && (
-              <p className="text-lg">
-                ₹{formatPrice(Number(vehiclePlanData?.planPrice))}
-              </p>
-            )}
-            <p
+            {/* {vehiclePlanData != null && (
+              <p className="text-lg">₹{Number(vehiclePlanData?.planPrice)}</p>
+            )} */}
+            {/* <p
               className={`${
                 vehiclePlanData != null ? "text-sm line-through" : "text-lg"
               }`}
-            >
-              ₹{formatPrice(Number(perDayCost))}/
+            > */}
+            <p className={`text-lg`}>
+              ₹{Number(bookingPrice?.rentAmount)}/
               <span className="text-sm">day</span>
             </p>
           </div>
@@ -275,4 +239,4 @@ const InfoCard = ({
   );
 };
 
-export default InfoCard;
+export default BookingInfoCard;

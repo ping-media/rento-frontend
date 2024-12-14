@@ -3,54 +3,11 @@ import {
   addingFilters,
   hanldeAddFilters,
   resetFilters,
-  // restFilterLoading,
 } from "../Redux/FiltersSlice/FiltersSlice";
 import {
   addVehiclesData,
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
-
-// const handleSearchVehicleData = async (
-//   dispatch,
-//   queryParmsData,
-//   location,
-//   selectedLocation,
-//   id
-// ) => {
-//   dispatch(fetchingVehicles());
-//   let result;
-//   if (location.pathname !== "/explore") {
-//     const category = queryParmsData?.category;
-//     const brand = queryParmsData?.brand;
-//     // console.log(queryParmsData, location);
-//     if (category != undefined && brand != undefined) {
-//       result = await fetchingData(
-//         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-//       );
-//     } else if (category != undefined) {
-//       result = await fetchingData(
-//         `/getVehicleTblData?stationId=${id}&vehicleType=${category}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-//       );
-//     } else if (brand != undefined) {
-//       result = await fetchingData(
-//         `/getVehicleTblData?stationId=${id}&vehicleBrand=${brand}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-//       );
-//     } else if (!category && !brand) {
-//       result = await fetchingData(
-//         `/getVehicleTblData?stationId=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-//       );
-//     }
-//   } else {
-//     const locationId = selectedLocation?.locationId;
-//     result = await fetchingData(
-//       `/getVehicleTblData?locationId=${locationId}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-//     );
-//   }
-//   if (result) {
-//     // console.log(result);
-//     dispatch(addVehiclesData(result?.data));
-//   }
-// };
 
 const handleSearchVehicleData = async (
   dispatch,
@@ -210,10 +167,105 @@ const changeAccordingToPlan = (
   }
 };
 
+const handleFetchBookingData = (
+  e,
+  vehicles,
+  queryParmsData,
+  currentUser,
+  toggleLoginModal,
+  addTempBookingData,
+  setBookingLoading,
+  vehiclePlanData,
+  dispatch
+) => {
+  setBookingLoading(true);
+  e.preventDefault();
+  // if user is not login than don't let user to book the ride
+  if (currentUser === null) {
+    // setBookingLoading(false);
+    return dispatch(toggleLoginModal());
+  }
+  const response = new FormData(e.target);
+  const result = Object.fromEntries(response.entries());
+  if (vehicles) {
+    const data = {
+      vehicleTableId: vehicles[0]?._id,
+      userId: currentUser?._id,
+      vehicleMasterId: vehicles[0]?.vehicleMasterId,
+      BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
+      BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
+      bookingPrice: {
+        bookingPrice: Number(result?.bookingPrice),
+        vehiclePrice: Number(result?.bookingPrice),
+        extraAddonPrice:
+          result?.extraAddonPrice == "" ? 0 : Number(result?.extraAddonPrice),
+        tax: Number(result?.tax),
+        totalPrice: Number(result?.totalPrice),
+        rentAmount: vehicles[0]?.perDayCost,
+        isPackageApplied: vehiclePlanData != null,
+      },
+      vehicleBasic: {
+        refundableDeposit: vehicles[0]?.refundableDeposit,
+        speedLimit: vehicles[0]?.speedLimit,
+        vehicleNumber: vehicles[0]?.vehicleNumber,
+        freeLimit: vehicles[0]?.freeKms,
+        lateFee: vehicles[0]?.lateFee,
+        extraKmCharge: vehicles[0]?.extraKmsCharges,
+      },
+      vehicleName: vehicles[0]?.vehicleName,
+      vehicleBrand: vehicles[0]?.vehicleBrand,
+      vehicleImage: vehicles[0]?.vehicleImage,
+      stationName: vehicles[0]?.stationName,
+      bookingStatus: "completed",
+      paymentStatus: "completed",
+      rideStatus: "pending",
+      paymentMethod: "cash",
+      payInitFrom: "Razor pay",
+      paySuccessId: "assa",
+    };
+    console.log(data);
+    dispatch(addTempBookingData(data));
+    return setBookingLoading(false);
+  }
+};
+
+const handleCreateBooking = async (
+  e,
+  data,
+  removeTempDate,
+  handlebooking,
+  handleAsyncError,
+  navigate,
+  dispatch,
+  setBookingLoading
+) => {
+  setBookingLoading(true);
+  e.preventDefault();
+  //removing this after we are going to booking
+  dispatch(removeTempDate());
+  try {
+    if (!data) return handleAsyncError(dispatch, "Unable to Book Ride");
+    const response = await handlebooking(data);
+    if (response?.status == 200) {
+      // console.log(response?.data);
+      handleAsyncError(dispatch, response?.message, "success");
+      navigate(`/my-rides/summary/${response?.data?.bookingId}`);
+    } else {
+      handleAsyncError(dispatch, response?.message);
+    }
+  } catch (error) {
+    console.log(error?.message);
+  } finally {
+    setBookingLoading(false);
+  }
+};
+
 export {
   handleSearchVehicleData,
   fetchingPlansFilters,
   searchData,
   getUserDocuments,
   changeAccordingToPlan,
+  handleCreateBooking,
+  handleFetchBookingData,
 };

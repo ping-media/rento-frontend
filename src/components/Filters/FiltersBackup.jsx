@@ -23,18 +23,17 @@ const Filters = () => {
 
   // for fetching plan filters & setting up the value if present in url
   useEffect(() => {
-    const category = queryParmsData?.category;
-    const brand = queryParmsData?.brand;
-    const vehiclePlan = queryParmsData?.vehiclePlan;
-    // console.log(category, brand, vehiclePlan);
-    if (category != undefined) {
+    const category = queryParms?.category;
+    const brand = queryParms?.brand;
+    const vehiclePlan = queryParms?.vehiclePlan;
+
+    if (
+      category != undefined ||
+      brand != undefined ||
+      vehiclePlan != undefined
+    ) {
       setInputCategory(category?.toLowerCase());
-    }
-    if (brand != undefined) {
-      // console.log(category, brand, vehiclePlan);
       setInputbrand(brand);
-    }
-    if (vehiclePlan != undefined) {
       setInputPlanId(vehiclePlan);
     }
     // for fetching plan filters

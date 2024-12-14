@@ -1,5 +1,5 @@
 import SearchRide from "../components/SearchRide/SearchRide";
-import Filters from "../components/Filters/Filters";
+import Filters from "../components/Filters/FiltersBackup";
 import Card from "../components/ProductCard/Card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,7 @@ import {
 } from "../Redux/ModalSlice/ModalSlice";
 import { handleSearchVehicleData } from "../Data/Functions";
 import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
+import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 
 const Search = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Search = () => {
       id
     );
     // console.log(vehicles);
-  }, [customLocation]);
+  }, [customLocation, selectedLocation]);
 
   // picking date from url and convert the data to show date in mobile view
   useEffect(() => {
@@ -57,6 +58,7 @@ const Search = () => {
 
     //removing this after we are going to booking
     dispatch(removeTempDate());
+    dispatch(removeTempBookingData());
   }, []);
 
   return (

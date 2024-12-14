@@ -148,6 +148,15 @@ const Categories = [
   { categoryImage: bikeImage, CategoryTitle: "Gear" },
 ];
 
+const termsAndConditions = [
+  "Documents Required: Aadhar Card and Driving License. Digilocker documents will work.",
+  "All Scooters are to use within the Bangalore City Limits.",
+  "Not allowed for commercial or delivery purpose.",
+  "In case the vehicle returned is found excessively dirty/muddy, the lessee will have to bear the charge of washing not exceeding Rs. 200. You must report such violations to a Lessors Representative as soon as possible.",
+  "Fuel Charges are not included in the security deposit or rent.",
+  "In case of any damage to the vehicle, the customer is liable to pay the repair charges plus the labour charges as per the Authorised Service Center.",
+];
+
 const brands = [
   "Vespa",
   "Honda",
@@ -166,4 +175,4 @@ const brands = [
 ];
 const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
-export { Categories, brands, Modal, menuList };
+export { Categories, brands, Modal, menuList, termsAndConditions };

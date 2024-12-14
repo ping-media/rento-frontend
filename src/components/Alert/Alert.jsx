@@ -8,14 +8,14 @@ const Alert = ({ error, errorType = "error" }) => {
   useEffect(() => {
     setTimeout(() => {
       dispatch(clearError());
-    }, 4000);
+    }, 3000);
   }, []);
 
   return (
-    <div className="absolute right-2 z-50 top-10 w-72">
+    <div className="absolute right-2 z-50 top-16 w-72">
       <div
-        className={`relative w-full flex flex-wrap items-center justify-center py-3 pl-4 pr-14 rounded-lg text-base font-medium [transition:all_0.5s_ease] text-gray-100 [&amp;_svg]:text-[#b22b2b] group ${
-          errorType == "error" ? "bg-red-500" : "bg-green-500"
+        className={`relative w-full flex flex-wrap items-center justify-center py-3 pl-4 pr-14 rounded text-base font-medium [transition:all_0.5s_ease] text-gray-100 [&amp;_svg]:text-[#b22b2b] group ${
+          errorType == "error" ? "bg-[#FF4545]" : "bg-[#118B50]"
         }`}
       >
         <button

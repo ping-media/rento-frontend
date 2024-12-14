@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   calculateTax,
   formatDateTimeForUser,
+  formatPrice,
   getDurationInDays,
 } from "../../utils";
 
@@ -160,25 +161,33 @@ const PriceCard = ({
                   item?.name == "extraAddonPrice") && (
                   <p className="text-xs text-gray-400">
                     (
-                    {`₹${
+                    {` ₹${
                       item?.name == "extraAddonPrice" ? 50 : perDayCost
-                    } x ${getDurationInDays(
-                      BookingStartDateAndTime,
-                      BookingEndDateAndTime
-                    )} day`}
+                    } x ${
+                      vehiclePlanData != null
+                        ? vehiclePlanData?.planDuration
+                        : getDurationInDays(
+                            BookingStartDateAndTime,
+                            BookingEndDateAndTime
+                          )
+                    } day`}
                     )
                   </p>
                 )}
               </div>
-              <span className="font-semibold">₹{item?.price}</span>
+              <span className="font-semibold">₹{formatPrice(item?.price)}</span>
             </li>
           ))}
         </ul>
         {/* total price  */}
-        <div className="flex items-center justify-between py-2">
+        <div
+          className={`flex items-center justify-between ${
+            isExtraChecked ? "pt-2 pb-6" : "py-2"
+          }`}
+        >
           <input type="hidden" name="totalPrice" value={totalPrice} />
           <span className="text-gray-500">Payable Amount</span>
-          <span className="font-semibold">₹{totalPrice}</span>
+          <span className="font-semibold">₹{formatPrice(totalPrice)}</span>
         </div>
       </div>
       {/* extra helmet  */}
