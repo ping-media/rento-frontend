@@ -67,10 +67,10 @@ const InfoCard = ({
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4 cursor-default">
       {vehicleImage ? (
-        <div className="w-52 h-40 mx-auto lg:mx-0">
+        <div className="w-62 h-40 mx-auto lg:mx-0">
           <img
             src={vehicleImage}
-            className="w-full h-full object-contain rounded-lg"
+            className="w-full h-full object-cover rounded-lg"
             alt={vehicleName}
             onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
             ref={vehicleImageRef}

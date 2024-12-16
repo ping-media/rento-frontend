@@ -49,6 +49,7 @@ const SearchRide = () => {
     }
   };
 
+  // for searching vehicles
   const handleSearchRide = (e) => {
     e.preventDefault();
     const response = new FormData(e.target);
@@ -107,8 +108,8 @@ const SearchRide = () => {
     const { BookingStartDateAndTime, BookingEndDateAndTime } = queryParmsData;
 
     // Function to format dates
-    const formatDate = (dateStr) => new Date(dateStr);
-    const formatTime = (dateStr) => {
+    const formatDateOnly = (dateStr) => new Date(dateStr);
+    const formatTimeOnly = (dateStr) => {
       const date = new Date(dateStr);
       return new Intl.DateTimeFormat("en-US", {
         hour: "2-digit",
@@ -120,10 +121,10 @@ const SearchRide = () => {
 
     if (BookingStartDateAndTime && BookingEndDateAndTime) {
       // Set state with formatted values
-      setPickupDate(formatDate(BookingStartDateAndTime));
-      setDropoffDate(formatDate(BookingEndDateAndTime));
-      setQueryPickupTime(formatTime(BookingStartDateAndTime));
-      setQueryDropoffTime(formatTime(BookingEndDateAndTime));
+      setPickupDate(formatDateOnly(BookingStartDateAndTime));
+      setDropoffDate(formatDateOnly(BookingEndDateAndTime));
+      setQueryPickupTime(formatTimeOnly(BookingStartDateAndTime));
+      setQueryDropoffTime(formatTimeOnly(BookingEndDateAndTime));
     } else {
       // Set default dates if data not found
       setPickupDate(new Date());
@@ -133,7 +134,7 @@ const SearchRide = () => {
     }
   }, [location?.href]);
 
-  //  through this we are changing the dropoffdate && dropOffTime by one when user change the pickupvalue
+  //  through this we are changing the dropoffdate && dropOffTime by one for one time only
   useEffect(() => {
     if (pickupDate) {
       setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
@@ -141,7 +142,7 @@ const SearchRide = () => {
     if (queryPickupTime != "") {
       setQueryDropoffTime(queryPickupTime);
     }
-  }, [pickupDate, queryPickupTime]);
+  }, []);
 
   return (
     <div
@@ -205,6 +206,7 @@ const SearchRide = () => {
             value={pickupDate}
             setValueChanger={setPickupDate}
             name={"pickupDate"}
+            setDropoffChanger={setDropoffDate}
           />
         </div>
         <div className="w-full">
@@ -216,6 +218,7 @@ const SearchRide = () => {
             value={queryPickupTime}
             setValueChanger={setQueryPickupTime}
             name={"pickupTime"}
+            setDropoffChanger={setQueryDropoffTime}
           />
         </div>
         <div className="w-full">

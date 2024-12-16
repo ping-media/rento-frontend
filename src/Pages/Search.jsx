@@ -1,5 +1,5 @@
 import SearchRide from "../components/SearchRide/SearchRide";
-import Filters from "../components/Filters/FiltersBackup";
+import Filters from "../components/Filters/Filters";
 import Card from "../components/ProductCard/Card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

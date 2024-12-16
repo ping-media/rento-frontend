@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DropDownButton from "../DropdownButton/DropDownButton";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleFilter } from "../../Redux/ModalSlice/ModalSlice";
 import CheckboxFilter from "../Input/CheckBoxFilter";
@@ -17,22 +17,21 @@ const Filters = () => {
   const dispatch = useDispatch();
   // const navigate = useNavigate();
 
-  // const navigate = useNavigate();
   const [queryParms, setQueryParms] = useSearchParams();
-  const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
+  // const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
 
   // for fetching plan filters & setting up the value if present in url
   useEffect(() => {
-    const category = queryParmsData?.category;
-    const brand = queryParmsData?.brand;
-    const vehiclePlan = queryParmsData?.vehiclePlan;
+    const newQueryParmsData = Object.fromEntries(queryParms.entries());
+    const { category, brand, vehiclePlan } = newQueryParmsData;
     // console.log(category, brand, vehiclePlan);
+
     if (category != undefined) {
       setInputCategory(category?.toLowerCase());
     }
     if (brand != undefined) {
       // console.log(category, brand, vehiclePlan);
-      setInputbrand(brand);
+      setInputbrand(brand?.toLowerCase());
     }
     if (vehiclePlan != undefined) {
       setInputPlanId(vehiclePlan);
@@ -53,7 +52,7 @@ const Filters = () => {
       // console.log("entered");
       //add new parameter in existing URL
       queryParms.set("category", inputCategory.toLowerCase());
-      queryParms.set("brand", inputbrand);
+      queryParms.set("brand", inputbrand.toLowerCase());
       queryParms.set("vehiclePlan", inputPlanId);
       setQueryParms(queryParms);
     } else if (inputbrand != "Choose Brand") {
@@ -111,7 +110,7 @@ const Filters = () => {
       <form onSubmit={handleSubmitFilters}>
         <div className="mb-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold mb-3">Categories</h2>
+            <h2 className="font-semibold mb-3">Filters</h2>
             {(queryParms.get("brand") ||
               queryParms.get("category") ||
               queryParms.get("vehiclePlan")) && (
@@ -137,25 +136,29 @@ const Filters = () => {
               </button>
             )}
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             {Categories.map((item, index) => (
               <button
                 type="button"
-                className={`w-24 lg:w-24 xl:w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
-                  inputCategory == item?.CategoryTitle
+                className={`w-20 lg:w-24 xl:w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
+                  inputCategory == item?.CategoryTitle.toLowerCase()
                     ? "bg-theme text-gray-100 border-theme"
                     : ""
                 }`}
-                onClick={() => setInputCategory(item?.CategoryTitle)}
+                onClick={() =>
+                  setInputCategory(item?.CategoryTitle.toLowerCase())
+                }
                 key={index}
               >
                 <div className="w-10 h-10 mb-1 mx-auto">
                   <img
                     src={item.categoryImage}
                     className={`w-full h-full object-cover group-hover:invert transition duration-200 ease-in-out ${
-                      inputCategory == item?.CategoryTitle ? "invert" : ""
+                      inputCategory == item?.CategoryTitle.toLowerCase()
+                        ? "invert"
+                        : ""
                     }`}
-                    alt={item?.CategoryTitle}
+                    alt={item?.CategoryTitle.toLowerCase()}
                   />
                 </div>
                 <h3 className="text-center group-hover:text-gray-100 transition duration-200 ease-in-out text-sm">
@@ -170,12 +173,15 @@ const Filters = () => {
             labelId={"brands"}
             optionsList={brands}
             setValue={setInputbrand}
-            defaultValue={inputbrand || "Choose Brand"}
+            defaultValue={inputbrand && inputbrand}
           />
         </div>
         <h2 className="font-semibold mb-2">Choose Packages</h2>
         <div className="mb-5">
-          <CheckboxFilter setPlanIdChanger={setInputPlanId} />
+          <CheckboxFilter
+            vehiclePlan={inputPlanId}
+            setPlanIdChanger={setInputPlanId}
+          />
         </div>
         <button
           type="submit"

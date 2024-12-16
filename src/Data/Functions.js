@@ -216,14 +216,14 @@ const handleFetchBookingData = (
       vehicleBrand: vehicles[0]?.vehicleBrand,
       vehicleImage: vehicles[0]?.vehicleImage,
       stationName: vehicles[0]?.stationName,
-      bookingStatus: "completed",
-      paymentStatus: "completed",
+      bookingStatus: "pending",
+      paymentStatus: "pending",
       rideStatus: "pending",
       paymentMethod: "cash",
-      payInitFrom: "Razor pay",
-      paySuccessId: "assa",
+      payInitFrom: "cash",
+      paySuccessId: "NA",
     };
-    console.log(data);
+    // console.log(data);
     dispatch(addTempBookingData(data));
     return setBookingLoading(false);
   }
@@ -232,31 +232,61 @@ const handleFetchBookingData = (
 const handleCreateBooking = async (
   e,
   data,
-  removeTempDate,
+  // removeTempDate,
   handlebooking,
   handleAsyncError,
-  navigate,
-  dispatch,
-  setBookingLoading
+  // navigate,
+  dispatch
+  // setBookingLoading
 ) => {
-  setBookingLoading(true);
+  // setBookingLoading(true);
   e.preventDefault();
   //removing this after we are going to booking
-  dispatch(removeTempDate());
+  // dispatch(removeTempDate());
   try {
     if (!data) return handleAsyncError(dispatch, "Unable to Book Ride");
     const response = await handlebooking(data);
     if (response?.status == 200) {
+      return response;
       // console.log(response?.data);
-      handleAsyncError(dispatch, response?.message, "success");
-      navigate(`/my-rides/summary/${response?.data?.bookingId}`);
+      // handleAsyncError(dispatch, response?.message, "success");
+      // navigate(`/my-rides/summary/${response?.data?.bookingId}`);
     } else {
       handleAsyncError(dispatch, response?.message);
     }
   } catch (error) {
     console.log(error?.message);
-  } finally {
-    setBookingLoading(false);
+  }
+  // finally {
+  //   setBookingLoading(false);
+  // }
+};
+
+const handleUpdateBooking = async (
+  e,
+  data,
+  removeTempDate,
+  handlebooking,
+  handleAsyncError,
+  dispatch
+) => {
+  e.preventDefault();
+  //removing this after we are going to booking
+  dispatch(removeTempDate());
+  try {
+    if (!data)
+      return handleAsyncError(
+        dispatch,
+        "something went wrong while booking Ride"
+      );
+    const response = await handlebooking(data);
+    if (response?.status == 200) {
+      return response?.data;
+    } else {
+      handleAsyncError(dispatch, response?.message);
+    }
+  } catch (error) {
+    console.log(error?.message);
   }
 };
 
@@ -268,4 +298,5 @@ export {
   changeAccordingToPlan,
   handleCreateBooking,
   handleFetchBookingData,
+  handleUpdateBooking,
 };

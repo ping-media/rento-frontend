@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-const CheckboxFilter = ({ setPlanIdChanger }) => {
+const CheckboxFilter = ({ vehiclePlan, setPlanIdChanger }) => {
   const { filter, filterLoading } = useSelector((state) => state.filter);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
 
@@ -25,7 +25,9 @@ const CheckboxFilter = ({ setPlanIdChanger }) => {
                 type="checkbox"
                 className="peer hidden"
                 value={item?._id}
-                checked={selectedPlanId === item?._id}
+                checked={
+                  selectedPlanId === item?._id || vehiclePlan === item?._id
+                }
                 onChange={() => handleCheckboxChange(item?._id)}
               />
               <div

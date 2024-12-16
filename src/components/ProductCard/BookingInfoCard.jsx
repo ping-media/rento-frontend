@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   formatDateTimeForUser,
   getDurationInDays,
@@ -24,7 +24,6 @@ const BookingInfoCard = ({
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
   const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
   const dispatch = useDispatch();
-  //   const [queryParms, setQueryParms] = useSearchParams();
 
   //converting time into readable format
   useEffect(() => {
@@ -38,10 +37,10 @@ const BookingInfoCard = ({
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 px-4 cursor-default">
       {vehicleImage ? (
-        <div className="w-52 h-40 mx-auto lg:mx-0">
+        <div className="w-62 h-40 mx-auto lg:mx-0">
           <img
             src={vehicleImage}
-            className="w-full h-full object-contain rounded-lg"
+            className="w-full h-full object-cover rounded-lg"
             alt={vehicleName}
             onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
             ref={vehicleImageRef}
@@ -133,33 +132,6 @@ const BookingInfoCard = ({
             </div>
           </div>
         </div>
-        {/* <div className="flex items-center gap-2 mb-2">
-          <span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-          </span>
-          Booked For:
-          <span className="font-semibold">
-            {vehiclePlanData != null
-              ? vehiclePlanData?.planDuration
-              : getDurationInDays(
-                  bookingStartDateTime?.date,
-                  bookingEndDateTime?.date
-                )}{" "}
-            Day
-          </span>
-        </div> */}
         {vehicleBasic ? (
           <div className="flex items-center gap-2">
             <span>
@@ -220,14 +192,6 @@ const BookingInfoCard = ({
             </svg>
           </span>
           <div>
-            {/* {vehiclePlanData != null && (
-              <p className="text-lg">₹{Number(vehiclePlanData?.planPrice)}</p>
-            )} */}
-            {/* <p
-              className={`${
-                vehiclePlanData != null ? "text-sm line-through" : "text-lg"
-              }`}
-            > */}
             <p className={`text-lg`}>
               ₹{Number(bookingPrice?.rentAmount)}/
               <span className="text-sm">day</span>

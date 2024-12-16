@@ -307,22 +307,18 @@ const removeAfterSecondSlash = (pathname) => {
 // };
 
 const formatDateTimeForUser = (input) => {
-  // Create a Date object from the input (ISO 8601 format)
   const date = new Date(input);
 
-  // Extract the UTC date components
   const year = date.getUTCFullYear();
   const month = date.getUTCMonth(); // 0-based index
   const day = date.getUTCDate();
 
-  // Format the date to the desired format (e.g. '11 Dec 2024')
   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
   const formattedDate = new Date(Date.UTC(year, month, day)).toLocaleDateString(
     "en-GB",
     dateOptions
   );
 
-  // Extract and format the UTC time components
   const hours = date.getUTCHours();
   const minutes = date.getUTCMinutes();
   const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
@@ -358,45 +354,28 @@ const isValidPhoneNumber = (phone) => {
 const getRoundedDateTime = (value) => {
   // Get the current local date and time
   const currentDate = value;
-
-  // Get current local minutes
   const localMinutes = currentDate.getMinutes();
-
-  // Round minutes to the nearest 30
   let roundedMinutes;
   if (localMinutes < 15) {
-    roundedMinutes = 0; // Round down to the hour (e.g., 4:00)
+    roundedMinutes = 0;
   } else if (localMinutes < 45) {
-    roundedMinutes = 30; // Round to the next 30 minutes (e.g., 4:30)
+    roundedMinutes = 30;
   } else {
-    roundedMinutes = 0; // Round up to the next hour (e.g., 5:00)
+    roundedMinutes = 0;
     currentDate.setHours(currentDate.getHours() + 1); // Increment the hour
   }
-
-  // Set the rounded minutes and reset seconds to 0
   currentDate.setMinutes(roundedMinutes);
   currentDate.setSeconds(0); // Reset seconds to 0
-
-  // Convert local time to UTC (by manually adjusting)
   const utcDate = new Date(
     currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
   );
-
-  // Convert to ISO string and return the result
   const isoString = utcDate.toISOString();
-
-  // Return the ISO string without milliseconds and 'Z' appended
   return isoString.split(".")[0] + "Z";
 };
 
 const addDaysToDate = (dateString, daysToAdd) => {
-  // Parse the input date string into a Date object
   const date = new Date(dateString);
-
-  // Add the specified number of days
   date.setUTCDate(date.getUTCDate() + (daysToAdd - 1));
-
-  // Return the new date in ISO string format (with 'Z' indicating UTC time)
   return date.toISOString();
 };
 

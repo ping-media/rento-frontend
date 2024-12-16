@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { formatTimeWithoutSeconds, parseTime } from "../../utils";
 
-const TimePicker = ({ value, name, setValueChanger }) => {
-  const [selectedTime, setSelectedTime] = useState("");
+const TimePicker = ({ value, name, setValueChanger, setDropoffChanger }) => {
+  // const [selectedTime, setSelectedTime] = useState("");
   const [timeVisible, setTimeVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
   const timePickerRef = useRef(null);
@@ -12,6 +12,9 @@ const TimePicker = ({ value, name, setValueChanger }) => {
   const handleTimeSelect = (time) => {
     // setSelectedTime(time);
     setValueChanger(time);
+    if (setDropoffChanger && name == "pickupTime") {
+      setDropoffChanger(time);
+    }
     setTimeVisible(false);
   };
 

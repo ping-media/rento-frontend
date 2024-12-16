@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { formatDate } from "../../utils";
+import { formatDate, nextDayFromCurrent } from "../../utils";
 
-const DatePicker = ({ value, name, setValueChanger }) => {
+const DatePicker = ({ value, name, setValueChanger, setDropoffChanger }) => {
   const datePickerRef = useRef(null);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
@@ -16,12 +16,11 @@ const DatePicker = ({ value, name, setValueChanger }) => {
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
     const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDayOfMonth.getDate();
-    const startDay = firstDayOfMonth.getDay(); // 0 = Sunday, 6 = Saturday
+    const startDay = firstDayOfMonth.getDay();
 
-    // Build the days grid for the calendar
     const days = [];
     for (let i = 0; i < startDay; i++) {
-      days.push(null); // Empty spaces for the first row
+      days.push(null);
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
@@ -34,6 +33,10 @@ const DatePicker = ({ value, name, setValueChanger }) => {
   // Handle selecting a date
   const handleDateSelect = (date) => {
     setValueChanger(date);
+    if (setDropoffChanger && name === "pickupDate") {
+      const tempDropoffDate = nextDayFromCurrent(new Date(date));
+      setDropoffChanger(tempDropoffDate);
+    }
     setCalendarVisible(false);
   };
 
@@ -67,9 +70,9 @@ const DatePicker = ({ value, name, setValueChanger }) => {
 
       // Set position based on available space
       if (spaceBelow < 300 && spaceAbove > spaceBelow) {
-        setDropdownPosition("top"); // Position above input
+        setDropdownPosition("top");
       } else {
-        setDropdownPosition("bottom"); // Position below input
+        setDropdownPosition("bottom");
       }
     }
   };
