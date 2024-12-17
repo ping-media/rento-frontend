@@ -221,7 +221,7 @@ const handleFetchBookingData = (
       rideStatus: "pending",
       paymentMethod: "cash",
       payInitFrom: "cash",
-      paySuccessId: "NA",
+      paySuccessId: "no id",
     };
     // console.log(data);
     dispatch(addTempBookingData(data));

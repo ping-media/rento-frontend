@@ -31,11 +31,22 @@ const MyRides = () => {
   const tabs = [
     {
       name: "Pending",
-      content: rides && rides.filter((item) => item?.rideStatus === "pending"),
+      content:
+        rides &&
+        rides.filter(
+          (item) =>
+            item?.rideStatus === "pending" || item?.paymentStatus === "pending"
+        ),
     },
     {
       name: "Cancelled",
-      content: rides && rides.filter((item) => item?.rideStatus === "canceled"),
+      content:
+        rides &&
+        rides.filter(
+          (item) =>
+            item?.rideStatus === "canceled" ||
+            item?.paymentStatus === "canceled"
+        ),
     },
     {
       name: "All Bookings",

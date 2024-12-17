@@ -27,7 +27,7 @@ const BookingPaymentCard = () => {
           name="paymentMethod"
           value={"partiallyPay"}
           className="checked:border-theme h-4 w-4"
-          disabled
+          // disabled
         />
       </label>
       {/* full payment through online  */}
@@ -56,7 +56,7 @@ const BookingPaymentCard = () => {
           name="paymentMethod"
           value={"online"}
           className="checked:border-theme h-4 w-4"
-          disabled
+          // disabled
         />
       </label>
       {/* pay on pickup  */}

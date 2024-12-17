@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner/Spinner";
 import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { handlebooking } from "../Data";
-import { razorPayment } from "../Data/Payment";
+import { createOrderId, razorPayment } from "../Data/Payment";
 
 const BookingAndPayment = () => {
   const { tempBookingData } = useSelector((state) => state.booking);
@@ -125,16 +125,12 @@ const BookingAndPayment = () => {
           ...data,
           bookingPrice: {
             ...data.bookingPrice,
-            userPay: (
-              (tempBookingData?.bookingPrice?.totalPrice * 20) /
-              100
-            ).toFixed(2),
+            userPay: parseInt(
+              (tempBookingData?.bookingPrice?.totalPrice * 20) / 100
+            ),
           },
         };
       }
-      // console.log(
-      //   ((tempBookingData?.bookingPrice?.totalPrice * 20) / 100).toFixed(2)
-      // );
       // pushing payment method
       data = { ...data, paymentMethod: result?.paymentMethod };
 
@@ -147,50 +143,67 @@ const BookingAndPayment = () => {
         dispatch
       );
 
-      console.log(bookingResponse, result?.paymentMethod);
-      let paymentStatus;
-      let updatedBooking;
-      if (
-        result?.paymentMethod == "online" ||
-        result?.paymentMethod == "partiallyPay"
-      ) {
-        paymentStatus = await razorPayment(bookingResponse?.data, currentUser);
-        console.log(paymentStatus);
+      if (bookingResponse?.status == 200) {
+        const orderId = await createOrderId(bookingResponse?.data);
+        console.log(data, result?.paymentMethod, orderId);
 
-        // Only proceed with booking update once payment is successful
-        if (paymentStatus?.razorpay_payment_id) {
-          updatedBooking = await handleUpdateBooking(
-            e,
-            {
-              bookingStatus: "completed",
-              paymentStatus: "completed",
-              paymentMethod: result?.paymentMethod,
-              payInitFrom: `${
-                result?.paymentMethod == "online" ||
-                result?.paymentMethod == "partiallyPay"
-                  ? "Razorpay"
-                  : "cash"
-              }`,
-              paySuccessId: paymentStatus?.razorpay_payment_id,
-            },
-            removeTempDate,
-            handlebooking,
-            handleAsyncError,
-            dispatch
+        let paymentStatus;
+        // let updatedBooking;
+        if (
+          (orderId && result?.paymentMethod == "online") ||
+          (orderId && result?.paymentMethod == "partiallyPay")
+        ) {
+          paymentStatus = await razorPayment(
+            bookingResponse?.data,
+            currentUser,
+            orderId
+          );
+          console.log(paymentStatus);
+
+          // Only proceed with booking update once payment is successful
+          if (paymentStatus?.razorpay_payment_id) {
+            await handleUpdateBooking(
+              e,
+              {
+                bookingStatus: "completed",
+                paymentStatus: "completed",
+                paymentMethod: result?.paymentMethod,
+                payInitFrom: `${
+                  result?.paymentMethod == "online" ||
+                  result?.paymentMethod == "partiallyPay"
+                    ? "Razorpay"
+                    : "cash"
+                }`,
+                paySuccessId: paymentStatus?.razorpay_payment_id,
+                paymentgatewayOrderId: orderId,
+              },
+              removeTempDate,
+              handlebooking,
+              handleAsyncError,
+              dispatch
+            );
+          } else {
+            handleAsyncError(dispatch, "payment failed!");
+          }
+        } else {
+          handleAsyncError(
+            dispatch,
+            "unable to make payment! try other method"
           );
         }
-      }
 
-      if (
-        paymentStatus?.razorpay_payment_id ||
-        result?.paymentMethod == "cash"
-      ) {
-        handleAsyncError(dispatch, bookingResponse?.message, "success");
+        if (
+          paymentStatus?.razorpay_payment_id ||
+          result?.paymentMethod == "cash"
+        ) {
+          handleAsyncError(dispatch, bookingResponse?.message, "success");
+          navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
+        } else {
+          return handleAsyncError(dispatch, "payment failed!");
+        }
       } else {
-        return handleAsyncError(dispatch, "payment failed!");
+        handleAsyncError(dispatch, "unable to create booking");
       }
-
-      navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
     } catch (error) {
       return handleAsyncError(
         dispatch,
