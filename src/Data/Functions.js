@@ -263,14 +263,14 @@ const handleCreateBooking = async (
 };
 
 const handleUpdateBooking = async (
-  e,
+  // e,
   data,
   removeTempDate,
   handlebooking,
   handleAsyncError,
   dispatch
 ) => {
-  e.preventDefault();
+  // e.preventDefault();
   //removing this after we are going to booking
   dispatch(removeTempDate());
   try {

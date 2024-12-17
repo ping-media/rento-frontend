@@ -1,7 +1,19 @@
 import axios from "axios";
+import { handleUpdateBooking } from "./Functions";
 
-export const razorPayment = async (currentUser, data, randomString) => {
-  if (!data && !currentUser) return "Unable to make payment! Please try again.";
+export const razorPayment = async (
+  currentUser,
+  data,
+  orderId,
+  result,
+  handleAsyncError,
+  navigate,
+  removeTempDate,
+  handlebooking,
+  dispatch
+) => {
+  if (!data && !currentUser && !orderId)
+    return "Unable to make payment! Please try again.";
 
   // Function to dynamically load Razorpay Checkout script
   const loadRazorpayScript = () => {
@@ -15,6 +27,32 @@ export const razorPayment = async (currentUser, data, randomString) => {
     });
   };
 
+  // console.log(data?._id);
+
+  const updatedata = async (response) => {
+    await handleUpdateBooking(
+      // e,
+      {
+        _id: data?.data?._id,
+        userId: currentUser?._id,
+        userType: currentUser?.userType,
+        bookingStatus: "completed",
+        paymentStatus: "completed",
+        paymentMethod: result?.paymentMethod,
+        payInitFrom: `${"Razorpay"}`,
+        paySuccessId: response?.razorpay_payment_id,
+        paymentgatewayOrderId: orderId,
+      },
+      removeTempDate,
+      handlebooking,
+      handleAsyncError,
+      dispatch
+    );
+
+    handleAsyncError(dispatch, data?.message, "success");
+    navigate(`/my-rides/summary/${data?.data?.bookingId}`);
+  };
+
   // Wait for Razorpay script to load
   try {
     await loadRazorpayScript();
@@ -25,25 +63,22 @@ export const razorPayment = async (currentUser, data, randomString) => {
 
   // Ensure data is valid and extract payment amount
   const payableAmount =
-    data?.bookingPrice?.userPay || data?.bookingPrice?.totalPrice || 100;
+    data?.data?.bookingPrice?.userPay ||
+    data?.data?.bookingPrice?.totalPrice ||
+    100;
 
   // Razorpay options configuration
   const options = {
     key: import.meta.env.VITE_RAZOR_KEY_ID,
     amount: payableAmount * 100,
-    order_id: `order_${randomString}`,
+    order_id: orderId,
     name: "Rento",
     description: "Payment for your booking",
     handler: (response) => {
-      // Log the payment response for debugging
-      console.log("Payment Success Response:", response);
-      if (response?.razorpay_payment_id) {
-        // alert("Payment Successful!");
-        return response;
-      } else {
-        console.error("Payment failed:", response);
-        // alert("Oops! Something went wrong. Payment failed.");
+      if (response) {
+        return updatedata(response);
       }
+      // return response;
     },
     prefill: {
       name: `${currentUser?.firstName} ${currentUser?.lastName}`,
@@ -57,56 +92,30 @@ export const razorPayment = async (currentUser, data, randomString) => {
 
   // Ensure Razorpay key exists and options are correctly set
   if (!options.key) {
-    console.error("Razorpay key is missing or invalid.");
     return "Razorpay key is missing or invalid.";
   }
 
   // Open Razorpay payment window
-  try {
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-  } catch (error) {
-    console.error("Error opening Razorpay:", error);
-    alert("Failed to open Razorpay. Please try again.");
-    return "Failed to open Razorpay.";
-  }
+  const razorpay = new window.Razorpay(options);
+  razorpay.open();
 };
 
 export const createOrderId = async (data) => {
   if (!data) return "unable to process payment.";
-  const key_id = import.meta.env.VITE_RAZOR_KEY_ID;
-  const key_secret = import.meta.env.VITE_RAZOR_KEY_SECRET;
-
-  // API endpoint for Razorpay order creation
-  const url = "https://api.razorpay.com/v1/orders";
-
   const payableAmount =
     data?.bookingPrice?.userPay || data?.bookingPrice?.totalPrice || 100;
 
   const booking_id = data?.booking_id;
   const amount = payableAmount;
-
-  // Prepare the order data to send
-  const options = {
-    amount: amount * 100, // Razorpay expects the amount in paise (100 paise = 1 INR)
-    currency: "INR",
-    receipt: "receipt#" + booking_id,
-  };
+  const options = { amount: amount, booking_id: booking_id };
 
   try {
-    // Make the API request to Razorpay using axios
-    const response = await axios.post(url, options, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      auth: {
-        username: key_id,
-        password: key_secret,
-      },
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/createOrderId`,
+      options
+    );
 
-    console.log("Order created:", response.data);
-    return response.data.id;
+    return response?.data;
   } catch (error) {
     console.error(
       "Error creating Razorpay order:",
