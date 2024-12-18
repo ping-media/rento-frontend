@@ -42,45 +42,44 @@ const Filters = () => {
   }, [location.pathname]);
 
   // this function will run after user apply any filter
-  const handleSubmitFilters = (e) => {
-    e.preventDefault();
-    if (
-      inputCategory != "" &&
-      inputbrand != "Choose Brand" &&
-      inputPlanId != ""
-    ) {
-      // console.log("entered");
-      //add new parameter in existing URL
-      queryParms.set("category", inputCategory.toLowerCase());
-      queryParms.set("brand", inputbrand);
-      queryParms.set("vehiclePlan", inputPlanId);
-      setQueryParms(queryParms);
-    } else if (inputbrand != "Choose Brand") {
-      // if it is present if not than do nothing
-      if (queryParms.get("category")) {
-        queryParms.delete("category");
-      }
-      queryParms.set("brand", inputbrand);
-      setQueryParms(queryParms);
-    } else if (inputPlanId != "") {
-      // if it is present if not than do nothing
-      if (queryParms.get("vehiclePlan")) {
-        queryParms.delete("vehiclePlan");
-      }
-      queryParms.set("vehiclePlan", inputPlanId);
-      setQueryParms(queryParms);
-    } else {
-      // if it is present if not than do nothing
-      if (queryParms.get("brand")) {
-        queryParms.delete("brand");
-      }
-      queryParms.set("category", inputCategory.toLowerCase());
-      setQueryParms(queryParms);
-    }
-    if (isFilterActive === true) {
-      dispatch(toggleFilter());
-    }
-  };
+  // const handleSubmitFilters = (e) => {
+  //   e.preventDefault();
+  //   if (
+  //     inputCategory != "" &&
+  //     (inputbrand != "Choose Brand" || inputbrand != "") &&
+  //     inputPlanId != ""
+  //   ) {
+  //     //add new parameter in existing URL
+  //     queryParms.set("category", inputCategory.toLowerCase());
+  //     queryParms.set("brand", inputbrand.toLowerCase());
+  //     queryParms.set("vehiclePlan", inputPlanId);
+  //     setQueryParms(queryParms);
+  //   } else if (inputbrand != "Choose Brand") {
+  //     // if it is present if not than do nothing
+  //     if (queryParms.get("category")) {
+  //       queryParms.delete("category");
+  //     }
+  //     queryParms.set("brand", inputbrand);
+  //     setQueryParms(queryParms);
+  //   } else if (inputPlanId != "") {
+  //     // if it is present if not than do nothing
+  //     if (queryParms.get("vehiclePlan")) {
+  //       queryParms.delete("vehiclePlan");
+  //     }
+  //     queryParms.set("vehiclePlan", inputPlanId);
+  //     setQueryParms(queryParms);
+  //   } else {
+  //     // if it is present if not than do nothing
+  //     if (queryParms.get("brand")) {
+  //       queryParms.delete("brand");
+  //     }
+  //     queryParms.set("category", inputCategory.toLowerCase());
+  //     setQueryParms(queryParms);
+  //   }
+  //   if (isFilterActive === true) {
+  //     dispatch(toggleFilter());
+  //   }
+  // };
 
   // delete applied filters
   const handleClearFilters = () => {

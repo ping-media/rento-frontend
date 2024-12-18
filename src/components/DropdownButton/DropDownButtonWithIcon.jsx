@@ -3,15 +3,21 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 import PreLoader from "../skeleton/PreLoader";
 import { handleCheckLocationChange } from "../../Redux/LocationSlice/LocationSlice";
+import { useLocation, useParams } from "react-router-dom";
+import { updateStationId } from "../../utils";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
-  const { isLocationChange } = useSelector((state) => state.selectedLocation);
+  const { isLocationChange, selectedLocation } = useSelector(
+    (state) => state.selectedLocation
+  );
   const [changeStationLoading, setChangeLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueId, setSelectedValueId] = useState("");
-  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
+  const [dropdownPosition, setDropdownPosition] = useState("bottom");
+  const { id } = useParams();
+  const customLocation = useLocation();
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
@@ -20,9 +26,13 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
     try {
       if (!loading) {
         setChangeLoading(true);
+        // when changing the location this will run
         if (isLocationChange == true && station.length > 0) {
           setSelectedValue(station[0]?.stationName);
           setSelectedValueId(station[0]?.stationId);
+          // for updating the url based on new station
+          updateStationId(customLocation, station[0]?.stationId);
+          // changing the flag to false so that this function don't run every time
           dispatch(handleCheckLocationChange());
         } else if (station.length > 0 && value) {
           const stationDataById = station?.filter(
@@ -43,6 +53,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
     }
   }, [loading, station]);
 
+  // for changing station when we click on station
   const handleLocationChange = (id, value) => {
     setSelectedValueId(id);
     setSelectedValue(value);
@@ -92,7 +103,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
       onClick={() => {
         if (!isDisabled) {
           setIsOpened(!isOpened);
-          checkDropdownPosition(); // Check position when toggling
+          checkDropdownPosition();
         }
       }}
       type="button"

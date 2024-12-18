@@ -390,6 +390,14 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
+const updateStationId = (location, newId) => {
+  const pathSegments = location.pathname.split("/");
+  pathSegments[pathSegments.length - 1] = newId;
+  const newPathname = pathSegments.join("/");
+  const newUrl = `${newPathname}${location.search}`;
+  window.history.pushState({}, "", newUrl);
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -413,4 +421,5 @@ export {
   addDaysToDate,
   camelCaseToSpaceSeparated,
   formatPrice,
+  updateStationId,
 };

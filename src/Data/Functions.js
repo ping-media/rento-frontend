@@ -84,7 +84,6 @@ const fetchingPlansFilters = async (dispatch, id) => {
     }
   } catch (error) {
     dispatch(resetFilters());
-    // console.log(error?.message);
   }
 };
 
@@ -102,7 +101,6 @@ const searchData = async (
         `/getStationData?locationId=${selectedLocation?.locationId}`
       );
       if (result) {
-        // console.log(result?.data);
         return dispatch(addStationData(result?.data));
       }
     }
@@ -223,7 +221,6 @@ const handleFetchBookingData = (
       payInitFrom: "cash",
       paySuccessId: "NA",
     };
-    // console.log(data);
     dispatch(addTempBookingData(data));
     return setBookingLoading(false);
   }
@@ -249,20 +246,15 @@ const handleCreateBooking = async (
   } catch (error) {
     console.log(error?.message);
   }
-  // finally {
-  //   setBookingLoading(false);
-  // }
 };
 
 const handleUpdateBooking = async (
-  // e,
   data,
   removeTempDate,
   handlebooking,
   handleAsyncError,
   dispatch
 ) => {
-  // e.preventDefault();
   //removing this after we are going to booking
   dispatch(removeTempDate());
   try {

@@ -18,7 +18,6 @@ const Filters = () => {
   // const navigate = useNavigate();
 
   const [queryParms, setQueryParms] = useSearchParams();
-  // const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
 
   // for fetching plan filters & setting up the value if present in url
   useEffect(() => {
@@ -44,39 +43,32 @@ const Filters = () => {
   // this function will run after user apply any filter
   const handleSubmitFilters = (e) => {
     e.preventDefault();
-    if (
-      inputCategory != "" &&
-      inputbrand != "Choose Brand" &&
-      inputPlanId != ""
-    ) {
-      // console.log("entered");
-      //add new parameter in existing URL
-      queryParms.set("category", inputCategory.toLowerCase());
-      queryParms.set("brand", inputbrand.toLowerCase());
-      queryParms.set("vehiclePlan", inputPlanId);
-      setQueryParms(queryParms);
-    } else if (inputbrand != "Choose Brand") {
-      // if it is present if not than do nothing
-      if (queryParms.get("category")) {
-        queryParms.delete("category");
-      }
-      queryParms.set("brand", inputbrand);
-      setQueryParms(queryParms);
-    } else if (inputPlanId != "") {
-      // if it is present if not than do nothing
-      if (queryParms.get("vehiclePlan")) {
-        queryParms.delete("vehiclePlan");
-      }
-      queryParms.set("vehiclePlan", inputPlanId);
-      setQueryParms(queryParms);
+    // Create a new URLSearchParams object to manipulate query params
+    const updatedQueryParms = new URLSearchParams(location.search);
+
+    // Set parameters if they are valid
+    if (inputCategory !== "") {
+      updatedQueryParms.set("category", inputCategory.toLowerCase());
     } else {
-      // if it is present if not than do nothing
-      if (queryParms.get("brand")) {
-        queryParms.delete("brand");
-      }
-      queryParms.set("category", inputCategory.toLowerCase());
-      setQueryParms(queryParms);
+      updatedQueryParms.delete("category");
     }
+
+    if (inputbrand !== "Choose Brand" && inputbrand !== "") {
+      updatedQueryParms.set("brand", inputbrand.toLowerCase());
+    } else {
+      updatedQueryParms.delete("brand");
+    }
+
+    if (inputPlanId !== "") {
+      updatedQueryParms.set("vehiclePlan", inputPlanId);
+    } else {
+      updatedQueryParms.delete("vehiclePlan");
+    }
+
+    // Update the queryParams using pushState or replaceState
+    const newUrl = `${location.pathname}?${updatedQueryParms.toString()}`;
+    setQueryParms(newUrl);
+
     if (isFilterActive === true) {
       dispatch(toggleFilter());
     }
@@ -173,7 +165,7 @@ const Filters = () => {
             labelId={"brands"}
             optionsList={brands}
             setValue={setInputbrand}
-            defaultValue={inputbrand && inputbrand}
+            defaultValue={inputbrand}
           />
         </div>
         <h2 className="font-semibold mb-2">Choose Packages</h2>

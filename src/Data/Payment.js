@@ -19,34 +19,37 @@ export const razorPayment = async (
 
   // function to create booking if after payment is completed
   const handleBookVehicle = async (response) => {
-    // for booking vehicle
-    const updatedData = {
-      ...data,
-      bookingStatus: "completed",
-      paymentStatus: "completed",
-      paymentMethod: result?.paymentMethod,
-      paySuccessId: response?.razorpay_payment_id,
-    };
+    try {
+      setBookingLoading && setBookingLoading(true);
+      // for booking vehicle
+      const updatedData = {
+        ...data,
+        bookingStatus: "completed",
+        paymentStatus: "completed",
+        paymentMethod: result?.paymentMethod,
+        paySuccessId: response?.razorpay_payment_id,
+      };
 
-    const bookingResponse = await handleCreateBooking(
-      updatedData,
-      handlebooking,
-      removeTempDate,
-      handleAsyncError,
-      dispatch
-    );
+      const bookingResponse = await handleCreateBooking(
+        updatedData,
+        handlebooking,
+        removeTempDate,
+        handleAsyncError,
+        dispatch
+      );
 
-    if (bookingResponse?.status == 200) {
-      handleAsyncError(dispatch, bookingResponse?.message, "success");
-      navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
-    } else {
-      handleAsyncError(dispatch, bookingResponse?.message);
+      if (bookingResponse?.status == 200) {
+        handleAsyncError(dispatch, bookingResponse?.message, "success");
+        navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
+      } else {
+        handleAsyncError(dispatch, bookingResponse?.message);
+      }
+    } catch (error) {
+      handleAsyncError(dispatch, "unable to create booking! try again");
+    } finally {
+      setBookingLoading && setBookingLoading(false);
     }
-
-    setBookingLoading && setBookingLoading(false);
   };
-
-  setBookingLoading && setBookingLoading(true);
 
   // Function to dynamically load Razorpay Checkout script
   const loadRazorpayScript = () => {

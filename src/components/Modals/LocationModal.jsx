@@ -90,7 +90,7 @@ const LocationModal = () => {
           </div>
 
           <div className="p-6 pt-5 text-center">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 :gap-2 w-full overflow-hidden h-96 overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-2 w-full overflow-hidden h-96 overflow-y-auto no-scrollbar">
               {!loading ? (
                 locationList?.length > 0 &&
                 locationList.map((item) => (
