@@ -17,22 +17,6 @@ export const razorPayment = async (
   if (!data && !currentUser && !orderId && !result)
     return "Unable to make payment! Please try again.";
 
-  console.log("Entered");
-
-  setBookingLoading && setBookingLoading(true);
-
-  // Function to dynamically load Razorpay Checkout script
-  const loadRazorpayScript = () => {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve();
-      script.onerror = (error) =>
-        reject(new Error("Failed to load Razorpay script."));
-      document.body.appendChild(script);
-    });
-  };
-
   // function to create booking if after payment is completed
   const handleBookVehicle = async (response) => {
     // for booking vehicle
@@ -60,6 +44,20 @@ export const razorPayment = async (
     }
 
     setBookingLoading && setBookingLoading(false);
+  };
+
+  setBookingLoading && setBookingLoading(true);
+
+  // Function to dynamically load Razorpay Checkout script
+  const loadRazorpayScript = () => {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve();
+      script.onerror = (error) =>
+        reject(new Error("Failed to load Razorpay script."));
+      document.body.appendChild(script);
+    });
   };
 
   await loadRazorpayScript();
