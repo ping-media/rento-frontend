@@ -107,7 +107,7 @@ const RideFareDetails = ({ rides }) => {
                       )}
                     </>
                   ) : (
-                    formatPrice(rides?.bookingPrice?.totalPrice)
+                    `₹ ${formatPrice(rides?.bookingPrice?.totalPrice)}`
                   )}
                 </p>
               </li>

@@ -51,7 +51,7 @@ const SearchRide = () => {
 
   // for searching vehicles
   const handleSearchRide = (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
     if (
