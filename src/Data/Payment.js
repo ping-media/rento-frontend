@@ -14,8 +14,10 @@ export const razorPayment = async (
   dispatch,
   setBookingLoading
 ) => {
-  if (!data && !currentUser && !orderId)
+  if (!data && !currentUser && !orderId && !result)
     return "Unable to make payment! Please try again.";
+
+  console.log("Entered");
 
   setBookingLoading && setBookingLoading(true);
 

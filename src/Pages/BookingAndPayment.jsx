@@ -54,28 +54,31 @@ const BookingAndPayment = () => {
         result?.paymentMethod == "partiallyPay"
       ) {
         const orderId = await createOrderId(data);
+        if (orderId) {
+          data = {
+            ...data,
+            payInitFrom: "Razorpay",
+            paymentgatewayOrderId: orderId?.id,
+            paymentgatewayReceiptId: orderId?.receipt,
+          };
 
-        data = {
-          ...data,
-          payInitFrom: "Razorpay",
-          paymentgatewayOrderId: orderId?.id,
-          paymentgatewayReceiptId: orderId?.receipt,
-        };
-
-        // if orderId is created successfully than send it to payment gateway
-        return await razorPayment(
-          currentUser,
-          data,
-          orderId,
-          result,
-          handleCreateBooking,
-          handleAsyncError,
-          navigate,
-          removeTempDate,
-          handlebooking,
-          dispatch,
-          setBookingLoading
-        );
+          // if orderId is created successfully than send it to payment gateway
+          return await razorPayment(
+            currentUser,
+            data,
+            orderId,
+            result,
+            handleCreateBooking,
+            handleAsyncError,
+            navigate,
+            removeTempDate,
+            handlebooking,
+            dispatch,
+            setBookingLoading
+          );
+        } else {
+          handleAsyncError(dispatch, "unable to make payment! try again");
+        }
       } else if (result?.paymentMethod == "cash") {
         data = {
           ...data,
