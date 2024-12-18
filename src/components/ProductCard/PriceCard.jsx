@@ -105,17 +105,17 @@ const PriceCard = ({
     {
       title: "Vehicle Rental Cost",
       name: "bookingPrice",
-      price: vehicleRentCost,
+      price: parseInt(vehicleRentCost),
     },
     {
       title: "Extra Helmet Price",
       name: "extraAddonPrice",
-      price: extraAddOnCost,
+      price: parseInt(extraAddOnCost),
     },
     {
       title: "GST(18% Applied)",
       name: "tax",
-      price: gSTCost,
+      price: parseInt(gSTCost),
     },
   ];
 

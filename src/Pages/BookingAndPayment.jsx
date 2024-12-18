@@ -35,11 +35,12 @@ const BookingAndPayment = () => {
         setBookingLoading(false);
         return handleAsyncError(dispatch, "select payment method first!");
       } else if (result?.paymentMethod == "partiallyPay") {
+        // if user select to pay some amount then this will run
         data = {
           ...data,
           bookingPrice: {
             ...data.bookingPrice,
-            userPay: parseInt(
+            userPaid: parseInt(
               (tempBookingData?.bookingPrice?.totalPrice * 20) / 100
             ),
           },
@@ -48,67 +49,62 @@ const BookingAndPayment = () => {
       // pushing payment method
       data = { ...data, paymentMethod: result?.paymentMethod };
 
-      // for booking
-      const bookingResponse = await handleCreateBooking(
-        e,
-        data,
-        handlebooking,
-        handleAsyncError,
-        dispatch
-      );
+      if (
+        result?.paymentMethod == "online" ||
+        result?.paymentMethod == "partiallyPay"
+      ) {
+        const orderId = await createOrderId(data);
 
-      if (bookingResponse?.status == 200) {
-        if (
-          result?.paymentMethod == "online" ||
-          result?.paymentMethod == "partiallyPay"
-        ) {
-          const orderId = await createOrderId(bookingResponse?.data);
-          console.log(
-            data,
-            result?.paymentMethod,
-            orderId,
-            bookingResponse?.data
-          );
+        data = {
+          ...data,
+          payInitFrom: "Razorpay",
+          paymentgatewayOrderId: orderId?.id,
+          paymentgatewayReceiptId: orderId?.receipt,
+        };
 
-          return await razorPayment(
-            currentUser,
-            bookingResponse,
-            orderId,
-            result,
-            handleAsyncError,
-            navigate,
-            removeTempDate,
-            handlebooking,
-            dispatch
-          );
-        } else {
-          await handleUpdateBooking(
-            {
-              _id: bookingResponse?.data?._id,
-              userId: currentUser?._id,
-              userType: currentUser?.userType,
-              bookingStatus: "completed",
-              paymentStatus: "completed",
-              paymentMethod: result?.paymentMethod,
-              payInitFrom: "cash",
-              paySuccessId: "NA",
-              paymentgatewayOrderId: "NA",
-            },
-            removeTempDate,
-            handlebooking,
-            handleAsyncError,
-            dispatch
-          );
-        }
-
-        if (result?.paymentMethod == "cash") {
+        // if orderId is created successfully than send it to payment gateway
+        return await razorPayment(
+          currentUser,
+          data,
+          orderId,
+          result,
+          handleCreateBooking,
+          handleAsyncError,
+          navigate,
+          removeTempDate,
+          handlebooking,
+          dispatch,
+          setBookingLoading
+        );
+      } else if (result?.paymentMethod == "cash") {
+        data = {
+          ...data,
+          bookingStatus: "completed",
+          paymentStatus: "pending",
+          paymentMethod: result?.paymentMethod,
+          payInitFrom: "cash",
+          paySuccessId: "NA",
+          paymentgatewayOrderId: "NA",
+        };
+        // for booking vehicle
+        const bookingResponse = await handleCreateBooking(
+          data,
+          handlebooking,
+          removeTempDate,
+          handleAsyncError,
+          dispatch
+        );
+        if (bookingResponse?.status == 200) {
           handleAsyncError(dispatch, bookingResponse?.message, "success");
           navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
+        } else {
+          handleAsyncError(dispatch, "unable to make booking! try again");
         }
       } else {
-        handleAsyncError(dispatch, "unable to create booking");
+        handleAsyncError(dispatch, "please select payment option first");
       }
     } catch (error) {
+      console.log(error?.message);
       return handleAsyncError(
         dispatch,
         "something went wrong while booking ride"

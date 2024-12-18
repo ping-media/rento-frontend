@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../../utils";
 
-const RideCard = ({ item, formatedDateAndTime = null }) => {
+const RideCard = ({ item, formatedDateAndTime = null, id }) => {
   const [isPageActive, setIsPageActive] = useState(false);
 
   useEffect(() => {
@@ -45,9 +45,6 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
           <p className="text-sm text-gray-400 mb-2 capitalize">
             Station Details: {item?.stationName}
           </p>
-          <p className="text-sm text-gray-400 mb-2">
-            {/* Rent Period: {getDurationInDays(startDate?.date, endDate?.date)} */}
-          </p>
           <div className="flex items-center gap-2 mb-2">
             <p className="text-sm text-gray-400">
               {item?.bookingPrice &&
@@ -63,6 +60,12 @@ const RideCard = ({ item, formatedDateAndTime = null }) => {
                 )}`}
             </p>
           </div>
+          {id && (
+            <p className="text-gray-400 italic">
+              (Deposit Amount to be paid at the time of pickup and will be
+              refunded after the drop)
+            </p>
+          )}
         </div>
       </div>
       {isPageActive ? (

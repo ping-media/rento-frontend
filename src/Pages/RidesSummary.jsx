@@ -25,9 +25,8 @@ const RidesSummary = () => {
       (async () => {
         dispatch(fetchingRides());
         const result = await fetchingData(`/getBookings?bookingId=${id}`);
-        // console.log(result);
-        // formatting data for user readability
         dispatch(addRidesData(result?.data));
+        // formatting data for user readability
         setFormatedDateAndTime(
           formatDateTimeForUser(result?.data[0]?.BookingStartDateAndTime)
         );
@@ -110,6 +109,7 @@ const RidesSummary = () => {
             <RideCard
               item={rides[0]}
               formatedDateAndTime={formatedDateAndTime}
+              id={id}
             />
           </div>
           <div className="mb-5">

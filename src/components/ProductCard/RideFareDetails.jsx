@@ -19,7 +19,6 @@ const RideFareDetails = ({ rides }) => {
             </div>
           )}
           <ul className="w-full leading-8">
-            {/* Iterate over all the fields except the totalPrice */}
             {Object.entries(rides?.bookingPrice)
               .filter(
                 ([key]) =>
@@ -40,6 +39,7 @@ const RideFareDetails = ({ rides }) => {
                         : camelCaseToSpaceSeparated(key)}
                     </p>
                     {key != "tax" &&
+                      key != "userPaid" &&
                       value != 0 &&
                       !rides?.bookingPrice.isPackageApplied && (
                         <p className="text-xs text-gray-500 mb-1">
@@ -73,16 +73,42 @@ const RideFareDetails = ({ rides }) => {
                         </p>
                       )}
                   </div>
-                  <p>₹{formatPrice(value)}</p>
+                  <p>
+                    {`${key == "userPaid" ? "-" : ""} ₹${formatPrice(value)}`}
+                  </p>
                 </li>
               ))}
 
             {/* Display the totalPrice last */}
             {rides?.bookingPrice.totalPrice && (
               <li className="flex items-center justify-between mt-1">
-                <p className="font-bold uppercase">Total Price</p>
-                <p className="font-bold">
-                  ₹{formatPrice(rides?.bookingPrice.totalPrice)}
+                <p className="font-bold uppercase text-left">
+                  Total Price
+                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                    {rides?.paymentMethod == "online"
+                      ? "(Already Paid)"
+                      : rides?.paymentMethod == "partiallyPay"
+                      ? ""
+                      : "(need to pay at pickup)"}
+                  </small>
+                </p>
+                <p className="font-bold text-right">
+                  {rides?.bookingPrice?.userPaid ? (
+                    <>
+                      <small className="block -mb-2 text-gray-500">{`(₹${formatPrice(
+                        rides?.bookingPrice?.totalPrice
+                      )} - ₹${formatPrice(
+                        rides?.bookingPrice?.userPaid
+                      )})`}</small>
+                      ₹
+                      {formatPrice(
+                        rides?.bookingPrice.totalPrice -
+                          rides?.bookingPrice?.userPaid
+                      )}
+                    </>
+                  ) : (
+                    formatPrice(rides?.bookingPrice?.totalPrice)
+                  )}
                 </p>
               </li>
             )}

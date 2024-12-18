@@ -221,7 +221,7 @@ const handleFetchBookingData = (
       rideStatus: "pending",
       paymentMethod: "cash",
       payInitFrom: "cash",
-      paySuccessId: "no id",
+      paySuccessId: "NA",
     };
     // console.log(data);
     dispatch(addTempBookingData(data));
@@ -230,27 +230,19 @@ const handleFetchBookingData = (
 };
 
 const handleCreateBooking = async (
-  e,
   data,
-  // removeTempDate,
   handlebooking,
+  removeTempDate,
   handleAsyncError,
-  // navigate,
   dispatch
-  // setBookingLoading
 ) => {
-  // setBookingLoading(true);
-  e.preventDefault();
   //removing this after we are going to booking
-  // dispatch(removeTempDate());
+  dispatch(removeTempDate());
   try {
     if (!data) return handleAsyncError(dispatch, "Unable to Book Ride");
     const response = await handlebooking(data);
     if (response?.status == 200) {
       return response;
-      // console.log(response?.data);
-      // handleAsyncError(dispatch, response?.message, "success");
-      // navigate(`/my-rides/summary/${response?.data?.bookingId}`);
     } else {
       handleAsyncError(dispatch, response?.message);
     }
