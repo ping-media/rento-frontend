@@ -65,7 +65,7 @@ const InfoCard = ({
   }, []);
 
   return (
-    <div className="flex justify-between flex-wrap mt-6 mb-4 px-4 cursor-default">
+    <div className="flex justify-between flex-wrap mt-6 mb-4 cursor-default">
       {vehicleImage ? (
         <div className="w-62 h-40 mx-auto lg:mx-0">
           <img
@@ -238,7 +238,7 @@ const InfoCard = ({
         )}
       </div>
       <div className="mt-2 lg:mt-0">
-        <h2 className="font-semibold flex items-center px-2">
+        <h2 className="font-semibold flex items-center px-4 lg:px-2">
           <span className="lg:hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"

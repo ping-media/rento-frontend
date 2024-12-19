@@ -39,7 +39,7 @@ const RidesSummary = () => {
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
         <div className="mb-1 flex items-center gap-3">
           <button
-            className="flex lg:hidden items-center gap-1 p-2 rounded-lg border-2 border-theme bg-theme text-gray-100"
+            className="flex lg:hidden items-center gap-1 p-1.5 rounded-lg border-2 border-theme bg-theme text-gray-100"
             type="button"
             onClick={() => handlePreviousPage(navigate)}
           >
@@ -57,28 +57,27 @@ const RidesSummary = () => {
             </svg>
             <span className="text-sm">Back</span>
           </button>
-          <h2 className="font-bold text-xl uppercase py-2">
+          <h2 className="font-bold text-lg lg:text-xl uppercase py-2">
             Booking <span className="text-theme">Information</span>
           </h2>
         </div>
-        <div className="px-4 py-3.5 -mx-4 bg-lighter-gray flex items-center justify-between mb-5 text-sm">
+        <div className="px-4 py-3.5 -mx-4 bg-lighter-gray flex flex-wrap gap-2 items-center justify-between mb-5 text-sm">
           <div className="flex items-center">
             <p className="font-semibold w-full lg:w-auto text-gray-600">
               <span className="block lg:inline">
                 Booking Id: #{rides[0]?.bookingId}
               </span>
               <span className="mx-1 hidden lg:inline">|</span>
-              BookingDate: {formatedDateAndTime?.date} :{" "}
+              Booking Date & Time: {formatedDateAndTime?.date} :{" "}
               {formatedDateAndTime?.time}
             </p>
           </div>
           <div
-            type="button"
             className={`${
               rides[0]?.bookingStatus == "completed"
                 ? "bg-green-500 bg-opacity-80 hover:bg-opacity-100"
                 : "bg-theme"
-            } text-gray-100 p-1 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none border-0 rounded-md cursor-pointer`}
+            } text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none border-0 rounded-md cursor-pointer`}
           >
             Booking Status:{" "}
             <span className="uppercase">{rides[0]?.bookingStatus}</span>
@@ -185,7 +184,7 @@ const RidesSummary = () => {
               </span>
               Things To Remember
             </h2>
-            <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3 bg-gray-400 bg-opacity-20">
+            <div className="px-2 lg:px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3 bg-gray-400 bg-opacity-20">
               <ThingsToRemember rides={rides && rides[0]} />
             </div>
           </div>

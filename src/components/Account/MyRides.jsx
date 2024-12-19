@@ -30,12 +30,17 @@ const MyRides = () => {
   // Tab content array
   const tabs = [
     {
+      name: "On Going",
+      content: rides && rides.filter((item) => item?.rideStatus === "pending"),
+    },
+    {
       name: "Pending",
       content:
         rides &&
         rides.filter(
           (item) =>
-            item?.rideStatus === "pending" || item?.paymentStatus === "pending"
+            item?.paymentStatus === "pending" ||
+            item?.bookingStatus === "pending"
         ),
     },
     {
@@ -45,7 +50,8 @@ const MyRides = () => {
         rides.filter(
           (item) =>
             item?.rideStatus === "canceled" ||
-            item?.paymentStatus === "canceled"
+            item?.paymentStatus === "canceled" ||
+            item?.bookingStatus === "canceled"
         ),
     },
     {
@@ -67,7 +73,7 @@ const MyRides = () => {
           <button
             key={index}
             onClick={() => setActiveTab(index)}
-            className={`py-2 px-4 text-lg font-medium 
+            className={`whitespace-nowrap py-2 px-2 lg:px-4 text-sm lg:text-lg font-medium 
               ${
                 activeTab === index
                   ? "text-theme border-b-2 border-theme"

@@ -68,7 +68,7 @@ const Search = () => {
       {/* mobileSearch  */}
       <div className="lg:hidden bg-white shadow-md px-6 py-2 lg:py-3 flex items-center justify-between">
         <button
-          className="flex items-center gap-1 p-2 rounded-lg border-2 border-theme bg-theme text-gray-100"
+          className="flex items-center gap-1 p-1"
           type="button"
           onClick={() => handlePreviousPage(navigate)}
         >

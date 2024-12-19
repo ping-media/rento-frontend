@@ -26,13 +26,13 @@ const ThingsToRemember = ({ rides }) => {
       <ul className="w-full leading-8">
         {Object.entries(thingsToRemember).map(([key, value]) => (
           <li key={key} className="flex items-center justify-between">
-            <div>
+            <div className="w-[75%]">
               <p className="font-semibold uppercase">
                 {camelCaseToSpaceSeparated(key)}
               </p>
               <p className="text-xs text-gray-500 mb-1">({value?.message})</p>
             </div>{" "}
-            <p>
+            <p className="text-right w-auto">
               {key.includes("Limit")
                 ? `${value?.limit} Km/hr`
                 : `₹ ${value?.limit || 0}/hr`}

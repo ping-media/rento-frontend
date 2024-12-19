@@ -1,15 +1,15 @@
 import axios from "axios";
-import favicon from "../../public/favicon.ico";
+import favicon from "../assets/favicon.ico";
 
 export const razorPayment = async (
   currentUser,
   data,
   orderId,
   result,
-  handleCreateBooking,
+  handleUpdateBooking,
   handleAsyncError,
   navigate,
-  removeTempDate,
+  // removeTempDate,
   handlebooking,
   dispatch,
   setBookingLoading
@@ -30,16 +30,19 @@ export const razorPayment = async (
         paySuccessId: response?.razorpay_payment_id,
       };
 
-      const bookingResponse = await handleCreateBooking(
+      // updating booking
+      const bookingResponse = await handleUpdateBooking(
         updatedData,
         handlebooking,
-        removeTempDate,
         handleAsyncError,
         dispatch
       );
 
+      // deleting temp booking
+      localStorage.removeItem("tempBooking");
+
       if (bookingResponse?.status == 200) {
-        handleAsyncError(dispatch, bookingResponse?.message, "success");
+        handleAsyncError(dispatch, "Ride booked successfully.", "success");
         navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
       } else {
         handleAsyncError(dispatch, bookingResponse?.message);
@@ -80,7 +83,7 @@ export const razorPayment = async (
     handler: (response) => {
       // console.log(response);
       if (response) {
-        handleBookVehicle(response);
+        return handleBookVehicle(response);
       } else {
         handleAsyncError(dispatch, "payment failed!");
       }
@@ -110,7 +113,7 @@ export const createOrderId = async (data) => {
     data?.bookingPrice?.userPaid || data?.bookingPrice?.totalPrice || 100;
 
   const amount = payableAmount;
-  const options = { amount: amount };
+  const options = { amount: amount, booking_id: data?.bookingId };
 
   try {
     const response = await axios.post(

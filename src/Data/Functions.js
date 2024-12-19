@@ -250,13 +250,10 @@ const handleCreateBooking = async (
 
 const handleUpdateBooking = async (
   data,
-  removeTempDate,
   handlebooking,
   handleAsyncError,
   dispatch
 ) => {
-  //removing this after we are going to booking
-  dispatch(removeTempDate());
   try {
     if (!data)
       return handleAsyncError(
@@ -265,7 +262,7 @@ const handleUpdateBooking = async (
       );
     const response = await handlebooking(data);
     if (response?.status == 200) {
-      return response?.data;
+      return response;
     } else {
       handleAsyncError(dispatch, response?.message);
     }
