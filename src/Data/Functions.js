@@ -391,6 +391,7 @@ const handleCreateBookingSubmit = async (
               payInitFrom: "Razorpay",
               paymentgatewayOrderId: orderId?.id,
               paymentgatewayReceiptId: orderId?.receipt,
+              paymentInitiatedDate: orderId?.created_at,
             };
 
             // store booking data

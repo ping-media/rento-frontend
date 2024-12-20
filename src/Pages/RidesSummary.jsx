@@ -110,9 +110,10 @@ const RidesSummary = () => {
             )}
             <div
               className={`${
-                rides[0]?.bookingStatus == "completed"
-                  ? "bg-green-500 bg-opacity-80 hover:bg-opacity-100"
-                  : "bg-theme"
+                (rides[0]?.bookingStatus == "done" &&
+                  "bg-green-500 bg-opacity-80 hover:bg-opacity-100") ||
+                (rides[0]?.bookingStatus == "canceled" && "bg-theme") ||
+                (rides[0]?.bookingStatus == "pending" && "bg-orange-400")
               } text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 shadow-md outline-none border-0 rounded-md cursor-pointer`}
             >
               Booking Status:{" "}

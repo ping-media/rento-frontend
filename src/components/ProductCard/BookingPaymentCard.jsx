@@ -20,7 +20,7 @@ const BookingPaymentCard = () => {
               />
             </svg>
           </div>
-          <h2 className="text-md">Pay 20% Now</h2>
+          <h2 className="text-md">Pay 20%(Advanced)</h2>
         </div>
         <input
           type="radio"
@@ -60,7 +60,7 @@ const BookingPaymentCard = () => {
         />
       </label>
       {/* pay on pickup  */}
-      <label className="has-[:checked]:bg-white/30 has-[:checked]:text-theme has-[:checked]:ring-theme has-[:checked]:ring-2 cursor-pointer bg-white/40 hover:bg-white/20 w-72 p-3 rounded-md flex justify-between items-center shadow mb-2">
+      {/* <label className="has-[:checked]:bg-white/30 has-[:checked]:text-theme has-[:checked]:ring-theme has-[:checked]:ring-2 cursor-pointer bg-white/40 hover:bg-white/20 w-72 p-3 rounded-md flex justify-between items-center shadow mb-2">
         <div className="flex items-center space-x-5">
           <div className="flex items-center">
             <svg
@@ -86,7 +86,7 @@ const BookingPaymentCard = () => {
           value={"cash"}
           className="checked:border-theme h-4 w-4"
         />
-      </label>
+      </label> */}
     </div>
   );
 };

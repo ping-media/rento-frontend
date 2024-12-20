@@ -5,7 +5,7 @@ const ThingsToRemember = ({ rides }) => {
     distanceLimit: {
       limit: rides?.vehicleBasic?.freeLimit,
       message:
-        "Utilise the total distance limit of the package as per your will (all kms in a day or some kms per day).",
+        "Utilise the total distance limit of the package as per your will all kms in a day or some kms per day.",
     },
     excessCharge: {
       limit: rides?.vehicleBasic?.extraKmCharge,

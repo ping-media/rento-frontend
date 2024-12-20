@@ -21,11 +21,13 @@ const RideFareDetails = ({ rides }) => {
           <ul className="w-full leading-8">
             {Object.entries(rides?.bookingPrice)
               .filter(
-                ([key]) =>
+                ([key, value]) =>
                   key !== "totalPrice" &&
                   key !== "vehiclePrice" &&
                   key !== "rentAmount" &&
-                  key !== "isPackageApplied"
+                  key !== "isPackageApplied" &&
+                  key !== "userPaid" &&
+                  !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
                 <li
@@ -73,45 +75,65 @@ const RideFareDetails = ({ rides }) => {
                         </p>
                       )}
                   </div>
-                  <p>
-                    {`${key == "userPaid" ? "-" : ""} ₹${formatPrice(value)}`}
-                  </p>
+                  <p>{`₹${formatPrice(value)}`}</p>
                 </li>
               ))}
 
-            {/* Display the totalPrice last */}
-            {rides?.bookingPrice.totalPrice && (
+            {/* Display the totalPrice & user paid & remaining amount last */}
+            {rides?.bookingPrice?.totalPrice && (
               <li className="flex items-center justify-between mt-1">
                 <p className="font-bold uppercase text-left">
                   Total Price
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     {rides?.paymentMethod == "online" &&
                     rides?.paySuccessId != "NA"
-                      ? "(Already Paid)"
+                      ? "(Full Paid)"
                       : rides?.paymentMethod == "partiallyPay"
                       ? ""
                       : "(need to pay at pickup)"}
                   </small>
                 </p>
                 <p className="font-bold text-right">
-                  {rides?.bookingPrice?.userPaid ? (
-                    <>
-                      <small className="block -mb-2 text-gray-500">{`(₹${formatPrice(
-                        rides?.bookingPrice?.totalPrice
-                      )} - ₹${formatPrice(
-                        rides?.bookingPrice?.userPaid
-                      )})`}</small>
-                      ₹
-                      {formatPrice(
-                        rides?.bookingPrice.totalPrice -
-                          rides?.bookingPrice?.userPaid
-                      )}
-                    </>
-                  ) : (
-                    `₹ ${formatPrice(rides?.bookingPrice?.totalPrice)}`
-                  )}
+                  {`₹ ${formatPrice(rides?.bookingPrice?.totalPrice)}`}
                 </p>
               </li>
+            )}
+            {rides?.bookingPrice?.userPaid && (
+              <>
+                <li className="flex items-center justify-between mt-1">
+                  <p className="font-semibold uppercase text-left">
+                    Amount Paid
+                  </p>
+                  <p className="font-bold text-right">
+                    {`- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`}
+                  </p>
+                </li>
+                <li className="flex items-center justify-between mt-1">
+                  <p className="font-semibold uppercase text-left">
+                    Remaining Amount
+                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                      (need to pay at pickup)
+                    </small>
+                  </p>
+                  <p className="font-bold text-right">
+                    {`₹${formatPrice(
+                      rides?.bookingPrice.totalPrice -
+                        rides?.bookingPrice?.userPaid
+                    )}`}
+                  </p>
+                </li>
+                <li className="flex items-center justify-between mt-1 border-t-2">
+                  <p className="font-semibold uppercase text-left">
+                    Refundable Deposit Amount
+                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                      (need to pay at pickup and will be refunded after drop)
+                    </small>
+                  </p>
+                  <p className="font-bold text-right">
+                    {`₹${formatPrice(Number(1000))}`}
+                  </p>
+                </li>
+              </>
             )}
           </ul>
         </>

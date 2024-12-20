@@ -47,7 +47,7 @@ const RideCard = ({ item, formatedDateAndTime = null, id }) => {
             <p className="text-xs lg:text-sm text-gray-400 mb-2 capitalize">
               Station Details: {item?.stationName}
             </p>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-1 lg:gap-2 mb-2">
               <p className="text-xs lg:text-sm text-gray-400">
                 {item?.bookingPrice &&
                   `Booking Amount: ₹${formatPrice(
@@ -57,7 +57,7 @@ const RideCard = ({ item, formatedDateAndTime = null, id }) => {
               <span className="mx-1 text-sm text-gray-400">|</span>
               <p className="text-xs lg:text-sm text-gray-400">
                 {item?.bookingPrice &&
-                  `Deposit Amount: ₹${formatPrice(
+                  `Refundable Deposit Amount: ₹${formatPrice(
                     item?.vehicleBasic?.refundableDeposit
                   )}`}
               </p>

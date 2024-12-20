@@ -23,8 +23,9 @@ export const razorPayment = async (
       // for booking vehicle
       const updatedData = {
         ...data,
-        bookingStatus: "completed",
-        paymentStatus: "completed",
+        bookingStatus: "done",
+        paymentStatus:
+          result?.paymentMethod == "partiallyPay" ? "partially_paid" : "paid",
         paymentMethod: result?.paymentMethod,
         paySuccessId: response?.razorpay_payment_id,
       };
@@ -42,7 +43,7 @@ export const razorPayment = async (
 
       if (bookingResponse?.status == 200) {
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
-        navigate(`/my-rides/summary/${bookingResponse?.data?.bookingId}`);
+        navigate(`/my-rides/summary/${updatedData?.bookingId}`);
       } else {
         handleAsyncError(dispatch, bookingResponse?.message);
       }

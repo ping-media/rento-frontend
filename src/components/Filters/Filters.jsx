@@ -15,7 +15,6 @@ const Filters = () => {
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
 
   const [queryParms, setQueryParms] = useSearchParams();
 
