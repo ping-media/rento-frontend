@@ -61,7 +61,7 @@ const MyRides = () => {
   ];
 
   return (
-    <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
+    <div className="border-2 rounded-lg px-2 lg:px-4 py-2 shadow-md bg-white mb-3">
       <div className="mb-1">
         <h2 className="font-bold text-xl uppercase py-2">
           My <span className="text-theme">Rides</span>

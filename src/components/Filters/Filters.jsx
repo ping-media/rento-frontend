@@ -128,7 +128,7 @@ const Filters = () => {
               </button>
             )}
           </div>
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center lg:justify-between gap-2">
             {Categories.map((item, index) => (
               <button
                 type="button"
@@ -165,7 +165,7 @@ const Filters = () => {
             labelId={"brands"}
             optionsList={brands}
             setValue={setInputbrand}
-            defaultValue={inputbrand}
+            defaultValue={inputbrand || "Choose Brand"}
           />
         </div>
         <h2 className="font-semibold mb-2">Choose Packages</h2>

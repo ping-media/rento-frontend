@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import PreLoader from "../skeleton/PreLoader";
 import { useEffect, useState } from "react";
 import { fetchingData } from "../../Data";
+import { useSelector } from "react-redux";
 
 const LocationCard = ({
   stationName,
@@ -10,6 +11,7 @@ const LocationCard = ({
   stationLoading,
 }) => {
   const [stationUser, setStationUser] = useState(null);
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   // for fetching station master details
   useEffect(() => {
     if (stationMasterUserId) {
@@ -29,7 +31,9 @@ const LocationCard = ({
     <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
       <div className="w-full lg:w-48 h-48">
         <img
-          src={`https://maps.googleapis.com/maps/api/staticmap?center=New+York&zoom=10&size=600x400&markers=color:red|label:A|40.7128,-74.0060&key=${
+          src={`https://maps.googleapis.com/maps/api/staticmap?center=${
+            selectedLocation?.locationName
+          }k&zoom=10&size=600x400&markers=color:red|label:A|40.7128,-74.0060&key=${
             import.meta.env.VITE_MAP_KEY
           }`}
           className="rounded-lg w-full h-full object-cover"

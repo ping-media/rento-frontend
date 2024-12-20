@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   formatDateTimeForUser,
+  formatPrice,
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
@@ -193,7 +194,7 @@ const BookingInfoCard = ({
           </span>
           <div>
             <p className={`text-lg`}>
-              ₹{Number(bookingPrice?.rentAmount)}/
+              ₹{formatPrice(Number(bookingPrice?.rentAmount))}/
               <span className="text-sm">day</span>
             </p>
           </div>

@@ -4,6 +4,7 @@ import {
   handleRestAll,
   toggleLoginModal,
   toggleSideBarModal,
+  toggleSignOutModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import { menuList } from "../../Data/dummyData";
 import SigninButton from "../Button/SigninButton";
@@ -28,7 +29,7 @@ const Sidebar = () => {
     <div
       className={`${
         isMainSideBarActive ? "left-0" : "left-[-100%]"
-      } absolute top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 transition-all duration-300 ease-in-out`}
+      } fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-40 transition-all duration-300 ease-in-out`}
     >
       <div className="w-[80%] bg-white h-full">
         <div className="bg-theme-black px-4 py-2.5 flex items-center justify-between mb-3">
@@ -92,7 +93,11 @@ const Sidebar = () => {
                   <button
                     className="capitalize font-semibold flex items-center justify-between w-full"
                     type="button"
-                    onClick={() => handleNavigation(item?.link)}
+                    onClick={
+                      item?.title == "Logout"
+                        ? () => dispatch(toggleSignOutModal())
+                        : () => handleNavigation(item?.link)
+                    }
                   >
                     {item?.title}
                     <span>

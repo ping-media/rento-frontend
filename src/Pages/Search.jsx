@@ -119,7 +119,7 @@ const Search = () => {
             className={`${
               !isFilterActive
                 ? "hidden lg:block"
-                : "absolute w-full bg-white h-full left-0 top-0 z-20"
+                : "fixed w-full bg-white h-full left-0 top-0 z-20"
             } col-span-1 px-4`}
           >
             <div className="lg:hidden py-2 border-b-2 px-4 flex items-center justify-between">

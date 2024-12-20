@@ -24,6 +24,13 @@ const Layout = () => {
     }
   }, [user]);
 
+  // this is to delete the temp booking
+  useEffect(() => {
+    if (localStorage.getItem("tempBooking")) {
+      localStorage.removeItem("tempBooking");
+    }
+  }, [location.href]);
+
   return (
     <>
       {/* login & register modals */}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import PreLoader from "../skeleton/PreLoader";
 
 const CheckboxFilter = ({ vehiclePlan, setPlanIdChanger }) => {
   const { filter, filterLoading } = useSelector((state) => state.filter);
@@ -57,7 +58,7 @@ const CheckboxFilter = ({ vehiclePlan, setPlanIdChanger }) => {
       <div className="text-gray-400 italic">No Plans found.</div>
     )
   ) : (
-    <div className="text-gray-400 italic">loading...</div>
+    <PreLoader />
   );
 };
 

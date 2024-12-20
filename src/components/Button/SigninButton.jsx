@@ -4,11 +4,11 @@ import { showGreeting } from "../../utils";
 const SigninButton = () => {
   const { currentUser } = useSelector((state) => state.user);
   return (
-    <button className="flex items-center gap-1.5 px-4 py-2 lg:py-1 bg-theme text-gray-100 rounded-md uppercase font-semibold hover:bg-theme-dark w-full">
+    <button className="flex items-center gap-1.5 px-4 py-1 bg-theme text-gray-100 rounded-md uppercase font-semibold hover:bg-theme-dark w-full">
       <span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-10 h-10"
+          className="w-9 lg:w-10 w-9 lg:h-10"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -22,8 +22,10 @@ const SigninButton = () => {
         </svg>
       </span>
       <div className="text-left">
-        <small>{showGreeting()},</small>
-        <p className="font-semibold text-xl">{currentUser?.firstName}</p>
+        <p className="text-xs">{showGreeting()},</p>
+        <p className="font-semibold text-md lg:text-xl">
+          {currentUser?.firstName}
+        </p>
       </div>
     </button>
   );

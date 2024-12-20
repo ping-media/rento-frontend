@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 const DropDownButton = ({ labelId, optionsList, setValue, defaultValue }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [selectedValue, setSelectedValue] = useState(
-    defaultValue && optionsList.includes(defaultValue)
+    defaultValue &&
+      defaultValue.trim() !== "" &&
+      optionsList.includes(defaultValue)
       ? defaultValue
       : "Choose Brand"
   );
@@ -13,10 +15,9 @@ const DropDownButton = ({ labelId, optionsList, setValue, defaultValue }) => {
     setIsOpened(!isOpened);
   };
 
-  // Sync `selectedValue` with parent component if `setValue` is provided
   useEffect(() => {
     if (setValue && selectedValue !== "Choose Brand") {
-      setValue(selectedValue); // Pass updated value to parent
+      setValue(selectedValue);
     }
   }, [selectedValue, setValue]);
 

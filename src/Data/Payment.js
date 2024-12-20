@@ -9,7 +9,6 @@ export const razorPayment = async (
   handleUpdateBooking,
   handleAsyncError,
   navigate,
-  // removeTempDate,
   handlebooking,
   dispatch,
   setBookingLoading
@@ -61,7 +60,7 @@ export const razorPayment = async (
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve();
       script.onerror = (error) =>
-        reject(new Error("Failed to load Razorpay script."));
+        reject(new Error("Failed to open payment gateway."));
       document.body.appendChild(script);
     });
   };
@@ -97,10 +96,6 @@ export const razorPayment = async (
       color: "#e23844", // Payment widget color
     },
   };
-
-  if (!options.key) {
-    return "Razorpay key is missing or invalid.";
-  }
 
   const razorpay = new window.Razorpay(options);
   razorpay.open();

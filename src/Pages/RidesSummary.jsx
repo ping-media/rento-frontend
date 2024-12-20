@@ -4,12 +4,15 @@ import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
 import { useEffect, useState } from "react";
 import { addRidesData, fetchingRides } from "../Redux/RidesSlice/RideSlice";
-import { fetchingData } from "../Data";
+import { fetchingData, handlebooking } from "../Data";
 import { useDispatch, useSelector } from "react-redux";
 import PreLoader from "../components/skeleton/PreLoader";
 import RideFareDetails from "../components/ProductCard/RideFareDetails";
 import ThingsToRemember from "../components/ProductCard/ThingsToRemember";
 import BookingError from "../components/Error/BookingError";
+import { razorPayment } from "../Data/Payment";
+import { handleUpdateBooking } from "../Data/Functions";
+import { handleAsyncError } from "../utils/handleAsyncError";
 
 const RidesSummary = () => {
   const navigate = useNavigate();
@@ -17,6 +20,8 @@ const RidesSummary = () => {
   const { id } = useParams();
   const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
   const [stationLoading, setStationLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
   const { rides, loading } = useSelector((state) => state.rides);
 
   // fetching booking data using booking id
@@ -32,7 +37,28 @@ const RidesSummary = () => {
         );
       })();
     }
-  }, []);
+  }, [bookingLoading]);
+
+  // back button to let them go back to ride page
+  const handleBackToRides = () => {
+    navigate("/my-rides");
+  };
+
+  // for making payment
+  const handleMakePayment = async () => {
+    return await razorPayment(
+      currentUser,
+      rides[0],
+      { id: rides[0]?.paymentgatewayOrderId },
+      { paymentMethod: rides[0]?.paymentMethod },
+      handleUpdateBooking,
+      handleAsyncError,
+      navigate,
+      handlebooking,
+      dispatch,
+      setBookingLoading
+    );
+  };
 
   return !loading ? (
     rides?.length == 1 ? (
@@ -41,7 +67,7 @@ const RidesSummary = () => {
           <button
             className="flex lg:hidden items-center gap-1 p-1.5 rounded-lg border-2 border-theme bg-theme text-gray-100"
             type="button"
-            onClick={() => handlePreviousPage(navigate)}
+            onClick={handleBackToRides}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -72,15 +98,26 @@ const RidesSummary = () => {
               {formatedDateAndTime?.time}
             </p>
           </div>
-          <div
-            className={`${
-              rides[0]?.bookingStatus == "completed"
-                ? "bg-green-500 bg-opacity-80 hover:bg-opacity-100"
-                : "bg-theme"
-            } text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none border-0 rounded-md cursor-pointer`}
-          >
-            Booking Status:{" "}
-            <span className="uppercase">{rides[0]?.bookingStatus}</span>
+          <div className="flex items-center gap-2">
+            {rides[0]?.bookingStatus == "pending" && (
+              <button
+                className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none rounded-md capitalize border"
+                type="button"
+                onClick={handleMakePayment}
+              >
+                make payment
+              </button>
+            )}
+            <div
+              className={`${
+                rides[0]?.bookingStatus == "completed"
+                  ? "bg-green-500 bg-opacity-80 hover:bg-opacity-100"
+                  : "bg-theme"
+              } text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 shadow-md outline-none border-0 rounded-md cursor-pointer`}
+            >
+              Booking Status:{" "}
+              <span className="uppercase">{rides[0]?.bookingStatus}</span>
+            </div>
           </div>
         </div>
         {/* lg:max-h-96 */}

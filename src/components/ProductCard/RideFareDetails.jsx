@@ -85,7 +85,8 @@ const RideFareDetails = ({ rides }) => {
                 <p className="font-bold uppercase text-left">
                   Total Price
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    {rides?.paymentMethod == "online"
+                    {rides?.paymentMethod == "online" &&
+                    rides?.paySuccessId != "NA"
                       ? "(Already Paid)"
                       : rides?.paymentMethod == "partiallyPay"
                       ? ""
