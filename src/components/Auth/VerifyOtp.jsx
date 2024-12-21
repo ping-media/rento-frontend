@@ -162,7 +162,6 @@ const VerifyOtp = ({
   return (
     <form onSubmit={handleLogin}>
       <>
-        {console.log(seconds)}
         <p className="text-gray-400 lg:text-gray-600 text-center mb-4">
           Code sent to {email != "" ? email : `+91-(${phone})`}
         </p>
