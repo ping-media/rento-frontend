@@ -16,6 +16,8 @@ const RegisterModal = () => {
   const dispatch = useDispatch();
   const { isRegisterModalActive } = useSelector((state) => state.modals);
   const [isverfiyOtpActive, setIsVerfiyOtpActive] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   const [inputNumber, setInputNumber] = useState(null);
   const [loadings, setLoadings] = useState(false);
 
@@ -35,6 +37,8 @@ const RegisterModal = () => {
             handleAsyncError(dispatch, response?.message, "success");
             setIsVerfiyOtpActive(true);
             setInputNumber(result?.contact);
+            setSeconds(30);
+            setIsTimerActive(true);
           } else {
             handleAsyncError(dispatch, response?.message);
           }
@@ -159,6 +163,10 @@ const RegisterModal = () => {
               setOtpValue={setIsVerfiyOtpActive}
               setInputValue={setInputNumber}
               modalChange={toggleRegisterModal}
+              seconds={seconds}
+              setSecondChanger={setSeconds}
+              isTimerActive={isTimerActive}
+              setTimerActive={setIsTimerActive}
             />
           )}
         </div>

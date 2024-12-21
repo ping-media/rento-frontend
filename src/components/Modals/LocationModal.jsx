@@ -95,7 +95,7 @@ const LocationModal = () => {
                 locationList?.length > 0 &&
                 locationList.map((item) => (
                   <button
-                    className="w-full h-40"
+                    className="w-full h-32 lg:h-40"
                     onClick={() =>
                       handleChangeLocation({
                         locationName: item?.locationName,
@@ -109,7 +109,7 @@ const LocationModal = () => {
                       className="w-full h-full object-cover rounded-lg"
                       alt="SEARCH_LOCATION"
                     />
-                    <h2 className="text-gray-600 font-semibold mt-2">
+                    <h2 className="text-gray-600 font-semibold capitalize mt-2">
                       {item?.locationName}
                     </h2>
                   </button>

@@ -17,8 +17,16 @@ const LoginModal = () => {
   const { isLoginModalActive } = useSelector((state) => state.modals);
   const [loading, setLoading] = useState(false);
   const [isOtpSend, setIsOtpSend] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   const [inputNumber, setInputNumber] = useState("");
+  const [isInputEmpty, setIsInputEmpty] = useState(null);
 
+  const handleChangeInputChange = (value) => {
+    setIsInputEmpty(value);
+  };
+
+  // for user login
   const handleLoginUser = async (e) => {
     setLoading(true);
     e.preventDefault();
@@ -35,9 +43,14 @@ const LoginModal = () => {
       if (response.status != 200) {
         dispatch(addTempContact(result?.contact));
         handleRegisterModal();
+      } else if (response.status == 500) {
+        handleAsyncError(dispatch, "unable to send otp! try again");
       } else {
         setInputNumber(result?.contact);
         setIsOtpSend(true);
+        setIsInputEmpty(null);
+        setSeconds(30);
+        setIsTimerActive(true);
         handleAsyncError(dispatch, response?.message, "success");
       }
       return setLoading(false);
@@ -82,17 +95,19 @@ const LoginModal = () => {
             </button>
           </div>
 
-          <div className="p-6 pt-0 text-center">
+          <div className="p-6 pt-2 text-center">
             {!isOtpSend ? (
               <>
-                <form onSubmit={handleLoginUser} className="mb-8">
+                <form onSubmit={handleLoginUser} className="mb-6">
                   <InputWithIcon
                     name={"contact"}
                     modalRef={isLoginModalActive}
+                    autoComplete="off"
+                    isEmpty={handleChangeInputChange}
                   />
                   <button
                     className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-gray-400 uppercase"
-                    disabled={loading}
+                    disabled={loading || isInputEmpty?.length != 10}
                   >
                     {!loading ? "Sign In" : <Spinner message={"loading"} />}
                   </button>
@@ -115,6 +130,10 @@ const LoginModal = () => {
                 setOtpValue={setIsOtpSend}
                 setInputValue={setInputNumber}
                 modalChange={toggleLoginModal}
+                seconds={seconds}
+                setSecondChanger={setSeconds}
+                isTimerActive={isTimerActive}
+                setTimerActive={setIsTimerActive}
               />
             )}
           </div>
