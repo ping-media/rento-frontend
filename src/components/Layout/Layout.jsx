@@ -11,6 +11,7 @@ const Alert = lazy(() => import("../Alert/Alert"));
 const Sidebar = lazy(() => import("../Sidebar/Sidebar"));
 import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
+import Footer from "../Footer/Footer";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
@@ -46,9 +47,10 @@ const Layout = () => {
         <TopHeader email={"support@rento.com"} phoneNumber={"+91 9087654321"} />
         <Header />
       </header>
-      <main>
+      <main style={{ minHeight: "calc(100vh - 108.8px)" }}>
         <Outlet />
       </main>
+      <Footer />
     </>
   );
 };

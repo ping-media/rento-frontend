@@ -26,7 +26,7 @@ const BookingPaymentCard = () => {
           type="radio"
           name="paymentMethod"
           value={"partiallyPay"}
-          className="checked:border-theme h-4 w-4"
+          className="checked:border-theme h-4 w-4 accent-theme"
           // disabled
         />
       </label>
@@ -55,7 +55,7 @@ const BookingPaymentCard = () => {
           type="radio"
           name="paymentMethod"
           value={"online"}
-          className="checked:border-theme h-4 w-4"
+          className="checked:border-theme h-4 w-4 accent-theme"
           // disabled
         />
       </label>

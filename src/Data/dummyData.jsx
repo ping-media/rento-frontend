@@ -166,4 +166,10 @@ const brands = [
 ];
 const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
-export { Categories, brands, Modal, menuList };
+const otherLink = [
+  { name: "Terms & Conditions", link: "/terms-and-conditions" },
+  { name: "Privacy Policy", link: "/privacy-policy" },
+  // { name: "Refund & Return", link: "/refund-return" },
+];
+
+export { Categories, brands, Modal, menuList, otherLink };

@@ -9,7 +9,7 @@ import BookingInfoCard from "../components/ProductCard/BookingInfoCard";
 import BookingPriceCard from "../components/ProductCard/BookingPriceCard";
 import BookingPaymentCard from "../components/ProductCard/BookingPaymentCard";
 import BookingTermCard from "../components/ProductCard/BookingTermCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner/Spinner";
@@ -47,6 +47,13 @@ const BookingAndPayment = () => {
       setBookingLoading
     );
   };
+
+  // if user try to reload the page than send to another page
+  useEffect(() => {
+    const tempBooking = JSON.parse(localStorage.getItem("tempBooking"));
+    if (!tempBooking) return;
+    navigate(`/my-rides/summary/${tempBooking?.bookingId}`);
+  }, []);
 
   return tempBookingData ? (
     <div className="w-[90%] mx-auto my-5 lg:my:3 xl:my-4">

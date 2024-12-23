@@ -10,6 +10,8 @@ const LoggedInLayout = lazy(() => import("./components/Layout/LoggedInLayout"));
 const Profile = lazy(() => import("./components/Account/Profile"));
 const MyRides = lazy(() => import("./components/Account/MyRides"));
 const RidesSummary = lazy(() => import("./Pages/RidesSummary"));
+const PrivacyPolicy = lazy(() => import("./Pages/PrivacyPolicy"));
+const TermsAndCondition = lazy(() => import("./Pages/TermsAndCondition"));
 const ErrorPageNotFound = lazy(() =>
   import("./components/Error/ErrorPageNotFound")
 );
@@ -38,6 +40,13 @@ const App = () => {
                 element={<RidesSummary />}
               />
             </Route>
+            <Route path="privacy-policy" exact element={<PrivacyPolicy />} />
+            <Route
+              path="terms-and-conditions"
+              exact
+              element={<TermsAndCondition />}
+            />
+            {/* <Route path="my-rides" exact element={<MyRides />} /> */}
           </Route>
           <Route path="*" exact element={<ErrorPageNotFound />} />
         </Routes>
