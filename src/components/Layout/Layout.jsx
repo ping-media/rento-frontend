@@ -44,7 +44,10 @@ const Layout = () => {
       {message != null && <Alert error={message} errorType={type} />}
       {/* main section  */}
       <header className="sticky top-0 z-20">
-        <TopHeader email={"support@rento.com"} phoneNumber={"+91 9087654321"} />
+        <TopHeader
+          email={"support@rentobikes.com"}
+          phoneNumber={"+91 9916864268"}
+        />
         <Header />
       </header>
       <main style={{ minHeight: "calc(100vh - 108.8px)" }}>

@@ -3,20 +3,20 @@ const TermsAndCondition = () => {
     <div className="flex items-center justify-between w-[95%] lg:w-[90%] mx-auto py-2.5">
       <div class="max-w-4xl lg:max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 class="text-2xl font-semibold text-gray-900 mb-6">
-          Rento Terms of Use: A General Guide for Use
+          Rento Bikes Terms of Use: A General Guide for Use
         </h1>
 
         <p class="text-gray-700 mb-6">
           These Terms of Use govern your use of this website and other services
-          provided by Rento (the “Services”). These Terms of Use, together with
-          our Privacy Policy, Disclaimer, and any other terms specifically
+          provided by Rento Bikes (the “Services”). These Terms of Use, together
+          with our Privacy Policy, Disclaimer, and any other terms specifically
           referred to in these documents, constitute a legally binding agreement
-          (the “Agreement”) between you and Rento (hereinafter referred to as
-          the “Company”) regarding your use of the website and services
+          (the “Agreement”) between you and Rento Bikes (hereinafter referred to
+          as the “Company”) regarding your use of the website and services
           (collectively, the “Platform”). By accepting these terms, you agree to
-          abide by them during your relationship with Rento. If you disagree
-          with any terms, please refrain from hiring vehicles through the
-          Company.
+          abide by them during your relationship with Rento Bikes. If you
+          disagree with any terms, please refrain from hiring vehicles through
+          the Company.
         </p>
 
         <hr class="border-gray-300 mb-6" />
@@ -205,8 +205,11 @@ const TermsAndCondition = () => {
         <hr class="border-gray-300 mb-6" />
 
         <p class="text-gray-700 text-lg">
-          For more information or assistance, contact Rento at{" "}
-          <span class="font-semibold text-gray-900">+91-8448444897</span>.
+          For more information or assistance, contact Rento Bikes at{" "}
+          <a href="tel:+919916864268" class="font-semibold text-gray-900">
+            +91 9916864268
+          </a>
+          .
         </p>
       </div>
     </div>

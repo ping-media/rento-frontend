@@ -12,6 +12,8 @@ const MyRides = lazy(() => import("./components/Account/MyRides"));
 const RidesSummary = lazy(() => import("./Pages/RidesSummary"));
 const PrivacyPolicy = lazy(() => import("./Pages/PrivacyPolicy"));
 const TermsAndCondition = lazy(() => import("./Pages/TermsAndCondition"));
+const RefundAndReturn = lazy(() => import("./Pages/RefundAndReturn"));
+const ContactUs = lazy(() => import("./Pages/ContactUs"));
 const ErrorPageNotFound = lazy(() =>
   import("./components/Error/ErrorPageNotFound")
 );
@@ -26,6 +28,7 @@ const App = () => {
             <Route path="/search" exact element={<Search />} />
             <Route path="/search/:id" exact element={<Search />} />
             <Route path="/explore" exact element={<Search />} />
+            <Route path="/contact-us" exact element={<ContactUs />} />
             <Route
               path="/booking/summary/:id"
               exact
@@ -46,7 +49,7 @@ const App = () => {
               exact
               element={<TermsAndCondition />}
             />
-            {/* <Route path="my-rides" exact element={<MyRides />} /> */}
+            <Route path="refund-return" exact element={<RefundAndReturn />} />
           </Route>
           <Route path="*" exact element={<ErrorPageNotFound />} />
         </Routes>

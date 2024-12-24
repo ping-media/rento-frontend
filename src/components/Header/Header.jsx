@@ -49,8 +49,8 @@ const Header = () => {
             </svg>
           </button>
           <Link to={"/"}>
-            <h1 className="font-bold text-theme text-3xl font-fingerPoint">
-              RENTO
+            <h1 className="font-bold text-theme text-3xl font-fingerPoint uppercase tracking-widest">
+              RENTO Bikes
             </h1>
           </Link>
         </div>

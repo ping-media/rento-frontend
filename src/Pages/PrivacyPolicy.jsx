@@ -5,21 +5,21 @@ const PrivacyPolicy = () => {
     <div className="flex items-center justify-between w-[95%] lg:w-[90%] mx-auto py-2.5">
       <div class="leading-7 bg-white px-6 py-4 rounded-xl max-w-4xl lg:max-w-7xl mx-auto">
         <h1 class="text-xl lg:text-3xl font-bold mb-6">
-          Privacy Policy for Rento
+          Privacy Policy for Rento Bikes
         </h1>
 
         <p class="text-gray-700 mb-4">
-          Rento ("us", "we", or "our") operates the rentobikes.com website and
-          the Rento mobile application (the "Service").
+          Rento Bikes ("us", "we", or "our") operates the rentobikes.com website
+          and the Rento Bikes mobile application (the "Service").
         </p>
 
         <p class="text-gray-700 mb-4">
-          Rento is a company duly registered and incorporated under the
+          Rento Bikes is a company duly registered and incorporated under the
           Companies Act, 2008.
         </p>
 
         <p class="text-gray-700 mb-4">
-          Rento owns and operates{" "}
+          Rento Bikes owns and operates{" "}
           <Link to="https://rentobikes.com" class="text-theme">
             https://rentobikes.com
           </Link>
@@ -58,13 +58,13 @@ const PrivacyPolicy = () => {
         </h2>
 
         <p class="text-gray-700 mb-4">
-          By registering at Rento, you agree to the following terms and
+          By registering at Rento Bikes, you agree to the following terms and
           conditions:
         </p>
 
         <p class="text-gray-700 mb-4">
           <span class="font-semibold">Platform Use:</span>
-          Rento operates{" "}
+          Rento Bikes operates{" "}
           <Link to="https://rentobikes.com" class="text-theme">
             https://rentobikes.com
           </Link>
@@ -76,8 +76,8 @@ const PrivacyPolicy = () => {
 
         <p class="text-gray-700 mb-4">
           <span class="font-semibold">Agreement to Policies:</span>
-          By registering on Rento, you accept all Terms and Conditions and the
-          Privacy Policy and take full responsibility for all activities
+          By registering on Rento Bikes, you accept all Terms and Conditions and
+          the Privacy Policy and take full responsibility for all activities
           conducted under your name.
         </p>
 
@@ -135,7 +135,7 @@ const PrivacyPolicy = () => {
 
         <p class="text-gray-700 mb-4">
           <span class="font-semibold">Information Sharing:</span>
-          Rento does not sell, trade, or rent Personally Identifiable
+          Rento Bikes does not sell, trade, or rent Personally Identifiable
           Information. We may share sensitive personal information under the
           following circumstances:
         </p>
@@ -150,7 +150,7 @@ const PrivacyPolicy = () => {
 
         <p class="text-gray-700 mb-4">
           <span class="font-semibold">Security Measures:</span>
-          Rento employs physical, electronic, and managerial procedures to
+          Rento Bikes employs physical, electronic, and managerial procedures to
           safeguard the information collected. Although we take reasonable
           measures, the Internet is not entirely secure, and we cannot guarantee
           complete data security during transmission.
@@ -172,7 +172,7 @@ const PrivacyPolicy = () => {
 
         <p class="text-gray-700 mb-4">
           For queries, reach out to us at{" "}
-          <span class="font-bold">info@rentobikes.com</span>.
+          <span class="font-bold">support@rentobikes.com</span>.
         </p>
       </div>
     </div>

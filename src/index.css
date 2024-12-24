@@ -1,5 +1,5 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Finger+Paint&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"); */
-@import url("https://fonts.googleapis.com/css2?family=Finger+Paint&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Finger+Paint&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Finger+Paint&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -55,5 +55,5 @@ body {
 }
 
 .font-fingerPoint {
-  font-family: "Finger Paint", sans-serif !important;
+  font-family: "Anton", serif !important;
 }
