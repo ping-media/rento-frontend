@@ -180,7 +180,7 @@ const handleFetchBookingData = (
   e.preventDefault();
   // if user is not login than don't let user to book the ride
   if (currentUser === null) {
-    // setBookingLoading(false);
+    setBookingLoading(false);
     return dispatch(toggleLoginModal());
   }
   const response = new FormData(e.target);
