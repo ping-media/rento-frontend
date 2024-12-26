@@ -7,6 +7,7 @@ import {
 } from "../../Redux/ModalSlice/ModalSlice";
 import { menuList } from "../../Data/dummyData";
 import LoggedInUserButton from "../Button/LoggedInUserButton";
+import logoImg from "../../assets/logo/rento-logo.png";
 import { useEffect, useState } from "react";
 
 const Header = () => {
@@ -48,10 +49,12 @@ const Header = () => {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <Link to={"/"}>
-            <h1 className="font-bold text-theme text-3xl font-fingerPoint uppercase tracking-widest">
-              RENTO Bikes
-            </h1>
+          <Link to={"/"} className="w-18 h-14 p-1.5 rounded-full bg-white">
+            <img
+              src={logoImg}
+              className="w-full h-full object-cover"
+              alt="RENTOBIKES"
+            />
           </Link>
         </div>
         {/* menu list, location & login options  */}
