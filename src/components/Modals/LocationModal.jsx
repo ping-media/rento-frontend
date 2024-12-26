@@ -30,7 +30,7 @@ const LocationModal = () => {
     (async () => {
       try {
         setLoading(true);
-        const result = await fetchingData("/getLocationData");
+        const result = await fetchingData("/getLocation");
         if (result.status == 200) {
           setLoading(false);
           // if no location is select than by default select the first one
