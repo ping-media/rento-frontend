@@ -137,6 +137,10 @@ const handleuploadDocument = async (data) => {
   }
 };
 
+const sendConfirmBookingToNumber = (data) => {
+  return axios.post("/sendConfirmBookingToNumber", data);
+};
+
 export {
   fetchingData,
   createBooking,
@@ -145,4 +149,5 @@ export {
   handleupdateUser,
   handleuploadDocument,
   handlePostData,
+  sendConfirmBookingToNumber,
 };

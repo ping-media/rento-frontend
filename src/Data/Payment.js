@@ -44,6 +44,7 @@ export const razorPayment = async (
       if (bookingResponse?.status == 200) {
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
         navigate(`/my-rides/summary/${updatedData?.bookingId}`);
+        sendConfirmBookingToNumber(updatedData);
       } else {
         handleAsyncError(dispatch, bookingResponse?.message);
       }
