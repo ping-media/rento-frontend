@@ -172,7 +172,7 @@ const PrivacyPolicy = () => {
 
         <p class="text-gray-700 mb-4">
           For queries, reach out to us at{" "}
-          <span class="font-bold">support@rentobikes.com</span>.
+          <span class="font-bold">support@rentobikes.com. </span>
         </p>
       </div>
     </div>
