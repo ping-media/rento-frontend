@@ -242,7 +242,7 @@ const contactUsLink = [
       </svg>
     ),
     name: "Contact Number",
-    value: "+919916864268",
+    value: "+918884488891",
   },
   {
     icon: (

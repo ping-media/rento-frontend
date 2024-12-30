@@ -134,7 +134,7 @@ const RefundAndReturn = () => {
             <strong>Email:</strong> support@rentobikes.com
           </li>
           <li>
-            <strong>Phone:</strong> +91 9916864268
+            <strong>Phone:</strong> +91 8884488891
           </li>
           <li>
             <strong>Live Chat:</strong> Available on our website and app.

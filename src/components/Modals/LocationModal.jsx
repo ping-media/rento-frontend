@@ -37,7 +37,7 @@ const LocationModal = () => {
           if (Object.keys(selectedLocation)?.length == 0) {
             // check whether Bangalore is present or not and if present than make it default
             const isData = result?.data?.filter(
-              (item) => item?.locationName == "Bangalore"
+              (item) => item?.locationName === "bangalore"
             )[0];
             if (isData) {
               dispatch(

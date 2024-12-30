@@ -52,7 +52,7 @@ const Layout = () => {
       <header className="sticky top-0 z-20">
         <TopHeader
           email={"support@rentobikes.com"}
-          phoneNumber={"+91 9916864268"}
+          phoneNumber={"+91 8884488891"}
         />
         <Header />
       </header>
