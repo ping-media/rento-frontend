@@ -10,6 +10,7 @@ const LoggedInLayout = lazy(() => import("./components/Layout/LoggedInLayout"));
 const Profile = lazy(() => import("./components/Account/Profile"));
 const MyRides = lazy(() => import("./components/Account/MyRides"));
 const RidesSummary = lazy(() => import("./Pages/RidesSummary"));
+const BookingAndPayment = lazy(() => import("./Pages/BookingAndPayment"));
 const PrivacyPolicy = lazy(() => import("./Pages/PrivacyPolicy"));
 const TermsAndCondition = lazy(() => import("./Pages/TermsAndCondition"));
 const RefundAndReturn = lazy(() => import("./Pages/RefundAndReturn"));
@@ -33,6 +34,11 @@ const App = () => {
               path="/booking/summary/:id"
               exact
               element={<BookingSummary />}
+            />
+            <Route
+              path="booking/payment/:id"
+              exact
+              element={<BookingAndPayment />}
             />
             <Route path="/" element={<LoggedInLayout />}>
               <Route path="profile" exact element={<Profile />} />

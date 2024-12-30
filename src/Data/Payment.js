@@ -12,6 +12,7 @@ export const razorPayment = async (
   navigate,
   handlebooking,
   dispatch,
+  handleRestCoupon,
   setBookingLoading
 ) => {
   if (!data && !currentUser && !orderId && !result)
@@ -45,6 +46,7 @@ export const razorPayment = async (
       if (bookingResponse?.status == 200) {
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
         navigate(`/my-rides/summary/${updatedData?.bookingId}`);
+        dispatch(handleRestCoupon());
         sendConfirmBookingToNumber(updatedData);
       } else {
         handleAsyncError(dispatch, bookingResponse?.message);
@@ -72,7 +74,10 @@ export const razorPayment = async (
 
   // Ensure data is valid and extract payment amount
   const payableAmount =
-    data?.bookingPrice?.userPaid || data?.bookingPrice?.totalPrice || 100;
+    data?.bookingPrice?.userPaid ||
+    data?.bookingPrice?.discountTotalPrice ||
+    data?.bookingPrice?.totalPrice ||
+    100;
 
   // Razorpay options configuration
   const options = {
@@ -108,7 +113,10 @@ export const razorPayment = async (
 export const createOrderId = async (data) => {
   if (!data) return "unable to process payment.";
   const payableAmount =
-    data?.bookingPrice?.userPaid || data?.bookingPrice?.totalPrice || 100;
+    data?.bookingPrice?.userPaid ||
+    data?.bookingPrice?.discountTotalPrice ||
+    data?.bookingPrice?.totalPrice ||
+    100;
 
   const amount = payableAmount;
   const options = { amount: amount, booking_id: data?.bookingId };

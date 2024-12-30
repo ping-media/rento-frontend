@@ -49,7 +49,10 @@ const Header = () => {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <Link to={"/"} className="w-18 h-14 p-1.5 rounded-full bg-white">
+          <Link
+            to={"/"}
+            className="w-12 h-12 lg:w-14 lg:h-14 p-1.5 rounded-full bg-white"
+          >
             <img
               src={logoImg}
               className="w-full h-full object-cover"

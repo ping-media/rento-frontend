@@ -1,13 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { formatTimeWithoutSeconds, parseTime } from "../../utils";
 
-const TimePicker = ({
-  value,
-  name,
-  setValueChanger,
-  setDropoffChanger,
-  date,
-}) => {
+const TimePicker = ({ value, name, setValueChanger, setDropoffChanger }) => {
+  // const [selectedTime, setSelectedTime] = useState("");
   const [timeVisible, setTimeVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
   const timePickerRef = useRef(null);
@@ -15,8 +10,9 @@ const TimePicker = ({
 
   // Handle selecting a time
   const handleTimeSelect = (time) => {
+    // setSelectedTime(time);
     setValueChanger(time);
-    if (setDropoffChanger && name === "pickupTime") {
+    if (setDropoffChanger && name == "pickupTime") {
       setDropoffChanger(time);
     }
     setTimeVisible(false);
@@ -24,24 +20,18 @@ const TimePicker = ({
 
   const generateTimes = () => {
     const times = [];
-    const today = new Date();
-    const selectedDate = new Date(date);
 
-    // Set time comparison baseline to the current time if the date matches today's date
-    const isToday = selectedDate.toDateString() === today.toDateString();
-    const currentTime = isToday ? today : null;
-
+    // Outer loop for AM and PM periods
     for (let period of ["AM", "PM"]) {
       for (let h = 1; h <= 12; h++) {
         for (let m = 0; m < 60; m += 60) {
+          // Formatting hours and minutes
           const hour = h < 10 ? `0${h}` : h;
           const minute = m === 0 ? "00" : m < 10 ? `0${m}` : m;
-          const timeString = `${hour}:${minute} ${period}`;
-          const timeDate = parseTime(timeString);
 
-          const isDisabled = isToday && timeDate < currentTime;
-
-          times.push({ time: timeString, isDisabled });
+          // Format the time string with the current period (AM or PM)
+          const time = `${hour}:${minute} ${period}`;
+          times.push(time);
         }
       }
     }
@@ -51,11 +41,13 @@ const TimePicker = ({
 
   useEffect(() => {
     if (value) {
+      // console.log(value);
+      // setSelectedTime(formatTimeWithoutSeconds(value));
       setValueChanger(formatTimeWithoutSeconds(value));
     }
   }, [value]);
 
-  // for closing dropdown menu when user clicks outside anywhere on screen
+  // for closing dropdown menu when user click outside anywhere on screen
   const handleClickOutside = (event) => {
     if (
       timePickerRef.current &&
@@ -66,27 +58,33 @@ const TimePicker = ({
   };
 
   useEffect(() => {
+    // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // Detect dropdown position relative to the viewport
   const checkDropdownPosition = () => {
     if (buttonRef.current) {
       const buttonRect = buttonRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - buttonRect.bottom;
       const spaceAbove = buttonRect.top;
 
+      // Set position based on available space
       if (spaceBelow < 150 && spaceAbove > spaceBelow) {
-        setDropdownPosition("top");
+        setDropdownPosition("top"); // Position above the button
       } else {
-        setDropdownPosition("bottom");
+        setDropdownPosition("bottom"); // Position below the button
       }
     }
   };
 
   useEffect(() => {
+    // Check dropdown position when it opens
     if (timeVisible) {
       checkDropdownPosition();
     }
@@ -99,7 +97,7 @@ const TimePicker = ({
         className="flex items-center justify-between border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full lg:w-auto"
         onClick={() => {
           setTimeVisible(!timeVisible);
-          checkDropdownPosition();
+          checkDropdownPosition(); // Check position when toggling
         }}
         ref={buttonRef}
       >
@@ -153,12 +151,12 @@ const TimePicker = ({
           }`}
         >
           <div className="p-2 max-h-60 overflow-y-auto">
-            {generateTimes().map(({ time, isDisabled }, index) => (
+            {generateTimes().map((time, index) => (
               <button
                 key={index}
                 className="block w-full text-left p-2 hover:bg-blue-100 rounded-md disabled:text-gray-400"
                 onClick={() => handleTimeSelect(time)}
-                disabled={isDisabled}
+                disabled={parseTime(time) < new Date() ? true : false}
               >
                 {time}
               </button>

@@ -5,6 +5,8 @@ import {
   formatPrice,
   getDurationInDays,
 } from "../../utils";
+import { useDispatch, useSelector } from "react-redux";
+import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
 
 const PriceCard = ({
   perDayCost,
@@ -22,6 +24,10 @@ const PriceCard = ({
   const [vehicleRentCost, setVehicleRentCost] = useState(0);
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
+  const { tempCouponDiscount, tempCouponTotalAmount } = useSelector(
+    (state) => state.coupon
+  );
+  const dispatch = useDispatch();
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
@@ -129,6 +135,7 @@ const PriceCard = ({
           return total + item.price;
         }, 0);
         setTotalPrice(totalPrice?.toFixed(2));
+        dispatch(addTempTotalPrice(totalPrice?.toFixed(2)));
       }
     })();
   }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
@@ -179,15 +186,36 @@ const PriceCard = ({
             </li>
           ))}
         </ul>
-        {/* total price  */}
-        <div
-          className={`flex items-center justify-between ${
-            isExtraChecked ? "pt-2 pb-6" : "py-2"
-          }`}
-        >
-          <input type="hidden" name="totalPrice" value={totalPrice} />
-          <span className="text-gray-500">Payable Amount</span>
-          <span className="font-semibold">₹{formatPrice(totalPrice)}</span>
+        {/* total price  & discount Price */}
+        <div className={`${isExtraChecked ? "pt-2 pb-10" : "pt-2 pb-6"}`}>
+          {tempCouponDiscount && (
+            <div className="flex items-center justify-between mb-1">
+              <input
+                type="hidden"
+                name="discountPrice"
+                value={tempCouponDiscount}
+              />
+              <span className="text-gray-500">Discount Amount</span>
+              <span className="font-semibold">
+                -₹{formatPrice(tempCouponDiscount)}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <input type="hidden" name="totalPrice" value={totalPrice} />
+            <input
+              type="hidden"
+              name="discounttotalPrice"
+              value={Number(tempCouponTotalAmount)}
+            />
+            <span className="text-gray-500">Payable Amount</span>
+            <span className="font-semibold">
+              ₹
+              {tempCouponTotalAmount
+                ? formatPrice(Number(tempCouponTotalAmount))
+                : formatPrice(totalPrice)}
+            </span>
+          </div>
         </div>
       </div>
       {/* extra helmet  */}

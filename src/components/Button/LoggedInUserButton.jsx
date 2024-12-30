@@ -35,9 +35,10 @@ const LoggedInUserButton = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   return (
     <button
-      className="hidden lg:flex relative hover:shadow-none shadow-md bg-lighter-gray rounded-xl cursor-pointer items-center gap-1 px-4 py-1"
+      className="hidden lg:flex relative hover:shadow-none shadow-md bg-lighter-gray rounded-xl cursor-pointer items-center gap-1 px-4 py-1.5"
       ref={adminRef}
       onClick={handleToggleVisibility}
     >

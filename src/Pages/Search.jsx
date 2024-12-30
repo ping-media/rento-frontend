@@ -23,7 +23,7 @@ import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 const Search = () => {
   const navigate = useNavigate();
   const [queryParms] = useSearchParams();
-  const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
+  // const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const dispatch = useDispatch();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
@@ -44,19 +44,21 @@ const Search = () => {
       selectedLocation,
       id
     );
-    // console.log(vehicles);
   }, [customLocation, selectedLocation]);
 
   // picking date from url and convert the data to show date in mobile view
   useEffect(() => {
-    const pickUpDateAndTime = queryParmsData?.BookingStartDateAndTime;
-    const dropoffDateAndTime = queryParmsData?.BookingEndDateAndTime;
+    const newQueryParmsData = Object.fromEntries(queryParms.entries());
+    const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
+    const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
     if (pickUpDateAndTime && dropoffDateAndTime) {
       setPickup(formatDateTimeForUser(pickUpDateAndTime));
       setDropOff(formatDateTimeForUser(dropoffDateAndTime));
     }
+  }, [location.href]);
 
-    //removing this after we are going to booking
+  //removing this after we are going to booking
+  useEffect(() => {
     dispatch(removeTempDate());
     dispatch(removeTempBookingData());
   }, []);

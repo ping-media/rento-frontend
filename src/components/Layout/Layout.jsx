@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { lazy, useEffect } from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
@@ -12,10 +12,12 @@ const Sidebar = lazy(() => import("../Sidebar/Sidebar"));
 import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
 import Footer from "../Footer/Footer";
+import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
   const { user } = useSelector((state) => state.user);
+  const { id } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,8 +27,12 @@ const Layout = () => {
     }
   }, [user]);
 
-  // this is to delete the temp booking
+  // this is to delete the temp booking & coupon data
   useEffect(() => {
+    if (location.pathname == `/search/${id}` || location.pathname == "/") {
+      dispatch(handleRestCoupon());
+    }
+
     if (localStorage.getItem("tempBooking")) {
       localStorage.removeItem("tempBooking");
     }

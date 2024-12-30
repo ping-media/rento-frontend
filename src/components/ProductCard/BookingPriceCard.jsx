@@ -51,11 +51,24 @@ const BookingPriceCard = ({
           ))}
         </ul>
         {/* total price  */}
-        <div className="flex items-center justify-between my-2.5">
-          <span className="text-gray-500">Payable Amount</span>
-          <span className="font-semibold">
-            ₹{formatPrice(bookingPrice?.totalPrice)}
-          </span>
+        <div className="my-2.5">
+          {bookingPrice?.discountPrice != 0 && (
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-gray-500">Discount Amount</span>
+              <span className="font-semibold">
+                - ₹{formatPrice(bookingPrice?.discountPrice)}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-gray-500">Payable Amount</span>
+            <span className="font-semibold">
+              ₹
+              {bookingPrice?.discountTotalPrice
+                ? formatPrice(Number(bookingPrice?.discountTotalPrice))
+                : formatPrice(bookingPrice?.totalPrice)}
+            </span>
+          </div>
         </div>
       </div>
     </>

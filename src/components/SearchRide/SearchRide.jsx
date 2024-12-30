@@ -219,6 +219,7 @@ const SearchRide = () => {
             setValueChanger={setQueryPickupTime}
             name={"pickupTime"}
             setDropoffChanger={setQueryDropoffTime}
+            date={pickupDate}
           />
         </div>
         <div className="w-full">
@@ -241,6 +242,7 @@ const SearchRide = () => {
             value={queryDropoffTime}
             setValueChanger={setQueryDropoffTime}
             name={"dropoffTime"}
+            date={dropoffDate}
           />
         </div>
         <Button

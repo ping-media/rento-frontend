@@ -170,31 +170,49 @@ const RidesSummary = () => {
             </h2>
             <LocationCard
               stationName={rides[0]?.stationName}
+              stationId={rides[0]?.stationId}
               stationMasterUserId={rides[0]?.stationMasterUserId}
               setStationLoading={setStationLoading}
               stationLoading={stationLoading}
             />
           </div>
           <div className="mb-5">
-            <h2 className="font-semibold mb-3 flex items-center gap-1">
-              <span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="w-5 h-5"
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold flex items-center gap-1">
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"
+                    />
+                  </svg>
+                </span>
+                Fare Details
+              </h2>
+              <p className="text-md text-semibold">
+                <span className="hidden lg:inline">Payment Mode:</span>
+                <span
+                  className={`${
+                    (rides[0]?.paymentStatus === "partially_paid" &&
+                      "bg-orange-400") ||
+                    rides[0]?.paymentStatus === "pending" ||
+                    (rides[0]?.paymentStatus === "failed" && "bg-theme") ||
+                    (rides[0]?.paymentStatus === "paid" &&
+                      "bg-green-500 bg-opacity-80")
+                  } text-gray-100 px-1.5 py-1 rounded-full cursor-pointer capitalize ml-2`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"
-                  />
-                </svg>
-              </span>
-              Fare Details
-            </h2>
+                  {rides[0]?.paymentStatus.replace("_", " ")}
+                </span>
+              </p>
+            </div>
             <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
               <RideFareDetails rides={rides && rides[0]} />
             </div>

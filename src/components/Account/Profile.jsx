@@ -21,6 +21,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const { isEmailVerifyModalActive } = useSelector((state) => state.modals);
+  const [isValidDOB, setIsValidDOB] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
 
   // fetching updated user details
@@ -127,6 +128,7 @@ const Profile = () => {
                 labelId={"dob"}
                 type="date"
                 required={true}
+                setDOBChanger={setIsValidDOB}
               />
               <SelectDropDown
                 name={"gender"}
@@ -174,7 +176,7 @@ const Profile = () => {
           <button
             type="submit"
             className="bg-theme px-4 py-2 text-gray-100 rounded-lg hover:bg-theme-dark transition duration-200 ease-in-out disabled:bg-gray-400 w-full lg:w-auto"
-            disabled={formLoading}
+            disabled={formLoading || !isValidDOB}
           >
             {formLoading ? <Spinner message={"loading.."} /> : "Update Profile"}
           </button>

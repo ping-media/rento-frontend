@@ -2,7 +2,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import bikeImage from "../../assets/logo/bike.png";
 import scooterImage from "../../assets/logo/scooter.png";
 import { useEffect, useRef, useState } from "react";
-import { handleErrorImage } from "../../utils";
+import { handleErrorImage, updateQueryParams } from "../../utils";
 
 const Card = ({
   perDayCost,
@@ -22,23 +22,9 @@ const Card = ({
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
 
-  // Function to update the URL dynamically with query parameters
-  const updateQueryParams = () => {
-    // Create a new searchParams object
-    const params = new URLSearchParams();
-    // Loop through the queryParmsData object and append to params
-    Object.entries(queryParmsData).forEach(([key, value]) => {
-      if (value) {
-        params.append(key, value);
-      }
-    });
-    // Construct the new URL with dynamic query parameters
-    const newUrl = `/booking/summary/${_id}?${params.toString()}`;
-    return newUrl;
-  };
-
   useEffect(() => {
-    setBookingUrl(updateQueryParams());
+    const url = updateQueryParams("/booking/summary/", _id, queryParmsData);
+    setBookingUrl(url);
   }, []);
 
   return (
@@ -52,13 +38,6 @@ const Card = ({
           >
             {vehicleModel}
           </p>
-          {/* <div className="bg-theme-black text-gray-100 px-2 py-1 rounded-l-lg">
-            <p
-              className="w-5 h-5 rounded-full mx-auto"
-              style={{ backgroundColor: vehicleColor }}
-              title="vehicle Color"
-            ></p>
-          </div> */}
         </div>
         <div className="px-3 py-1.5">
           <div className="w-full h-48 rounded-lg mb-2.5">

@@ -174,7 +174,12 @@ const handleFetchBookingData = (
   addTempBookingData,
   setBookingLoading,
   vehiclePlanData,
-  dispatch
+  dispatch,
+  id,
+  updateQueryParams,
+  tempCouponName,
+  tempCouponId,
+  navigate
 ) => {
   setBookingLoading(true);
   e.preventDefault();
@@ -199,6 +204,8 @@ const handleFetchBookingData = (
           result?.extraAddonPrice == "" ? 0 : Number(result?.extraAddonPrice),
         tax: Number(result?.tax),
         totalPrice: Number(result?.totalPrice),
+        discountPrice: Number(result?.discountPrice || 0),
+        discountTotalPrice: Number(result?.discounttotalPrice || 0),
         rentAmount: vehicles[0]?.perDayCost,
         isPackageApplied: vehiclePlanData != null,
       },
@@ -209,6 +216,10 @@ const handleFetchBookingData = (
         freeLimit: vehicles[0]?.freeKms,
         lateFee: vehicles[0]?.lateFee,
         extraKmCharge: vehicles[0]?.extraKmsCharges,
+      },
+      discountCuopon: {
+        couponName: tempCouponName,
+        couponId: tempCouponId,
       },
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,
@@ -222,7 +233,9 @@ const handleFetchBookingData = (
       paySuccessId: "NA",
     };
     dispatch(addTempBookingData(data));
-    return setBookingLoading(false);
+    const url = updateQueryParams("/booking/payment/", id, queryParmsData);
+    setBookingLoading(false);
+    return navigate(url);
   }
 };
 
@@ -280,6 +293,7 @@ const handleCreateBookingSubmit = async (
   handleUpdateBooking,
   createOrderId,
   razorPayment,
+  handleRestCoupon,
   handleAsyncError,
   navigate,
   removeTempDate,
@@ -306,7 +320,11 @@ const handleCreateBookingSubmit = async (
         ...data,
         bookingPrice: {
           ...data.bookingPrice,
-          userPaid: parseInt((data?.bookingPrice?.totalPrice * 20) / 100),
+          userPaid: parseInt(
+            data?.bookingPrice?.discountTotalPrice
+              ? (data?.bookingPrice?.discountTotalPrice * 20) / 100
+              : (data?.bookingPrice?.totalPrice * 20) / 100
+          ),
         },
       };
     }
@@ -357,10 +375,6 @@ const handleCreateBookingSubmit = async (
           JSON.parse(localStorage.getItem("tempBooking"))?.paymentMethod !=
             result?.paymentMethod
         ) {
-          // console.log(
-          //   Object.entries(bookingResponse?.data).length,
-          //   JSON.parse(localStorage.getItem("tempBooking"))
-          // );
           let oldData =
             (Object.entries(bookingResponse?.data).length > 0 &&
               bookingResponse?.data) ||
@@ -377,7 +391,9 @@ const handleCreateBookingSubmit = async (
               bookingPrice: {
                 ...oldData.bookingPrice,
                 userPaid: parseInt(
-                  (oldData?.bookingPrice?.totalPrice * 20) / 100
+                  oldData?.bookingPrice?.discountTotalPrice
+                    ? (oldData?.bookingPrice?.discountTotalPrice * 20) / 100
+                    : (oldData?.bookingPrice?.totalPrice * 20) / 100
                 ),
               },
             };
@@ -420,6 +436,7 @@ const handleCreateBookingSubmit = async (
           navigate,
           handlebooking,
           dispatch,
+          handleRestCoupon,
           setBookingLoading
         );
       }
@@ -448,7 +465,6 @@ const handleCreateBookingSubmit = async (
           handleAsyncError,
           dispatch
         );
-        // console.log(bookingResponse);
       } else {
         data = {
           ...data,

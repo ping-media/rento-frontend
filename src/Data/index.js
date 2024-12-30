@@ -138,7 +138,28 @@ const handleuploadDocument = async (data) => {
 };
 
 const sendConfirmBookingToNumber = (data) => {
-  return axios.post("/sendConfirmBookingToNumber", data);
+  return axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/sendConfirmBookingToNumber`,
+    data
+  );
+};
+
+const getCouponData = async (couponCode, totalprice) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/applyCoupon`,
+      {
+        couponName: couponCode,
+        totalAmount: totalprice,
+      }
+    );
+    return response?.data;
+  } catch (error) {
+    return {
+      message: error?.message,
+      type: "error",
+    };
+  }
 };
 
 export {
@@ -150,4 +171,5 @@ export {
   handleuploadDocument,
   handlePostData,
   sendConfirmBookingToNumber,
+  getCouponData,
 };

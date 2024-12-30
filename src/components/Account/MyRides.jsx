@@ -30,10 +30,6 @@ const MyRides = () => {
   // Tab content array
   const tabs = [
     {
-      name: "On Going",
-      content: rides && rides.filter((item) => item?.rideStatus === "pending"),
-    },
-    {
       name: "Pending",
       content:
         rides &&
@@ -44,14 +40,31 @@ const MyRides = () => {
         ),
     },
     {
+      name: "On Going",
+      content: rides && rides.filter((item) => item?.rideStatus === "ongoing"),
+    },
+    {
+      name: "Completed",
+      content:
+        rides &&
+        rides.filter(
+          (item) =>
+            item?.paymentStatus === "paid" ||
+            item?.paymentStatus === "partially_paid" ||
+            item?.bookingStatus === "completed" ||
+            item?.rideStatus === "completed"
+        ),
+    },
+    {
       name: "Cancelled",
       content:
         rides &&
         rides.filter(
           (item) =>
-            item?.rideStatus === "canceled" ||
             item?.paymentStatus === "canceled" ||
-            item?.bookingStatus === "canceled"
+            item?.paymentStatus === "failed" ||
+            item?.bookingStatus === "canceled" ||
+            item?.rideStatus === "canceled"
         ),
     },
     {

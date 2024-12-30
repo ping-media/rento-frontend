@@ -398,6 +398,48 @@ const updateStationId = (location, newId) => {
   window.history.pushState({}, "", newUrl);
 };
 
+const updateQueryParams = (endpoint, _id, queryParmsData) => {
+  // Create a new searchParams object
+  const params = new URLSearchParams();
+  // Loop through the queryParmsData object and append to params
+  Object.entries(queryParmsData).forEach(([key, value]) => {
+    if (value) {
+      params.append(key, value);
+    }
+  });
+  // Construct the new URL with dynamic query parameters
+  const newUrl = `${endpoint}${_id}?${params.toString()}`;
+  return newUrl;
+};
+
+const isUser18 = (dob) => {
+  if (!dob) return false; // Ensure input is not empty or invalid
+
+  // Convert the input DOB string to a Date object
+  const birthDate = new Date(dob);
+
+  // Check if the birthDate is valid
+  if (isNaN(birthDate)) return false;
+
+  // Get today's date
+  const today = new Date();
+
+  // Calculate the user's age
+  let age = today.getFullYear() - birthDate.getFullYear();
+
+  // Adjust the age if the user's birthday hasn't occurred yet this year
+  const hasHadBirthdayThisYear =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() >= birthDate.getDate());
+
+  if (!hasHadBirthdayThisYear) {
+    age -= 1;
+  }
+
+  return age >= 18;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -422,4 +464,6 @@ export {
   camelCaseToSpaceSeparated,
   formatPrice,
   updateStationId,
+  updateQueryParams,
+  isUser18,
 };
