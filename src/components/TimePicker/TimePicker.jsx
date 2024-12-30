@@ -40,7 +40,6 @@ const TimePicker = ({
           const timeDate = parseTime(timeString);
 
           const isDisabled = isToday && timeDate < currentTime;
-
           times.push({ time: timeString, isDisabled });
         }
       }
