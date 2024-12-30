@@ -183,23 +183,25 @@ const VerifyOtp = ({
             />
           ))}
         </div>
-        <div className="flex items-center flex-col justify-between mb-5">
-          <p className="lg:text-gray-600 text-sm text-gray-400">
-            Didn't receive code?
-          </p>
-          <div className="flex items-center space-x-2">
-            <button
-              className="px-3 py-2 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
-              disabled={isTimerActive}
-              type="button"
-              onClick={handleSendOtpAgain}
-            >
-              {seconds == 0
-                ? "Request Again"
-                : `Request Again (00:00:${seconds})`}
-            </button>
+        {seconds && (
+          <div className="flex items-center flex-col justify-between mb-5">
+            <p className="lg:text-gray-600 text-sm text-gray-400">
+              Didn't receive code?
+            </p>
+            <div className="flex items-center space-x-2">
+              <button
+                className="px-3 py-2 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
+                disabled={isTimerActive}
+                type="button"
+                onClick={handleSendOtpAgain}
+              >
+                {seconds == 0
+                  ? "Request Again"
+                  : `Request Again (00:00:${seconds})`}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
         <button
           className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
           type="submit"

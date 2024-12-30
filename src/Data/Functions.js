@@ -67,14 +67,13 @@ const handleSearchVehicleData = async (
 const fetchingPlansFilters = async (dispatch, id) => {
   dispatch(addingFilters());
   try {
-    let endpoint;
+    let endpoint = "/getPlanData";
     // change the endpoint based on page whether it is explore or search
-    // console.log(location.pathname.substring(0, 7));
-    if (location.pathname.substring(0, 7) == "/search") {
-      endpoint = `/getPlanData?stationId=${id}`;
-    } else {
-      endpoint = `/getPlanData?locationId=${id}`;
-    }
+    // if (location.pathname.substring(0, 7) == "/search") {
+    //   endpoint = `/getPlanData?stationId=${id}`;
+    // } else {
+    //   endpoint = `/getPlanData?locationId=${id}`;
+    // }
     const response = await fetchingData(endpoint);
     if (response.status == 200) {
       // console.log(response?.data);

@@ -86,7 +86,8 @@ const RideFareDetails = ({ rides }) => {
             {rides?.bookingPrice?.totalPrice && (
               <li className="flex items-center justify-between mt-1">
                 <p className="font-bold uppercase text-left">
-                  {rides?.bookingPrice?.discountPrice != 0
+                  {rides?.bookingPrice?.discountPrice &&
+                  rides?.bookingPrice?.discountPrice != 0
                     ? "Subtotal"
                     : "Total Price"}
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
@@ -104,19 +105,20 @@ const RideFareDetails = ({ rides }) => {
               </li>
             )}
             {/* discount price  */}
-            {rides?.bookingPrice?.discountPrice != 0 && (
-              <li className="flex items-center justify-between mt-1 border-t-2">
-                <p className="font-semibold uppercase text-left">
-                  Discount Price
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    Coupon: ({rides?.discountCuopon?.couponName})
-                  </small>
-                </p>
-                <p className="font-semibold text-right">
-                  {`- ₹${formatPrice(rides?.bookingPrice?.discountPrice)}`}
-                </p>
-              </li>
-            )}
+            {rides?.bookingPrice?.discountPrice &&
+              rides?.bookingPrice?.discountPrice != 0 && (
+                <li className="flex items-center justify-between mt-1 border-t-2">
+                  <p className="font-semibold uppercase text-left">
+                    Discount Price
+                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                      Coupon: ({rides?.discountCuopon?.couponName})
+                    </small>
+                  </p>
+                  <p className="font-semibold text-right">
+                    {`- ₹${formatPrice(rides?.bookingPrice?.discountPrice)}`}
+                  </p>
+                </li>
+              )}
             {/* discount price  */}
             {rides?.bookingPrice?.discountTotalPrice && (
               <li className="flex items-center justify-between mt-1 border-b-2">
@@ -155,7 +157,8 @@ const RideFareDetails = ({ rides }) => {
                     </small>
                   </p>
                   <p className="font-bold text-right">
-                    {rides?.bookingPrice?.discountPrice != 0
+                    {rides?.bookingPrice?.discountPrice &&
+                    rides?.bookingPrice?.discountPrice != 0
                       ? `₹${formatPrice(
                           rides?.bookingPrice.discountTotalPrice -
                             rides?.bookingPrice?.userPaid

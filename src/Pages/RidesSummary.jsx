@@ -207,7 +207,7 @@ const RidesSummary = () => {
                     (rides[0]?.paymentStatus === "failed" && "bg-theme") ||
                     (rides[0]?.paymentStatus === "paid" &&
                       "bg-green-500 bg-opacity-80")
-                  } text-gray-100 px-1.5 py-1 rounded-full cursor-pointer capitalize ml-2`}
+                  } text-gray-100 px-2 py-1 rounded-full cursor-pointer capitalize ml-2`}
                 >
                   {rides[0]?.paymentStatus.replace("_", " ")}
                 </span>

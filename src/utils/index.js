@@ -440,6 +440,16 @@ const isUser18 = (dob) => {
   return age >= 18;
 };
 
+const formatDateTimeComingFromDatabase = (input) => {
+  const date = new Date(input);
+
+  // Format the date
+  const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
+  const formattedDate = date.toLocaleDateString("en-GB", dateOptions);
+
+  return formattedDate;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -466,4 +476,5 @@ export {
   updateStationId,
   updateQueryParams,
   isUser18,
+  formatDateTimeComingFromDatabase,
 };

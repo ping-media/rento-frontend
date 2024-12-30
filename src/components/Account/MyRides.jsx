@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { addRidesData, fetchingRides } from "../../Redux/RidesSlice/RideSlice";
 import PreLoader from "../skeleton/PreLoader";
 import RideNotFound from "../skeleton/RideNotFound";
-import { formatDateTimeForUser } from "../../utils";
 
 const MyRides = () => {
   // State to track the selected tab
@@ -30,13 +29,16 @@ const MyRides = () => {
   // Tab content array
   const tabs = [
     {
-      name: "Pending",
+      name: "Processing",
       content:
         rides &&
         rides.filter(
           (item) =>
             item?.paymentStatus === "pending" ||
-            item?.bookingStatus === "pending"
+            item?.bookingStatus === "pending" ||
+            item?.paymentStatus === "paid" ||
+            item?.paymentStatus === "partially_paid" ||
+            item?.bookingStatus === "completed"
         ),
     },
     {
@@ -46,14 +48,7 @@ const MyRides = () => {
     {
       name: "Completed",
       content:
-        rides &&
-        rides.filter(
-          (item) =>
-            item?.paymentStatus === "paid" ||
-            item?.paymentStatus === "partially_paid" ||
-            item?.bookingStatus === "completed" ||
-            item?.rideStatus === "completed"
-        ),
+        rides && rides.filter((item) => item?.rideStatus === "completed"),
     },
     {
       name: "Cancelled",
@@ -105,15 +100,9 @@ const MyRides = () => {
           <div className="p-4 rounded-lg hover:overflow-y-auto overflow-hidden">
             <div>
               {tabs[activeTab].content.length > 0 ? (
-                tabs[activeTab].content.map((item, index) => (
-                  <RideCard
-                    item={item}
-                    formatedDateAndTime={formatDateTimeForUser(
-                      item?.BookingStartDateAndTime
-                    )}
-                    key={index}
-                  />
-                ))
+                tabs[activeTab].content.map((item, index) => {
+                  return <RideCard item={item} key={index} />;
+                })
               ) : (
                 <RideNotFound />
               )}
