@@ -139,8 +139,15 @@ const handleuploadDocument = async (data) => {
 
 const sendConfirmBookingToNumber = (data) => {
   return axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/sendConfirmBookingToNumber`,
+    `${import.meta.env.VITE_BACKEND_URL}/sendBookingDetailesTosocial`,
     data
+  );
+};
+
+const updateCouponCount = (id) => {
+  return axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/updateCouponCount?_id=${id}`,
+    { _id: id }
   );
 };
 
@@ -172,4 +179,5 @@ export {
   handlePostData,
   sendConfirmBookingToNumber,
   getCouponData,
+  updateCouponCount,
 };

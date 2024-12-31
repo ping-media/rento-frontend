@@ -36,8 +36,8 @@ const RideFareDetails = ({ rides }) => {
                   key={key}
                   className="flex items-center justify-between border-b-2"
                 >
-                  <div>
-                    <p className="font-semibold uppercase">
+                  <div className="my-1">
+                    <p className="text-sm font-semibold uppercase">
                       {key == "tax"
                         ? `${camelCaseToSpaceSeparated(key)} (18% GST)`
                         : camelCaseToSpaceSeparated(key)}
@@ -84,8 +84,8 @@ const RideFareDetails = ({ rides }) => {
             {/* Display the totalPrice & user paid & remaining amount last */}
             {/* totalPrice */}
             {rides?.bookingPrice?.totalPrice && (
-              <li className="flex items-center justify-between mt-1">
-                <p className="font-bold uppercase text-left">
+              <li className="flex items-center justify-between mt-1 my-1">
+                <p className="text-sm font-bold uppercase text-left">
                   {rides?.bookingPrice?.discountPrice &&
                   rides?.bookingPrice?.discountPrice != 0
                     ? "Subtotal"
@@ -99,7 +99,7 @@ const RideFareDetails = ({ rides }) => {
                       : "(need to pay at pickup)"}
                   </small>
                 </p>
-                <p className="font-bold text-right">
+                <p className="text-sm font-bold text-right">
                   {`₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
                 </p>
               </li>
@@ -107,10 +107,17 @@ const RideFareDetails = ({ rides }) => {
             {/* discount price  */}
             {rides?.bookingPrice?.discountPrice &&
               rides?.bookingPrice?.discountPrice != 0 && (
-                <li className="flex items-center justify-between mt-1 border-t-2">
-                  <p className="font-semibold uppercase text-left">
+                <li
+                  className={`flex items-center justify-between mt-1 my-1 ${
+                    rides?.bookingPrice?.discountPrice &&
+                    rides?.bookingPrice?.discountPrice != 0
+                      ? "border-t-2"
+                      : ""
+                  }`}
+                >
+                  <p className="text-sm font-semibold uppercase text-left">
                     Discount Price
-                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                    <small className="text-sm font-semibold text-xs mx-1 block text-gray-400 italic">
                       Coupon: ({rides?.discountCuopon?.couponName})
                     </small>
                   </p>
@@ -121,8 +128,12 @@ const RideFareDetails = ({ rides }) => {
               )}
             {/* discount price  */}
             {rides?.bookingPrice?.discountTotalPrice && (
-              <li className="flex items-center justify-between mt-1 border-b-2">
-                <p className="font-bold uppercase text-left">
+              <li
+                className={`flex items-center justify-between mt-1 my-1 ${
+                  rides?.bookingPrice?.userPaid ? "border-b-2" : ""
+                }`}
+              >
+                <p className="text-sm font-bold uppercase text-left">
                   Total Price
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     {rides?.paymentMethod == "online" &&
@@ -133,7 +144,7 @@ const RideFareDetails = ({ rides }) => {
                       : "(need to pay at pickup)"}
                   </small>
                 </p>
-                <p className="font-bold text-right">
+                <p className="text-sm font-bold text-right">
                   {`₹${formatPrice(rides?.bookingPrice?.discountTotalPrice)}`}
                 </p>
               </li>
@@ -141,22 +152,22 @@ const RideFareDetails = ({ rides }) => {
             {/* user paid */}
             {rides?.bookingPrice?.userPaid && (
               <>
-                <li className="flex items-center justify-between mt-1">
-                  <p className="font-semibold uppercase text-left">
+                <li className="flex items-center justify-between mt-1 my-1">
+                  <p className="text-sm font-semibold uppercase text-left">
                     Amount Paid
                   </p>
-                  <p className="font-bold text-right">
+                  <p className="text-sm font-bold text-right">
                     {`- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`}
                   </p>
                 </li>
-                <li className="flex items-center justify-between mt-1">
-                  <p className="font-bold uppercase text-left">
+                <li className="flex items-center justify-between mt-1 my-1">
+                  <p className="text-sm font-bold uppercase text-left">
                     Remaining Amount
                     <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                       (need to pay at pickup)
                     </small>
                   </p>
-                  <p className="font-bold text-right">
+                  <p className="text-sm font-bold text-right">
                     {rides?.bookingPrice?.discountPrice &&
                     rides?.bookingPrice?.discountPrice != 0
                       ? `₹${formatPrice(
@@ -169,19 +180,19 @@ const RideFareDetails = ({ rides }) => {
                         )}`}
                   </p>
                 </li>
-                <li className="flex items-center justify-between mt-1 border-t-2">
-                  <p className="font-semibold uppercase text-left">
-                    Refundable Deposit Amount
-                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                      (need to pay at pickup and will be refunded after drop)
-                    </small>
-                  </p>
-                  <p className="font-bold text-right">
-                    {`₹${formatPrice(Number(1000))}`}
-                  </p>
-                </li>
               </>
             )}
+            <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+              <p className="text-sm font-semibold uppercase text-left">
+                Refundable Deposit Amount
+                <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                  (need to pay at pickup and will be refunded after drop)
+                </small>
+              </p>
+              <p className="text-sm font-bold text-right">
+                {`₹${formatPrice(Number(1000))}`}
+              </p>
+            </li>
           </ul>
         </>
       )}
