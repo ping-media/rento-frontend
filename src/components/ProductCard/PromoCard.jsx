@@ -68,10 +68,10 @@ const PromoCard = () => {
         </div>
         <div className="w-full h-10 relative flex items-center px-4 mb-3">
           <input
-            className="w-full h-full bg-white font-light placeholder-slate-400 contrast-more:placeholder-slate-500 border-2 border-slate-200 outline-none rounded-lg focus:border-theme focus:ring-theme focus:ring-1 px-3"
+            className="w-full h-full bg-white font-light placeholder-slate-400 contrast-more:placeholder-slate-500 border-2 border-slate-200 outline-none rounded-lg focus:border-theme focus:ring-theme focus:ring-1 px-3 uppercase"
             placeholder="Enter Promo Coupon Here"
             value={CouponCode}
-            onChange={(e) => setCouponCode(e.target.value)}
+            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
             type="text"
             readOnly={tempCouponId != ""}
           />
