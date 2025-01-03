@@ -144,6 +144,13 @@ const sendConfirmBookingToNumber = (data) => {
   );
 };
 
+const sendEmailForBookingDetails = (data) => {
+  return axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/sendEmailForBookingDetails`,
+    data
+  );
+};
+
 const updateCouponCount = (id) => {
   return axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/updateCouponCount?_id=${id}`,
@@ -180,4 +187,5 @@ export {
   sendConfirmBookingToNumber,
   getCouponData,
   updateCouponCount,
+  sendEmailForBookingDetails,
 };

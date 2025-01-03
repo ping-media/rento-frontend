@@ -55,7 +55,7 @@ const Header = () => {
           >
             <img
               src={logoImg}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               alt="RENTOBIKES"
             />
           </Link>
