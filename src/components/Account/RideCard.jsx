@@ -28,7 +28,7 @@ const RideCard = ({ item, id }) => {
   }, [item]);
 
   return (
-    <Link to={isPageActive ? `/my-rides/summary/${item?.bookingId}` : "#"}>
+    <Link to={isPageActive ? `/my-rides/summary/${item?._id}` : "#"}>
       <div
         className={`px-4 py-2 rounded-lg border-2 cursor-pointer ${
           isPageActive ? "shadow-md hover:shadow-lg" : ""

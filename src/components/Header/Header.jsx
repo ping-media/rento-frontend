@@ -10,6 +10,7 @@ import LoggedInUserButton from "../Button/LoggedInUserButton";
 import logoImg from "../../assets/logo/rento-logo.png";
 import { useEffect, useState } from "react";
 import { handleSignOut } from "../../Redux/UserSlice/UserSlice";
+import { handleUser } from "../../Data";
 
 const Header = () => {
   const dispatch = useDispatch();

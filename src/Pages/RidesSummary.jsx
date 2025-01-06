@@ -29,7 +29,7 @@ const RidesSummary = () => {
     if (id) {
       (async () => {
         dispatch(fetchingRides());
-        const result = await fetchingData(`/getBookings?bookingId=${id}`);
+        const result = await fetchingData(`/getBookings?_id=${id}`);
         dispatch(addRidesData(result?.data));
         // formatting data for user readability
         setFormatedDateAndTime(
