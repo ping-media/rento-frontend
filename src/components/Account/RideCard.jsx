@@ -54,7 +54,7 @@ const RideCard = ({ item, id }) => {
                     className={`${
                       (item?.paymentStatus === "partially_paid" &&
                         "bg-orange-400") ||
-                      item?.paymentStatus === "pending" ||
+                      (item?.paymentStatus === "pending" && "bg-orange-400") ||
                       (item?.paymentStatus === "failed" && "bg-theme") ||
                       (item?.paymentStatus === "paid" &&
                         "bg-green-500 bg-opacity-80")
