@@ -12,6 +12,7 @@ import InputWithVerifyButton from "../Input/InputWithVerifyButton.jsx";
 import {
   handleLoadingUserData,
   handleSignIn,
+  handleUpdateSelectedCurrentUser,
 } from "../../Redux/UserSlice/UserSlice.js";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
@@ -41,33 +42,39 @@ const Profile = () => {
         }
       })();
     }
-  }, [isEmailVerifyModalActive, formLoading]);
+  }, [isEmailVerifyModalActive]);
 
   // updating user profile
   const handleProfileUpdate = async (e) => {
-    setFormLoading(true);
     e.preventDefault();
+    const currentEmail = currentUser?.email;
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
+    let formEmail = result["email"];
     result = Object.assign(result, {
       _id: currentUser?._id,
-      isEmailVerified: currentUser?.isEmailVerified,
+      isEmailVerified:
+        currentEmail === formEmail ? currentUser?.isEmailVerified : "no",
       isContactVerified: currentUser?.isContactVerified,
       kycApproved: currentUser?.kycApproved,
       userType: "customer",
     });
-    // console.log(result);
+    if (!result)
+      return handleAsyncError(dispatch, "unable to update! try again.");
+    setFormLoading(true);
     try {
       const response = await handleupdateUser(result);
       if (response?.status == 200) {
+        dispatch(handleUpdateSelectedCurrentUser(result));
         handleAsyncError(dispatch, response?.message, "success");
       } else {
         handleAsyncError(dispatch, response?.message);
       }
-      return setFormLoading(false);
     } catch (error) {
       setFormLoading(false);
       return error?.message;
+    } finally {
+      setFormLoading(false);
     }
   };
 

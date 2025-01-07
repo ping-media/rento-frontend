@@ -8,37 +8,39 @@ import {
 import { menuList } from "../../Data/dummyData";
 import LoggedInUserButton from "../Button/LoggedInUserButton";
 import logoImg from "../../assets/logo/rento-logo.png";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { handleSignOut } from "../../Redux/UserSlice/UserSlice";
 import { handleUser } from "../../Data";
 
-const Header = () => {
+const Header = memo(() => {
   const dispatch = useDispatch();
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { currentUser } = useSelector((state) => state.user);
-  const [sideMenuList, setSideMenuList] = useState(menuList);
   const { isSideBarModalActive } = useSelector((state) => state.modals);
 
+  // Validate user only when currentUser changes
   useEffect(() => {
     if (currentUser) {
-      (async () => {
+      const validateUser = async () => {
         const response = await handleUser("/validedToken", {
           _id: currentUser?._id,
         });
         if (response?.isUserValid !== true) {
           dispatch(handleSignOut());
         }
-      })();
+      };
+      validateUser();
     }
-  }, [currentUser]);
+  }, [currentUser, dispatch]);
 
-  useEffect(() => {
+  // Memoize sideMenuList to avoid unnecessary recalculations
+  const sideMenuList = useMemo(() => {
     if (isSideBarModalActive) {
-      setSideMenuList(sideMenuList);
+      return menuList;
     } else {
-      setSideMenuList(sideMenuList.filter((list) => list.isPhone === false));
+      return menuList.filter((list) => list.isPhone === false);
     }
-  }, [currentUser]);
+  }, [isSideBarModalActive]);
 
   return (
     <div className="bg-theme-black">
@@ -75,7 +77,7 @@ const Header = () => {
             />
           </Link>
         </div>
-        {/* menu list, location & login options  */}
+        {/* menu list, location & login options */}
         <div className="flex items-center gap-4">
           <ul className="items-center gap-4 hidden lg:flex">
             {sideMenuList.map((item, index) => (
@@ -136,6 +138,6 @@ const Header = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Header;
