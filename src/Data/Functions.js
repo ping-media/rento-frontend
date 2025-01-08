@@ -221,8 +221,8 @@ const handleFetchBookingData = (
       bookingStatus: "pending",
       paymentStatus: "pending",
       rideStatus: "pending",
-      paymentMethod: "cash",
-      payInitFrom: "cash",
+      paymentMethod: "NA",
+      payInitFrom: "NA",
       paySuccessId: "NA",
     };
     dispatch(addTempBookingData(data));

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import PreLoader from "../skeleton/PreLoader";
 import { useEffect, useState } from "react";
 import { fetchingData } from "../../Data";
-import { useSelector } from "react-redux";
 
 const LocationCard = ({
   stationName,
@@ -12,20 +11,16 @@ const LocationCard = ({
   stationLoading,
 }) => {
   const [stationUser, setStationUser] = useState([]);
-  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   // for fetching station master details
   useEffect(() => {
     if (stationMasterUserId) {
       (async () => {
         setStationLoading(true);
-        const [stationMasterUserResponse, stationMasterResponse] =
-          await Promise.all([
-            fetchingData(`/getAllUsers?_id=${stationMasterUserId}`),
-            fetchingData(`/getStationData?stationId=${stationId}`),
-          ]);
+        const stationMasterResponse = await fetchingData(
+          `/getStationData?stationId=${stationId}`
+        );
         // formatting data for user readability
         setStationUser({
-          stationUser: stationMasterUserResponse?.data[0],
           stationData: stationMasterResponse?.data[0],
         });
         setStationLoading(false);
@@ -64,18 +59,16 @@ const LocationCard = ({
           <li>
             <span className="font-bold mr-2">Person Name:</span>
             {stationUser
-              ? `${stationUser?.stationUser?.firstName} ${stationUser?.stationUser?.lastName}`
+              ? `${stationMasterUserId?.firstName} ${stationMasterUserId?.lastName}`
               : "Test User"}
           </li>
           <li>
             <span className="font-bold mr-2">Mobile Number:</span>
             <Link
               className="text-blue-400 hover:underline"
-              to={`tel:${
-                stationUser ? stationUser?.stationUser?.contact : "xxxxxxxxxx"
-              }`}
+              to={`tel:${stationMasterUserId?.contact || "xxxxxxxxxx"}`}
             >
-              {stationUser ? stationUser?.stationUser?.contact : "xxxxxxxxxx"}
+              {stationMasterUserId?.contact || "xxxxxxxxxx"}
             </Link>
           </li>
         </ul>

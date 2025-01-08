@@ -29,6 +29,7 @@ const RideFareDetails = ({ rides }) => {
                   key !== "userPaid" &&
                   key !== "discountPrice" &&
                   key !== "discountTotalPrice" &&
+                  key !== "isInvoiceCreated" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
