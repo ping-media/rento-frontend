@@ -84,7 +84,7 @@ const SearchRide = () => {
     }
   };
 
-  // this code is to change the direction of opening the option dropdown whether it goes up or down
+  // this code is to change the direction of opening the option dropdown whether it goes up or down in direction
   useEffect(() => {
     if (location.pathname == "/") {
       setIsHomePage(!isHomePage);
