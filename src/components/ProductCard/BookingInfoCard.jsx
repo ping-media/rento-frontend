@@ -193,7 +193,18 @@ const BookingInfoCard = ({
             </svg>
           </span>
           <div>
-            <p className={`text-lg`}>
+            {bookingPrice?.isPackageApplied === true && (
+              <p className={`text-lg`}>
+                ₹{formatPrice(Number(bookingPrice?.bookingPrice))}
+              </p>
+            )}
+            <p
+              className={`${
+                bookingPrice?.isPackageApplied === true
+                  ? "text-sm line-through"
+                  : "text-lg"
+              }`}
+            >
               ₹{formatPrice(Number(bookingPrice?.rentAmount))}/
               <span className="text-sm">day</span>
             </p>

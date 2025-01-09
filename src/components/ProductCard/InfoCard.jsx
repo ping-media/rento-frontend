@@ -21,30 +21,40 @@ const InfoCard = ({
   vehicleType,
   vehicleBrand,
   stationName,
+  vehiclePlan,
   perDayCost,
   freeKms,
-  BookingStartDateAndTime,
-  BookingEndDateAndTime,
+  queryParmsData,
+  // BookingStartDateAndTime,
+  // BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
   const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
   const [updatedBookingEndDateAndTime, setUpdatedBookingEndDateAndTime] =
     useState(null);
+  const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
   const dispatch = useDispatch();
   const { tempDate } = useSelector((state) => state.vehicles);
   const [queryParms, setQueryParms] = useSearchParams();
 
   //converting time into readable format
   useEffect(() => {
-    if (BookingStartDateAndTime && BookingEndDateAndTime) {
-      setBookingStartDateTime(formatDateTimeForUser(BookingStartDateAndTime));
+    if (
+      queryParmsData?.BookingStartDateAndTime &&
+      queryParmsData?.BookingEndDateAndTime
+    ) {
+      setBookingStartDateTime(
+        formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime)
+      );
       if (updatedBookingEndDateAndTime != null) {
         setBookingEndDateTime(
           formatDateTimeForUser(updatedBookingEndDateAndTime)
         );
       } else {
-        setBookingEndDateTime(formatDateTimeForUser(BookingEndDateAndTime));
+        setBookingEndDateTime(
+          formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime)
+        );
       }
     }
   }, [updatedBookingEndDateAndTime]);
@@ -53,7 +63,7 @@ const InfoCard = ({
   useEffect(() => {
     changeAccordingToPlan(
       vehiclePlanData,
-      BookingEndDateAndTime,
+      queryParmsData?.BookingEndDateAndTime,
       setUpdatedBookingEndDateAndTime,
       dispatch,
       addTempDate,
@@ -62,6 +72,12 @@ const InfoCard = ({
       queryParms,
       setQueryParms
     );
+    if (vehiclePlan && vehiclePlan?.length > 0) {
+      const plan = vehiclePlan?.find(
+        (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
+      );
+      setAppliedVehiclePlan(plan);
+    }
   }, []);
 
   return (
@@ -212,8 +228,8 @@ const InfoCard = ({
                 (vehiclePlanData != null
                   ? vehiclePlanData?.planDuration
                   : getDurationInDays(
-                      BookingStartDateAndTime,
-                      BookingEndDateAndTime
+                      queryParmsData?.BookingStartDateAndTime,
+                      queryParmsData?.BookingEndDateAndTime
                     ))}
               KM
             </span>
@@ -223,8 +239,8 @@ const InfoCard = ({
                 vehiclePlanData != null
                   ? vehiclePlanData?.planDuration
                   : getDurationInDays(
-                      BookingStartDateAndTime,
-                      BookingEndDateAndTime
+                      queryParmsData?.BookingStartDateAndTime,
+                      queryParmsData?.BookingEndDateAndTime
                     )
               } days`}
               )
@@ -257,7 +273,10 @@ const InfoCard = ({
           <div>
             {vehiclePlanData != null && (
               <p className="text-lg">
-                ₹{formatPrice(Number(vehiclePlanData?.planPrice))}
+                ₹
+                {appliedVehiclePlan !== null
+                  ? formatPrice(Number(appliedVehiclePlan?.planPrice))
+                  : formatPrice(Number(vehiclePlanData?.planPrice))}
               </p>
             )}
             <p

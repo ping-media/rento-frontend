@@ -21,6 +21,7 @@ import {
   removeAfterSecondSlash,
 } from "../../utils";
 import { searchData } from "../../Data/Functions";
+import { handleAsyncError } from "../../utils/handleAsyncError";
 
 const SearchRide = () => {
   const navigate = useNavigate();
@@ -36,9 +37,6 @@ const SearchRide = () => {
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
   const [queryParms] = useSearchParams();
-  const [queryParmsData, setQueryParmsData] = useState(
-    Object.fromEntries(queryParms.entries())
-  );
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
 
@@ -54,6 +52,11 @@ const SearchRide = () => {
     e && e.preventDefault();
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
+    if (result?.pickupTime !== result?.dropoffTime)
+      return handleAsyncError(
+        dispatch,
+        "minimum duration should be 1 day or more"
+      );
     if (
       location.pathname == "/" ||
       removeAfterSecondSlash(location.pathname) == "/search"
@@ -104,8 +107,8 @@ const SearchRide = () => {
 
   useEffect(() => {
     // Destructure BookingStartDateAndTime and BookingEndDateAndTime
-    setQueryParmsData(Object.fromEntries(queryParms.entries()));
-    const { BookingStartDateAndTime, BookingEndDateAndTime } = queryParmsData;
+    const newQueryParms = Object.fromEntries(queryParms.entries());
+    const { BookingStartDateAndTime, BookingEndDateAndTime } = newQueryParms;
 
     // Function to format dates
     const formatDateOnly = (dateStr) => new Date(dateStr);

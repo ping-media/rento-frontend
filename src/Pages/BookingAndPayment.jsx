@@ -82,6 +82,10 @@ const BookingAndPayment = () => {
                   bookingPrice={
                     tempBookingData && tempBookingData?.bookingPrice
                   }
+                  packageApplied={
+                    tempBookingData &&
+                    tempBookingData?.bookingPrice?.isPackageApplied
+                  }
                   BookingStartDateAndTime={
                     tempBookingData && tempBookingData?.BookingStartDateAndTime
                   }

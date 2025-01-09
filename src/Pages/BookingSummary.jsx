@@ -113,7 +113,7 @@ const BookingSummary = () => {
                 <InfoCard
                   {...vehicles[0]}
                   vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
-                  {...queryParmsData}
+                  queryParmsData={queryParmsData}
                 />
                 <DetailsCard extraKmCharge={vehicles[0]?.extraKmsCharges} />
               </div>
@@ -127,8 +127,11 @@ const BookingSummary = () => {
                 </div>
                 <PriceCard
                   perDayCost={vehicles[0]?.perDayCost}
+                  vehiclePlan={
+                    vehicles[0]?.vehiclePlan ? vehicles[0]?.vehiclePlan : null
+                  }
                   vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
-                  {...queryParmsData}
+                  queryParmsData={queryParmsData}
                 />
               </div>
               <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-center justify-center lg:max-h-48">

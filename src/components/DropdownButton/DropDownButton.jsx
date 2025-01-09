@@ -12,6 +12,7 @@ const DropDownButton = ({ labelId, optionsList, setValue, defaultValue }) => {
 
   const handleChangeValue = (value) => {
     setSelectedValue(value);
+    setValue(value);
     setIsOpened(!isOpened);
   };
 
@@ -19,7 +20,7 @@ const DropDownButton = ({ labelId, optionsList, setValue, defaultValue }) => {
     if (setValue && selectedValue !== "Choose Brand") {
       setValue(selectedValue);
     }
-  }, [selectedValue, setValue]);
+  }, []);
 
   useEffect(() => {
     // If defaultValue changes, update selectedValue to match it

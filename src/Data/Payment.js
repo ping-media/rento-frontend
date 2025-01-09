@@ -1,10 +1,6 @@
 import axios from "axios";
 import favicon from "../assets/favicon.ico";
-import {
-  sendConfirmBookingToNumber,
-  sendEmailForBookingDetails,
-  updateCouponCount,
-} from ".";
+import { sendEmailForBookingDetails, updateCouponCount } from ".";
 
 export const razorPayment = async (
   currentUser,
@@ -52,7 +48,6 @@ export const razorPayment = async (
         navigate(`/my-rides/summary/${updatedData?._id}`);
         dispatch(handleRestCoupon());
         // sending booking confirm to whatsapp & email
-        sendConfirmBookingToNumber(updatedData);
         sendEmailForBookingDetails(updatedData);
         // checking whether user used the coupon or not if not than return
         if (!updatedData?.discountCuopon?.couponId) return;

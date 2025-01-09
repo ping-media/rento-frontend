@@ -31,18 +31,25 @@ const TimePicker = ({
     const isToday = selectedDate.toDateString() === today.toDateString();
     const currentTime = isToday ? today : null;
 
-    for (let period of ["AM", "PM"]) {
-      for (let h = 1; h <= 12; h++) {
-        for (let m = 0; m < 60; m += 60) {
-          const hour = h < 10 ? `0${h}` : h;
-          const minute = m === 0 ? "00" : m < 10 ? `0${m}` : m;
-          const timeString = `${hour}:${minute} ${period}`;
-          const timeDate = parseTime(timeString);
+    // Iterate over a 24-hour clock for proper order
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 60) {
+        const period = hour < 12 ? "AM" : "PM";
+        const adjustedHour = hour % 12 === 0 ? 12 : hour % 12; // Convert 24-hour to 12-hour format
+        const hourString =
+          adjustedHour < 10 ? `0${adjustedHour}` : adjustedHour;
+        const minuteString = minute < 10 ? `0${minute}` : minute;
+        const timeString = `${hourString}:${minuteString} ${period}`;
+        const timeDate = parseTime(timeString);
 
-          const isDisabled = isToday && timeDate < currentTime;
+        // Disable times before 6:00 AM or after 8:00 PM
+        const isOutsideAllowedRange = hour < 6 || hour > 20;
 
-          times.push({ time: timeString, isDisabled });
-        }
+        // Also disable times before the current time if today
+        const isDisabled =
+          (isToday && timeDate < currentTime) || isOutsideAllowedRange;
+
+        times.push({ time: timeString, isDisabled });
       }
     }
 

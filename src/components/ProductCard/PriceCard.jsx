@@ -10,28 +10,45 @@ import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
 
 const PriceCard = ({
   perDayCost,
+  vehiclePlan,
   vehiclePlanData,
-  BookingStartDateAndTime,
-  BookingEndDateAndTime,
+  queryParmsData,
 }) => {
   const bookingStartDateTime =
-    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
+    queryParmsData?.BookingStartDateAndTime &&
+    formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
   const bookingEndDateTime =
-    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
+    queryParmsData?.BookingEndDateAndTime &&
+    formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState(false);
   const [vehicleRentCost, setVehicleRentCost] = useState(0);
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
+  const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
   const { tempCouponDiscount, tempCouponTotalAmount } = useSelector(
     (state) => state.coupon
   );
   const dispatch = useDispatch();
 
+  // for getting plan price
+  useEffect(() => {
+    if (vehiclePlan != null && vehiclePlan?.length > 0) {
+      const plan = vehiclePlan?.find(
+        (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
+      );
+      setAppliedVehiclePlan(plan);
+    } else {
+      setAppliedVehiclePlan(null);
+    }
+  }, []);
+
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
-    if (vehiclePlanData != null) {
+    if (appliedVehiclePlan != null) {
+      setVehicleRentCost(Number(appliedVehiclePlan?.planPrice));
+    } else if (vehiclePlanData != null) {
       if (perDayCost) {
         setVehicleRentCost(Number(vehiclePlanData?.planPrice));
       }
@@ -105,7 +122,7 @@ const PriceCard = ({
         );
       }
     }
-  }, [isExtraChecked]);
+  }, [isExtraChecked, appliedVehiclePlan]);
 
   const priceDetails = [
     {
@@ -125,6 +142,7 @@ const PriceCard = ({
     },
   ];
 
+  // for calculating price based on helmet add or not
   useEffect(() => {
     (() => {
       if (vehicleRentCost != 0 && extraAddOnCost != 0 && gSTCost != 0) {
@@ -168,16 +186,18 @@ const PriceCard = ({
                   item?.name == "extraAddonPrice") && (
                   <p className="text-xs text-gray-400">
                     (
-                    {` ₹${
-                      item?.name == "extraAddonPrice" ? 50 : perDayCost
-                    } x ${
-                      vehiclePlanData != null
-                        ? vehiclePlanData?.planDuration
-                        : getDurationInDays(
-                            BookingStartDateAndTime,
-                            BookingEndDateAndTime
-                          )
-                    } day`}
+                    {item?.name == "bookingPrice" && appliedVehiclePlan != null
+                      ? "Package Applied"
+                      : ` ₹${
+                          item?.name == "extraAddonPrice" ? 50 : perDayCost
+                        } x ${
+                          vehiclePlanData != null
+                            ? vehiclePlanData?.planDuration
+                            : getDurationInDays(
+                                queryParmsData?.BookingStartDateAndTime,
+                                queryParmsData?.BookingEndDateAndTime
+                              )
+                        } day`}
                     )
                   </p>
                 )}
