@@ -33,7 +33,8 @@ const Header = memo(() => {
           dispatch(handleSignOut());
         }
       };
-      setTimeout(validateUser(), 100);
+      const timer = setTimeout(() => validateUser(), 100);
+      return () => clearTimeout(timer);
     }
   }, [currentUser, dispatch]);
 

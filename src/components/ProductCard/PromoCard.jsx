@@ -35,9 +35,9 @@ const PromoCard = () => {
         dispatch(
           addTempCouponDetails({
             couponName: CouponCode,
-            discountPrice: parseInt(response?.data?.discount.toFixed(2)),
-            totalPrice: parseInt(response?.data?.finalAmount.toFixed(2)),
-            id: response?.data?._id,
+            discountType: response?.data?.discount,
+            discount: response?.data?.finalAmount,
+            id: response?.data?.coupon?._id,
             isExtra: response?.data?.isExtra,
           })
         );

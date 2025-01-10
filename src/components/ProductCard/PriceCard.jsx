@@ -28,9 +28,14 @@ const PriceCard = ({
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
   const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
+  const [discountPrice, setDiscountPrice] = useState(0);
   const [discounttotalPrice, setDiscounttotalPrice] = useState(0);
-  const { tempCouponDiscount, tempCouponTotalAmount, tempCouponExtra } =
-    useSelector((state) => state.coupon);
+  const {
+    tempCouponDiscount,
+    tempCouponDiscountType,
+    tempCouponExtra,
+    loading,
+  } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
 
   // for getting plan price
@@ -178,14 +183,30 @@ const PriceCard = ({
     dispatch(handleChangeExtraChecked(!isExtraChecked));
   };
 
+  // changing price based discount and addon
   useEffect(() => {
-    const tempAmount = tempCouponExtra
-      ? Number(tempCouponTotalAmount)
-      : !tempCouponExtra && isExtraChecked
-      ? Number(totalPrice) - Number(tempCouponDiscount)
-      : Number(tempCouponTotalAmount);
-    setDiscounttotalPrice(tempAmount.toFixed(2));
-  }, [isExtraChecked]);
+    // if (tempCouponDiscount === "") return;
+    // let newTotalPrice;
+    // if (!tempCouponExtra) {
+    //   newTotalPrice =
+    //     !tempCouponExtra && isExtraChecked
+    //       ? Number(totalPrice) + Number(extraAddOnCost)
+    //       : isExtraChecked
+    //       ? Number(totalPrice) + Number(extraAddOnCost)
+    //       : Number(totalPrice);
+    // }
+    // const discountPrice =
+    //   tempCouponDiscountType === "percentage"
+    //     ? (Number(newTotalPrice) * Number(tempCouponDiscount)) / 100
+    //     : Number(newTotalPrice) - Number(tempCouponDiscount);
+    // setDiscountPrice(Number(discountPrice).toFixed(2));
+    // const totalDiscount = Number(newTotalPrice) - Number(discountPrice);
+    // setDiscounttotalPrice(totalDiscount.toFixed(2));
+    if (!loading) {
+      setDiscountPrice(tempCouponDiscountType);
+      setDiscounttotalPrice(tempCouponDiscount);
+    }
+  }, [loading]);
 
   return (
     <>
@@ -237,19 +258,25 @@ const PriceCard = ({
         </ul>
         {/* total price  & discount Price */}
         <div className={`${isExtraChecked ? "pt-2 pb-10" : "pt-2 pb-6"}`}>
-          {tempCouponDiscount && (
+          {/* {discountPrice && discountPrice > 0 && (
             <div className="flex items-center justify-between mb-1">
-              <input
-                type="hidden"
-                name="discountPrice"
-                value={tempCouponDiscount}
-              />
+              <input type="hidden" name="discountPrice" value={discountPrice} />
               <span className="text-gray-500">Discount Amount</span>
               <span className="font-semibold">
-                -₹{formatPrice(tempCouponDiscount)}
+                -₹{formatPrice(discountPrice)}
+              </span>
+            </div>
+          )} */}
+          {tempCouponDiscountType && tempCouponDiscountType != null && (
+            <div className="flex items-center justify-between mb-1">
+              <input type="hidden" name="discountPrice" value={discountPrice} />
+              <span className="text-gray-500">Discount Amount</span>
+              <span className="font-semibold">
+                -₹{formatPrice(discountPrice)}
               </span>
             </div>
           )}
+
           <div className="flex items-center justify-between">
             <input type="hidden" name="totalPrice" value={totalPrice} />
             <input
@@ -260,12 +287,15 @@ const PriceCard = ({
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
-              {tempCouponTotalAmount
+              {/* {tempCouponTotalAmount
                 ? tempCouponExtra
                   ? formatPrice(Number(tempCouponTotalAmount))
                   : !tempCouponExtra && isExtraChecked
                   ? formatPrice(Number(totalPrice) - Number(tempCouponDiscount))
                   : formatPrice(Number(tempCouponTotalAmount))
+                : formatPrice(totalPrice)} */}
+              {tempCouponDiscount && tempCouponDiscount > 0
+                ? formatPrice(discounttotalPrice)
                 : formatPrice(totalPrice)}
             </span>
           </div>

@@ -60,7 +60,8 @@ const couponPersistConfig = {
     "tempCouponName",
     "tempCouponId",
     "tempCouponDiscount",
-    "tempCouponTotalAmount",
+    "tempCouponDiscountType",
+    "tempCouponExtra",
   ],
   blacklist: ["loading"],
 };

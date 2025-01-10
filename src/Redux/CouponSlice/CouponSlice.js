@@ -4,8 +4,8 @@ const initialState = {
   tempTotalPrice: "",
   tempCouponName: "",
   tempCouponId: "",
+  tempCouponDiscountTotal: "",
   tempCouponDiscount: "",
-  tempCouponTotalAmount: "",
   tempCouponExtra: false,
   loading: false,
 };
@@ -21,11 +21,11 @@ const CouponSlice = createSlice({
       state.tempTotalPrice = action.payload;
     },
     addTempCouponDetails: (state, action) => {
-      const { couponName, totalPrice, discountPrice, id, isExtra } =
+      const { couponName, discountType, discount, id, isExtra } =
         action.payload;
       state.tempCouponName = couponName;
-      state.tempCouponDiscount = discountPrice;
-      state.tempCouponTotalAmount = totalPrice;
+      state.tempCouponDiscount = discount;
+      state.tempCouponDiscountTotal = discountType;
       state.tempCouponId = id;
       state.tempCouponExtra = isExtra;
     },
