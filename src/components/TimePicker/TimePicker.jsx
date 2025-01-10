@@ -35,15 +35,14 @@ const TimePicker = ({
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 60) {
         const period = hour < 12 ? "AM" : "PM";
-        const adjustedHour = hour % 12 === 0 ? 12 : hour % 12; // Convert 24-hour to 12-hour format
+        const adjustedHour = hour % 12 === 0 ? 12 : hour % 12;
         const hourString =
           adjustedHour < 10 ? `0${adjustedHour}` : adjustedHour;
         const minuteString = minute < 10 ? `0${minute}` : minute;
         const timeString = `${hourString}:${minuteString} ${period}`;
         const timeDate = parseTime(timeString);
 
-        // Disable times before 6:00 AM or after 8:00 PM
-        const isOutsideAllowedRange = hour < 6 || hour > 20;
+        const isOutsideAllowedRange = hour < 7 || hour > 19;
 
         // Also disable times before the current time if today
         const isDisabled =

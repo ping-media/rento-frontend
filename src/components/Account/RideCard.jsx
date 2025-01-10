@@ -39,6 +39,7 @@ const RideCard = ({ item, id }) => {
             <img
               src={item?.vehicleImage}
               className="w-full h-full object-contain"
+              loading="lazy"
               alt={item?.vehicleName}
             />
           </div>

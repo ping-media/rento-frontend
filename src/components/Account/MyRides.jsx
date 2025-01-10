@@ -34,11 +34,13 @@ const MyRides = () => {
         rides &&
         rides.filter(
           (item) =>
-            item?.paymentStatus === "pending" ||
-            item?.bookingStatus === "pending" ||
-            item?.paymentStatus === "paid" ||
-            item?.paymentStatus === "partially_paid" ||
-            item?.bookingStatus === "completed"
+            (item?.paymentStatus === "pending" ||
+              item?.bookingStatus === "pending" ||
+              item?.paymentStatus === "paid" ||
+              item?.paymentStatus === "partially_paid" ||
+              item?.bookingStatus === "completed") &&
+            item?.rideStatus !== "ongoing" &&
+            item?.rideStatus !== "completed"
         ),
     },
     {
@@ -81,7 +83,7 @@ const MyRides = () => {
           <button
             key={index}
             onClick={() => setActiveTab(index)}
-            className={`whitespace-nowrap py-2 px-2 lg:px-4 text-sm lg:text-lg font-medium 
+            className={`whitespace-nowrap py-2 px-2 lg:px-4 text-sm lg:text-base font-medium 
               ${
                 activeTab === index
                   ? "text-theme border-b-2 border-theme"

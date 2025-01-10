@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-// import { useDispatch } from "react-redux";
 import {
   formatDateTimeForUser,
   formatPrice,
@@ -8,23 +7,19 @@ import {
 } from "../../utils";
 
 const BookingInfoCard = ({
-  // vehicleNumber,
   vehicleImage,
   vehicleName,
   vehicleType,
   vehicleBrand,
   stationName,
-  // perDayCost,
   bookingPrice,
   vehicleBasic,
-  // freeKms,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
   const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
-  // const dispatch = useDispatch();
 
   //converting time into readable format
   useEffect(() => {
@@ -43,6 +38,7 @@ const BookingInfoCard = ({
             src={vehicleImage}
             className="w-full h-full object-cover rounded-lg"
             alt={vehicleName}
+            loading="lazy"
             onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
             ref={vehicleImageRef}
           />

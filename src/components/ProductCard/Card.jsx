@@ -45,6 +45,7 @@ const Card = ({
               src={vehicleImage}
               className="w-full h-full object-contain"
               alt={vehicleName}
+              loading="lazy"
               onError={() => handleErrorImage(vehicleType, productImageRef)}
               ref={productImageRef}
             />

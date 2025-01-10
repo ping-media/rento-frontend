@@ -88,6 +88,7 @@ const InfoCard = ({
             src={vehicleImage}
             className="w-full h-full object-cover rounded-lg"
             alt={vehicleName}
+            loading="lazy"
             onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
             ref={vehicleImageRef}
           />
@@ -97,6 +98,7 @@ const InfoCard = ({
           <img
             src={vehicleType == "gear" ? bikeImg : scooterImg}
             className="w-full h-full object-cover"
+            loading="lazy"
             alt={vehicleName}
           />
         </div>

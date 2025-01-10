@@ -20,7 +20,10 @@ const Header = memo(() => {
 
   // Validate user only when currentUser changes
   useEffect(() => {
-    if (currentUser) {
+    if (
+      (currentUser && location.pathname == "/") ||
+      location.pathname.includes("/booking/summary/")
+    ) {
       const validateUser = async () => {
         const response = await handleUser("/validedToken", {
           _id: currentUser?._id,
