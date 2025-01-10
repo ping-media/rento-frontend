@@ -7,6 +7,7 @@ import {
 } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
+import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice";
 
 const PriceCard = ({
   perDayCost,
@@ -27,9 +28,9 @@ const PriceCard = ({
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
   const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
-  const { tempCouponDiscount, tempCouponTotalAmount } = useSelector(
-    (state) => state.coupon
-  );
+  const [discounttotalPrice, setDiscounttotalPrice] = useState(0);
+  const { tempCouponDiscount, tempCouponTotalAmount, tempCouponExtra } =
+    useSelector((state) => state.coupon);
   const dispatch = useDispatch();
 
   // for getting plan price
@@ -58,14 +59,27 @@ const PriceCard = ({
         setGSTCost(
           Number(
             calculateTax(
-              Number(vehiclePlanData?.planPrice) + extraAddOnCost,
+              Number(
+                appliedVehiclePlan != null && appliedVehiclePlan?.planPrice > 0
+                  ? appliedVehiclePlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ) + extraAddOnCost,
               18
             )
           )
         );
       } else {
         setGSTCost(
-          Number(calculateTax(Number(vehiclePlanData?.planPrice), 18))
+          Number(
+            calculateTax(
+              Number(
+                appliedVehiclePlan != null && appliedVehiclePlan?.planPrice > 0
+                  ? appliedVehiclePlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ),
+              18
+            )
+          )
         );
       }
     } else {
@@ -124,6 +138,7 @@ const PriceCard = ({
     }
   }, [isExtraChecked, appliedVehiclePlan]);
 
+  // price list
   const priceDetails = [
     {
       title: "Vehicle Rental Cost",
@@ -157,6 +172,20 @@ const PriceCard = ({
       }
     })();
   }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
+
+  const handleChangeExtraAddonPrice = () => {
+    setIsExtraChecked(!isExtraChecked);
+    dispatch(handleChangeExtraChecked(!isExtraChecked));
+  };
+
+  useEffect(() => {
+    const tempAmount = tempCouponExtra
+      ? Number(tempCouponTotalAmount)
+      : !tempCouponExtra && isExtraChecked
+      ? Number(totalPrice) - Number(tempCouponDiscount)
+      : Number(tempCouponTotalAmount);
+    setDiscounttotalPrice(tempAmount.toFixed(2));
+  }, [isExtraChecked]);
 
   return (
     <>
@@ -226,13 +255,17 @@ const PriceCard = ({
             <input
               type="hidden"
               name="discounttotalPrice"
-              value={Number(tempCouponTotalAmount)}
+              value={discounttotalPrice}
             />
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
               {tempCouponTotalAmount
-                ? formatPrice(Number(tempCouponTotalAmount))
+                ? tempCouponExtra
+                  ? formatPrice(Number(tempCouponTotalAmount))
+                  : !tempCouponExtra && isExtraChecked
+                  ? formatPrice(Number(totalPrice) - Number(tempCouponDiscount))
+                  : formatPrice(Number(tempCouponTotalAmount))
                 : formatPrice(totalPrice)}
             </span>
           </div>
@@ -249,7 +282,7 @@ const PriceCard = ({
               id="hr"
               type="checkbox"
               className="peer hidden"
-              onChange={() => setIsExtraChecked(!isExtraChecked)}
+              onChange={handleChangeExtraAddonPrice}
             />
             <div
               htmlFor="hr"

@@ -158,13 +158,14 @@ const updateCouponCount = (id) => {
   );
 };
 
-const getCouponData = async (couponCode, totalprice) => {
+const getCouponData = async (couponCode, totalprice, isExtra) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/applyCoupon`,
       {
         couponName: couponCode,
         totalAmount: totalprice,
+        isExtra: isExtra,
       }
     );
     return response?.data;

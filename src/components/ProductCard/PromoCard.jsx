@@ -14,6 +14,7 @@ const PromoCard = () => {
   const { tempTotalPrice, tempCouponName, tempCouponId } = useSelector(
     (state) => state.coupon
   );
+  const { isExtraAddonChecked } = useSelector((state) => state.vehicles);
   const dispatch = useDispatch();
 
   // apply CouponCode
@@ -24,7 +25,11 @@ const PromoCard = () => {
       return handleAsyncError(dispatch, "uable to apply coupon!");
     setLoading(true);
     try {
-      const response = await getCouponData(CouponCode, tempTotalPrice);
+      const response = await getCouponData(
+        CouponCode,
+        tempTotalPrice,
+        isExtraAddonChecked
+      );
       if (response?.status == 200) {
         handleAsyncError(dispatch, "Coupon Applied.", "success");
         dispatch(
@@ -33,6 +38,7 @@ const PromoCard = () => {
             discountPrice: parseInt(response?.data?.discount.toFixed(2)),
             totalPrice: parseInt(response?.data?.finalAmount.toFixed(2)),
             id: response?.data?._id,
+            isExtra: response?.data?.isExtra,
           })
         );
       } else {

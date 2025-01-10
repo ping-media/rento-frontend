@@ -5,6 +5,7 @@ const ProductsSlice = createSlice({
   initialState: {
     vehicles: [],
     tempDate: "",
+    isExtraAddonChecked: false,
     loading: false,
     error: null,
   },
@@ -28,6 +29,9 @@ const ProductsSlice = createSlice({
       state.vehicles = action.payload;
       state.loading = false;
     },
+    handleChangeExtraChecked: (state, action) => {
+      state.isExtraAddonChecked = action.payload;
+    },
     handleEndLoading: (state) => {
       state.loading = false;
     },
@@ -39,6 +43,7 @@ export const {
   addTempDate,
   removeTempDate,
   fetchingVehicles,
+  handleChangeExtraChecked,
   addVehiclesData,
   handleEndLoading,
 } = ProductsSlice.actions;

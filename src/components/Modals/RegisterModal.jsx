@@ -11,6 +11,7 @@ import Spinner from "../Spinner/Spinner";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import VerifyOtp from "../Auth/VerifyOtp";
 import { removeTempContact } from "../../Redux/UserSlice/UserSlice";
+import { Link } from "react-router-dom";
 
 const RegisterModal = () => {
   const dispatch = useDispatch();
@@ -42,7 +43,6 @@ const RegisterModal = () => {
           } else {
             handleAsyncError(dispatch, response?.message);
           }
-          // handleLoginModal();
         } else {
           handleAsyncError(dispatch, dataResponse?.message);
         }
@@ -139,13 +139,14 @@ const RegisterModal = () => {
                 </button>
                 <p className="mt-4 text-sm text-gray-600">
                   By signing up, I accept the{" "}
-                  <span className="text-theme cursor-pointer hover:text-theme-dark hover:underline transition duration-300 ease-in-out">
+                  <Link
+                    to={"/terms-and-conditions"}
+                    className="text-theme cursor-pointer hover:text-theme-dark hover:underline transition duration-300 ease-in-out"
+                  >
                     Terms and Conditions
-                  </span>
+                  </Link>
                 </p>
               </form>
-
-              {/* <div className="border-6 w-[50%] border-theme mx-auto h-1"></div> */}
 
               <p className="text-left">
                 Already have an account?{" "}
