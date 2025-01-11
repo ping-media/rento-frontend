@@ -68,8 +68,8 @@ const SearchRide = () => {
     //checking whether time is in opening hours
     if (
       result?.pickupTime === result?.dropoffTime &&
-      covertedTime > 7 &&
-      covertedTime < 19
+      covertedTime >= 7 &&
+      covertedTime <= 19
     ) {
       if (
         location.pathname == "/" ||
