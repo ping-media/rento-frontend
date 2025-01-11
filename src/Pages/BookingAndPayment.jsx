@@ -54,7 +54,7 @@ const BookingAndPayment = () => {
   useEffect(() => {
     const tempBooking = JSON.parse(localStorage.getItem("tempBooking"));
     if (!tempBooking) return;
-    navigate(`/my-rides/summary/${tempBooking?.bookingId}`);
+    navigate(`/my-rides/summary/${tempBooking?._id}`);
   }, []);
 
   return !loading ? (
