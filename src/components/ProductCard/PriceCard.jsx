@@ -32,7 +32,7 @@ const PriceCard = ({
   const [discounttotalPrice, setDiscounttotalPrice] = useState(0);
   const {
     tempCouponDiscount,
-    tempCouponDiscountType,
+    tempCouponDiscountTotal,
     tempCouponExtra,
     loading,
   } = useSelector((state) => state.coupon);
@@ -185,26 +185,9 @@ const PriceCard = ({
 
   // changing price based discount and addon
   useEffect(() => {
-    // if (tempCouponDiscount === "") return;
-    // let newTotalPrice;
-    // if (!tempCouponExtra) {
-    //   newTotalPrice =
-    //     !tempCouponExtra && isExtraChecked
-    //       ? Number(totalPrice) + Number(extraAddOnCost)
-    //       : isExtraChecked
-    //       ? Number(totalPrice) + Number(extraAddOnCost)
-    //       : Number(totalPrice);
-    // }
-    // const discountPrice =
-    //   tempCouponDiscountType === "percentage"
-    //     ? (Number(newTotalPrice) * Number(tempCouponDiscount)) / 100
-    //     : Number(newTotalPrice) - Number(tempCouponDiscount);
-    // setDiscountPrice(Number(discountPrice).toFixed(2));
-    // const totalDiscount = Number(newTotalPrice) - Number(discountPrice);
-    // setDiscounttotalPrice(totalDiscount.toFixed(2));
     if (!loading) {
-      setDiscountPrice(tempCouponDiscountType);
-      setDiscounttotalPrice(tempCouponDiscount);
+      setDiscountPrice(Math.ceil(tempCouponDiscountTotal).toFixed(2));
+      setDiscounttotalPrice(Math.ceil(tempCouponDiscount).toFixed(2));
     }
   }, [loading]);
 
@@ -258,21 +241,16 @@ const PriceCard = ({
         </ul>
         {/* total price  & discount Price */}
         <div className={`${isExtraChecked ? "pt-2 pb-10" : "pt-2 pb-6"}`}>
-          {/* {discountPrice && discountPrice > 0 && (
+          {tempCouponDiscountTotal && tempCouponDiscountTotal != null && (
             <div className="flex items-center justify-between mb-1">
-              <input type="hidden" name="discountPrice" value={discountPrice} />
+              <input
+                type="hidden"
+                name="discountPrice"
+                value={tempCouponDiscountTotal}
+              />
               <span className="text-gray-500">Discount Amount</span>
               <span className="font-semibold">
-                -₹{formatPrice(discountPrice)}
-              </span>
-            </div>
-          )} */}
-          {tempCouponDiscountType && tempCouponDiscountType != null && (
-            <div className="flex items-center justify-between mb-1">
-              <input type="hidden" name="discountPrice" value={discountPrice} />
-              <span className="text-gray-500">Discount Amount</span>
-              <span className="font-semibold">
-                -₹{formatPrice(discountPrice)}
+                -₹{formatPrice(tempCouponDiscountTotal)}
               </span>
             </div>
           )}
@@ -282,20 +260,13 @@ const PriceCard = ({
             <input
               type="hidden"
               name="discounttotalPrice"
-              value={discounttotalPrice}
+              value={tempCouponDiscount}
             />
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
-              {/* {tempCouponTotalAmount
-                ? tempCouponExtra
-                  ? formatPrice(Number(tempCouponTotalAmount))
-                  : !tempCouponExtra && isExtraChecked
-                  ? formatPrice(Number(totalPrice) - Number(tempCouponDiscount))
-                  : formatPrice(Number(tempCouponTotalAmount))
-                : formatPrice(totalPrice)} */}
-              {tempCouponDiscount && tempCouponDiscount > 0
-                ? formatPrice(discounttotalPrice)
+              {tempCouponDiscount != null && tempCouponDiscount > 0
+                ? formatPrice(tempCouponDiscount)
                 : formatPrice(totalPrice)}
             </span>
           </div>

@@ -38,7 +38,7 @@ const LoginModal = () => {
       return handleAsyncError(dispatch, "invalid phone number");
     }
     if (result) {
-      const response = await handleUser("/optGernet", result);
+      const response = await handleUser("/otpGenerat", result);
       // console.log(response);
       if (response.status != 200) {
         dispatch(addTempContact(result?.contact));

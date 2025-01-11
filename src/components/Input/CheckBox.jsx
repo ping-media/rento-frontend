@@ -5,7 +5,7 @@ const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
     <div className="mb-3">
       <label
         htmlFor={labelId}
-        className="flex flex-row items-center gap-2.5 text-gray-500"
+        className="flex flex-row items-center text-sm gap-2.5 text-gray-500"
       >
         <input
           id={labelId}

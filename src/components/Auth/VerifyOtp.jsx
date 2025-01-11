@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import Spinner from "../Spinner/Spinner";
-// import { toggleLoginModal } from "../../Redux/ModalSlice/ModalSlice";
 import { handleUser } from "../../Data";
-import {
-  // handleLoadingUserData,
-  handleSignIn,
-} from "../../Redux/UserSlice/UserSlice";
+import { handleSignIn } from "../../Redux/UserSlice/UserSlice";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 
 const VerifyOtp = ({
@@ -118,6 +114,7 @@ const VerifyOtp = ({
     return () => clearInterval(interval);
   }, [isTimerActive, seconds]);
 
+  // handle login
   const handleLogin = async (e, otp) => {
     setLoading(true);
     if (e) e.preventDefault();
@@ -150,9 +147,9 @@ const VerifyOtp = ({
   // resending otp
   const handleSendOtpAgain = async () => {
     if (phone == 0) return;
-    const response = await handleUser("/optGernet", { contact: phone });
+    const response = await handleUser("/otpGenerat", { contact: phone });
     if (response?.status == 200) {
-      setSecondChanger(0);
+      setSecondChanger(30);
       setTimerActive(true);
     } else {
       handleAsyncError(dispatch, "unable to send otp! try again");
@@ -183,25 +180,25 @@ const VerifyOtp = ({
             />
           ))}
         </div>
-        {seconds && (
-          <div className="flex items-center flex-col justify-between mb-5">
-            <p className="lg:text-gray-600 text-sm text-gray-400">
-              Didn't receive code?
-            </p>
-            <div className="flex items-center space-x-2">
-              <button
-                className="px-3 py-2 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
-                disabled={isTimerActive}
-                type="button"
-                onClick={handleSendOtpAgain}
-              >
-                {seconds == 0
-                  ? "Request Again"
-                  : `Request Again (00:00:${seconds})`}
-              </button>
-            </div>
+
+        <div className="flex items-center flex-col justify-between mb-5">
+          <p className="lg:text-gray-600 text-sm text-gray-400">
+            Didn't receive code?
+          </p>
+          <div className="flex items-center space-x-2">
+            <button
+              className="px-3 py-2 text-sm font-medium text-center rounded hover:text-gray-500 text-theme disabled:text-gray-400"
+              disabled={isTimerActive}
+              type="button"
+              onClick={handleSendOtpAgain}
+            >
+              {seconds === 0
+                ? "Request Again"
+                : `Request Again (00:00:${seconds})`}
+            </button>
           </div>
-        )}
+        </div>
+
         <button
           className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
           type="submit"

@@ -4,18 +4,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCouponData } from "../../Data";
 import {
   addTempCouponDetails,
-  handleRestCoupon,
+  handleRestCouponWithPrice,
 } from "../../Redux/CouponSlice/CouponSlice";
 import PreLoader from "../skeleton/PreLoader";
 
 const PromoCard = () => {
   const [CouponCode, setCouponCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
   const { tempTotalPrice, tempCouponName, tempCouponId } = useSelector(
     (state) => state.coupon
   );
   const { isExtraAddonChecked } = useSelector((state) => state.vehicles);
   const dispatch = useDispatch();
+
+  // setting the couponName in input if present
+  useEffect(() => {
+    if (tempCouponName) {
+      return setCouponCode(tempCouponName);
+    }
+  }, [tempCouponName]);
+
+  // updating the coupon with price
+  useEffect(() => {
+    if (tempCouponId && tempCouponId != "" && CouponCode && CouponCode != "") {
+      handleApplyCoupon();
+    }
+  }, [tempTotalPrice]);
 
   // apply CouponCode
   const handleApplyCoupon = async () => {
@@ -31,12 +46,14 @@ const PromoCard = () => {
         isExtraAddonChecked
       );
       if (response?.status == 200) {
-        handleAsyncError(dispatch, "Coupon Applied.", "success");
+        !isCouponApplied &&
+          handleAsyncError(dispatch, "Coupon Applied.", "success");
+        setIsCouponApplied(true);
         dispatch(
           addTempCouponDetails({
             couponName: CouponCode,
-            discountType: response?.data?.discount,
-            discount: response?.data?.finalAmount,
+            discountType: Number(response?.data?.discount),
+            discount: Number(response?.data?.finalAmount),
             id: response?.data?.coupon?._id,
             isExtra: response?.data?.isExtra,
           })
@@ -54,15 +71,9 @@ const PromoCard = () => {
   // remove CouponCode
   const handleReomveCoupon = async () => {
     setCouponCode("");
-    return dispatch(handleRestCoupon());
+    setIsCouponApplied(false);
+    return dispatch(handleRestCouponWithPrice());
   };
-
-  // setting the couponName in input if present
-  useEffect(() => {
-    if (tempCouponName) {
-      return setCouponCode(tempCouponName);
-    }
-  }, [tempCouponName]);
 
   return (
     <>

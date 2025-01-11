@@ -35,6 +35,13 @@ const CouponSlice = createSlice({
     handleEndLoading: (state) => {
       state.loading = false;
     },
+    handleRestCouponWithPrice: (state) => {
+      state.tempCouponName = "";
+      state.tempCouponId = "";
+      state.tempCouponDiscountTotal = "";
+      state.tempCouponDiscount = "";
+      state.tempCouponExtra = false;
+    },
     handleRestCoupon: () => initialState,
   },
 });
@@ -43,6 +50,7 @@ export const {
   handleStartLoading,
   addTempTotalPrice,
   addTempCouponDetails,
+  handleRestCouponWithPrice,
   removeTempTotalPrice,
   handleEndLoading,
   handleRestCoupon,
