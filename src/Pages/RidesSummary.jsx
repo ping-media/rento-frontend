@@ -1,5 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { formatDateTimeForUser, handlePreviousPage } from "../utils";
+import {
+  formatDateTimeForUser,
+  formatDateTimeISTForUser,
+  handlePreviousPage,
+} from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
 import { useEffect, useState } from "react";
@@ -33,7 +37,7 @@ const RidesSummary = () => {
         dispatch(addRidesData(result?.data));
         // formatting data for user readability
         setFormatedDateAndTime(
-          formatDateTimeForUser(result?.data[0]?.BookingStartDateAndTime)
+          formatDateTimeISTForUser(result?.data[0]?.createdAt)
         );
       })();
     }
@@ -203,8 +207,11 @@ const RidesSummary = () => {
                   className={`${
                     (rides[0]?.paymentStatus === "partially_paid" &&
                       "bg-orange-400") ||
+                    (rides[0]?.paymentStatus === "partiallyPay" &&
+                      "bg-orange-400") ||
                     rides[0]?.paymentStatus === "pending" ||
                     (rides[0]?.paymentStatus === "failed" && "bg-theme") ||
+                    (rides[0]?.paymentStatus === "refunded" && "bg-theme") ||
                     (rides[0]?.paymentStatus === "paid" &&
                       "bg-green-500 bg-opacity-80")
                   } text-gray-100 px-2 py-1 rounded-full cursor-pointer capitalize ml-2`}

@@ -34,6 +34,7 @@ const PriceCard = ({
     tempCouponDiscount,
     tempCouponDiscountTotal,
     tempCouponExtra,
+    tempCouponName,
     loading,
   } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const PriceCard = ({
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
-    if (appliedVehiclePlan != null) {
+    if (appliedVehiclePlan != null && appliedVehiclePlan?.planPrice) {
       setVehicleRentCost(Number(appliedVehiclePlan?.planPrice));
     } else if (vehiclePlanData != null) {
       if (perDayCost) {
@@ -248,7 +249,12 @@ const PriceCard = ({
                 name="discountPrice"
                 value={tempCouponDiscountTotal}
               />
-              <span className="text-gray-500">Discount Amount</span>
+              <div>
+                <span className="text-gray-500">Discount Amount</span>
+                <span className="block text-xs text-gray-400">
+                  coupon: ({tempCouponName})
+                </span>
+              </div>
               <span className="font-semibold">
                 -₹{formatPrice(tempCouponDiscountTotal)}
               </span>

@@ -337,6 +337,41 @@ const formatDateTimeForUser = (input) => {
   };
 };
 
+const formatDateTimeISTForUser = (input) => {
+  const date = new Date(input);
+
+  // Convert to IST
+  const IST_OFFSET = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+  const istDate = new Date(date.getTime() + IST_OFFSET);
+
+  const year = istDate.getUTCFullYear();
+  const month = istDate.getUTCMonth(); // 0-based index
+  const day = istDate.getUTCDate();
+
+  const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
+  const formattedDate = new Date(Date.UTC(year, month, day)).toLocaleDateString(
+    "en-GB",
+    dateOptions
+  );
+
+  const hours = istDate.getUTCHours();
+  const minutes = istDate.getUTCMinutes();
+  const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
+
+  // Format the time as per IST
+  const formattedTime = new Date(
+    Date.UTC(year, month, day, hours, minutes)
+  ).toLocaleTimeString("en-GB", {
+    ...timeOptions,
+    timeZone: "UTC", // Explicitly use IST offset calculated
+  });
+
+  return {
+    date: formattedDate,
+    time: formattedTime,
+  };
+};
+
 const nextDayFromCurrent = (date) => {
   const nextDay = date;
   nextDay.setDate(nextDay.getDate() + 1); // Increment the day by 1
@@ -495,4 +530,5 @@ export {
   isUser18,
   formatDateTimeComingFromDatabase,
   convertTo24HourFormat,
+  formatDateTimeISTForUser,
 };

@@ -30,6 +30,7 @@ const RideFareDetails = ({ rides }) => {
                   key !== "discountPrice" &&
                   key !== "discountTotalPrice" &&
                   key !== "isInvoiceCreated" &&
+                  key !== "isPickupImageAdded" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
@@ -149,32 +150,6 @@ const RideFareDetails = ({ rides }) => {
             )}
 
             {/* total price  */}
-            {/* {rides?.bookingPrice?.discountTotalPrice &&
-              rides?.bookingPrice?.discountTotalPrice !== 0 && (
-                <li
-                  className={`flex items-center justify-between mt-1 my-1 ${
-                    rides?.bookingPrice?.userPaid ? "border-b-2" : ""
-                  }`}
-                >
-                  <p className="text-sm font-bold uppercase text-left">
-                    Total Price
-                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                      {rides?.paymentMethod == "online" &&
-                      rides?.paySuccessId != "NA"
-                        ? "(Full Paid)"
-                        : rides?.paymentMethod == "partiallyPay"
-                        ? ""
-                        : "(need to pay at pickup)"}
-                    </small>
-                  </p>
-                  <p className="text-sm font-bold text-right">
-                    {`₹${formatPrice(
-                      rides?.bookingPrice?.discountTotalPrice != 0 &&
-                        rides?.bookingPrice?.discountTotalPrice
-                    )}`}
-                  </p>
-                </li>
-              )} */}
             {rides?.bookingPrice?.discountTotalPrice > 0 && (
               <li
                 className={`flex items-center justify-between mt-1 my-1 ${
@@ -230,6 +205,33 @@ const RideFareDetails = ({ rides }) => {
                   </p>
                 </li>
               </>
+            )}
+            {/* for refund process  */}
+            {(rides?.paymentStatus === "refundInt" ||
+              rides?.paymentStatus === "refunded") && (
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+                <p className="text-sm font-semibold uppercase text-left">
+                  Refund Amount
+                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                    (
+                    {`${
+                      rides?.paymentStatus === "refundInt"
+                        ? "Refund Request Received"
+                        : "Refunded"
+                    }`}
+                    )
+                  </small>
+                </p>
+                <p className="text-sm font-bold text-right">
+                  {rides?.bookingPrice?.userPaid
+                    ? `- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`
+                    : rides?.bookingPrice?.discountTotalPrice > 0
+                    ? `- ₹${formatPrice(
+                        rides?.bookingPrice?.discountTotalPrice
+                      )}`
+                    : `- ₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
+                </p>
+              </li>
             )}
             <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
               <p className="text-sm font-semibold uppercase text-left">

@@ -55,8 +55,11 @@ const RideCard = ({ item, id }) => {
                     className={`${
                       (item?.paymentStatus === "partially_paid" &&
                         "bg-orange-400") ||
+                      (item?.paymentStatus === "partiallyPay" &&
+                        "bg-orange-400") ||
                       (item?.paymentStatus === "pending" && "bg-orange-400") ||
                       (item?.paymentStatus === "failed" && "bg-theme") ||
+                      (item?.paymentStatus === "refunded" && "bg-theme") ||
                       (item?.paymentStatus === "paid" &&
                         "bg-green-500 bg-opacity-80")
                     } text-gray-100 px-2 rounded-full cursor-pointer capitalize ml-2`}

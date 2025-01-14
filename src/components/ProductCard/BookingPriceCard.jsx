@@ -3,6 +3,7 @@ import { formatPrice, getDurationInDays } from "../../utils";
 const BookingPriceCard = ({
   bookingPrice,
   packageApplied,
+  bookingPackage,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
 }) => {
@@ -64,7 +65,12 @@ const BookingPriceCard = ({
         <div className="my-2.5">
           {bookingPrice?.discountPrice != 0 && (
             <div className="flex items-center justify-between mb-1">
-              <span className="text-gray-500">Discount Amount</span>
+              <div>
+                <span className="text-gray-500">Discount Amount</span>
+                <span className="block text-xs text-gray-400">
+                  coupon: ({bookingPackage?.couponName})
+                </span>
+              </div>
               <span className="font-semibold">
                 - ₹{formatPrice(bookingPrice?.discountPrice)}
               </span>

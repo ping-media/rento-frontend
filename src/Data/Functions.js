@@ -378,7 +378,6 @@ const handleCreateBookingSubmit = async (
           ) {
             delete oldData?.bookingPrice?.userPaid;
           } else if (result?.paymentMethod == "partiallyPay") {
-            // console.log(oldData);
             oldData = {
               ...oldData,
               bookingPrice: {
@@ -393,7 +392,7 @@ const handleCreateBookingSubmit = async (
           }
 
           orderId = await createOrderId(oldData);
-          if (orderId) {
+          if (orderId?.id) {
             updatedData = oldData;
             updatedData = {
               ...updatedData,

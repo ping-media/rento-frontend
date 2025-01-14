@@ -146,8 +146,12 @@ const VerifyOtp = ({
 
   // resending otp
   const handleSendOtpAgain = async () => {
-    if (phone == 0) return;
-    const response = await handleUser("/otpGenerat", { contact: phone });
+    let response;
+    if (phone != 0) {
+      response = await handleUser("/otpGenerat", { contact: phone });
+    } else if (email != "") {
+      response = await handleUser("/emailOtp", { email: email });
+    }
     if (response?.status == 200) {
       setSecondChanger(30);
       setTimerActive(true);

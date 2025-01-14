@@ -25,8 +25,6 @@ const InfoCard = ({
   perDayCost,
   freeKms,
   queryParmsData,
-  // BookingStartDateAndTime,
-  // BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
@@ -276,7 +274,7 @@ const InfoCard = ({
             {vehiclePlanData != null && (
               <p className="text-lg">
                 ₹
-                {appliedVehiclePlan !== null
+                {appliedVehiclePlan !== null && appliedVehiclePlan?.planPrice
                   ? formatPrice(Number(appliedVehiclePlan?.planPrice))
                   : formatPrice(Number(vehiclePlanData?.planPrice))}
               </p>

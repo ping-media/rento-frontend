@@ -10,6 +10,8 @@ const EmailVerifyModal = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   const { isEmailVerifyModalActive } = useSelector((state) => state.modals);
 
   // sending the otp
@@ -18,7 +20,9 @@ const EmailVerifyModal = () => {
     const response = await handlePostData("/emailOtp", {
       email: currentUser && currentUser?.email,
     });
-    if (response?.status == 200) {
+    if (response?.status === 200) {
+      setSeconds(30);
+      setIsTimerActive(true);
       handleAsyncError(dispatch, response?.message, "success");
     }
     setLoading(false);
@@ -72,6 +76,10 @@ const EmailVerifyModal = () => {
               otp={123456}
               email={currentUser && currentUser?.email}
               modalChange={toggleEmailVerifyModal}
+              seconds={seconds}
+              setSecondChanger={setSeconds}
+              isTimerActive={isTimerActive}
+              setTimerActive={setIsTimerActive}
             />
           </div>
         </div>
