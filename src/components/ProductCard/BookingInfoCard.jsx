@@ -58,9 +58,9 @@ const BookingInfoCard = ({
             <h2 className="font-bold uppercase text-xl">
               {vehicleBrand} {vehicleName}
             </h2>
-            <span className="text-xs text-gray-500">
+            {/* <span className="text-xs text-gray-500">
               (Vehicle Number: {vehicleBasic?.vehicleNumber})
-            </span>
+            </span> */}
           </div>
         ) : (
           <div className="h-4 w-32 bg-gray-400 rounded mb-3"></div>
