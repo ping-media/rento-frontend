@@ -21,8 +21,8 @@ const Layout = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // setting decrypt user data
     if (user) {
-      // setting decrypt user data
       dispatch(handleCurrentUser(user));
     }
   }, [user]);

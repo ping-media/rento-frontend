@@ -173,7 +173,7 @@ const VerifyOtp = ({
           {otpInput.map((value, index) => (
             <input
               key={index}
-              type="text"
+              type="number"
               value={value}
               ref={(input) => (inputRef.current[index] = input)}
               onChange={(e) => handleChange(index, e)}

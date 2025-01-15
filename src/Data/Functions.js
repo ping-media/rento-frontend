@@ -54,13 +54,10 @@ const handleSearchVehicleData = async (
     result = await fetchingData(url);
 
     if (result) {
-      // Dispatch the result if available
       return dispatch(addVehiclesData(result?.data));
     }
   } catch (error) {
-    // Handle errors
     console.error("Error fetching vehicle data:", error);
-    // Optionally dispatch an error state if you want to show error messages
   }
 };
 

@@ -21,7 +21,8 @@ const LocationModal = () => {
       dispatch(addingLocation());
       dispatch(addLocation(value));
       dispatch(toggleLocationModal());
-      dispatch(handleCheckLocationChange());
+      location.pathname.includes("/search/") &&
+        dispatch(handleCheckLocationChange());
     }
   };
 
@@ -50,7 +51,8 @@ const LocationModal = () => {
                   })
                 );
               }
-              dispatch(handleCheckLocationChange());
+              location.pathname.includes("/search/") &&
+                dispatch(handleCheckLocationChange());
             }
             return setLocationList(result?.data);
           }

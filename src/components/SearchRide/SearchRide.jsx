@@ -43,6 +43,8 @@ const SearchRide = () => {
   const [queryParms] = useSearchParams();
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
+  const [isFormSubmitFirst, setIsFormSubmitFirst] = useState(false);
+  const rideSubmitRef = useRef(null);
 
   // if searchFilter modal is active than run this
   const handletoggleSearchUpdate = () => {
@@ -67,20 +69,32 @@ const SearchRide = () => {
       );
 
     //checking whether time is in opening hours
-    if (
-      result?.pickupTime === result?.dropoffTime &&
-      covertedTime >= 7 &&
-      covertedTime <= 19
-    ) {
+    try {
       if (
-        location.pathname == "/" ||
-        removeAfterSecondSlash(location.pathname) == "/search"
+        result?.pickupTime === result?.dropoffTime &&
+        covertedTime >= 7 &&
+        covertedTime <= 19
       ) {
-        if (result?.pickupLocationId != "") {
+        if (
+          location.pathname == "/" ||
+          removeAfterSecondSlash(location.pathname) == "/search"
+        ) {
+          if (result?.pickupLocationId != "") {
+            return navigate(
+              `/search/${
+                result?.pickupLocationId
+              }?BookingStartDateAndTime=${convertToISOString(
+                result?.pickupDate,
+                result?.pickupTime
+              )}&BookingEndDateAndTime=${convertToISOString(
+                result?.dropoffDate,
+                result?.dropoffTime
+              )}`
+            );
+          }
+        } else if (location.pathname == "/explore") {
           return navigate(
-            `/search/${
-              result?.pickupLocationId
-            }?BookingStartDateAndTime=${convertToISOString(
+            `/explore?BookingStartDateAndTime=${convertToISOString(
               result?.pickupDate,
               result?.pickupTime
             )}&BookingEndDateAndTime=${convertToISOString(
@@ -89,19 +103,13 @@ const SearchRide = () => {
             )}`
           );
         }
-      } else if (location.pathname == "/explore") {
-        return navigate(
-          `/explore?BookingStartDateAndTime=${convertToISOString(
-            result?.pickupDate,
-            result?.pickupTime
-          )}&BookingEndDateAndTime=${convertToISOString(
-            result?.dropoffDate,
-            result?.dropoffTime
-          )}`
-        );
+      } else {
+        return handleAsyncError(dispatch, "time should be in opening hour");
       }
-    } else {
-      return handleAsyncError(dispatch, "time should be in opening hour");
+    } catch (error) {
+      navigate(`/error-${error?.message}`);
+    } finally {
+      setIsFormSubmitFirst(true);
     }
   };
 
@@ -176,6 +184,14 @@ const SearchRide = () => {
     }
   }, []);
 
+  // for form resubmit itself when selectedLocation change
+  // useEffect(() => {
+  //   if (isFormSubmitFirst === false) return;
+  //   if (rideSubmitRef.current) {
+  //     rideSubmitRef.current.submit();
+  //   }
+  // }, [selectedLocation]);
+
   return (
     <>
       {isPageLoad && stationLoading && <PreLoader />}
@@ -219,6 +235,7 @@ const SearchRide = () => {
           className={`flex flex-wrap lg:grid grid-cols-6 gap-3 lg:gap-4 ${
             isSearchUpdatesActive ? "mt-5" : "mt-1"
           } lg:mt-0`}
+          ref={rideSubmitRef}
           onSubmit={handleSearchRide}
         >
           <div className="w-full">
