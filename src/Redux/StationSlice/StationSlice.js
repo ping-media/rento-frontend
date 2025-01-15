@@ -4,16 +4,16 @@ const StationSlice = createSlice({
   name: "station",
   initialState: {
     station: [],
-    loading: false,
+    stationLoading: false,
     error: null,
   },
   reducers: {
     fetchingStation: (state) => {
-      state.loading = true;
+      state.stationLoading = true;
     },
     addStationData: (state, action) => {
       state.station = action.payload;
-      state.loading = false;
+      state.stationLoading = false;
     },
   },
 });

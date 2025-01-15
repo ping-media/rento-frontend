@@ -23,7 +23,6 @@ import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 const Search = () => {
   const navigate = useNavigate();
   const [queryParms] = useSearchParams();
-  // const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const dispatch = useDispatch();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DatePicker from "../DatePicker/DatePicker";
 import TimePicker from "../TimePicker/TimePicker";
 import Button from "../Button/Button";
@@ -33,6 +33,7 @@ const SearchRide = () => {
   const { id } = useParams();
   const [isHomePage, setIsHomePage] = useState(false);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
+  const { stationLoading } = useSelector((state) => state.station);
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation
   );
@@ -112,7 +113,7 @@ const SearchRide = () => {
   }, [location.href]);
 
   // this function is fetching station based on location id
-  useEffect(() => {
+  const memoizedSearchData = useCallback(() => {
     searchData(
       dispatch,
       selectedLocation,
@@ -120,7 +121,11 @@ const SearchRide = () => {
       addStationData,
       loading
     );
-  }, [location.pathname, selectedLocation]);
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    memoizedSearchData();
+  }, [memoizedSearchData]);
 
   useEffect(() => {
     // Destructure BookingStartDateAndTime and BookingEndDateAndTime
@@ -173,7 +178,7 @@ const SearchRide = () => {
 
   return (
     <>
-      {isPageLoad && <PreLoader />}
+      {isPageLoad && stationLoading && <PreLoader />}
       <div
         className={`w-[95%] lg:w-[90%] mx-auto px-4 py-2.5 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
           isHomePage && "-mt-32 md:-mt-28 lg:-mt-14"

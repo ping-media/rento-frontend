@@ -392,7 +392,7 @@ const handleCreateBookingSubmit = async (
           }
 
           orderId = await createOrderId(oldData);
-          if (orderId?.id) {
+          if (orderId?.status === "created") {
             updatedData = oldData;
             updatedData = {
               ...updatedData,
@@ -412,6 +412,8 @@ const handleCreateBookingSubmit = async (
               handleAsyncError,
               dispatch
             );
+          } else {
+            handleAsyncError(dispatch, "unable to create orderId");
           }
         } else {
           updatedData = JSON.parse(localStorage.getItem("tempBooking"));
