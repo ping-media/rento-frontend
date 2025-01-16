@@ -31,6 +31,7 @@ const RideFareDetails = ({ rides }) => {
                   key !== "discountTotalPrice" &&
                   key !== "isInvoiceCreated" &&
                   key !== "isPickupImageAdded" &&
+                  key !== "isDiscountZero" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
@@ -107,30 +108,6 @@ const RideFareDetails = ({ rides }) => {
               </li>
             )}
             {/* discount price  */}
-            {/* {rides?.bookingPrice?.discountPrice &&
-              rides?.bookingPrice?.discountPrice != 0 && (
-                <li
-                  className={`flex items-center justify-between mt-1 my-1 ${
-                    rides?.bookingPrice?.discountPrice &&
-                    rides?.bookingPrice?.discountPrice != 0
-                      ? "border-t-2"
-                      : ""
-                  }`}
-                >
-                  <p className="text-sm font-semibold uppercase text-left">
-                    Discount Price
-                    <small className="text-sm font-semibold text-xs mx-1 block text-gray-400 italic">
-                      Coupon: ({rides?.discountCuopon?.couponName})
-                    </small>
-                  </p>
-                  <p className="font-semibold text-right">
-                    {`- ₹${formatPrice(
-                      rides?.bookingPrice?.discountPrice !== 0 &&
-                        rides?.bookingPrice?.discountPrice
-                    )}`}
-                  </p>
-                </li>
-              )} */}
             {rides?.bookingPrice?.discountPrice > 0 && (
               <li
                 className={`flex items-center justify-between mt-1 my-1 ${
@@ -150,28 +127,35 @@ const RideFareDetails = ({ rides }) => {
             )}
 
             {/* total price  */}
-            {rides?.bookingPrice?.discountTotalPrice > 0 && (
-              <li
-                className={`flex items-center justify-between mt-1 my-1 ${
-                  rides?.bookingPrice?.userPaid ? "border-b-2" : ""
-                }`}
-              >
-                <p className="text-sm font-bold uppercase text-left">
-                  Total Price
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    {rides?.paymentMethod == "online" &&
-                    rides?.paySuccessId !== "NA"
-                      ? "(Full Paid)"
-                      : rides?.paymentMethod == "partiallyPay"
-                      ? ""
-                      : "(Need to pay at pickup)"}
-                  </small>
-                </p>
-                <p className="text-sm font-bold text-right">
-                  {`₹${formatPrice(rides?.bookingPrice?.discountTotalPrice)}`}
-                </p>
-              </li>
-            )}
+            {rides?.bookingPrice?.discountTotalPrice > 0 ||
+              (rides?.bookingPrice?.isDiscountZero === true && (
+                <li
+                  className={`flex items-center justify-between mt-1 my-1 ${
+                    rides?.bookingPrice?.userPaid ? "border-b-2" : ""
+                  }`}
+                >
+                  <p className="text-sm font-bold uppercase text-left">
+                    Total Price
+                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                      {rides?.paymentMethod == "online" &&
+                      rides?.paySuccessId !== "NA"
+                        ? "(Full Paid)"
+                        : rides?.paymentMethod == "partiallyPay"
+                        ? ""
+                        : rides?.bookingPrice?.isDiscountZero === true
+                        ? ""
+                        : "(Need to pay at pickup)"}
+                    </small>
+                  </p>
+                  <p className="text-sm font-bold text-right">
+                    {`₹${formatPrice(
+                      rides?.bookingPrice?.isDiscountZero === true
+                        ? 0
+                        : rides?.bookingPrice?.discountTotalPrice
+                    )}`}
+                  </p>
+                </li>
+              ))}
 
             {/* user paid */}
             {rides?.bookingPrice?.userPaid && (

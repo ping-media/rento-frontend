@@ -164,6 +164,7 @@ const handleFetchBookingData = (
   addTempBookingData,
   setBookingLoading,
   vehiclePlanData,
+  isDiscountZero,
   dispatch,
   id,
   updateQueryParams,
@@ -196,6 +197,7 @@ const handleFetchBookingData = (
         totalPrice: Number(result?.totalPrice),
         discountPrice: Number(result?.discountPrice || 0),
         discountTotalPrice: Number(result?.discounttotalPrice || 0),
+        isDiscountZero: isDiscountZero,
         rentAmount: vehicles[0]?.perDayCost,
         isPackageApplied: vehiclePlanData != null,
       },
@@ -300,11 +302,35 @@ const handleCreateBookingSubmit = async (
     } else {
       data = tempBookingData;
     }
-
+    // this is case if discount is zero
+    if (data?.bookingPrice?.isDiscountZero === true) {
+      // update the paymentMethod before sending the data for booking
+      data = {
+        ...data,
+        paymentMethod: "online",
+        bookingStatus: "done",
+        paymentStatus: "paid",
+      };
+      // continue booking
+      const response = await handleCreateBooking(
+        data,
+        handlebooking,
+        removeTempDate,
+        handleAsyncError,
+        dispatch
+      );
+      if (response?.status === 200) {
+        handleAsyncError(dispatch, "Ride booked successfully.", "success");
+        return navigate(`/my-rides/summary/${response?.data?._id}`);
+      } else {
+        return handleAsyncError(dispatch, response?.message);
+      }
+    }
+    // continue
     if (!result?.paymentMethod) {
       setBookingLoading(false);
       return handleAsyncError(dispatch, "select payment method first!");
-    } else if (result?.paymentMethod == "partiallyPay") {
+    } else if (result?.paymentMethod === "partiallyPay") {
       // if user select to pay some amount then this will run
       data = {
         ...data,

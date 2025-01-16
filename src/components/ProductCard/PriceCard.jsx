@@ -35,6 +35,7 @@ const PriceCard = ({
     tempCouponDiscountTotal,
     tempCouponExtra,
     tempCouponName,
+    isDiscountZero,
     loading,
   } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
@@ -242,12 +243,12 @@ const PriceCard = ({
         </ul>
         {/* total price  & discount Price */}
         <div className={`${isExtraChecked ? "pt-2 pb-10" : "pt-2 pb-6"}`}>
-          {tempCouponDiscountTotal && tempCouponDiscountTotal != null && (
+          {tempCouponDiscount && tempCouponDiscount != null && (
             <div className="flex items-center justify-between mb-1">
               <input
                 type="hidden"
                 name="discountPrice"
-                value={tempCouponDiscountTotal}
+                value={tempCouponDiscount}
               />
               <div>
                 <span className="text-gray-500">Discount Amount</span>
@@ -256,7 +257,7 @@ const PriceCard = ({
                 </span>
               </div>
               <span className="font-semibold">
-                -₹{formatPrice(tempCouponDiscountTotal)}
+                -₹{formatPrice(tempCouponDiscount)}
               </span>
             </div>
           )}
@@ -266,13 +267,14 @@ const PriceCard = ({
             <input
               type="hidden"
               name="discounttotalPrice"
-              value={tempCouponDiscount}
+              value={tempCouponDiscountTotal}
             />
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
-              {tempCouponDiscount != null && tempCouponDiscount > 0
-                ? formatPrice(tempCouponDiscount)
+              {tempCouponDiscountTotal != null &&
+              (isDiscountZero === true || tempCouponDiscountTotal > 0)
+                ? formatPrice(tempCouponDiscountTotal)
                 : formatPrice(totalPrice)}
             </span>
           </div>

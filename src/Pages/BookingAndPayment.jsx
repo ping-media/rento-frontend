@@ -97,12 +97,18 @@ const BookingAndPayment = () => {
                   }
                 />
               </div>
+
               <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-center justify-center w-full">
                 <div className="py-3 border-b-2 border-gray-300 w-full">
                   <h2 className="font-semibold">Payment Method</h2>
                 </div>
-                <BookingPaymentCard />
+                <BookingPaymentCard
+                  isDiscountZeroApplied={
+                    tempBookingData?.bookingPrice?.isDiscountZero
+                  }
+                />
               </div>
+
               <div className="mt-1 order-5 w-full">
                 <button
                   className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
@@ -110,7 +116,11 @@ const BookingAndPayment = () => {
                   type="submit"
                 >
                   {!bookingLoading ? (
-                    "Make Payment"
+                    tempBookingData?.bookingPrice?.isDiscountZero === true ? (
+                      "Confirm Booking"
+                    ) : (
+                      "Make Payment"
+                    )
                   ) : (
                     <Spinner message={"booking..."} />
                   )}

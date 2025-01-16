@@ -48,15 +48,15 @@ const LocationCard = ({
       </Link>
       <div className="px-4 py-2 w-full lg:w-auto text-sm">
         <ul className="leading-8">
-          <li>
+          <li className="capitalize">
             <span className="font-bold mr-2">Pickup Location:</span>
             {stationName}
           </li>
-          <li>
+          <li className="capitalize">
             <span className="font-bold mr-2">LandMark:</span>
             {stationName}
           </li>
-          <li>
+          <li className="capitalize">
             <span className="font-bold mr-2">Person Name:</span>
             {stationUser
               ? `${stationMasterUserId?.firstName} ${stationMasterUserId?.lastName}`

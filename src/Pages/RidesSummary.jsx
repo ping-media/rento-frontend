@@ -128,25 +128,39 @@ const RidesSummary = () => {
         {/* lg:max-h-96 */}
         <div className="lg:overflow-hidden lg:hover:overflow-y-auto no-scrollbar">
           <div className="mb-5">
-            <h2 className="font-semibold mb-3 flex items-center gap-1">
-              <span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="w-5 h-5"
+            <div className="flex justify-between items-center mt-1 mb-3">
+              <h2 className="font-semibold flex items-center gap-1">
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+                    />
+                  </svg>
+                </span>
+                Vehicle Details
+              </h2>
+              <p className="text-md text-semibold">
+                <span className="hidden lg:inline">Ride Status:</span>
+                <span
+                  className={`border-2 border-gray-300 bg-gray-200 bg-opacity-50 text-black px-2 py-1 rounded-md cursor-pointer uppercase ml-2`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
-                  />
-                </svg>
-              </span>
-              Vehicle Details
-            </h2>
+                  {rides[0]?.rideStatus === "pending"
+                    ? "Not Started"
+                    : rides[0]?.rideStatus === "ongoing"
+                    ? "Started"
+                    : "Completed"}
+                </span>
+              </p>
+            </div>
             <RideCard
               item={rides[0]}
               formatedDateAndTime={formatedDateAndTime}
@@ -209,12 +223,13 @@ const RidesSummary = () => {
                       "bg-orange-400") ||
                     (rides[0]?.paymentStatus === "partiallyPay" &&
                       "bg-orange-400") ||
+                    (rides[0]?.paymentStatus === "pending" && "bg-theme") ||
                     rides[0]?.paymentStatus === "pending" ||
                     (rides[0]?.paymentStatus === "failed" && "bg-theme") ||
                     (rides[0]?.paymentStatus === "refunded" && "bg-theme") ||
                     (rides[0]?.paymentStatus === "paid" &&
                       "bg-green-500 bg-opacity-80")
-                  } text-gray-100 px-2 py-1 rounded-full cursor-pointer capitalize ml-2`}
+                  } text-gray-100 px-2 py-1 rounded-md cursor-pointer capitalize ml-2`}
                 >
                   {rides[0]?.paymentStatus.replace("_", " ")}
                 </span>

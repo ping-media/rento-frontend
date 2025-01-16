@@ -80,7 +80,8 @@ const BookingPriceCard = ({
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
-              {bookingPrice?.discountTotalPrice
+              {bookingPrice?.isDiscountZero === true ||
+              bookingPrice?.discountTotalPrice
                 ? formatPrice(Number(bookingPrice?.discountTotalPrice))
                 : formatPrice(bookingPrice?.totalPrice)}
             </span>

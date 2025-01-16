@@ -160,12 +160,6 @@ const SearchRide = () => {
         setDropoffDate(formatDateOnly(BookingEndDateAndTime));
         setQueryPickupTime(formatTimeOnly(BookingStartDateAndTime));
         setQueryDropoffTime(formatTimeOnly(BookingEndDateAndTime));
-      } else {
-        // Set default dates if data not found
-        setPickupDate(new Date());
-        setDropoffDate(nextDayFromCurrent(new Date()));
-        setQueryPickupTime(new Date().toLocaleTimeString());
-        setQueryDropoffTime(new Date().toLocaleTimeString());
       }
     } catch (error) {
       return console.error(error?.message);
@@ -173,6 +167,17 @@ const SearchRide = () => {
       setIsPageLoad(false);
     }
   }, [location?.href]);
+
+  // this will set time and date for the first time on homepage
+  useEffect(() => {
+    // Set default dates if data not found
+    if (location.pathname === "/") {
+      setPickupDate(new Date());
+      setDropoffDate(nextDayFromCurrent(new Date()));
+      setQueryPickupTime(new Date().toLocaleTimeString());
+      setQueryDropoffTime(new Date().toLocaleTimeString());
+    }
+  }, []);
 
   //  through this we are changing the dropoffdate && dropOffTime by one for one time only
   useEffect(() => {

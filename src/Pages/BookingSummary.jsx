@@ -28,7 +28,9 @@ const BookingSummary = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
-  const { tempCouponName, tempCouponId } = useSelector((state) => state.coupon);
+  const { tempCouponName, tempCouponId, isDiscountZero } = useSelector(
+    (state) => state.coupon
+  );
   const [bookingLoading, setBookingLoading] = useState(false);
   // for getting queryparms value
   const [queryParms] = useSearchParams();
@@ -90,6 +92,7 @@ const BookingSummary = () => {
       addTempBookingData,
       setBookingLoading,
       vehiclePlanData,
+      isDiscountZero,
       dispatch,
       id,
       updateQueryParams,
