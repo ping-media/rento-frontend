@@ -14,6 +14,7 @@ import {
   handleSignIn,
   handleUpdateSelectedCurrentUser,
 } from "../../Redux/UserSlice/UserSlice.js";
+import TextAreaBox from "../Input/TextAreaBox.jsx";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));
@@ -96,7 +97,7 @@ const Profile = () => {
                 currentUser?.kycApproved == "yes"
                   ? "bg-green-500"
                   : "bg-red-500"
-              } text-white px-1 lg:px-4 py-1 rounded-sm`}
+              } text-white px-1 lg:px-4 py-1 rounded-md`}
             >
               {currentUser?.kycApproved == "yes" ? "Verified" : "Not Verified"}
             </span>
@@ -177,6 +178,18 @@ const Profile = () => {
                 labelDesc={"Alternative Contact Number"}
                 placeholderDesc={"Enter Alternative Phone Number"}
                 value={currentUser?.altContact || ""}
+                required={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 mb-5">
+            <div className="w-full lg:flex-1">
+              <TextAreaBox
+                name={"addressProof"}
+                placeholderDesc={"Enter Address"}
+                labelDesc={"Enter Address"}
+                labelId={"address"}
+                value={currentUser?.addressProof || ""}
               />
             </div>
           </div>

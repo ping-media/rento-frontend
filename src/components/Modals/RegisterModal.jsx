@@ -31,7 +31,7 @@ const RegisterModal = () => {
       if (result) {
         const dataResponse = await handleUser("/signup", result);
         if (dataResponse.status == 200) {
-          const response = await handleUser("/optGernet", {
+          const response = await handleUser("/otpGenerat", {
             contact: result?.contact,
           });
           if (response?.status == 200) {

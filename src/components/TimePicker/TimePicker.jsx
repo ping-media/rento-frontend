@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { formatTimeWithoutSeconds, parseTime } from "../../utils";
+import { useSelector } from "react-redux";
 
 const TimePicker = ({
   value,
@@ -9,6 +10,7 @@ const TimePicker = ({
   date,
 }) => {
   const [timeVisible, setTimeVisible] = useState(false);
+  const { selectedStation } = useSelector((state) => state.station);
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
   const timePickerRef = useRef(null);
   const buttonRef = useRef(null);
@@ -42,7 +44,9 @@ const TimePicker = ({
         const timeString = `${hourString}:${minuteString} ${period}`;
         const timeDate = parseTime(timeString);
 
-        const isOutsideAllowedRange = hour < 7 || hour > 19;
+        const isOutsideAllowedRange =
+          hour < selectedStation?.openStartTime ||
+          hour > selectedStation?.openEndTime;
 
         // Also disable times before the current time if today
         const isDisabled =
@@ -54,6 +58,11 @@ const TimePicker = ({
 
     return times;
   };
+
+  // with this we are changing the opening hour on based on station time
+  useEffect(() => {
+    generateTimes();
+  }, [selectedStation]);
 
   useEffect(() => {
     if (value) {

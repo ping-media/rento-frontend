@@ -167,7 +167,7 @@ const VerifyOtp = ({
           Code sent to {email != "" ? email : `+91-(${phone})`}
         </p>
         <div
-          className="flex items-center justify-around gap-2 lg:gap-4 mx-auto mt-2 mb-4"
+          className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
           onPaste={handlePaste}
         >
           {otpInput.map((value, index) => (
@@ -198,7 +198,9 @@ const VerifyOtp = ({
             >
               {seconds === 0
                 ? "Request Again"
-                : `Request Again (00:00:${seconds})`}
+                : `Request Again (00:00:${
+                    seconds < 10 ? `0${seconds}` : seconds
+                  })`}
             </button>
           </div>
         </div>

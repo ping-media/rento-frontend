@@ -3,20 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 import PreLoader from "../skeleton/PreLoader";
 import { handleCheckLocationChange } from "../../Redux/LocationSlice/LocationSlice";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { updateStationId } from "../../utils";
+import { addCurrentStation } from "../../Redux/StationSlice/StationSlice";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station } = useSelector((state) => state.station);
-  const { isLocationChange, selectedLocation } = useSelector(
-    (state) => state.selectedLocation
-  );
+  const { isLocationChange } = useSelector((state) => state.selectedLocation);
   const [changeStationLoading, setChangeLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueId, setSelectedValueId] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState("bottom");
-  const { id } = useParams();
   const customLocation = useLocation();
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
@@ -43,6 +41,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
         } else if (station.length > 0) {
           setSelectedValue(station[0]?.stationName);
           setSelectedValueId(station[0]?.stationId);
+          dispatch(addCurrentStation(station[0]));
         } else {
           setSelectedValue("No Station Found");
         }
@@ -54,9 +53,11 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   }, [loading, station]);
 
   // for changing station when we click on station
-  const handleLocationChange = (id, value) => {
-    setSelectedValueId(id);
-    setSelectedValue(value);
+  const handleLocationChange = (item) => {
+    setSelectedValueId(item?.stationId);
+    setSelectedValue(item?.stationName);
+    // adding current station data for changing time based on station
+    dispatch(addCurrentStation(item));
   };
 
   // For closing the dropdown menu when the user clicks outside anywhere on screen
@@ -168,10 +169,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
                       key={item?.stationId}
                       className="w-full text-left py-1 hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3 capitalize"
                       onClick={() => {
-                        handleLocationChange(
-                          item?.stationId,
-                          item?.stationName
-                        );
+                        handleLocationChange(item);
                       }}
                     >
                       {item?.stationName}

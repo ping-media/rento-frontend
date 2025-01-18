@@ -20,7 +20,6 @@ const MyRides = () => {
         const result = await fetchingData(
           `/getBookings?userId=${currentUser && currentUser?._id}`
         );
-        // console.log(result);
         dispatch(addRidesData(result?.data));
       })();
     }
@@ -29,7 +28,7 @@ const MyRides = () => {
   // Tab content array
   const tabs = [
     {
-      name: "Processing",
+      name: "Upcoming",
       content:
         rides &&
         rides.filter(
@@ -44,7 +43,7 @@ const MyRides = () => {
         ),
     },
     {
-      name: "On Going",
+      name: "Ongoing",
       content: rides && rides.filter((item) => item?.rideStatus === "ongoing"),
     },
     {

@@ -13,10 +13,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
 import Footer from "../Footer/Footer";
 import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
+import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
   const { user } = useSelector((state) => state.user);
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { id } = useParams();
   const dispatch = useDispatch();
 
@@ -37,6 +39,13 @@ const Layout = () => {
       localStorage.removeItem("tempBooking");
     }
   }, [location.href]);
+
+  // if selectedLocation is not present than open popup modal
+  useEffect(() => {
+    if (selectedLocation && Object.keys(selectedLocation)?.length === 0) {
+      dispatch(toggleLocationModal());
+    }
+  }, []);
 
   return (
     <>

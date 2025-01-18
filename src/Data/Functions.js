@@ -181,6 +181,8 @@ const handleFetchBookingData = (
   }
   const response = new FormData(e.target);
   const result = Object.fromEntries(response.entries());
+  // ride starting otp
+  const startRideOtp = Math.floor(1000 + Math.random() * 9000);
   if (vehicles) {
     const data = {
       vehicleTableId: vehicles[0]?._id,
@@ -208,6 +210,8 @@ const handleFetchBookingData = (
         freeLimit: vehicles[0]?.freeKms,
         lateFee: vehicles[0]?.lateFee,
         extraKmCharge: vehicles[0]?.extraKmsCharges,
+        startRide: Number(startRideOtp),
+        endRide: 0,
       },
       discountCuopon: {
         couponName: tempCouponName,

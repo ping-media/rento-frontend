@@ -502,6 +502,18 @@ const convertTo24HourFormat = (time12h) => {
   )}`;
 };
 
+const format24HourFormatTime = (hour) => {
+  // Validate input
+  if (hour < 0 || hour > 23 || isNaN(hour)) {
+    throw new Error("Invalid hour. Please provide a number between 0 and 23.");
+  }
+
+  // Convert to 12-hour format
+  const period = hour >= 12 ? "PM" : "AM";
+  const formattedHour = hour % 12 || 12; // 12-hour clock (convert 0 to 12)
+  return `${formattedHour.toString().padStart(2, "0")}:00 ${period}`;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -531,4 +543,5 @@ export {
   formatDateTimeComingFromDatabase,
   convertTo24HourFormat,
   formatDateTimeISTForUser,
+  format24HourFormatTime,
 };

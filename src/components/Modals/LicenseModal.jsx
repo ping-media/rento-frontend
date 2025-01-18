@@ -11,24 +11,25 @@ const LicenseModal = () => {
   const { isLicenseModalActive } = useSelector((state) => state.modals);
   const { currentUser } = useSelector((state) => state.user);
   const [formLoading, setFormLoading] = useState(false);
-  const [image, setImage] = useState(null);
+  const [frontImage, setFrontImage] = useState(null);
+  const [backImage, setBackImage] = useState(null);
 
   const handleUploadLicense = async (e) => {
     setFormLoading(true);
     e.preventDefault();
-    const response = new FormData(e.target);
-    let result = Object.fromEntries(response.entries());
+    let formData = new FormData(e.target);
+    let result = Object.fromEntries(formData.entries());
     if (!result) return handleAsyncError(dispatch, "choose vaild image first!");
-    result = Object.assign(result, {
-      userId: currentUser?._id,
-      docType: "license",
-    });
+    // appending other details before sending it s
+    formData.append("userId", currentUser?._id);
+    formData.append("docType", "license");
 
     try {
-      const response = await handleuploadDocument(result);
+      const response = await handleuploadDocument(formData);
       if (response?.status == 200) {
         handleAsyncError(dispatch, response?.message, "success");
-        setImage(null);
+        setFrontImage(null);
+        setBackImage(null);
         dispatch(toggleLicenseModal());
       } else {
         handleAsyncError(dispatch, response?.message);
@@ -77,18 +78,32 @@ const LicenseModal = () => {
               onSubmit={handleUploadLicense}
             >
               <div className="w-full lg:flex-1 order-1 lg:order-2">
-                <div className="mb-5">
-                  <InputFile
-                    name={"images"}
-                    labelDesc={"Front License Image"}
-                    labelId={"licenseFrontImage"}
-                    image={image}
-                    setImage={setImage}
-                  />
+                <div className="flex items-center gap-2">
+                  <div className="mb-5 flex-1">
+                    <InputFile
+                      name={"images"}
+                      labelDesc={"Front License Image"}
+                      labelId={"licenseFrontImage"}
+                      image={frontImage}
+                      setImage={setFrontImage}
+                    />
+                  </div>
+                  <div className="mb-5 flex-1">
+                    <InputFile
+                      name={"images"}
+                      labelDesc={"Back License Image"}
+                      labelId={"licenseBackImage"}
+                      image={backImage}
+                      setImage={setBackImage}
+                    />
+                  </div>
                 </div>
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                  disabled={formLoading || image != null ? false : true}
+                  disabled={
+                    formLoading ||
+                    (frontImage && backImage != null ? false : true)
+                  }
                 >
                   {formLoading ? (
                     <Spinner message={"loading..."} />

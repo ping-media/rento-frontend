@@ -33,7 +33,6 @@ const PriceCard = ({
   const {
     tempCouponDiscount,
     tempCouponDiscountTotal,
-    tempCouponExtra,
     tempCouponName,
     isDiscountZero,
     loading,
@@ -155,7 +154,7 @@ const PriceCard = ({
     {
       title: "Extra Helmet Price",
       name: "extraAddonPrice",
-      price: parseInt(extraAddOnCost),
+      price: parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
     },
     {
       title: "GST(18% Applied)",
@@ -195,7 +194,7 @@ const PriceCard = ({
 
   return (
     <>
-      <div className="mt-6 mb-14 lg:mb-1">
+      <div className="px-4 mt-6 mb-14 lg:mb-1">
         <ul className="leading-7 pb-3 border-b-2 border-gray-300">
           {priceDetails.map((item, index) => (
             <li
@@ -242,7 +241,7 @@ const PriceCard = ({
           ))}
         </ul>
         {/* total price  & discount Price */}
-        <div className={`${isExtraChecked ? "pt-2 pb-10" : "pt-2 pb-6"}`}>
+        <div className={`${isExtraChecked ? "pt-2 pb-6" : "pt-2 pb-6"}`}>
           {tempCouponDiscount && tempCouponDiscount != null && (
             <div className="flex items-center justify-between mb-1">
               <input
@@ -281,7 +280,7 @@ const PriceCard = ({
         </div>
       </div>
       {/* extra helmet  */}
-      <div className="bg-yellow-200 -mx-4 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg absolute bottom-2 w-full">
+      <div className="bg-yellow-200 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg bottom-2 w-full">
         <div className="mb-1">
           <label
             htmlFor="hr"

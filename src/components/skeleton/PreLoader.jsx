@@ -6,7 +6,7 @@ const PreLoader = () => {
       id="loading-overlay"
       className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-60"
     >
-      <Spinner message={"Loading..."} />
+      <Spinner />
     </div>
   );
 };

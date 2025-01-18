@@ -12,10 +12,11 @@ import Spinner from "../Spinner/Spinner";
 const LocationModal = () => {
   const dispatch = useDispatch();
   const { isLocationModalActive } = useSelector((state) => state.modals);
-  const { selectedLocation } = useSelector((state) => state.selectedLocation);
+  // const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const [loading, setLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
 
+  // for changing the location when click on location
   const handleChangeLocation = (value) => {
     if (value) {
       dispatch(addingLocation());
@@ -29,35 +30,18 @@ const LocationModal = () => {
   //  setting the default location for new user
   useEffect(() => {
     let hasRun = false;
-
     if (!hasRun) {
       (async () => {
         try {
           setLoading(true);
           const result = await fetchingData("/getLocation");
           if (result.status == 200) {
-            setLoading(false);
-            // if no location is select than by default select the first one
-            if (Object.keys(selectedLocation)?.length == 0) {
-              // check whether Bangalore is present or not and if present than make it default
-              const isData = result?.data?.filter(
-                (item) => item?.locationName === "bangalore"
-              )[0];
-              if (isData) {
-                dispatch(
-                  addLocation({
-                    locationName: isData?.locationName,
-                    locationId: isData?._id,
-                  })
-                );
-              }
-              location.pathname.includes("/search/") &&
-                dispatch(handleCheckLocationChange());
-            }
             return setLocationList(result?.data);
           }
         } catch (error) {
           console.log(error.message);
+        } finally {
+          setLoading(false);
         }
       })();
       hasRun = true;
@@ -123,7 +107,10 @@ const LocationModal = () => {
                 ))
               ) : (
                 <div className="text-center col-span-full">
-                  <Spinner message={"loading.."} />
+                  <Spinner
+                    customColor={"text-black uppercase"}
+                    message={"loading.."}
+                  />
                 </div>
               )}
             </div>

@@ -42,6 +42,7 @@ const LocationCard = ({
               import.meta.env.VITE_MAP_KEY
             }`}
             className="rounded-lg w-full h-full object-cover"
+            loading="lazy"
             alt="GOOGLE_MAP"
           />
         </div>
@@ -57,13 +58,13 @@ const LocationCard = ({
             {stationName}
           </li>
           <li className="capitalize">
-            <span className="font-bold mr-2">Person Name:</span>
+            <span className="font-bold mr-2">Manager Name:</span>
             {stationUser
               ? `${stationMasterUserId?.firstName} ${stationMasterUserId?.lastName}`
               : "Test User"}
           </li>
           <li>
-            <span className="font-bold mr-2">Mobile Number:</span>
+            <span className="font-bold mr-2">Manager Phone Number:</span>
             <Link
               className="text-blue-400 hover:underline"
               to={`tel:${stationMasterUserId?.contact || "xxxxxxxxxx"}`}

@@ -1,7 +1,4 @@
-import { useState } from "react";
 const InputFile = ({ labelDesc, labelId, name, image, setImage }) => {
-  // const [image, setImage] = useState(null);
-
   const handleLocalImage = (event) => {
     const file = event.target.files[0];
     if (file) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const InputWithIconAndLabel = ({
+const TextAreaBox = ({
   name,
   labelId,
   placeholderDesc,
@@ -17,24 +17,21 @@ const InputWithIconAndLabel = ({
           {required && <span className="mx-1 text-red-500">*</span>}
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-3 my-auto h-6 flex items-center border-r pr-2">
-            +91
-          </div>
-          <input
-            type="number"
+          <textarea
             name={name}
             id={labelId}
             placeholder={placeholderDesc}
-            className="w-full pl-[3.5rem] pr-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1 disabled:bg-gray-300 disabled:bg-opacity-30"
+            className="w-full px-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1 disabled:bg-gray-300 disabled:bg-opacity-30 resize-none"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             required={required}
-            disabled={name == "contact"}
-          />
+            disabled={name === "contact"}
+            spellCheck="false"
+          ></textarea>
         </div>
       </div>
     </>
   );
 };
 
-export default InputWithIconAndLabel;
+export default TextAreaBox;

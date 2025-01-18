@@ -2,6 +2,10 @@ import { camelCaseToSpaceSeparated } from "../../utils";
 
 const ThingsToRemember = ({ rides }) => {
   const thingsToRemember = {
+    Otp: {
+      limit: rides?.vehicleBasic?.startRide,
+      message: "OTP to start ride",
+    },
     distanceLimit: {
       limit: rides?.vehicleBasic?.freeLimit,
       message:
@@ -21,6 +25,7 @@ const ThingsToRemember = ({ rides }) => {
       message: "Keep the speed within mentioned limits for safe travels.",
     },
   };
+
   return (
     <>
       <ul className="w-full leading-8">
@@ -32,9 +37,15 @@ const ThingsToRemember = ({ rides }) => {
               </p>
               <p className="text-xs text-gray-500 mb-1">({value?.message})</p>
             </div>{" "}
-            <p className="text-right w-auto">
+            <p
+              className={`text-right w-auto ${
+                key.includes("Otp") ? "font-bold" : ""
+              }`}
+            >
               {key.includes("Limit")
                 ? `${value?.limit} Km/hr`
+                : key.includes("Otp")
+                ? value?.limit
                 : `₹ ${value?.limit || 0}/hr`}
             </p>
           </li>

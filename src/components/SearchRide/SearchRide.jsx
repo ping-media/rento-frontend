@@ -18,6 +18,7 @@ import {
 import {
   convertTo24HourFormat,
   convertToISOString,
+  format24HourFormatTime,
   nextDayFromCurrent,
   removeAfterSecondSlash,
 } from "../../utils";
@@ -33,7 +34,9 @@ const SearchRide = () => {
   const { id } = useParams();
   const [isHomePage, setIsHomePage] = useState(false);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
-  const { stationLoading } = useSelector((state) => state.station);
+  const { stationLoading, selectedStation } = useSelector(
+    (state) => state.station
+  );
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation
   );
@@ -189,13 +192,27 @@ const SearchRide = () => {
     }
   }, []);
 
-  // for form resubmit itself when selectedLocation change
-  // useEffect(() => {
-  //   if (isFormSubmitFirst === false) return;
-  //   if (rideSubmitRef.current) {
-  //     rideSubmitRef.current.submit();
-  //   }
-  // }, [selectedLocation]);
+  // changing date & time if time is passed openning hour
+  useEffect(() => {
+    if (selectedStation != null) {
+      const currentTime = new Date().getHours();
+      const openEndTime = Number(selectedStation?.openEndTime);
+      // console.log(currentTime, openEndTime, currentTime >= openEndTime);
+      if (currentTime >= openEndTime) {
+        const nextday = nextDayFromCurrent(new Date());
+        // changing date
+        setPickupDate(nextDayFromCurrent(new Date()));
+        setDropoffDate(nextDayFromCurrent(nextday));
+        // changing time
+        setQueryPickupTime(
+          format24HourFormatTime(selectedStation?.openStartTime)
+        );
+        setQueryDropoffTime(
+          format24HourFormatTime(selectedStation?.openStartTime)
+        );
+      }
+    }
+  }, [selectedStation]);
 
   return (
     <>

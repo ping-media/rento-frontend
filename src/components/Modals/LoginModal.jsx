@@ -38,22 +38,28 @@ const LoginModal = () => {
       return handleAsyncError(dispatch, "invalid phone number");
     }
     if (result) {
-      const response = await handleUser("/otpGenerat", result);
-      // console.log(response);
-      if (response.status != 200) {
-        dispatch(addTempContact(result?.contact));
-        handleRegisterModal();
-      } else if (response.status == 500) {
-        handleAsyncError(dispatch, "unable to send otp! try again");
-      } else {
-        setInputNumber(result?.contact);
-        setIsOtpSend(true);
-        setIsInputEmpty(null);
-        setSeconds(30);
-        setIsTimerActive(true);
-        handleAsyncError(dispatch, response?.message, "success");
+      try {
+        const response = await handleUser("/otpGenerat", result);
+        if (response.status != 200) {
+          dispatch(addTempContact(result?.contact));
+          handleRegisterModal();
+        } else if (response?.type === "error") {
+          handleAsyncError(dispatch, response?.message);
+        } else if (response.status === 500) {
+          handleAsyncError(dispatch, "unable to send otp! try again");
+        } else {
+          setInputNumber(result?.contact);
+          setIsOtpSend(true);
+          setIsInputEmpty(null);
+          setSeconds(30);
+          setIsTimerActive(true);
+          handleAsyncError(dispatch, response?.message, "success");
+        }
+      } catch (error) {
+        return handleAsyncError(dispatch, "unable to send otp! try again");
+      } finally {
+        return setLoading(false);
       }
-      return setLoading(false);
     }
   };
 

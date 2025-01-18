@@ -4,6 +4,7 @@ const StationSlice = createSlice({
   name: "station",
   initialState: {
     station: [],
+    selectedStation: null,
     stationLoading: false,
     error: null,
   },
@@ -15,9 +16,13 @@ const StationSlice = createSlice({
       state.station = action.payload;
       state.stationLoading = false;
     },
+    addCurrentStation: (state, action) => {
+      state.selectedStation = action.payload;
+    },
   },
 });
 
-export const { fetchingStation, addStationData } = StationSlice.actions;
+export const { fetchingStation, addStationData, addCurrentStation } =
+  StationSlice.actions;
 
 export default StationSlice.reducer;

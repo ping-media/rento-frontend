@@ -91,9 +91,9 @@ const UserDocument = () => {
           )}
         </div>
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 mx-auto">
         {userDocument?.length > 0 ? (
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             {userDocument[0]?.files?.map((file) => (
               <div
                 className="block border-2 px-3 py-1 rounded-lg"
