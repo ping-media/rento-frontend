@@ -49,8 +49,9 @@ const TimePicker = ({
           hour > selectedStation?.openEndTime;
 
         // Also disable times before the current time if today
-        const isDisabled =
-          (isToday && timeDate < currentTime) || isOutsideAllowedRange;
+        // const isDisabled =
+        //   (isToday && timeDate < currentTime) || isOutsideAllowedRange;
+        const isDisabled = isOutsideAllowedRange;
 
         times.push({ time: timeString, isDisabled });
       }

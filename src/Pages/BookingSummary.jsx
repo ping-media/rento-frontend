@@ -108,7 +108,7 @@ const BookingSummary = () => {
         <form onSubmit={handleCreateBookingSubmit}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 h-[95%]">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 lg:h-[95%]">
                 <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
                   <h2 className="font-semibold">Booking Summary</h2>
                   <h2 className="font-semibold hidden lg:block">Price</h2>

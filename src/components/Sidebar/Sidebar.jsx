@@ -34,8 +34,8 @@ const Sidebar = () => {
       <div className="w-[80%] bg-white h-full">
         <div className="bg-theme-black px-4 py-2.5 flex items-center justify-between mb-3">
           <Link to={"/"}>
-            <h1 className="font-bold text-theme text-3xl font-fingerPoint">
-              RENTO
+            <h1 className="font-bold text-theme text-3xl font-fingerPoint tracking-wide">
+              RENTO BIKES
             </h1>
           </Link>
           <button

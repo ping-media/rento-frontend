@@ -154,6 +154,7 @@ const PriceCard = ({
     {
       title: "Extra Helmet Price",
       name: "extraAddonPrice",
+      // do this because we don't need to take helmet price more than 200
       price: parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
     },
     {
@@ -194,7 +195,7 @@ const PriceCard = ({
 
   return (
     <>
-      <div className="px-4 mt-6 mb-14 lg:mb-1">
+      <div className="px-4 mt-6 mb-4 lg:mb-2">
         <ul className="leading-7 pb-3 border-b-2 border-gray-300">
           {priceDetails.map((item, index) => (
             <li

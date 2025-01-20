@@ -2,9 +2,13 @@ import { camelCaseToSpaceSeparated } from "../../utils";
 
 const ThingsToRemember = ({ rides }) => {
   const thingsToRemember = {
-    Otp: {
+    StartOtp: {
       limit: rides?.vehicleBasic?.startRide,
       message: "OTP to start ride",
+    },
+    EndOtp: {
+      limit: rides?.vehicleBasic?.endRide,
+      message: "OTP to end ride",
     },
     distanceLimit: {
       limit: rides?.vehicleBasic?.freeLimit,
@@ -29,27 +33,32 @@ const ThingsToRemember = ({ rides }) => {
   return (
     <>
       <ul className="w-full leading-8">
-        {Object.entries(thingsToRemember).map(([key, value]) => (
-          <li key={key} className="flex items-center justify-between">
-            <div className="w-[75%]">
-              <p className="font-semibold uppercase">
-                {camelCaseToSpaceSeparated(key)}
+        {Object.entries(thingsToRemember).map(([key, value]) => {
+          if (key === "EndOtp" && value === 0) {
+            return null;
+          }
+          return (
+            <li key={key} className="flex items-center justify-between">
+              <div className="w-[75%]">
+                <p className="font-semibold uppercase">
+                  {camelCaseToSpaceSeparated(key)}
+                </p>
+                <p className="text-xs text-gray-500 mb-1">({value?.message})</p>
+              </div>{" "}
+              <p
+                className={`text-right w-auto ${
+                  key.includes("Otp") ? "font-bold" : ""
+                }`}
+              >
+                {key.includes("Limit")
+                  ? `${value?.limit} Km/hr`
+                  : key.includes("Otp")
+                  ? value?.limit
+                  : `₹ ${value?.limit || 0}/hr`}
               </p>
-              <p className="text-xs text-gray-500 mb-1">({value?.message})</p>
-            </div>{" "}
-            <p
-              className={`text-right w-auto ${
-                key.includes("Otp") ? "font-bold" : ""
-              }`}
-            >
-              {key.includes("Limit")
-                ? `${value?.limit} Km/hr`
-                : key.includes("Otp")
-                ? value?.limit
-                : `₹ ${value?.limit || 0}/hr`}
-            </p>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </>
   );
