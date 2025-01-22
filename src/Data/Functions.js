@@ -1,4 +1,4 @@
-import { fetchingData } from ".";
+import { fetchingData, handlePostData } from ".";
 import {
   addingFilters,
   hanldeAddFilters,
@@ -202,6 +202,7 @@ const handleFetchBookingData = (
         isDiscountZero: isDiscountZero,
         rentAmount: vehicles[0]?.perDayCost,
         isPackageApplied: vehiclePlanData != null,
+        extendAmount: [],
       },
       vehicleBasic: {
         refundableDeposit: vehicles[0]?.refundableDeposit,
@@ -216,6 +217,9 @@ const handleFetchBookingData = (
       discountCuopon: {
         couponName: tempCouponName,
         couponId: tempCouponId,
+      },
+      extendBooking: {
+        oldBooking: [],
       },
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,
@@ -248,6 +252,17 @@ const handleCreateBooking = async (
     if (!data) return handleAsyncError(dispatch, "Unable to Book Ride");
     const response = await handlebooking(data);
     if (response?.status == 200) {
+      // updating the timeline for booking
+      const timeLineData = {
+        userId: response?.data?.userId,
+        bookingId: response?.data?.bookingId,
+        currentBooking_id: response?.data?._id,
+        isStart: true,
+        timeLine: {
+          "Booking Created": new Date().toLocaleString(),
+        },
+      };
+      handlePostData("/createTimeline", timeLineData);
       return response;
     } else {
       handleAsyncError(dispatch, response?.message);
@@ -439,6 +454,15 @@ const handleCreateBookingSubmit = async (
               handleAsyncError,
               dispatch
             );
+
+            // updating the timeline for payment
+            const timeLineData = {
+              currentBooking_id: updatedData?._id,
+              timeLine: {
+                "Payment Initiated": new Date().toLocaleString(),
+              },
+            };
+            handlePostData("/createTimeline", timeLineData);
           } else {
             handleAsyncError(dispatch, "unable to create orderId");
           }
