@@ -34,7 +34,7 @@ const ThingsToRemember = ({ rides }) => {
     <>
       <ul className="w-full leading-8">
         {Object.entries(thingsToRemember).map(([key, value]) => {
-          if (key === "EndOtp" && thingsToRemember[key] > 0) {
+          if (value?.limit == 0) {
             return null;
           }
           return (
