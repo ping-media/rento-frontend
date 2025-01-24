@@ -188,8 +188,12 @@ const handleFetchBookingData = (
       vehicleTableId: vehicles[0]?._id,
       userId: currentUser?._id,
       vehicleMasterId: vehicles[0]?.vehicleMasterId,
-      BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
-      BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
+      BookingStartDateAndTime:
+        (queryParmsData?.BookingStartDateAndTime).replace(".000Z", "Z"),
+      BookingEndDateAndTime: (queryParmsData?.BookingEndDateAndTime).replace(
+        ".000Z",
+        "Z"
+      ),
       bookingPrice: {
         bookingPrice: Number(result?.bookingPrice),
         vehiclePrice: Number(result?.bookingPrice),
