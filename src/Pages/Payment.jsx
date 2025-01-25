@@ -23,7 +23,7 @@ const Payment = async () => {
 
       // updating booking
       const bookingResponse = await handlePostData(
-        `/createBooking?_id=${queryParmsDataUpdated?.bookingId}`,
+        `/createBooking?_id=${queryParmsDataUpdated?.id}`,
         updatedData
       );
       if (bookingResponse?.status == 200) {
