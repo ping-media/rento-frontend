@@ -1,6 +1,11 @@
 import axios from "axios";
 import favicon from "../assets/favicon.ico";
-import { sendEmailForBookingDetails, updateCouponCount } from ".";
+import {
+  handlePostData,
+  sendEmailForBookingDetails,
+  updateCouponCount,
+} from ".";
+// import { toggleBookingDoneModal } from "../Redux/ModalSlice/ModalSlice";
 
 export const razorPayment = async (
   currentUser,
@@ -22,6 +27,7 @@ export const razorPayment = async (
   const handleBookVehicle = async (response) => {
     try {
       setBookingLoading && setBookingLoading(true);
+      // dispatch(toggleBookingDoneModal());
       // for booking vehicle
       const updatedData = {
         ...data,
@@ -45,6 +51,14 @@ export const razorPayment = async (
 
       if (bookingResponse?.status == 200) {
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
+        // dispatch(toggleBookingDoneModal());
+        const timeLineData = {
+          currentBooking_id: updatedData?.id,
+          timeLine: {
+            "Payment Done": new Date().toLocaleString(),
+          },
+        };
+        await handlePostData("/createTimeline", timeLineData);
         navigate(`/my-rides/summary/${updatedData?._id}`);
         dispatch(handleRestCoupon());
         // sending booking confirm to whatsapp & email

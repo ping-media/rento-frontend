@@ -17,6 +17,7 @@ import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { handlebooking } from "../Data";
 import { createOrderId, razorPayment } from "../Data/Payment";
 import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
+import BookingSuccessModal from "../components/Modals/BookingSuccessModal";
 
 const BookingAndPayment = () => {
   const { tempBookingData, loading } = useSelector((state) => state.booking);
@@ -60,6 +61,9 @@ const BookingAndPayment = () => {
   return !loading ? (
     tempBookingData && (
       <div className="w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
+        {/* this modal is going to open after payment is done  */}
+        <BookingSuccessModal />
+        {/* continue to form..  */}
         <form onSubmit={handleSubmitBookingData}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
