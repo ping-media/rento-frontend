@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toggleSignOutModal } from "../../Redux/ModalSlice/ModalSlice";
 
 const LoggedInUserButton = () => {
   const [isVisible, setIsVisible] = useState(false);
   const dispatch = useDispatch();
   const adminRef = useRef(null);
+  const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
   //for dropdown menu
   useEffect(() => {
@@ -35,6 +36,13 @@ const LoggedInUserButton = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogoutUser = () => {
+    dispatch(toggleSignOutModal());
+    if (location.pathname.includes("/booking/payment/")) {
+      return navigate("/");
+    }
+  };
 
   return (
     <button
@@ -106,7 +114,7 @@ const LoggedInUserButton = () => {
           </Link>
           <Link
             className="py-1.5 px-1.5 hover:bg-theme rounded-md hover:text-white transition duration-200 ease-in-ou w-full"
-            onClick={() => dispatch(toggleSignOutModal())}
+            onClick={handleLogoutUser}
           >
             <span className="inline-flex mr-1">
               <svg
