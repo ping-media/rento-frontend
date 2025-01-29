@@ -31,14 +31,16 @@ const LocationCard = ({
   return !stationLoading ? (
     <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
       <Link
-        to={`https://www.google.com/maps/search/?api=1&query=${stationUser?.stationData?.latitude},${stationUser?.stationData?.longitude}`}
+        to={`https://www.google.com/maps/search/?api=1&query=${parseFloat(
+          stationUser?.stationData?.latitude
+        )},${parseFloat(stationUser?.stationData?.longitude)}`}
         target="_blank"
       >
         <div className="w-full lg:w-48 h-48">
           <img
             src={`https://maps.googleapis.com/maps/api/staticmap?center=${
               stationUser?.stationData?.city
-            }k&zoom=10&size=600x400&markers=color:red|label:A|40.7128,-74.0060&key=${
+            }&zoom=10&size=600x400&markers=color:red|label:A|40.7128,-74.0060&key=${
               import.meta.env.VITE_MAP_KEY
             }`}
             className="rounded-lg w-full h-full object-cover"

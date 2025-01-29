@@ -355,15 +355,24 @@ const handleCreateBookingSubmit = async (
       return handleAsyncError(dispatch, "select payment method first!");
     } else if (result?.paymentMethod === "partiallyPay") {
       // if user select to pay some amount then this will run
+      const userPaid = parseInt(
+        data?.bookingPrice?.discountTotalPrice
+          ? (data?.bookingPrice?.discountTotalPrice * 20) / 100
+          : (data?.bookingPrice?.totalPrice * 20) / 100
+      );
+      // amount to be paid at pickup
+      const AmountLeftAfterUserPaid =
+        data?.bookingPrice?.discountTotalPrice &&
+        data?.bookingPrice?.discountTotalPrice > 0
+          ? Number(data?.bookingPrice?.discountTotalPrice) - Number(userPaid)
+          : Number(data?.bookingPrice?.totalPrice) - Number(userPaid);
+
       data = {
         ...data,
         bookingPrice: {
           ...data.bookingPrice,
-          userPaid: parseInt(
-            data?.bookingPrice?.discountTotalPrice
-              ? (data?.bookingPrice?.discountTotalPrice * 20) / 100
-              : (data?.bookingPrice?.totalPrice * 20) / 100
-          ),
+          userPaid: userPaid,
+          AmountLeftAfterUserPaid: AmountLeftAfterUserPaid,
         },
       };
     }
@@ -424,15 +433,24 @@ const handleCreateBookingSubmit = async (
           ) {
             delete oldData?.bookingPrice?.userPaid;
           } else if (result?.paymentMethod == "partiallyPay") {
+            const userPaid = parseInt(
+              oldData?.bookingPrice?.discountTotalPrice
+                ? (oldData?.bookingPrice?.discountTotalPrice * 20) / 100
+                : (oldData?.bookingPrice?.totalPrice * 20) / 100
+            );
+            // amount to be paid at pickup
+            const AmountLeftAfterUserPaid =
+              oldData?.bookingPrice?.discountTotalPrice &&
+              oldData?.bookingPrice?.discountTotalPrice > 0
+                ? Number(oldData?.bookingPrice?.discountTotalPrice) -
+                  Number(userPaid)
+                : Number(oldData?.bookingPrice?.totalPrice) - Number(userPaid);
             oldData = {
               ...oldData,
               bookingPrice: {
                 ...oldData.bookingPrice,
-                userPaid: parseInt(
-                  oldData?.bookingPrice?.discountTotalPrice
-                    ? (oldData?.bookingPrice?.discountTotalPrice * 20) / 100
-                    : (oldData?.bookingPrice?.totalPrice * 20) / 100
-                ),
+                userPaid: userPaid,
+                AmountLeftAfterUserPaid: AmountLeftAfterUserPaid,
               },
             };
           }

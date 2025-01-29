@@ -34,6 +34,8 @@ const RideFareDetails = ({ rides }) => {
                   key !== "isDiscountZero" &&
                   key !== "isChanged" &&
                   key !== "extendAmount" &&
+                  key !== "diffAmount" &&
+                  key !== "AmountLeftAfterUserPaid" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
@@ -178,16 +180,9 @@ const RideFareDetails = ({ rides }) => {
                     </small>
                   </p>
                   <p className="text-sm font-bold text-right">
-                    {rides?.bookingPrice?.discountTotalPrice &&
-                    rides?.bookingPrice?.discountTotalPrice !== 0
-                      ? `₹${formatPrice(
-                          rides?.bookingPrice.discountTotalPrice -
-                            rides?.bookingPrice?.userPaid
-                        )}`
-                      : `₹${formatPrice(
-                          rides?.bookingPrice.totalPrice -
-                            rides?.bookingPrice?.userPaid
-                        )}`}
+                    {`₹${formatPrice(
+                      rides?.bookingPrice.AmountLeftAfterUserPaid
+                    )}`}
                   </p>
                 </li>
               </>
@@ -225,13 +220,7 @@ const RideFareDetails = ({ rides }) => {
                 <p className="text-sm font-semibold uppercase text-left">
                   Difference Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    (
-                    {rides?.changeVehicle?.bookingPrice?.discountTotalPrice > 0
-                      ? `₹${rides?.changeVehicle?.bookingPrice?.discountTotalPrice} -
-                        ₹${rides?.bookingPrice?.discountTotalPrice}`
-                      : `₹${rides?.changeVehicle?.bookingPrice?.totalPrice} -
-                        ₹${rides?.bookingPrice?.totalPrice}`}
-                    )
+                    ( need to pay this amount )
                   </small>
                 </p>
                 <p className="text-sm font-bold text-right">
