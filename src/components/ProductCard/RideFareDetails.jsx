@@ -205,7 +205,7 @@ const RideFareDetails = ({ rides }) => {
                 </p>
                 <p className="text-sm font-bold text-right">
                   {rides?.bookingPrice?.userPaid
-                    ? `- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`
+                    ? `₹${formatPrice(rides?.bookingPrice?.userPaid)}`
                     : rides?.bookingPrice?.discountTotalPrice > 0
                     ? `₹${formatPrice(rides?.bookingPrice?.discountTotalPrice)}`
                     : `₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
