@@ -50,7 +50,6 @@ export const razorPayment = async (
       localStorage.removeItem("tempBooking");
 
       if (bookingResponse?.status == 200) {
-        handleAsyncError(dispatch, "Ride booked successfully.", "success");
         // dispatch(toggleBookingDoneModal());
         const timeLineData = {
           currentBooking_id: updatedData?.id,
@@ -59,6 +58,7 @@ export const razorPayment = async (
           },
         };
         await handlePostData("/createTimeline", timeLineData);
+        handleAsyncError(dispatch, "Ride booked successfully.", "success");
         navigate(`/my-rides/summary/${updatedData?._id}`);
         dispatch(handleRestCoupon());
         // sending booking confirm to whatsapp & email

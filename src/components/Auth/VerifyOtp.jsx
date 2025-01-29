@@ -55,10 +55,23 @@ const VerifyOtp = ({
       if (combinedOtp.length === 6) {
         // Submit OTP when all fields are filled
         setOnOtpSubmit(combinedOtp);
-        handleLogin(null, combinedOtp);
+        // handleLogin(null, combinedOtp);
       }
     }
   };
+
+  // const handlePaste = (e) => {
+  //   e.preventDefault();
+  //   const paste = e.clipboardData.getData("text").trim();
+
+  //   if (paste.length === 6 && /^[0-9]{6}$/.test(paste)) {
+  //     const newOtp = paste.split("");
+  //     setOtpInput(newOtp);
+
+  //     const combinedOtp = newOtp.join("");
+  //     setOnOtpSubmit(combinedOtp);
+  //   }
+  // };
 
   const handleClick = (index) => {
     inputRef.current[index].setSelectionRange(1, 1);
@@ -168,7 +181,7 @@ const VerifyOtp = ({
         </p>
         <div
           className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
-          onPaste={handlePaste}
+          // onPaste={handlePaste}
         >
           {otpInput.map((value, index) => (
             <input
