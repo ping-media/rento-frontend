@@ -261,11 +261,6 @@ const RidesSummary = () => {
                 <RideFareDetails rides={rides && rides[0]} />
               </div>
             </div>
-            {/* <div className="mb-5">
-              <button className="w-full bg-theme text-gray-100 px-4 py-2.5 rounded-md">
-                Extend
-              </button>
-            </div> */}
             <div className="mb-5">
               <h2 className="font-semibold mb-3 flex items-center gap-1">
                 <span>

@@ -15,6 +15,7 @@ import {
   handleUpdateSelectedCurrentUser,
 } from "../../Redux/UserSlice/UserSlice.js";
 import TextAreaBox from "../Input/TextAreaBox.jsx";
+import SelfieModal from "../Modals/SelfieModal.jsx";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));
@@ -25,6 +26,7 @@ const Profile = () => {
   const { isEmailVerifyModalActive } = useSelector((state) => state.modals);
   const [isValidDOB, setIsValidDOB] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [inputError, setInputError] = useState("");
 
   // fetching updated user details
   useEffect(() => {
@@ -84,6 +86,7 @@ const Profile = () => {
       {/* modals  */}
       <LicenseModal />
       <IdentityModal />
+      <SelfieModal />
       <EmailVerifyModal />
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
         <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center justify-between">
@@ -178,6 +181,9 @@ const Profile = () => {
                 labelDesc={"Alternative Contact Number"}
                 placeholderDesc={"Enter Alternative Phone Number"}
                 value={currentUser?.altContact || ""}
+                checkValue={currentUser?.contact || ""}
+                inputError={inputError}
+                setInputError={setInputError}
                 required={true}
               />
             </div>
@@ -196,7 +202,7 @@ const Profile = () => {
           <button
             type="submit"
             className="bg-theme px-4 py-2 text-gray-100 rounded-lg hover:bg-theme-dark transition duration-200 ease-in-out disabled:bg-gray-400 w-full lg:w-auto"
-            disabled={formLoading || !isValidDOB}
+            disabled={formLoading || !isValidDOB || inputError !== ""}
           >
             {formLoading ? <Spinner message={"loading.."} /> : "Update Profile"}
           </button>

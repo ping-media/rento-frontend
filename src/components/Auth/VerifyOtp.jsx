@@ -32,46 +32,45 @@ const VerifyOtp = ({
     setOtpInput(newOtp);
     //submit trigger
     const combinedOtp = newOtp.join("");
-    // console.log(combinedOtp);
     // after all field are filled auto submit
     if (combinedOtp.length == 6) {
       setOnOtpSubmit(combinedOtp);
       handleLogin(null, combinedOtp);
     }
-
     // move to next input if current field is filled
     if (value && index < 6 - 1 && inputRef.current[index + 1]) {
       inputRef.current[index + 1].focus();
     }
   };
 
-  // Handle pasting OTP into the inputs
-  const handlePaste = (e) => {
-    const paste = e.clipboardData.getData("text").trim();
-    if (paste.length === 6 && /^[0-9]+$/.test(paste)) {
-      const newOtp = paste.split("");
-      setOtpInput(newOtp);
-      const combinedOtp = newOtp.join("");
-      if (combinedOtp.length === 6) {
-        // Submit OTP when all fields are filled
-        setOnOtpSubmit(combinedOtp);
-        // handleLogin(null, combinedOtp);
-      }
-    }
-  };
-
   // const handlePaste = (e) => {
-  //   e.preventDefault();
   //   const paste = e.clipboardData.getData("text").trim();
-
-  //   if (paste.length === 6 && /^[0-9]{6}$/.test(paste)) {
+  //   if (paste.length === 6 && /^[0-9]+$/.test(paste)) {
   //     const newOtp = paste.split("");
   //     setOtpInput(newOtp);
-
   //     const combinedOtp = newOtp.join("");
-  //     setOnOtpSubmit(combinedOtp);
+  //     if (combinedOtp.length === 6) {
+  //       // Submit OTP when all fields are filled
+  //       setOnOtpSubmit(combinedOtp);
+  //       // handleLogin(null, combinedOtp);
+  //     }
   //   }
   // };
+
+  // Handle pasting OTP into the inputs
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData("text").trim();
+
+    if (paste.length === 6 && /^[0-9]{6}$/.test(paste)) {
+      const newOtp = paste.split("");
+      setOtpInput(newOtp);
+
+      const combinedOtp = newOtp.join("");
+      setOnOtpSubmit(combinedOtp);
+      handleLogin(null, combinedOtp);
+    }
+  };
 
   const handleClick = (index) => {
     inputRef.current[index].setSelectionRange(1, 1);
@@ -89,29 +88,11 @@ const VerifyOtp = ({
     }
   };
 
-  // autofill otp only for dev mode
-  const handleOtpDev = () => {
-    if (otp) {
-      const pastedData = otp.toString().slice(0, 6);
-      const newOtp = [...otpInput];
-      for (let i = 0; i < 6 && i < 6; i++) {
-        newOtp[i] = pastedData[i];
-        if (inputRef.current[i]) {
-          inputRef.current[i].focus();
-        }
-      }
-      setOtpInput(newOtp);
-      setOnOtpSubmit(otp);
-    }
-  };
-
   useEffect(() => {
     //move focus to the first input
     if (inputRef.current[0]) {
       inputRef.current[0].focus();
     }
-    // autofill otp only for dev mode
-    // handleOtpDev();
   }, []);
 
   useEffect(() => {
@@ -181,7 +162,7 @@ const VerifyOtp = ({
         </p>
         <div
           className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
-          // onPaste={handlePaste}
+          onPaste={handlePaste}
         >
           {otpInput.map((value, index) => (
             <input

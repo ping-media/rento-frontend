@@ -78,7 +78,6 @@ const BookingSummary = () => {
       })();
     }
   }, []);
-  // console.log(vehicles);
 
   // for send to detail and payment page
   const handleCreateBookingSubmit = (e) => {
@@ -118,7 +117,12 @@ const BookingSummary = () => {
                   vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
                   queryParmsData={queryParmsData}
                 />
-                <DetailsCard extraKmCharge={vehicles[0]?.extraKmsCharges} />
+                <DetailsCard
+                  refundableDeposit={vehicles[0]?.refundableDeposit}
+                  extraKmCharge={vehicles[0]?.extraKmsCharges}
+                  lateFee={vehicles[0]?.lateFee}
+                  speedLimit={vehicles[0]?.speedLimit}
+                />
               </div>
             </div>
 

@@ -262,9 +262,11 @@ const handleCreateBooking = async (
         bookingId: response?.data?.bookingId,
         currentBooking_id: response?.data?._id,
         isStart: true,
-        timeLine: {
-          "Booking Created": new Date().toLocaleString(),
-        },
+        timeLine: [
+          {
+            "Booking Created": new Date().toLocaleString(),
+          },
+        ],
       };
       handlePostData("/createTimeline", timeLineData);
       return response;
@@ -480,9 +482,11 @@ const handleCreateBookingSubmit = async (
             // updating the timeline for payment
             const timeLineData = {
               currentBooking_id: updatedData?._id,
-              timeLine: {
-                "Payment Initiated": new Date().toLocaleString(),
-              },
+              timeLine: [
+                {
+                  "Payment Initiated": new Date().toLocaleString(),
+                },
+              ],
             };
             handlePostData("/createTimeline", timeLineData);
           } else {

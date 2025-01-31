@@ -52,10 +52,20 @@ export const razorPayment = async (
       if (bookingResponse?.status == 200) {
         // dispatch(toggleBookingDoneModal());
         const timeLineData = {
-          currentBooking_id: updatedData?.id,
-          timeLine: {
-            "Payment Done": new Date().toLocaleString(),
-          },
+          currentBooking_id: bookingResponse?.data?._id,
+          timeLine: [
+            {
+              "Payment Done": new Date().toLocaleString(),
+              paymentAmount:
+                bookingResponse?.data?.bookingPrice?.discountTotalPrice &&
+                bookingResponse?.data?.bookingPrice?.discountTotalPrice > 0
+                  ? bookingResponse?.data?.bookingPrice?.discountTotalPrice
+                  : bookingResponse?.data?.bookingPrice?.userPaid &&
+                    bookingResponse?.data?.bookingPrice?.userPaid > 0
+                  ? bookingResponse?.data?.bookingPrice?.userPaid
+                  : bookingResponse?.data?.bookingPrice?.totalPrice,
+            },
+          ],
         };
         await handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");

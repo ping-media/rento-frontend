@@ -45,9 +45,18 @@ const RideCard = ({ item, id }) => {
           </div>
           <div>
             <div className="lg:flex items-center mb-2">
-              <h2 className="font-bold uppercase text-md lg:text-lg">
-                {item?.vehicleBrand} {item?.vehicleName}
-              </h2>
+              <div>
+                <h2 className="font-bold uppercase text-md lg:text-lg">
+                  {item?.vehicleBrand} {item?.vehicleName}
+                </h2>
+                {(item?.rideStatus === "ongoing" ||
+                  item?.rideStatus === "completed") &&
+                  location.pathname.includes("my-rides/summary/") && (
+                    <small className="text-gray-400 italic">
+                      Vehicle Number:({item?.vehicleBasic?.vehicleNumber})
+                    </small>
+                  )}
+              </div>
               {isPageActive && (
                 <>
                   <span className="lg:mx-1 hidden lg:inline">|</span>

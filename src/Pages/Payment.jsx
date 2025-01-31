@@ -33,12 +33,15 @@ const Payment = () => {
 
       if (bookingResponse?.status === 200) {
         // Update timeline for booking
-        const timeLineData = {
-          currentBooking_id: queryParmsDataUpdated?.id,
-          timeLine: {
-            "Payment Done": new Date().toLocaleString(),
+        const timeLineData = [
+          {
+            currentBooking_id: bookingResponse?.data?._id,
+            timeLine: {
+              "Payment Done": new Date().toLocaleString(),
+              paymentAmount: queryParmsDataUpdated?.finalAmount,
+            },
           },
-        };
+        ];
         await handlePostData("/createTimeline", timeLineData);
 
         // Redirect to booking summary
