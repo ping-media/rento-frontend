@@ -67,12 +67,20 @@ const LocationCard = ({
           </li>
           <li>
             <span className="font-bold mr-2">Manager Phone Number:</span>
-            <Link
-              className="text-blue-400 hover:underline"
-              to={`tel:${stationMasterUserId?.contact || "xxxxxxxxxx"}`}
-            >
-              {stationMasterUserId?.contact || "xxxxxxxxxx"}
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link
+                className="text-blue-400 hover:underline"
+                to={`tel:${stationMasterUserId?.contact || "xxxxxxxxxx"}`}
+              >
+                {stationMasterUserId?.contact || "xxxxxxxxxx"}
+              </Link>
+              <Link
+                className="text-blue-400 hover:underline"
+                to={`tel:${stationMasterUserId?.altContact || "xxxxxxxxxx"}`}
+              >
+                {stationMasterUserId?.altContact || "xxxxxxxxxx"}
+              </Link>
+            </div>
           </li>
         </ul>
       </div>
