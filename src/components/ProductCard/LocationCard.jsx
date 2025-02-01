@@ -65,7 +65,7 @@ const LocationCard = ({
               ? `${stationMasterUserId?.firstName} ${stationMasterUserId?.lastName}`
               : "Test User"}
           </li>
-          <li>
+          <li className="flex items-center gap-1">
             <span className="font-bold mr-2">Manager Phone Number:</span>
             <div className="flex items-center gap-1">
               <Link
@@ -74,12 +74,19 @@ const LocationCard = ({
               >
                 {stationMasterUserId?.contact || "xxxxxxxxxx"}
               </Link>
-              <Link
-                className="text-blue-400 hover:underline"
-                to={`tel:${stationMasterUserId?.altContact || "xxxxxxxxxx"}`}
-              >
-                {stationMasterUserId?.altContact || "xxxxxxxxxx"}
-              </Link>
+              {stationMasterUserId?.altContact && (
+                <>
+                  <span className="mr-1">,</span>
+                  <Link
+                    className="text-blue-400 hover:underline"
+                    to={`tel:${
+                      stationMasterUserId?.altContact || "xxxxxxxxxx"
+                    }`}
+                  >
+                    {stationMasterUserId?.altContact || "xxxxxxxxxx"}
+                  </Link>
+                </>
+              )}
             </div>
           </li>
         </ul>
