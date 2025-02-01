@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { handlePostData } from "../Data";
+import { fetchingData, handlePostData } from "../Data";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import favicon from "../assets/favicon.ico";
 import { useDispatch } from "react-redux";
@@ -13,16 +13,27 @@ const Payment = () => {
   const [paymentDone, setPaymentDone] = useState(false); // State for showing "Payment Done"
   const [paymentInProgress, setPaymentInProgress] = useState(false); // State to prevent reopening payment gateway
   const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
+  const [currentBooking, setCurrentBooking] = useState(null);
 
   // Function to create booking after payment
   const handleBookVehicle = async (response) => {
     try {
       const updatedData = {
         _id: queryParmsDataUpdated?.id,
-        bookingStatus: "done",
-        paymentStatus: queryParmsDataUpdated?.paymentStatus,
+        bookingStatus: queryParmsDataUpdated?.paymentStatus
+          ? "done"
+          : "extended",
+        paymentStatus:
+          queryParmsDataUpdated?.paymentStatus || currentBooking?.paymentStatus,
         paymentMethod: "online",
         paySuccessId: response?.razorpay_payment_id,
+        extendBooking: {
+          oldBooking: currentBooking?.oldBooking,
+          transactionIds: [
+            ...currentBooking?.extendBooking?.transactionIds,
+            currentBooking?.paySuccessId,
+          ],
+        },
       };
 
       // Updating booking
@@ -35,7 +46,7 @@ const Payment = () => {
         // Update timeline for booking
         const timeLineData = [
           {
-            currentBooking_id: bookingResponse?.data?._id,
+            currentBooking_id: queryParmsDataUpdated?.id,
             timeLine: {
               title: "Payment Done",
               date: new Date().toLocaleString(),
@@ -47,7 +58,7 @@ const Payment = () => {
 
         // Redirect to booking summary
         setPaymentDone(false); // Stop showing "Payment Done"
-        navigate(`/my-rides/summary/${bookingResponse?.data?._id}`);
+        navigate("/");
       } else {
         handleAsyncError(dispatch, bookingResponse?.message);
       }
@@ -73,6 +84,19 @@ const Payment = () => {
       // Prevent reinitializing the payment gateway
       if (paymentInProgress) return;
 
+      const getBookingData = await fetchingData(
+        `/getBookings?_id=${queryParmsDataUpdated?.id}`
+      );
+
+      if (getBookingData?.status === 200) {
+        setCurrentBooking(getBookingData?.data);
+      } else {
+        handleAsyncError(dispatch, getBookingData?.message);
+        return setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+
       try {
         setPaymentInProgress(true); // Mark payment as in progress
 
@@ -86,7 +110,7 @@ const Payment = () => {
         const options = {
           key: import.meta.env.VITE_RAZOR_KEY_ID,
           amount: payableAmount * 100,
-          order_id: queryParmsDataUpdated?.orderId,
+          order_id: currentBooking?.paymentgatewayOrderId,
           name: "Rento",
           description: "Payment for your booking",
           image: favicon,
@@ -99,9 +123,9 @@ const Payment = () => {
             }
           },
           prefill: {
-            name: queryParmsDataUpdated?.fullName,
-            email: queryParmsDataUpdated?.email,
-            contact: queryParmsDataUpdated?.contact,
+            name: `${currentBooking?.userId?.firstName} ${currentBooking?.userId?.lastName}`,
+            email: currentBooking?.userId?.email,
+            contact: currentBooking?.userId?.contact,
           },
           theme: {
             color: "#e23844", // Payment widget color
@@ -127,8 +151,12 @@ const Payment = () => {
 
   if (paymentDone) {
     return (
-      <div className="flex items-center justify-center h-screen bg-white">
-        <h1 className="text-2xl font-semibold text-green-500">Payment Done!</h1>
+      <div className="flex items-center justify-center h-screen">
+        <div className="max-w-xl bg-white rounded-xl shadow-xl">
+          <h1 className="text-2xl font-semibold text-green-500">
+            Payment Done!
+          </h1>
+        </div>
       </div>
     );
   }

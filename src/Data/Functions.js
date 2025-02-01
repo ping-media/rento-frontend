@@ -224,6 +224,7 @@ const handleFetchBookingData = (
       },
       extendBooking: {
         oldBooking: [],
+        transactionIds: [],
       },
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,

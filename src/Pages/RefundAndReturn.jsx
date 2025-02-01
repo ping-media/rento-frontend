@@ -65,7 +65,7 @@ const RefundAndReturn = () => {
           </li>
           <li>
             Refunds will be credited back to the original payment method used
-            during booking.
+            during booking <strong>5-7 business days</strong>.
           </li>
         </ul>
 
