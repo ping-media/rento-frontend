@@ -37,7 +37,8 @@ const Payment = () => {
           {
             currentBooking_id: bookingResponse?.data?._id,
             timeLine: {
-              "Payment Done": new Date().toLocaleString(),
+              title: "Payment Done",
+              date: new Date().toLocaleString(),
               paymentAmount: queryParmsDataUpdated?.finalAmount,
             },
           },

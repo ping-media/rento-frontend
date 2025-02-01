@@ -264,7 +264,8 @@ const handleCreateBooking = async (
         isStart: true,
         timeLine: [
           {
-            "Booking Created": new Date().toLocaleString(),
+            title: "Booking Created",
+            date: new Date().toLocaleString(),
           },
         ],
       };
@@ -345,6 +346,16 @@ const handleCreateBookingSubmit = async (
         dispatch
       );
       if (response?.status === 200) {
+        const timeLineData = {
+          currentBooking_id: response?.data?._id,
+          timeLine: [
+            {
+              title: "Booking Done",
+              date: new Date().toLocaleString(),
+            },
+          ],
+        };
+        handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
         return navigate(`/my-rides/summary/${response?.data?._id}`);
       } else {
@@ -484,7 +495,8 @@ const handleCreateBookingSubmit = async (
               currentBooking_id: updatedData?._id,
               timeLine: [
                 {
-                  "Payment Initiated": new Date().toLocaleString(),
+                  title: "Payment Initiated",
+                  date: new Date().toLocaleString(),
                 },
               ],
             };
