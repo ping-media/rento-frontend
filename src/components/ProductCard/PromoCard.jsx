@@ -7,7 +7,7 @@ import {
   handleRestCouponWithPrice,
 } from "../../Redux/CouponSlice/CouponSlice";
 import PreLoader from "../skeleton/PreLoader";
-import { useSearchParams } from "react-router-dom";
+// import { useSearchParams } from "react-router-dom";
 
 const PromoCard = () => {
   const [CouponCode, setCouponCode] = useState("");
@@ -16,8 +16,8 @@ const PromoCard = () => {
   const { tempTotalPrice, tempCouponName, tempCouponId } = useSelector(
     (state) => state.coupon
   );
-  const [queryParms] = useSearchParams();
-  const [isPackageApplied, setIsPackageApplied] = useState(false);
+  // const [queryParms] = useSearchParams();
+  // const [isPackageApplied, setIsPackageApplied] = useState(false);
   const { isExtraAddonChecked } = useSelector((state) => state.vehicles);
   const dispatch = useDispatch();
 
@@ -28,12 +28,12 @@ const PromoCard = () => {
     }
   }, [tempCouponName]);
 
-  useEffect(() => {
-    const packageId = queryParms.get("vehiclePlan");
-    if (packageId && packageId?.length > 0) {
-      setIsPackageApplied(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const packageId = queryParms.get("vehiclePlan");
+  //   if (packageId && packageId?.length > 0) {
+  //     setIsPackageApplied(true);
+  //   }
+  // }, []);
 
   // updating the coupon with price
   useEffect(() => {
@@ -49,7 +49,7 @@ const PromoCard = () => {
     if (!tempTotalPrice)
       return handleAsyncError(dispatch, "uable to apply coupon!");
     // avoid applying coupon when user is using package
-    if (isPackageApplied === true) return;
+    // if (isPackageApplied === true) return;
     setLoading(true);
     try {
       const response = await getCouponData(
@@ -96,11 +96,11 @@ const PromoCard = () => {
         <div className="bg-theme rounded-t-lg mb-3">
           <h3 className="px-4 py-2 font-semibold text-gray-100">Promo Codes</h3>
         </div>
-        {isPackageApplied && (
+        {/* {isPackageApplied && (
           <p className="px-4 mb-1 text-xs italic text-gray-400">
             (Can't use coupon when package is applied)
           </p>
-        )}
+        )} */}
         <div className="w-full h-10 relative flex items-center px-4 mb-3">
           <input
             className="w-full h-full bg-white font-light placeholder-slate-400 contrast-more:placeholder-slate-500 border-2 border-slate-200 outline-none rounded-lg focus:border-theme focus:ring-theme focus:ring-1 px-3 uppercase disabled:bg-gray-300 disabled:bg-opacity-50"
@@ -108,7 +108,7 @@ const PromoCard = () => {
             value={CouponCode}
             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
             type="text"
-            disabled={isPackageApplied}
+            // disabled={isPackageApplied}
             readOnly={tempCouponId != ""}
           />
           <div className="w-10 absolute block right-8 fill-theme">
@@ -117,9 +117,8 @@ const PromoCard = () => {
                 className={`text-theme disabled:text-gray-500`}
                 type="button"
                 disabled={
-                  isPackageApplied ||
-                  tempCouponId != "" ||
-                  CouponCode.length < 6
+                  // isPackageApplied ||
+                  tempCouponId != "" || CouponCode.length < 6
                 }
                 onClick={handleApplyCoupon}
               >

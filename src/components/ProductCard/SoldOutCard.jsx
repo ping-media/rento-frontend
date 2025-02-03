@@ -11,7 +11,14 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
           alt="SOLD_OUT"
         />
       </div>
-      <p className="flex items-center px-2 py-1 h-[10%] bg-theme-black text-gray-100 text-xs lg:text-sm">
+      <p
+        className="flex items-center px-2 py-1 h-[10%] bg-theme-black text-gray-100 text-xs lg:text-sm truncate"
+        title={
+          (MaintenanceEndDate &&
+            formatTimeForProductCard(MaintenanceEndDate)) ||
+          (BookingEndDate && formatTimeForProductCard(BookingEndDate))
+        }
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
