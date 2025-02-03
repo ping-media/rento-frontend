@@ -157,12 +157,12 @@ const Search = () => {
           <div className="col-span-4 lg:col-span-3 px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {!loading ? (
-                vehicles?.length > 0 ? (
+                Object.entries(vehicles)?.length > 0 ? (
                   <>
-                    {vehicles[0]?.availableVehicles?.map((item, index) => (
+                    {vehicles?.availableVehicles?.map((item, index) => (
                       <Card {...item} key={index} />
                     ))}
-                    {vehicles[0]?.excludedVehicles?.map((item, index) => (
+                    {vehicles?.excludedVehicles?.map((item, index) => (
                       <Card {...item} isSold={true} key={index} />
                     ))}
                   </>
