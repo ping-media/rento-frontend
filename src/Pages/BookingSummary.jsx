@@ -59,7 +59,7 @@ const BookingSummary = () => {
     (async () => {
       dispatch(fetchingVehicles());
       const result = await fetchingData(
-        `/getVehicleTblData?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+        `/getAllVehiclesAvailable?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
       // console.log(result);
       dispatch(addVehiclesData(result?.data));

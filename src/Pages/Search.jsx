@@ -19,12 +19,16 @@ import {
 import { handleSearchVehicleData } from "../Data/Functions";
 import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
+import Pagination from "../components/SearchRide/Pagination";
 
 const Search = () => {
   const navigate = useNavigate();
   const [queryParms] = useSearchParams();
   const dispatch = useDispatch();
-  const { loading, vehicles } = useSelector((state) => state.vehicles);
+  const { loading, vehicles, pagination } = useSelector(
+    (state) => state.vehicles
+  );
+  const [currentPage, setCurrentPage] = useState(pagination?.page);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
@@ -41,9 +45,10 @@ const Search = () => {
       newQueryParmsData,
       location,
       selectedLocation,
-      id
+      id,
+      pagination?.page
     );
-  }, [customLocation, selectedLocation]);
+  }, [customLocation, selectedLocation, pagination?.page]);
 
   // picking date from url and convert the data to show date in mobile view
   useEffect(() => {
@@ -153,7 +158,14 @@ const Search = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {!loading ? (
                 vehicles?.length > 0 ? (
-                  vehicles?.map((item, index) => <Card {...item} key={index} />)
+                  <>
+                    {vehicles[0]?.availableVehicles?.map((item, index) => (
+                      <Card {...item} key={index} />
+                    ))}
+                    {vehicles[0]?.excludedVehicles?.map((item, index) => (
+                      <Card {...item} isSold={true} key={index} />
+                    ))}
+                  </>
                 ) : (
                   <div className="col-span-3">
                     <ErrorNotFound errorMessage={"No Vehicles Found."} />
@@ -165,6 +177,15 @@ const Search = () => {
                   .map((_, index) => <ProductSkeleton key={index} />)
               )}
             </div>
+            {pagination?.totalPages > 0 && (
+              <div className="flex w-full items-center justify-end mt-5">
+                <Pagination
+                  totalNumberOfPages={pagination?.totalPages}
+                  currentPage={currentPage}
+                  setPageChanger={setCurrentPage}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

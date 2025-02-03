@@ -5,6 +5,7 @@ import {
   resetFilters,
 } from "../Redux/FiltersSlice/FiltersSlice";
 import {
+  addPaginationData,
   addVehiclesData,
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
@@ -14,7 +15,8 @@ const handleSearchVehicleData = async (
   queryParmsData,
   location,
   selectedLocation,
-  id
+  id,
+  page
 ) => {
   // Dispatch loading action
   dispatch(fetchingVehicles());
@@ -32,7 +34,7 @@ const handleSearchVehicleData = async (
     let url = "/getVehicleTblData?";
 
     // Common parameters
-    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}`;
+    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}&page=${page}`;
 
     if (location.pathname !== "/explore") {
       // For non-explore path
@@ -54,6 +56,7 @@ const handleSearchVehicleData = async (
     result = await fetchingData(url);
 
     if (result) {
+      dispatch(addPaginationData(result?.pagination));
       return dispatch(addVehiclesData(result?.data));
     }
   } catch (error) {

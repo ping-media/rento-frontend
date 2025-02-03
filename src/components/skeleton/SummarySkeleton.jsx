@@ -3,7 +3,7 @@ const SummarySkeleton = () => {
     <div className="w-[90%] mx-auto mt-8 animate-pulse">
       <div className="grid grid-cols-1 lg:grid-cols-10 lg:gap-4">
         <div className="col-span-7">
-          <div className="mb-5 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md">
+          <div className="mb-5 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md lg:h-[95%]">
             <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
               <div className="h-4 w-24 bg-gray-400 bg-opacity-50 rounded mb-1"></div>
               <div className="h-4 w-12 bg-gray-400 bg-opacity-50 rounded mb-1"></div>
@@ -67,12 +67,14 @@ const SummarySkeleton = () => {
                 <li className="flex items-center w-full lg:w-[49%] gap-2">
                   <div className="h-4 w-40 bg-gray-400 bg-opacity-50 rounded mb-2"></div>
                 </li>
+                <li className="flex items-center w-full lg:w-[49%] gap-2">
+                  <div className="h-4 w-40 bg-gray-400 bg-opacity-50 rounded mb-2"></div>
+                </li>
+                <li className="flex items-center w-full lg:w-[49%] gap-2">
+                  <div className="h-4 w-40 bg-gray-400 bg-opacity-50 rounded mb-2"></div>
+                </li>
               </ul>
             </div>
-          </div>
-          <div className="mb-5 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md">
-            <div className="h-4 w-11/12 bg-gray-400 bg-opacity-50 rounded mb-3"></div>
-            <div className="h-4 w-10/12 bg-gray-400 bg-opacity-50 rounded"></div>
           </div>
         </div>
 
@@ -118,8 +120,12 @@ const SummarySkeleton = () => {
             </div>
             <div className="h-6 w-90 bg-gray-400 bg-opacity-50 rounded mb-2 mx-4"></div>
           </div>
+          <div className="mb-5 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md mt-2">
+            <div className="h-4 w-11/12 bg-gray-400 bg-opacity-50 rounded mb-3"></div>
+            <div className="h-4 w-10/12 bg-gray-400 bg-opacity-50 rounded"></div>
+          </div>
           <button
-            className="w-full rounded-lg mt-4 bg-gray-400 bg-opacity-50 h-14"
+            className="w-full rounded-lg mt-1 bg-gray-400 bg-opacity-50 h-14"
             disabled
           ></button>
         </div>

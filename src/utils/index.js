@@ -514,6 +514,24 @@ const format24HourFormatTime = (hour) => {
   return `${formattedHour.toString().padStart(2, "0")}:00 ${period}`;
 };
 
+const formatTimeForProductCard = (isoString) => {
+  let date = new Date(isoString);
+
+  date.setUTCHours(date.getUTCHours() + 1);
+
+  const day = date.getUTCDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getUTCFullYear();
+
+  let hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+  const amPm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12 || 12; // Convert 24-hour to 12-hour format
+
+  return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -544,4 +562,5 @@ export {
   convertTo24HourFormat,
   formatDateTimeISTForUser,
   format24HourFormatTime,
+  formatTimeForProductCard,
 };

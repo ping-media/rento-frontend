@@ -104,7 +104,7 @@ const Filters = () => {
               queryParms.get("category") ||
               queryParms.get("vehiclePlan")) && (
               <button
-                className="px-1 py-1 border hover:border-theme hover:text-theme rounded"
+                className="px-1 py-1 border hover:border-theme hover:text-theme rounded flex gap-1"
                 type="button"
                 onClick={handleClearFilters}
               >
@@ -122,6 +122,7 @@ const Filters = () => {
                     d="M6 18 18 6M6 6l12 12"
                   />
                 </svg>
+                <span className="text-xs">Rest All</span>
               </button>
             )}
           </div>
