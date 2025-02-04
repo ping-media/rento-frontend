@@ -10,8 +10,8 @@ import PreLoader from "../components/skeleton/PreLoader";
 import RideFareDetails from "../components/ProductCard/RideFareDetails";
 import ThingsToRemember from "../components/ProductCard/ThingsToRemember";
 import BookingError from "../components/Error/BookingError";
-import { razorPayment } from "../Data/Payment";
-import { handleUpdateBooking } from "../Data/Functions";
+// import { razorPayment } from "../Data/Payment";
+// import { handleUpdateBooking } from "../Data/Functions";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import Spinner from "../components/Spinner/Spinner";
 import PickupImages from "../components/Account/PickupImages";
@@ -50,17 +50,36 @@ const RidesSummary = () => {
 
   // for making payment
   const handleMakePayment = async () => {
-    return await razorPayment(
-      currentUser,
-      rides[0],
-      { id: rides[0]?.paymentgatewayOrderId },
-      { paymentMethod: rides[0]?.paymentMethod },
-      handleUpdateBooking,
-      handleAsyncError,
-      navigate,
-      handlebooking,
-      dispatch,
-      setBookingLoading
+    const { _id, bookingPrice } = rides[0];
+    // return await razorPayment(
+    //   currentUser,
+    //   rides[0],
+    //   { id: rides[0]?.paymentgatewayOrderId },
+    //   { paymentMethod: rides[0]?.paymentMethod },
+    //   handleUpdateBooking,
+    //   handleAsyncError,
+    //   navigate,
+    //   handlebooking,
+    //   dispatch,
+    //   setBookingLoading
+    // );
+    // checking whether user applied Discount or not
+    const subAmount =
+      bookingPrice?.discountTotalPrice && bookingPrice?.discountTotalPrice > 0
+        ? bookingPrice?.discountTotalPrice
+        : bookingPrice?.totalPrice;
+    // checking whether user is paying full payment or half
+    const finalAmount =
+      bookingPrice?.userPaid && bookingPrice?.userPaid > 0
+        ? bookingPrice?.userPaid
+        : subAmount;
+    // setting paymentStatus
+    const paymentStatus =
+      bookingPrice?.userPaid && bookingPrice?.userPaid > 0
+        ? "partiallyPay"
+        : "paid";
+    return navigate(
+      `/payment?id=${_id}&paymentStatus=${paymentStatus}&finalAmount=${finalAmount}`
     );
   };
 
