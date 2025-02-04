@@ -1,97 +1,161 @@
+// import React, { useState, useEffect, useRef } from "react";
 // import { useNavigate, useSearchParams } from "react-router-dom";
-// import { handlePostData } from "../Data";
+// import { fetchingData, handlePostData } from "../Data";
 // import { handleAsyncError } from "../utils/handleAsyncError";
 // import favicon from "../assets/favicon.ico";
 // import { useDispatch } from "react-redux";
+// import PaymentDoneCard from "../components/ProductCard/PaymentDoneCard";
+// import PreLoader from "../components/skeleton/PreLoader";
 
-// const Payment = async () => {
+// const Payment = () => {
 //   const [queryParms] = useSearchParams();
 //   const dispatch = useDispatch();
 //   const navigate = useNavigate();
+//   const [loading, setLoading] = useState(true);
+//   const [paymentDone, setPaymentDone] = useState(false);
+//   const paymentInProgress = useRef(false); // Use useRef instead of useState
 //   const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
 
-//   // function to create booking if after payment is completed
+//   let currentBooking;
+
 //   const handleBookVehicle = async (response) => {
 //     try {
-//       // for booking vehicle
 //       const updatedData = {
-//         _id: queryParmsDataUpdated?._id,
-//         bookingStatus: "done",
-//         paymentStatus: queryParmsDataUpdated?.paymentStatus,
+//         _id: currentBooking?._id,
+//         bookingStatus: queryParmsDataUpdated?.paymentStatus
+//           ? "done"
+//           : "extended",
+//         paymentStatus:
+//           queryParmsDataUpdated?.paymentStatus || currentBooking?.paymentStatus,
 //         paymentMethod: "online",
+//         paymentgatewayOrderId:
+//           queryParmsDataUpdated?.order || currentBooking?.paymentgatewayOrderId,
 //         paySuccessId: response?.razorpay_payment_id,
+//         extendBooking: {
+//           oldBooking: currentBooking?.oldBooking,
+//           transactionIds: [
+//             ...currentBooking?.extendBooking?.transactionIds,
+//             currentBooking?.paySuccessId,
+//           ],
+//         },
 //       };
 
-//       // updating booking
 //       const bookingResponse = await handlePostData(
-//         `/createBooking?_id=${queryParmsDataUpdated?._id}`,
+//         `/createBooking?_id=${queryParmsDataUpdated?.id}`,
 //         updatedData
 //       );
-//       if (bookingResponse?.status == 200) {
-//         // updating the timeline for booking
+
+//       if (bookingResponse?.status === 200) {
 //         const timeLineData = {
-//           currentBooking_id: response?.data?._id,
-//           timeLine: {
-//             "Payment Done": new Date().toLocaleString(),
-//           },
+//           currentBooking_id: queryParmsDataUpdated?.id,
+//           timeLine: [
+//             {
+//               title: "Payment Recived",
+//               date: new Date().toLocaleString(),
+//               paymentAmount: queryParmsDataUpdated?.finalAmount,
+//             },
+//           ],
 //         };
-//         handlePostData("/createTimeline", timeLineData);
-//         navigate(`/my-rides/summary/${bookingResponse?.data?._id}`);
+//         await handlePostData("/createTimeline", timeLineData);
+//         setPaymentDone(false);
+//         navigate("/");
 //       } else {
 //         handleAsyncError(dispatch, bookingResponse?.message);
 //       }
 //     } catch (error) {
-//       handleAsyncError(dispatch, "unable to create booking! try again");
+//       handleAsyncError(dispatch, error?.message);
 //     }
 //   };
 
-//   // Function to dynamically load Razorpay Checkout script
 //   const loadRazorpayScript = () => {
 //     return new Promise((resolve, reject) => {
 //       const script = document.createElement("script");
 //       script.src = "https://checkout.razorpay.com/v1/checkout.js";
 //       script.onload = () => resolve();
-//       script.onerror = (error) =>
+//       script.onerror = () =>
 //         reject(new Error("Failed to open payment gateway."));
 //       document.body.appendChild(script);
 //     });
 //   };
 
-//   await loadRazorpayScript();
+//   useEffect(() => {
+//     const initializePayment = async () => {
+//       if (paymentInProgress.current) return; // Prevent multiple executions
+//       paymentInProgress.current = true; // Mark as in progress
 
-//   // Ensure data is valid and extract payment amount
-//   const payableAmount = queryParmsDataUpdated?.finalAmount || 100;
-
-//   // Razorpay options configuration
-//   const options = {
-//     key: import.meta.env.VITE_RAZOR_KEY_ID,
-//     amount: payableAmount * 100,
-//     order_id: queryParmsDataUpdated?.orderId,
-//     name: "Rento",
-//     description: "Payment for your booking",
-//     image: favicon,
-//     handler: (response) => {
-//       // console.log(response);
-//       if (response) {
-//         return handleBookVehicle(response);
+//       const getBookingData = await fetchingData(
+//         `/getBookings?_id=${queryParmsDataUpdated?.id}`
+//       );
+//       if (getBookingData?.status === 200) {
+//         currentBooking = getBookingData?.data[0];
 //       } else {
-//         handleAsyncError(dispatch, "payment failed!");
+//         handleAsyncError(dispatch, getBookingData?.message);
+//         navigate("/");
 //       }
-//     },
-//     prefill: {
-//       name: queryParmsDataUpdated?.fullName,
-//       email: queryParmsDataUpdated?.email,
-//       contact: queryParmsDataUpdated?.contact,
-//     },
-//     theme: {
-//       color: "#e23844", // Payment widget color
-//     },
-//   };
 
-//   const razorpay = new window.Razorpay(options);
-//   razorpay.open();
+//       try {
+//         await loadRazorpayScript();
+//         const payableAmount = queryParmsDataUpdated?.finalAmount || 100;
 
-//   return <div className="bg-white h-screen"></div>;
+//         const options = {
+//           key: import.meta.env.VITE_RAZOR_KEY_ID,
+//           amount: payableAmount * 100,
+//           order_id: queryParmsDataUpdated?.order,
+//           name: "Rento",
+//           description: "Payment for your booking",
+//           image: favicon,
+//           handler: (response) => {
+//             if (response) {
+//               setPaymentDone(true);
+//               return handleBookVehicle(response);
+//             } else {
+//               return handleAsyncError(dispatch, "Payment failed!");
+//             }
+//           },
+//           prefill: {
+//             name: `${currentBooking?.userId?.firstName} ${currentBooking?.userId?.lastName}`,
+//             email: currentBooking?.userId?.email,
+//             contact: currentBooking?.userId?.contact,
+//           },
+//           theme: { color: "#e23844" },
+//           modal: {
+//             escape: false, // Prevents closing on `Esc` key
+//             ondismiss: function () {
+//               navigate("/"); // Redirect to home if the user closes Razorpay modal
+//             },
+//           },
+//         };
+
+//         const razorpay = new window.Razorpay(options);
+//         razorpay.open();
+//       } catch (error) {
+//         handleAsyncError(dispatch, "Unable to load payment gateway.");
+//         navigate("/");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     initializePayment();
+//   }, [queryParmsDataUpdated]);
+
+//   if (loading) {
+//     return (
+//       <div className="bg-white h-screen">
+//         <PreLoader />
+//       </div>
+//     );
+//   }
+
+//   if (paymentDone) {
+//     return (
+//       <div className="flex items-center justify-center">
+//         <PaymentDoneCard />
+//       </div>
+//     );
+//   }
+
+//   return null;
 // };
 
 // export default Payment;
