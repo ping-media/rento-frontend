@@ -13,29 +13,30 @@
 //   const navigate = useNavigate();
 //   const [loading, setLoading] = useState(true);
 //   const [paymentDone, setPaymentDone] = useState(false);
-//   const paymentInProgress = useRef(false); // Use useRef instead of useState
+//   const paymentInProgress = useRef(false);
+//   const currentBooking = useRef(null);
 //   const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
-
-//   let currentBooking;
 
 //   const handleBookVehicle = async (response) => {
 //     try {
 //       const updatedData = {
-//         _id: currentBooking?._id,
+//         _id: currentBooking.current?._id,
 //         bookingStatus: queryParmsDataUpdated?.paymentStatus
 //           ? "done"
 //           : "extended",
 //         paymentStatus:
-//           queryParmsDataUpdated?.paymentStatus || currentBooking?.paymentStatus,
+//           queryParmsDataUpdated?.paymentStatus ||
+//           currentBooking.current?.paymentStatus,
 //         paymentMethod: "online",
 //         paymentgatewayOrderId:
-//           queryParmsDataUpdated?.order || currentBooking?.paymentgatewayOrderId,
+//           queryParmsDataUpdated?.order ||
+//           currentBooking.current?.paymentgatewayOrderId,
 //         paySuccessId: response?.razorpay_payment_id,
 //         extendBooking: {
-//           oldBooking: currentBooking?.oldBooking,
+//           oldBooking: currentBooking.current?.oldBooking,
 //           transactionIds: [
-//             ...currentBooking?.extendBooking?.transactionIds,
-//             currentBooking?.paySuccessId,
+//             ...currentBooking.current?.extendBooking?.transactionIds,
+//             currentBooking.current?.paySuccessId,
 //           ],
 //         },
 //       };
@@ -50,7 +51,7 @@
 //           currentBooking_id: queryParmsDataUpdated?.id,
 //           timeLine: [
 //             {
-//               title: "Payment Recived",
+//               title: "Payment Received",
 //               date: new Date().toLocaleString(),
 //               paymentAmount: queryParmsDataUpdated?.finalAmount,
 //             },
@@ -80,14 +81,14 @@
 
 //   useEffect(() => {
 //     const initializePayment = async () => {
-//       if (paymentInProgress.current) return; // Prevent multiple executions
-//       paymentInProgress.current = true; // Mark as in progress
+//       if (paymentInProgress.current) return;
+//       paymentInProgress.current = true;
 
 //       const getBookingData = await fetchingData(
 //         `/getBookings?_id=${queryParmsDataUpdated?.id}`
 //       );
 //       if (getBookingData?.status === 200) {
-//         currentBooking = getBookingData?.data[0];
+//         currentBooking.current = getBookingData?.data[0];
 //       } else {
 //         handleAsyncError(dispatch, getBookingData?.message);
 //         navigate("/");
@@ -113,15 +114,15 @@
 //             }
 //           },
 //           prefill: {
-//             name: `${currentBooking?.userId?.firstName} ${currentBooking?.userId?.lastName}`,
-//             email: currentBooking?.userId?.email,
-//             contact: currentBooking?.userId?.contact,
+//             name: `${currentBooking.current?.userId?.firstName} ${currentBooking.current?.userId?.lastName}`,
+//             email: currentBooking.current?.userId?.email,
+//             contact: currentBooking.current?.userId?.contact,
 //           },
 //           theme: { color: "#e23844" },
 //           modal: {
-//             escape: false, // Prevents closing on `Esc` key
+//             escape: false,
 //             ondismiss: function () {
-//               navigate("/"); // Redirect to home if the user closes Razorpay modal
+//               navigate("/");
 //             },
 //           },
 //         };

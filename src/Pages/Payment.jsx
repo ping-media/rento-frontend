@@ -13,6 +13,7 @@ const Payment = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [paymentDone, setPaymentDone] = useState(false);
+  const [bookingFetched, setBookingFetched] = useState(false);
   const paymentInProgress = useRef(false);
   const currentBooking = useRef(null);
   const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
@@ -35,7 +36,8 @@ const Payment = () => {
         extendBooking: {
           oldBooking: currentBooking.current?.oldBooking,
           transactionIds: [
-            ...currentBooking.current?.extendBooking?.transactionIds,
+            ...(currentBooking.current?.extendBooking?.transactionIds || []),
+            currentBooking.current?.paymentgatewayOrderId,
             currentBooking.current?.paySuccessId,
           ],
         },
@@ -79,21 +81,46 @@ const Payment = () => {
     });
   };
 
+  // Fetch booking data first
   useEffect(() => {
-    const initializePayment = async () => {
-      if (paymentInProgress.current) return;
-      paymentInProgress.current = true;
-
-      const getBookingData = await fetchingData(
-        `/getBookings?_id=${queryParmsDataUpdated?.id}`
-      );
-      if (getBookingData?.status === 200) {
-        currentBooking.current = getBookingData?.data[0];
-      } else {
-        handleAsyncError(dispatch, getBookingData?.message);
+    const fetchBookingData = async () => {
+      try {
+        const getBookingData = await fetchingData(
+          `/getBookings?_id=${queryParmsDataUpdated?.id}`
+        );
+        if (getBookingData?.status === 200) {
+          currentBooking.current = getBookingData?.data[0];
+          setBookingFetched(true); // Mark as fetched
+          if (queryParmsDataUpdated?.order) {
+            if (
+              currentBooking.current?.paymentgatewayOrderId ===
+              queryParmsDataUpdated?.order
+            ) {
+              handleAsyncError(dispatch, "Payment Already Done!", "success");
+              return navigate("/");
+            }
+          }
+        } else {
+          handleAsyncError(dispatch, getBookingData?.message);
+          navigate("/");
+        }
+      } catch (error) {
+        handleAsyncError(dispatch, "Error fetching booking data");
         navigate("/");
+      } finally {
+        setLoading(false);
       }
+    };
 
+    fetchBookingData();
+  }, [queryParmsDataUpdated, dispatch, navigate]);
+
+  // After fetching data, initialize payment
+  useEffect(() => {
+    if (!bookingFetched || paymentInProgress.current) return;
+    paymentInProgress.current = true;
+
+    const initializePayment = async () => {
       try {
         await loadRazorpayScript();
         const payableAmount = queryParmsDataUpdated?.finalAmount || 100;
@@ -132,13 +159,11 @@ const Payment = () => {
       } catch (error) {
         handleAsyncError(dispatch, "Unable to load payment gateway.");
         navigate("/");
-      } finally {
-        setLoading(false);
       }
     };
 
     initializePayment();
-  }, [queryParmsDataUpdated]);
+  }, [bookingFetched, queryParmsDataUpdated, dispatch, navigate]);
 
   if (loading) {
     return (
