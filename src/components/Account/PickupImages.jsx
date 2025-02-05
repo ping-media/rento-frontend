@@ -1,17 +1,20 @@
 const PickupImages = ({ data }) => {
+  console.log(data[0]?.files);
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <>
       {data &&
-        Object.entries(data[0]?.files)?.map(([value]) => (
-          <div className="w-48 border-2 h-full" key={value?._id}>
-            <img
-              src={value?.imageUrl}
-              className="w-full h-full object-cover"
-              alt={value?.fileName}
-            />
-          </div>
-        ))}
-    </div>
+        Object.entries(data[0]?.files)?.map(([key, value]) => {
+          return (
+            <div className="w-40 h-20 border-2 h-full" key={key}>
+              <img
+                src={value?.imageUrl}
+                className="w-full h-full object-contain"
+                alt={value?.fileName}
+              />
+            </div>
+          );
+        })}
+    </>
   );
 };
 
