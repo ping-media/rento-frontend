@@ -319,6 +319,7 @@ const SearchRide = () => {
               setValueChanger={setQueryDropoffTime}
               name={"dropoffTime"}
               date={dropoffDate}
+              isDisabled={true}
             />
           </div>
           <Button

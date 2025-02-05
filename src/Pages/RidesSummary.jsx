@@ -12,8 +12,6 @@ import ThingsToRemember from "../components/ProductCard/ThingsToRemember";
 import BookingError from "../components/Error/BookingError";
 // import { razorPayment } from "../Data/Payment";
 // import { handleUpdateBooking } from "../Data/Functions";
-import { handleAsyncError } from "../utils/handleAsyncError";
-import Spinner from "../components/Spinner/Spinner";
 import PickupImages from "../components/Account/PickupImages";
 
 const RidesSummary = () => {
@@ -23,7 +21,6 @@ const RidesSummary = () => {
   const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
   const [stationLoading, setStationLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
-  const [imagesLoading, setImagesLoading] = useState(false);
   const [images, setImages] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
   const { rides, loading } = useSelector((state) => state.rides);
@@ -34,6 +31,12 @@ const RidesSummary = () => {
       (async () => {
         dispatch(fetchingRides());
         const result = await fetchingData(`/getBookings?_id=${id}`);
+        const response = await fetchingData(
+          `/getPickupImage?bookingId=${result?.data[0]?.bookingId}`
+        );
+        if (response?.status === 200) {
+          setImages(response?.data);
+        }
         dispatch(addRidesData(result?.data));
         // formatting data for user readability
         setFormatedDateAndTime(
@@ -84,22 +87,22 @@ const RidesSummary = () => {
   };
 
   // for fetching images
-  const handleFetchPickupImages = async () => {
-    try {
-      setImagesLoading(true);
-      const response = await fetchingData(
-        `/getPickupImage?bookingId=${rides && rides[0]?.bookingId}`
-      );
-      if (response?.status === 200) {
-        setImages(response?.data);
-        return handleAsyncError(dispatch, response?.message, "success");
-      }
-    } catch (error) {
-      return handleAsyncError(dispatch, error?.message);
-    } finally {
-      setImagesLoading(false);
-    }
-  };
+  // const handleFetchPickupImages = async () => {
+  //   try {
+  //     setImagesLoading(true);
+  //     const response = await fetchingData(
+  //       `/getPickupImage?bookingId=${rides && rides[0]?.bookingId}`
+  //     );
+  //     if (response?.status === 200) {
+  //       setImages(response?.data);
+  //       return handleAsyncError(dispatch, response?.message, "success");
+  //     }
+  //   } catch (error) {
+  //     return handleAsyncError(dispatch, error?.message);
+  //   } finally {
+  //     setImagesLoading(false);
+  //   }
+  // };
 
   return (
     <>
@@ -323,7 +326,7 @@ const RidesSummary = () => {
                     </span>
                     Pickup Vehicle Images
                   </h2>
-                  <button
+                  {/* <button
                     className="bg-theme text-gray-100 px-3 py-1.5 rounded-md disabled:bg-opacity-50"
                     onClick={handleFetchPickupImages}
                     disabled={imagesLoading || images?.length > 0}
@@ -337,11 +340,11 @@ const RidesSummary = () => {
                     ) : (
                       <Spinner />
                     )}
-                  </button>
+                  </button> */}
                 </div>
               </div>
               <div className="px-2 lg:px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
-                {imagesLoading && <PreLoader />}
+                {/* {imagesLoading && <PreLoader />} */}
                 {images && images?.length > 0 ? (
                   <PickupImages data={images} />
                 ) : (

@@ -13,7 +13,7 @@ const DetailsCard = ({
     `${speedLimit}km/hr Speed Limit`,
   ];
   return (
-    <div className="border-t-2 border-gray-300 bg-white px-4 py-1.5">
+    <div className="border-t-2 border-gray-300 bg-white mt-3 px-4 py-1.5">
       <h3 className="font-semibold mb-2 lg:mb-5 uppercase">Rent Details</h3>
       <ul className="flex flex-wrap w-full gap-2 lg:gap-4 items-center">
         {details.map((item, index) => (

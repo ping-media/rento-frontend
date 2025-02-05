@@ -8,6 +8,7 @@ const TimePicker = ({
   setValueChanger,
   setDropoffChanger,
   date,
+  isDisabled = false,
 }) => {
   const [timeVisible, setTimeVisible] = useState(false);
   const { selectedStation } = useSelector((state) => state.station);
@@ -118,6 +119,7 @@ const TimePicker = ({
           checkDropdownPosition();
         }}
         ref={buttonRef}
+        disabled={isDisabled}
       >
         <div className="inline-flex items-center gap-0.5">
           <span>
