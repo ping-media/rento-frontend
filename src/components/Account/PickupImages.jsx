@@ -1,5 +1,4 @@
 const PickupImages = ({ data }) => {
-  // console.log(data[0]?.files);
   return (
     <>
       {data &&

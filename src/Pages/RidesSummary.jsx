@@ -326,21 +326,6 @@ const RidesSummary = () => {
                     </span>
                     Pickup Vehicle Images
                   </h2>
-                  {/* <button
-                    className="bg-theme text-gray-100 px-3 py-1.5 rounded-md disabled:bg-opacity-50"
-                    onClick={handleFetchPickupImages}
-                    disabled={imagesLoading || images?.length > 0}
-                  >
-                    {!imagesLoading ? (
-                      images?.length > 0 ? (
-                        "Images showed."
-                      ) : (
-                        "Show Images"
-                      )
-                    ) : (
-                      <Spinner />
-                    )}
-                  </button> */}
                 </div>
               </div>
               <div className="px-2 lg:px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">

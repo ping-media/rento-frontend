@@ -467,7 +467,10 @@ const handleCreateBookingSubmit = async (
               bookingPrice: {
                 ...oldData.bookingPrice,
                 userPaid: userPaid,
-                AmountLeftAfterUserPaid: AmountLeftAfterUserPaid,
+                AmountLeftAfterUserPaid: {
+                  amount: AmountLeftAfterUserPaid,
+                  status: "upaid",
+                },
               },
             };
           }
