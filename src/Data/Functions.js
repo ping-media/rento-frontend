@@ -469,7 +469,7 @@ const handleCreateBookingSubmit = async (
                 userPaid: userPaid,
                 AmountLeftAfterUserPaid: {
                   amount: AmountLeftAfterUserPaid,
-                  status: "upaid",
+                  status: "unpaid",
                 },
               },
             };
