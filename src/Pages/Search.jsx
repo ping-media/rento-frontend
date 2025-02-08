@@ -177,7 +177,7 @@ const Search = () => {
                   .map((_, index) => <ProductSkeleton key={index} />)
               )}
             </div>
-            {pagination?.totalPages > 0 && (
+            {pagination?.totalPages > 1 && (
               <div className="flex w-full items-center justify-end mt-5">
                 <Pagination
                   totalNumberOfPages={pagination?.totalPages}
