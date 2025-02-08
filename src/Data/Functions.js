@@ -470,6 +470,7 @@ const handleCreateBookingSubmit = async (
                 AmountLeftAfterUserPaid: {
                   amount: AmountLeftAfterUserPaid,
                   status: "unpaid",
+                  paymentMethod: "",
                 },
               },
             };
