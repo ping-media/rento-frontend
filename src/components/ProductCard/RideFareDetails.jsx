@@ -178,7 +178,12 @@ const RideFareDetails = ({ rides }) => {
                   <p className="text-sm font-bold uppercase text-left">
                     Remaining Amount
                     <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                      (need to pay at pickup)
+                      (
+                      {rides?.bookingPrice?.AmountLeftAfterUserPaid
+                        ?.paymentMethod != ""
+                        ? `Paid: ${rides?.bookingPrice?.AmountLeftAfterUserPaid?.paymentMethod}`
+                        : "need to pay at pickup"}
+                      )
                     </small>
                   </p>
                   <p className="text-sm font-bold text-right">
