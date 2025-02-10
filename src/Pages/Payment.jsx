@@ -20,7 +20,7 @@ const Payment = () => {
 
   const handleBookVehicle = async (response) => {
     try {
-      const updatedData = {
+      let updatedData = {
         _id: currentBooking.current?._id,
         bookingStatus: queryParmsDataUpdated?.paymentStatus
           ? "done"
@@ -42,6 +42,43 @@ const Payment = () => {
           ],
         },
       };
+
+      // if extend or change is present in url
+      if (queryParmsDataUpdated?.for === "extend") {
+        const updatedExtendAmount = [
+          ...currentBooking.current.bookingPrice.extendAmount,
+        ];
+        // Update the last item's status
+        updatedExtendAmount[updatedExtendAmount.length - 1] = {
+          ...updatedExtendAmount[updatedExtendAmount.length - 1],
+          status: "paid",
+        };
+
+        updatedData = {
+          ...updatedData,
+          bookingPrice: {
+            ...currentBooking.current?.bookingPrice,
+            extendAmount: updatedExtendAmount,
+          },
+        };
+      } else if (queryParmsDataUpdated?.for === "change") {
+        const updatedDiffAmount = [
+          ...currentBooking.current.bookingPrice.diffAmount,
+        ];
+        // Update the last item's status
+        updatedDiffAmount[updatedDiffAmount.length - 1] = {
+          ...updatedDiffAmount[updatedDiffAmount.length - 1],
+          status: "paid",
+        };
+
+        updatedData = {
+          ...updatedData,
+          bookingPrice: {
+            ...currentBooking.current?.bookingPrice,
+            diffAmount: updatedDiffAmount,
+          },
+        };
+      }
 
       const bookingResponse = await handlePostData(
         `/createBooking?_id=${queryParmsDataUpdated?.id}`,
