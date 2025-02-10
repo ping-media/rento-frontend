@@ -140,6 +140,7 @@ const LoginModal = () => {
                 setSecondChanger={setSeconds}
                 isTimerActive={isTimerActive}
                 setTimerActive={setIsTimerActive}
+                setRestValue={setInputNumber}
               />
             )}
           </div>

@@ -16,6 +16,7 @@ const VerifyOtp = ({
   setSecondChanger,
   isTimerActive,
   setTimerActive,
+  setRestValue,
 }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
   const [onOtpSubmit, setOnOtpSubmit] = useState(0);
@@ -154,6 +155,12 @@ const VerifyOtp = ({
     }
   };
 
+  // resting the input so that can revert back to input
+  const handleRestOtpScreen = async () => {
+    setOtpValue(false);
+    setRestValue && setRestValue("");
+  };
+
   return (
     <form onSubmit={handleLogin}>
       <>
@@ -179,7 +186,7 @@ const VerifyOtp = ({
           ))}
         </div>
 
-        <div className="flex items-center flex-col justify-between mb-5">
+        <div className="flex items-center flex-col justify-between mb-1">
           <p className="lg:text-gray-600 text-sm text-gray-400">
             Didn't receive code?
           </p>
@@ -198,6 +205,18 @@ const VerifyOtp = ({
             </button>
           </div>
         </div>
+        {/* back to number page  */}
+        {setRestValue && (
+          <div className="flex items-center flex-col justify-between mb-5">
+            <button
+              className="px-3 py-1 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
+              type="button"
+              onClick={handleRestOtpScreen}
+            >
+              Change Number
+            </button>
+          </div>
+        )}
 
         <button
           className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
