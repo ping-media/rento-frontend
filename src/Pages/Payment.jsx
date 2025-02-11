@@ -65,11 +65,13 @@ const Payment = () => {
         const updatedDiffAmount = [
           ...currentBooking.current.bookingPrice.diffAmount,
         ];
-        // Update the last item's status
-        updatedDiffAmount[updatedDiffAmount.length - 1] = {
-          ...updatedDiffAmount[updatedDiffAmount.length - 1],
-          status: "paid",
-        };
+
+        // Ensure there is at least one item before modifying
+        if (updatedDiffAmount.length > 0) {
+          Object.assign(updatedDiffAmount[updatedDiffAmount.length - 1], {
+            status: "paid",
+          });
+        }
 
         updatedData = {
           ...updatedData,
@@ -79,6 +81,24 @@ const Payment = () => {
           },
         };
       }
+      // } else if (queryParmsDataUpdated?.for === "change") {
+      //   const updatedDiffAmount = [
+      //     ...currentBooking.current.bookingPrice.diffAmount,
+      //   ];
+      //   // Update the last item's status
+      //   updatedDiffAmount[updatedDiffAmount.length - 1] = {
+      //     ...updatedDiffAmount[updatedDiffAmount.length - 1],
+      //     status: "paid",
+      //   };
+
+      //   updatedData = {
+      //     ...updatedData,
+      //     bookingPrice: {
+      //       ...currentBooking.current?.bookingPrice,
+      //       diffAmount: updatedDiffAmount,
+      //     },
+      //   };
+      // }
 
       const bookingResponse = await handlePostData(
         `/createBooking?_id=${queryParmsDataUpdated?.id}`,

@@ -129,9 +129,9 @@ const UserDocument = () => {
                 <p className="mb-2 capitalize">
                   {file?.fileName?.includes("aadhar")
                     ? "Aadhaar"
-                    : file?.fileName?.includes("driving")
+                    : file?.fileName?.includes("license")
                     ? "Driving License"
-                    : "Selfie"}{" "}
+                    : file?.fileName?.includes("selfie") && "Selfie"}{" "}
                   Image
                 </p>
                 <div>

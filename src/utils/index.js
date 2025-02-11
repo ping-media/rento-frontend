@@ -408,6 +408,27 @@ const getRoundedDateTime = (value) => {
   return isoString.split(".")[0] + "Z";
 };
 
+const RoundedDateTimeAndToNextHour = (value) => {
+  // Get the current local date and time
+  const currentDate = new Date(value); // Ensure we don't mutate the original date
+
+  const localMinutes = currentDate.getMinutes();
+
+  if (localMinutes >= 1) {
+    // As soon as minutes turn 01 or more, set to the next full hour
+    currentDate.setHours(currentDate.getHours() + 1);
+  }
+
+  currentDate.setMinutes(0);
+  currentDate.setSeconds(0); // Reset seconds to 0
+
+  const utcDate = new Date(
+    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
+  );
+
+  return utcDate.toISOString().split(".")[0] + "Z";
+};
+
 const addDaysToDate = (dateString, daysToAdd) => {
   const date = new Date(dateString);
   date.setUTCDate(date.getUTCDate() + (daysToAdd - 1));
@@ -563,4 +584,5 @@ export {
   formatDateTimeISTForUser,
   format24HourFormatTime,
   formatTimeForProductCard,
+  RoundedDateTimeAndToNextHour,
 };

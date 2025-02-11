@@ -68,15 +68,15 @@ const SearchRide = () => {
     if (result?.pickupTime !== result?.dropoffTime)
       return handleAsyncError(
         dispatch,
-        "minimum duration should be 1 day or more"
+        "Minimum Interval between dates should be 24 hours"
       );
 
     //checking whether time is in opening hours
     try {
       if (
         result?.pickupTime === result?.dropoffTime &&
-        covertedTime >= 7 &&
-        covertedTime <= 19
+        covertedTime >= selectedStation?.openStartTime &&
+        covertedTime <= selectedStation?.openEndTime
       ) {
         if (
           location.pathname == "/" ||
@@ -107,7 +107,10 @@ const SearchRide = () => {
           );
         }
       } else {
-        return handleAsyncError(dispatch, "time should be in opening hour");
+        return handleAsyncError(
+          dispatch,
+          `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
+        );
       }
     } catch (error) {
       navigate(`/error-${error?.message}`);
@@ -197,13 +200,22 @@ const SearchRide = () => {
     if (selectedStation != null) {
       const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
-      // console.log(currentTime, openEndTime, currentTime >= openEndTime);
+      const openStartTime = Number(selectedStation?.openStartTime);
+      // change date & time after end time
       if (currentTime >= openEndTime) {
         const nextday = nextDayFromCurrent(new Date());
         // changing date
         setPickupDate(nextDayFromCurrent(new Date()));
         setDropoffDate(nextDayFromCurrent(nextday));
         // changing time
+        setQueryPickupTime(
+          format24HourFormatTime(selectedStation?.openStartTime)
+        );
+        setQueryDropoffTime(
+          format24HourFormatTime(selectedStation?.openStartTime)
+        );
+        // change time to openStartTime if current time does not match
+      } else if (currentTime <= openStartTime) {
         setQueryPickupTime(
           format24HourFormatTime(selectedStation?.openStartTime)
         );

@@ -50,9 +50,19 @@ const TimePicker = ({
           hour > selectedStation?.openEndTime;
 
         // Also disable times before the current time if today
-        // const isDisabled =
-        //   (isToday && timeDate < currentTime) || isOutsideAllowedRange;
-        const isDisabled = isOutsideAllowedRange;
+        let isDisabled;
+        if (location.pathname?.includes("/explore")) {
+          const now = new Date();
+          const currentTime = now.getHours() * 60 + now.getMinutes();
+          const timeDateMinutes =
+            timeDate.getHours() * 60 + timeDate.getMinutes();
+          // disable the past time
+          isDisabled = timeDateMinutes < currentTime;
+        } else {
+          isDisabled =
+            (isToday && timeDate < currentTime) || isOutsideAllowedRange;
+        }
+        // const isDisabled = isOutsideAllowedRange;
 
         times.push({ time: timeString, isDisabled });
       }

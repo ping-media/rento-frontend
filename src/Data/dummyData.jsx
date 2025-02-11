@@ -1,12 +1,12 @@
 import scooterImage from "../assets/logo/scooter.png";
 import bikeImage from "../assets/logo/bike.png";
-import { getRoundedDateTime } from "../utils";
+import { RoundedDateTimeAndToNextHour } from "../utils";
 
 //for setting currentDatePlusOne and sending for explore
 const currentDatePlusOne = new Date();
 currentDatePlusOne.setDate(currentDatePlusOne.getDate() + 1);
-const dateAndTime = getRoundedDateTime(new Date());
-const nextDayAndTime = getRoundedDateTime(currentDatePlusOne);
+const dateAndTime = RoundedDateTimeAndToNextHour(new Date());
+const nextDayAndTime = RoundedDateTimeAndToNextHour(currentDatePlusOne);
 
 // const items = [
 //   {
