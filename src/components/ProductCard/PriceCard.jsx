@@ -69,7 +69,7 @@ const PriceCard = ({
                 appliedVehiclePlan != null && appliedVehiclePlan?.planPrice > 0
                   ? appliedVehiclePlan?.planPrice
                   : vehiclePlanData?.planPrice
-              ) + extraAddOnCost,
+              ) + parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
               18
             )
           )
@@ -120,7 +120,7 @@ const PriceCard = ({
                     bookingEndDateTime?.date
                   )
                 ) +
-                Number(extraAddOnCost),
+                parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
               18
             )
           )
