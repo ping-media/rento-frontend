@@ -201,6 +201,8 @@ const RidesSummary = () => {
                       ? "Not Started"
                       : rides[0]?.rideStatus === "ongoing"
                       ? "Started"
+                      : rides[0]?.rideStatus === "canceled"
+                      ? "Cancelled"
                       : "Completed"}
                   </span>
                 </p>

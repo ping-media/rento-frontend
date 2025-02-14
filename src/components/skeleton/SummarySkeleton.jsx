@@ -1,11 +1,11 @@
 const SummarySkeleton = () => {
   return (
-    <div className="w-[90%] mx-auto mt-8 animate-pulse">
+    <div className="w-[95%] lg:w-[90%] mx-auto mt-8 animate-pulse">
       <div className="grid grid-cols-1 lg:grid-cols-10 lg:gap-4">
         <div className="col-span-7">
           <div className="mb-5 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md lg:h-[95%]">
             <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
-              <div className="h-4 w-24 bg-gray-400 bg-opacity-50 rounded mb-1"></div>
+              <div className="h-4 w-24 bg-gray-400 bg-opacity-50 rounded mt-1 mb-1"></div>
               <div className="h-4 w-12 bg-gray-400 bg-opacity-50 rounded mb-1"></div>
             </div>
             <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">

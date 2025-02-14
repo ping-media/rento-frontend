@@ -1,7 +1,7 @@
 const TopHeader = ({ email, phoneNumber }) => {
   return (
     <div className=" bg-theme">
-      <div className="py-1.5 w-[90%] mx-auto">
+      <div className="py-1.5 w-[95%] lg:w-[90%] mx-auto">
         <div className="flex items-center justify-between lg:justify-end gap-2">
           <a
             href={`mailto:${email}`}

@@ -231,7 +231,7 @@ const SearchRide = () => {
       {isPageLoad && stationLoading && <PreLoader />}
       <div
         className={`w-[95%] lg:w-[90%] mx-auto px-4 py-2.5 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
-          isHomePage && "-mt-32 md:-mt-28 lg:-mt-14"
+          isHomePage && "-mt-6 md:-mt-28 lg:-mt-14"
         } shadow-lg ${
           !isHomePage
             ? isSearchUpdatesActive
