@@ -24,6 +24,7 @@ const Card = ({
   const [queryParms] = useSearchParams();
   const productImageRef = useRef(null);
   const [bookingUrl, setBookingUrl] = useState("");
+  const [isImgLoading, setIsImgLoading] = useState(true);
   const navigate = useNavigate();
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
@@ -44,7 +45,7 @@ const Card = ({
   };
 
   return (
-    <button type="button" onClick={sendToRideSummary} className="relative">
+    <div onClick={sendToRideSummary} className="relative">
       <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
         {((isSold && BookingEndDate) || (isSold && MaintenanceEndDate)) && (
           <SoldOutCard
@@ -62,12 +63,15 @@ const Card = ({
           </p>
         </div>
         <div className="px-3 py-1.5">
-          <div className="w-full h-48 rounded-lg mb-2.5 relative">
+          <div className="w-full h-32 lg:h-48 rounded-lg mb-2.5 relative">
             <img
               src={vehicleImage}
-              className="w-full h-full object-contain"
+              className={`w-full h-full object-contain ${
+                isImgLoading ? "animate-pulse bg-gray-200" : ""
+              }`}
               alt={vehicleName}
               loading="lazy"
+              onLoad={() => setIsImgLoading(false)}
               onError={() => handleErrorImage(vehicleType, productImageRef)}
               ref={productImageRef}
             />
@@ -78,9 +82,10 @@ const Card = ({
             </h2>
           </div>
           <div className="flex items-center mb-1">
-            <div className="w-8 h-8 mr-1">
+            <div className="w-6 lg:w-8 h-6 lg:h-8 mr-1">
               <img
                 src={vehicleType === "gear" ? bikeImage : scooterImage}
+                loading="lazy"
                 alt={vehicleType}
               />
             </div>
@@ -91,14 +96,14 @@ const Card = ({
           <p className="text-xs mb-5 text-left">
             (After Limit {extraKmsCharges}/KM + GST)
           </p>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between flex-wrap gap-2 lg:gap-0 mb-2">
             <p>
               <span className="mr-1">₹</span>
               {formatPrice(perDayCost)}/<span className="text-sm">day</span>
             </p>
-            <div className="px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
+            <button className="w-full md:w-3/5 lg:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
               Rent Now
-            </div>
+            </button>
           </div>
           <p className="text-gray-600 text-left">
             Pickup at{" "}
@@ -108,7 +113,7 @@ const Card = ({
           </p>
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 

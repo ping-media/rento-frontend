@@ -118,7 +118,7 @@ const Search = () => {
         </button>
       </div>
 
-      <div className="mt-10 mb-4 w-[90%] mx-auto">
+      <div className="mt-5 lg:mt-10 mb-4 w-[95%] lg:w-[90%] mx-auto">
         <div className="grid grid-cols-4 w-full">
           {/* 25% column */}
           <div
@@ -126,7 +126,7 @@ const Search = () => {
               !isFilterActive
                 ? "hidden lg:block"
                 : "fixed w-full bg-white h-full left-0 top-0 z-20"
-            } col-span-1 px-4`}
+            } col-span-1 px-2 lg:px-4`}
           >
             <div className="lg:hidden py-2 border-b-2 px-4 flex items-center justify-between">
               <h2 className="text-xl uppercase font-bold">
@@ -154,8 +154,8 @@ const Search = () => {
           </div>
 
           {/* 75% column */}
-          <div className="col-span-4 lg:col-span-3 px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="col-span-4 lg:col-span-3 px-1">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {!loading ? (
                 Object.entries(vehicles)?.length > 0 ? (
                   <>

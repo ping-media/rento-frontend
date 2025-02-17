@@ -8,6 +8,7 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
         <img
           src={soldOutImage}
           className="w-full h-full object-contain"
+          loading="lazy"
           alt="SOLD_OUT"
         />
       </div>
