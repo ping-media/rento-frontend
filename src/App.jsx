@@ -57,7 +57,7 @@ const App = () => {
               element={<TermsAndCondition />}
             />
             <Route path="refund-return" exact element={<RefundAndReturn />} />
-            <Route path="/payment" exact element={<Payment />} />
+            <Route path="/payment/:id" exact element={<Payment />} />
           </Route>
           <Route path="*" exact element={<ErrorPageNotFound />} />
         </Routes>

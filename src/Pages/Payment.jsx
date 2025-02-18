@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fetchingData, handlePostData } from "../Data";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import favicon from "../assets/favicon.ico";
 import { useDispatch } from "react-redux";
 import PaymentDoneCard from "../components/ProductCard/PaymentDoneCard";
 import PreLoader from "../components/skeleton/PreLoader";
+import { jwtDecode } from "jwt-decode";
 
 const Payment = () => {
-  const [queryParms] = useSearchParams();
+  // const [queryParms] = useSearchParams();
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -16,22 +18,35 @@ const Payment = () => {
   const [bookingFetched, setBookingFetched] = useState(false);
   const paymentInProgress = useRef(false);
   const currentBooking = useRef(null);
-  const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
+  const [decodedParams, setDecodedParams] = useState(null);
+  // const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
+  // const decodedParams = Object.fromEntries(
+  //   Object.entries(queryParmsDataUpdated).map(([key, value]) => [
+  //     key,
+  //     decodeURIComponent(value),
+  //   ])
+  // );
+
+  // decoding the jwt token
+  useEffect(() => {
+    if (id) {
+      const decodedData = jwtDecode(id);
+      setDecodedParams(decodedData);
+    }
+  }, []);
+
+  // return;
 
   const handleBookVehicle = async (response) => {
     try {
       let updatedData = {
         _id: currentBooking.current?._id,
-        bookingStatus: queryParmsDataUpdated?.paymentStatus
-          ? "done"
-          : "extended",
+        bookingStatus: decodedParams?.paymentStatus ? "done" : "extended",
         paymentStatus:
-          queryParmsDataUpdated?.paymentStatus ||
-          currentBooking.current?.paymentStatus,
+          decodedParams?.paymentStatus || currentBooking.current?.paymentStatus,
         paymentMethod: "online",
         paymentgatewayOrderId:
-          queryParmsDataUpdated?.order ||
-          currentBooking.current?.paymentgatewayOrderId,
+          decodedParams?.order || currentBooking.current?.paymentgatewayOrderId,
         paySuccessId: response?.razorpay_payment_id,
         extendBooking: {
           oldBooking: currentBooking.current?.oldBooking,
@@ -44,42 +59,56 @@ const Payment = () => {
       };
 
       // if extend or change is present in url
-      if (queryParmsDataUpdated?.for === "extend") {
-        const updatedExtendAmount = [
-          ...currentBooking.current.bookingPrice.extendAmount,
-        ];
+      if (decodedParams?.for === "extend") {
+        // const updatedExtendAmount = [
+        //   ...currentBooking.current.bookingPrice.extendAmount,
+        // ];
         // Update the last item's status
-        updatedExtendAmount[updatedExtendAmount.length - 1] = {
-          ...updatedExtendAmount[updatedExtendAmount.length - 1],
-          status: "paid",
-        };
-
-        updatedData = {
-          ...updatedData,
-          bookingPrice: {
-            ...currentBooking.current?.bookingPrice,
-            extendAmount: updatedExtendAmount,
-          },
-        };
-      } else if (queryParmsDataUpdated?.for === "change") {
-        const updatedDiffAmount = [
-          ...currentBooking.current.bookingPrice.diffAmount,
-        ];
-
-        // Ensure there is at least one item before modifying
-        if (updatedDiffAmount.length > 0) {
-          Object.assign(updatedDiffAmount[updatedDiffAmount.length - 1], {
-            status: "paid",
-          });
+        // updatedExtendAmount[updatedExtendAmount.length - 1] = {
+        //   ...updatedExtendAmount[updatedExtendAmount.length - 1],
+        //   status: "paid",
+        // };
+        const data = currentBooking?.current?.bookingPrice?.extendAmount?.find(
+          (item) => item.id === decodedParams?.paymentId
+        );
+        if (data) {
+          data.paymentMethod = "Razor Pay";
+          data.status = "paid";
         }
 
-        updatedData = {
-          ...updatedData,
-          bookingPrice: {
-            ...currentBooking.current?.bookingPrice,
-            diffAmount: updatedDiffAmount,
-          },
-        };
+        // updatedData = {
+        //   ...updatedData,
+        //   bookingPrice: {
+        //     ...currentBooking.current?.bookingPrice,
+        //     extendAmount: updatedExtendAmount,
+        //   },
+        // };
+      } else if (decodedParams?.for === "change") {
+        // const updatedDiffAmount = [
+        //   ...currentBooking.current.bookingPrice.diffAmount,
+        // ];
+
+        // // Ensure there is at least one item before modifying
+        // if (updatedDiffAmount.length > 0) {
+        //   Object.assign(updatedDiffAmount[updatedDiffAmount.length - 1], {
+        //     status: "paid",
+        //   });
+        // }
+        const data = currentBooking?.current?.bookingPrice?.diffAmount?.find(
+          (item) => item.id === decodedParams?.paymentId
+        );
+        if (data) {
+          data.paymentMethod = "Razor Pay";
+          data.status = "paid";
+        }
+
+        // updatedData = {
+        //   ...updatedData,
+        //   bookingPrice: {
+        //     ...currentBooking.current?.bookingPrice,
+        //     diffAmount: updatedDiffAmount,
+        //   },
+        // };
       }
       // } else if (queryParmsDataUpdated?.for === "change") {
       //   const updatedDiffAmount = [
@@ -101,18 +130,19 @@ const Payment = () => {
       // }
 
       const bookingResponse = await handlePostData(
-        `/createBooking?_id=${queryParmsDataUpdated?.id}`,
+        `/createBooking?_id=${decodedParams?.id}`,
         updatedData
       );
 
       if (bookingResponse?.status === 200) {
         const timeLineData = {
-          currentBooking_id: queryParmsDataUpdated?.id,
+          currentBooking_id: decodedParams?.id,
           timeLine: [
             {
               title: "Payment Received",
               date: new Date().toLocaleString(),
-              paymentAmount: queryParmsDataUpdated?.finalAmount,
+              paymentAmount: decodedParams?.finalAmount,
+              id: decodedParams.paymentId,
             },
           ],
         };
@@ -143,15 +173,15 @@ const Payment = () => {
     const fetchBookingData = async () => {
       try {
         const getBookingData = await fetchingData(
-          `/getBookings?_id=${queryParmsDataUpdated?.id}`
+          `/getBookings?_id=${decodedParams?.id}`
         );
         if (getBookingData?.status === 200) {
           currentBooking.current = getBookingData?.data[0];
           setBookingFetched(true); // Mark as fetched
-          if (queryParmsDataUpdated?.order) {
+          if (decodedParams?.order) {
             if (
               currentBooking.current?.paymentgatewayOrderId ===
-              queryParmsDataUpdated?.order
+              decodedParams?.order
             ) {
               handleAsyncError(dispatch, "Payment Already Done!", "success");
               return navigate("/");
@@ -169,8 +199,8 @@ const Payment = () => {
       }
     };
 
-    fetchBookingData();
-  }, [queryParmsDataUpdated, dispatch, navigate]);
+    decodedParams !== null && fetchBookingData();
+  }, [decodedParams, dispatch, navigate]);
 
   // After fetching data, initialize payment
   useEffect(() => {
@@ -180,12 +210,12 @@ const Payment = () => {
     const initializePayment = async () => {
       try {
         await loadRazorpayScript();
-        const payableAmount = queryParmsDataUpdated?.finalAmount || 100;
+        const payableAmount = decodedParams?.finalAmount || 100;
 
         const options = {
           key: import.meta.env.VITE_RAZOR_KEY_ID,
           amount: payableAmount * 100,
-          order_id: queryParmsDataUpdated?.order,
+          order_id: decodedParams?.order,
           name: "Rento",
           description: "Payment for your booking",
           image: favicon,
@@ -220,7 +250,7 @@ const Payment = () => {
     };
 
     initializePayment();
-  }, [bookingFetched, queryParmsDataUpdated, dispatch, navigate]);
+  }, [bookingFetched, decodedParams, dispatch, navigate]);
 
   if (loading) {
     return (
