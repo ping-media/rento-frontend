@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchingData, handlePostData } from "../Data";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import favicon from "../assets/favicon.ico";
@@ -9,7 +9,6 @@ import PreLoader from "../components/skeleton/PreLoader";
 import { jwtDecode } from "jwt-decode";
 
 const Payment = () => {
-  // const [queryParms] = useSearchParams();
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,13 +18,6 @@ const Payment = () => {
   const paymentInProgress = useRef(false);
   const currentBooking = useRef(null);
   const [decodedParams, setDecodedParams] = useState(null);
-  // const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
-  // const decodedParams = Object.fromEntries(
-  //   Object.entries(queryParmsDataUpdated).map(([key, value]) => [
-  //     key,
-  //     decodeURIComponent(value),
-  //   ])
-  // );
 
   // decoding the jwt token
   useEffect(() => {
@@ -60,74 +52,44 @@ const Payment = () => {
 
       // if extend or change is present in url
       if (decodedParams?.for === "extend") {
-        // const updatedExtendAmount = [
-        //   ...currentBooking.current.bookingPrice.extendAmount,
-        // ];
-        // Update the last item's status
-        // updatedExtendAmount[updatedExtendAmount.length - 1] = {
-        //   ...updatedExtendAmount[updatedExtendAmount.length - 1],
-        //   status: "paid",
-        // };
         const data = currentBooking?.current?.bookingPrice?.extendAmount?.find(
-          (item) => item.id === decodedParams?.paymentId
+          (item) => Number(item.id) === Number(decodedParams?.paymentId)
         );
         if (data) {
-          data.paymentMethod = "Razor Pay";
           data.status = "paid";
+          data.paymentMethod = "RazorPay";
         }
-
-        // updatedData = {
-        //   ...updatedData,
-        //   bookingPrice: {
-        //     ...currentBooking.current?.bookingPrice,
-        //     extendAmount: updatedExtendAmount,
-        //   },
-        // };
+        // replacing the new old data with new values
+        updatedData = {
+          ...updatedData,
+          bookingPrice: {
+            ...currentBooking.current?.bookingPrice,
+            extendAmount:
+              currentBooking?.current?.bookingPrice?.extendAmount?.map((item) =>
+                item.id === decodedParams.paymentId ? data : item
+              ) || [data],
+          },
+        };
       } else if (decodedParams?.for === "change") {
-        // const updatedDiffAmount = [
-        //   ...currentBooking.current.bookingPrice.diffAmount,
-        // ];
-
-        // // Ensure there is at least one item before modifying
-        // if (updatedDiffAmount.length > 0) {
-        //   Object.assign(updatedDiffAmount[updatedDiffAmount.length - 1], {
-        //     status: "paid",
-        //   });
-        // }
         const data = currentBooking?.current?.bookingPrice?.diffAmount?.find(
-          (item) => item.id === decodedParams?.paymentId
+          (item) => Number(item.id) === Number(decodedParams?.paymentId)
         );
         if (data) {
-          data.paymentMethod = "Razor Pay";
           data.status = "paid";
+          data.paymentMethod = "RazorPay";
         }
 
-        // updatedData = {
-        //   ...updatedData,
-        //   bookingPrice: {
-        //     ...currentBooking.current?.bookingPrice,
-        //     diffAmount: updatedDiffAmount,
-        //   },
-        // };
+        // replacing the new old data with new values
+        updatedData = {
+          ...updatedData,
+          bookingPrice: {
+            ...currentBooking.current?.bookingPrice,
+            diffAmount: currentBooking?.current?.bookingPrice?.diffAmount?.map(
+              (item) => (item.id === decodedParams.paymentId ? data : item)
+            ) || [data],
+          },
+        };
       }
-      // } else if (queryParmsDataUpdated?.for === "change") {
-      //   const updatedDiffAmount = [
-      //     ...currentBooking.current.bookingPrice.diffAmount,
-      //   ];
-      //   // Update the last item's status
-      //   updatedDiffAmount[updatedDiffAmount.length - 1] = {
-      //     ...updatedDiffAmount[updatedDiffAmount.length - 1],
-      //     status: "paid",
-      //   };
-
-      //   updatedData = {
-      //     ...updatedData,
-      //     bookingPrice: {
-      //       ...currentBooking.current?.bookingPrice,
-      //       diffAmount: updatedDiffAmount,
-      //     },
-      //   };
-      // }
 
       const bookingResponse = await handlePostData(
         `/createBooking?_id=${decodedParams?.id}`,
