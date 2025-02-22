@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { formatTimeWithoutSeconds, parseTime } from "../../utils";
+import { useSelector } from "react-redux";
 
 const TimePicker = ({
   value,
@@ -7,8 +8,10 @@ const TimePicker = ({
   setValueChanger,
   setDropoffChanger,
   date,
+  isDisabled = false,
 }) => {
   const [timeVisible, setTimeVisible] = useState(false);
+  const { selectedStation } = useSelector((state) => state.station);
   const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
   const timePickerRef = useRef(null);
   const buttonRef = useRef(null);
@@ -31,22 +34,50 @@ const TimePicker = ({
     const isToday = selectedDate.toDateString() === today.toDateString();
     const currentTime = isToday ? today : null;
 
-    for (let period of ["AM", "PM"]) {
-      for (let h = 1; h <= 12; h++) {
-        for (let m = 0; m < 60; m += 60) {
-          const hour = h < 10 ? `0${h}` : h;
-          const minute = m === 0 ? "00" : m < 10 ? `0${m}` : m;
-          const timeString = `${hour}:${minute} ${period}`;
-          const timeDate = parseTime(timeString);
+    // Iterate over a 24-hour clock for proper order
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 60) {
+        const period = hour < 12 ? "AM" : "PM";
+        const adjustedHour = hour % 12 === 0 ? 12 : hour % 12;
+        const hourString =
+          adjustedHour < 10 ? `0${adjustedHour}` : adjustedHour;
+        const minuteString = minute < 10 ? `0${minute}` : minute;
+        const timeString = `${hourString}:${minuteString} ${period}`;
+        const timeDate = parseTime(timeString);
 
-          const isDisabled = isToday && timeDate < currentTime;
-          times.push({ time: timeString, isDisabled });
+        // const isDisabled = isToday && timeDate < currentTime;
+        // times.push({ time: timeString, isDisabled });
+
+        const isOutsideAllowedRange =
+          hour < selectedStation?.openStartTime ||
+          hour > selectedStation?.openEndTime;
+
+        // Also disable times before the current time if today
+        let isDisabled;
+        if (location.pathname?.includes("/explore")) {
+          const now = new Date();
+          const currentTime = now.getHours() * 60 + now.getMinutes();
+          const timeDateMinutes =
+            timeDate.getHours() * 60 + timeDate.getMinutes();
+          // disable the past time
+          isDisabled = timeDateMinutes < currentTime;
+        } else {
+          isDisabled =
+            (isToday && timeDate < currentTime) || isOutsideAllowedRange;
         }
+        // const isDisabled = isOutsideAllowedRange;
+
+        times.push({ time: timeString, isDisabled });
       }
     }
 
     return times;
   };
+
+  // with this we are changing the opening hour on based on station time
+  useEffect(() => {
+    generateTimes();
+  }, [selectedStation]);
 
   useEffect(() => {
     if (value) {
@@ -101,6 +132,7 @@ const TimePicker = ({
           checkDropdownPosition();
         }}
         ref={buttonRef}
+        disabled={isDisabled}
       >
         <div className="inline-flex items-center gap-0.5">
           <span>

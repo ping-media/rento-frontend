@@ -36,6 +36,13 @@ const UserSlice = createSlice({
       state.currentUser = action.payload;
       state.loading = false;
     },
+    handleUpdateSelectedCurrentUser: (state, action) => {
+      state.currentUser = {
+        ...state.currentUser,
+        ...action.payload,
+      };
+      state.loading = false;
+    },
     handleAddUserDocument: (state, action) => {
       state.userDocument = action.payload;
       state.loading = false;
@@ -57,6 +64,7 @@ export const {
   handleSignIn,
   handleCurrentUser,
   handleUpdateCurrentUser,
+  handleUpdateSelectedCurrentUser,
   addTempContact,
   removeTempContact,
   handleAddUserDocument,

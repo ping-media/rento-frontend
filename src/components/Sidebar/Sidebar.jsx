@@ -7,6 +7,7 @@ import {
   toggleSignOutModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import { menuList } from "../../Data/dummyData";
+import logoImg from "../../assets/logo/rento-logo.png";
 import SigninButton from "../Button/SigninButton";
 
 const Sidebar = () => {
@@ -33,10 +34,20 @@ const Sidebar = () => {
     >
       <div className="w-[80%] bg-white h-full">
         <div className="bg-theme-black px-4 py-2.5 flex items-center justify-between mb-3">
-          <Link to={"/"}>
-            <h1 className="font-bold text-theme text-3xl font-fingerPoint">
-              RENTO
+          {/* <Link to={"/"}>
+            <h1 className="font-bold text-theme text-3xl font-fingerPoint tracking-wide">
+              RENTO BIKES
             </h1>
+          </Link> */}
+          <Link
+            to={"/"}
+            className="w-12 h-12 lg:w-14 lg:h-14 p-1.5 rounded-full bg-white"
+          >
+            <img
+              src={logoImg}
+              className="w-full h-full object-contain"
+              alt="RENTOBIKES"
+            />
           </Link>
           <button
             className="text-gray-100"

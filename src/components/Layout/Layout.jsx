@@ -13,16 +13,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
 import Footer from "../Footer/Footer";
 import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
+import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
   const { user } = useSelector((state) => state.user);
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { id } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // setting decrypt user data
     if (user) {
-      // setting decrypt user data
       dispatch(handleCurrentUser(user));
     }
   }, [user]);
@@ -38,6 +40,13 @@ const Layout = () => {
     }
   }, [location.href]);
 
+  // if selectedLocation is not present than open popup modal
+  useEffect(() => {
+    if (selectedLocation && Object.keys(selectedLocation)?.length === 0) {
+      dispatch(toggleLocationModal());
+    }
+  }, []);
+
   return (
     <>
       {/* login & register modals */}
@@ -52,7 +61,7 @@ const Layout = () => {
       <header className="sticky top-0 z-20">
         <TopHeader
           email={"support@rentobikes.com"}
-          phoneNumber={"+91 9916864268"}
+          phoneNumber={"+91 8884488891"}
         />
         <Header />
       </header>

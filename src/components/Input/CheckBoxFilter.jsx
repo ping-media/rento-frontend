@@ -1,16 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PreLoader from "../skeleton/PreLoader";
+import { useSearchParams } from "react-router-dom";
 
-const CheckboxFilter = ({ vehiclePlan, setPlanIdChanger }) => {
+const CheckboxFilter = ({ setPlanIdChanger }) => {
   const { filter, filterLoading } = useSelector((state) => state.filter);
+  const [query] = useSearchParams();
   const [selectedPlanId, setSelectedPlanId] = useState(null);
 
   const handleCheckboxChange = (planId) => {
-    // Set the selected plan ID, uncheck if already selected
-    setSelectedPlanId((prev) => (prev === planId ? null : planId));
-    setPlanIdChanger(planId); // Update parent component with the selected plan ID
+    if (selectedPlanId === planId) {
+      setSelectedPlanId(null);
+      setPlanIdChanger(null);
+    } else {
+      setSelectedPlanId(planId);
+      setPlanIdChanger(planId);
+    }
   };
+
+  // changing the checkbox state to checked or unchecked based on conditon
+  useEffect(() => {
+    const vehiclePlanId = query.get("vehiclePlan") || null;
+    if (vehiclePlanId) {
+      setSelectedPlanId(vehiclePlanId);
+    } else {
+      setSelectedPlanId(null);
+    }
+  }, [query]);
 
   return !filterLoading ? (
     filter.length > 0 ? (
@@ -26,9 +42,7 @@ const CheckboxFilter = ({ vehiclePlan, setPlanIdChanger }) => {
                 type="checkbox"
                 className="peer hidden"
                 value={item?._id}
-                checked={
-                  selectedPlanId === item?._id || vehiclePlan === item?._id
-                }
+                checked={selectedPlanId === item?._id}
                 onChange={() => handleCheckboxChange(item?._id)}
               />
               <div

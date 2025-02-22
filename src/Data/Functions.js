@@ -1,10 +1,11 @@
-import { fetchingData } from ".";
+import { fetchingData, handlePostData } from ".";
 import {
   addingFilters,
   hanldeAddFilters,
   resetFilters,
 } from "../Redux/FiltersSlice/FiltersSlice";
 import {
+  addPaginationData,
   addVehiclesData,
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
@@ -14,7 +15,8 @@ const handleSearchVehicleData = async (
   queryParmsData,
   location,
   selectedLocation,
-  id
+  id,
+  page
 ) => {
   // Dispatch loading action
   dispatch(fetchingVehicles());
@@ -32,7 +34,7 @@ const handleSearchVehicleData = async (
     let url = "/getVehicleTblData?";
 
     // Common parameters
-    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}`;
+    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}&page=${page}`;
 
     if (location.pathname !== "/explore") {
       // For non-explore path
@@ -54,27 +56,18 @@ const handleSearchVehicleData = async (
     result = await fetchingData(url);
 
     if (result) {
-      // Dispatch the result if available
+      dispatch(addPaginationData(result?.pagination));
       return dispatch(addVehiclesData(result?.data));
     }
   } catch (error) {
-    // Handle errors
     console.error("Error fetching vehicle data:", error);
-    // Optionally dispatch an error state if you want to show error messages
   }
 };
 
 const fetchingPlansFilters = async (dispatch, id) => {
   dispatch(addingFilters());
   try {
-    let endpoint;
-    // change the endpoint based on page whether it is explore or search
-    // console.log(location.pathname.substring(0, 7));
-    if (location.pathname.substring(0, 7) == "/search") {
-      endpoint = `/getPlanData?stationId=${id}`;
-    } else {
-      endpoint = `/getPlanData?locationId=${id}`;
-    }
+    let endpoint = "/getPlanData";
     const response = await fetchingData(endpoint);
     if (response.status == 200) {
       // console.log(response?.data);
@@ -174,6 +167,7 @@ const handleFetchBookingData = (
   addTempBookingData,
   setBookingLoading,
   vehiclePlanData,
+  isDiscountZero,
   dispatch,
   id,
   updateQueryParams,
@@ -190,13 +184,19 @@ const handleFetchBookingData = (
   }
   const response = new FormData(e.target);
   const result = Object.fromEntries(response.entries());
+  // ride starting otp
+  const startRideOtp = Math.floor(1000 + Math.random() * 9000);
   if (vehicles) {
     const data = {
       vehicleTableId: vehicles[0]?._id,
       userId: currentUser?._id,
       vehicleMasterId: vehicles[0]?.vehicleMasterId,
-      BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime,
-      BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime,
+      BookingStartDateAndTime:
+        (queryParmsData?.BookingStartDateAndTime).replace(".000Z", "Z"),
+      BookingEndDateAndTime: (queryParmsData?.BookingEndDateAndTime).replace(
+        ".000Z",
+        "Z"
+      ),
       bookingPrice: {
         bookingPrice: Number(result?.bookingPrice),
         vehiclePrice: Number(result?.bookingPrice),
@@ -206,8 +206,10 @@ const handleFetchBookingData = (
         totalPrice: Number(result?.totalPrice),
         discountPrice: Number(result?.discountPrice || 0),
         discountTotalPrice: Number(result?.discounttotalPrice || 0),
+        isDiscountZero: isDiscountZero,
         rentAmount: vehicles[0]?.perDayCost,
         isPackageApplied: vehiclePlanData != null,
+        extendAmount: [],
       },
       vehicleBasic: {
         refundableDeposit: vehicles[0]?.refundableDeposit,
@@ -216,10 +218,16 @@ const handleFetchBookingData = (
         freeLimit: vehicles[0]?.freeKms,
         lateFee: vehicles[0]?.lateFee,
         extraKmCharge: vehicles[0]?.extraKmsCharges,
+        startRide: Number(startRideOtp),
+        endRide: 0,
       },
       discountCuopon: {
         couponName: tempCouponName,
         couponId: tempCouponId,
+      },
+      extendBooking: {
+        oldBooking: [],
+        transactionIds: [],
       },
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,
@@ -228,8 +236,8 @@ const handleFetchBookingData = (
       bookingStatus: "pending",
       paymentStatus: "pending",
       rideStatus: "pending",
-      paymentMethod: "cash",
-      payInitFrom: "cash",
+      paymentMethod: "NA",
+      payInitFrom: "NA",
       paySuccessId: "NA",
     };
     dispatch(addTempBookingData(data));
@@ -252,6 +260,20 @@ const handleCreateBooking = async (
     if (!data) return handleAsyncError(dispatch, "Unable to Book Ride");
     const response = await handlebooking(data);
     if (response?.status == 200) {
+      // updating the timeline for booking
+      const timeLineData = {
+        userId: response?.data?.userId,
+        bookingId: response?.data?.bookingId,
+        currentBooking_id: response?.data?._id,
+        isStart: true,
+        timeLine: [
+          {
+            title: "Booking Created",
+            date: new Date().toLocaleString(),
+          },
+        ],
+      };
+      handlePostData("/createTimeline", timeLineData);
       return response;
     } else {
       handleAsyncError(dispatch, response?.message);
@@ -310,21 +332,64 @@ const handleCreateBookingSubmit = async (
     } else {
       data = tempBookingData;
     }
-
+    // this is case if discount is zero
+    if (data?.bookingPrice?.isDiscountZero === true) {
+      // update the paymentMethod before sending the data for booking
+      data = {
+        ...data,
+        paymentMethod: "online",
+        bookingStatus: "done",
+        paymentStatus: "paid",
+      };
+      // continue booking
+      const response = await handleCreateBooking(
+        data,
+        handlebooking,
+        removeTempDate,
+        handleAsyncError,
+        dispatch
+      );
+      if (response?.status === 200) {
+        const timeLineData = {
+          currentBooking_id: response?.data?._id,
+          timeLine: [
+            {
+              title: "Booking Done",
+              date: new Date().toLocaleString(),
+            },
+          ],
+        };
+        handlePostData("/createTimeline", timeLineData);
+        handleAsyncError(dispatch, "Ride booked successfully.", "success");
+        return navigate(`/my-rides/summary/${response?.data?._id}`);
+      } else {
+        return handleAsyncError(dispatch, response?.message);
+      }
+    }
+    // continue
     if (!result?.paymentMethod) {
       setBookingLoading(false);
       return handleAsyncError(dispatch, "select payment method first!");
-    } else if (result?.paymentMethod == "partiallyPay") {
+    } else if (result?.paymentMethod === "partiallyPay") {
       // if user select to pay some amount then this will run
+      const userPaid = parseInt(
+        data?.bookingPrice?.discountTotalPrice
+          ? (data?.bookingPrice?.discountTotalPrice * 20) / 100
+          : (data?.bookingPrice?.totalPrice * 20) / 100
+      );
+      // amount to be paid at pickup
+      const AmountLeftAfterUserPaid =
+        data?.bookingPrice?.discountTotalPrice &&
+        data?.bookingPrice?.discountTotalPrice > 0
+          ? Number(data?.bookingPrice?.discountTotalPrice) - Number(userPaid)
+          : Number(data?.bookingPrice?.totalPrice) - Number(userPaid);
+
       data = {
         ...data,
         bookingPrice: {
           ...data.bookingPrice,
-          userPaid: parseInt(
-            data?.bookingPrice?.discountTotalPrice
-              ? (data?.bookingPrice?.discountTotalPrice * 20) / 100
-              : (data?.bookingPrice?.totalPrice * 20) / 100
-          ),
+          userPaid: userPaid,
+          AmountLeftAfterUserPaid: AmountLeftAfterUserPaid,
         },
       };
     }
@@ -385,22 +450,34 @@ const handleCreateBookingSubmit = async (
           ) {
             delete oldData?.bookingPrice?.userPaid;
           } else if (result?.paymentMethod == "partiallyPay") {
-            // console.log(oldData);
+            const userPaid = parseInt(
+              oldData?.bookingPrice?.discountTotalPrice
+                ? (oldData?.bookingPrice?.discountTotalPrice * 20) / 100
+                : (oldData?.bookingPrice?.totalPrice * 20) / 100
+            );
+            // amount to be paid at pickup
+            const AmountLeftAfterUserPaid =
+              oldData?.bookingPrice?.discountTotalPrice &&
+              oldData?.bookingPrice?.discountTotalPrice > 0
+                ? Number(oldData?.bookingPrice?.discountTotalPrice) -
+                  Number(userPaid)
+                : Number(oldData?.bookingPrice?.totalPrice) - Number(userPaid);
             oldData = {
               ...oldData,
               bookingPrice: {
                 ...oldData.bookingPrice,
-                userPaid: parseInt(
-                  oldData?.bookingPrice?.discountTotalPrice
-                    ? (oldData?.bookingPrice?.discountTotalPrice * 20) / 100
-                    : (oldData?.bookingPrice?.totalPrice * 20) / 100
-                ),
+                userPaid: userPaid,
+                AmountLeftAfterUserPaid: {
+                  amount: AmountLeftAfterUserPaid,
+                  status: "unpaid",
+                  paymentMethod: "",
+                },
               },
             };
           }
 
           orderId = await createOrderId(oldData);
-          if (orderId) {
+          if (orderId?.status === "created") {
             updatedData = oldData;
             updatedData = {
               ...updatedData,
@@ -420,6 +497,20 @@ const handleCreateBookingSubmit = async (
               handleAsyncError,
               dispatch
             );
+
+            // updating the timeline for payment
+            const timeLineData = {
+              currentBooking_id: updatedData?._id,
+              timeLine: [
+                {
+                  title: "Payment Initiated",
+                  date: new Date().toLocaleString(),
+                },
+              ],
+            };
+            handlePostData("/createTimeline", timeLineData);
+          } else {
+            handleAsyncError(dispatch, "unable to create orderId");
           }
         } else {
           updatedData = JSON.parse(localStorage.getItem("tempBooking"));

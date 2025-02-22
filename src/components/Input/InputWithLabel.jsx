@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isUser18 } from "../../utils";
 
 const InputWithLabel = ({
@@ -14,14 +14,20 @@ const InputWithLabel = ({
   const [inputValue, setInputValue] = useState(value && value);
   const [isValidDOB, setIsValidDOB] = useState(false);
 
-  const handleChangeValue = (e) => {
-    setInputValue(e.target.value);
+  const handleChangeValue = (value) => {
+    setInputValue(value);
     if (name === "dateofbirth") {
-      const isValid = isUser18(e.target.value);
+      const isValid = isUser18(value);
       setIsValidDOB(isValid);
       setDOBChanger && setDOBChanger(isValid);
     }
   };
+
+  useEffect(() => {
+    if (value) {
+      handleChangeValue(value);
+    }
+  }, []);
 
   return (
     <>
@@ -40,7 +46,7 @@ const InputWithLabel = ({
           placeholder={placeholderDesc}
           className="w-full px-3 py-3.5 appearance-none bg-transparent outline-none border focus:border-theme shadow-sm rounded-lg focus:ring-theme focus:ring-1"
           value={inputValue}
-          onChange={(e) => handleChangeValue(e)}
+          onChange={(e) => handleChangeValue(e.target.value)}
           required={required}
         />
       </div>

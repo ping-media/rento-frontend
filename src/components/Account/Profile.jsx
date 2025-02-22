@@ -12,7 +12,10 @@ import InputWithVerifyButton from "../Input/InputWithVerifyButton.jsx";
 import {
   handleLoadingUserData,
   handleSignIn,
+  handleUpdateSelectedCurrentUser,
 } from "../../Redux/UserSlice/UserSlice.js";
+import TextAreaBox from "../Input/TextAreaBox.jsx";
+import SelfieModal from "../Modals/SelfieModal.jsx";
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));
@@ -23,6 +26,7 @@ const Profile = () => {
   const { isEmailVerifyModalActive } = useSelector((state) => state.modals);
   const [isValidDOB, setIsValidDOB] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [inputError, setInputError] = useState("");
 
   // fetching updated user details
   useEffect(() => {
@@ -41,33 +45,39 @@ const Profile = () => {
         }
       })();
     }
-  }, [isEmailVerifyModalActive, formLoading]);
+  }, [isEmailVerifyModalActive]);
 
   // updating user profile
   const handleProfileUpdate = async (e) => {
-    setFormLoading(true);
     e.preventDefault();
+    const currentEmail = currentUser?.email;
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
+    let formEmail = result["email"];
     result = Object.assign(result, {
       _id: currentUser?._id,
-      isEmailVerified: currentUser?.isEmailVerified,
+      isEmailVerified:
+        currentEmail === formEmail ? currentUser?.isEmailVerified : "no",
       isContactVerified: currentUser?.isContactVerified,
       kycApproved: currentUser?.kycApproved,
       userType: "customer",
     });
-    // console.log(result);
+    if (!result)
+      return handleAsyncError(dispatch, "unable to update! try again.");
+    setFormLoading(true);
     try {
       const response = await handleupdateUser(result);
       if (response?.status == 200) {
+        dispatch(handleUpdateSelectedCurrentUser(result));
         handleAsyncError(dispatch, response?.message, "success");
       } else {
         handleAsyncError(dispatch, response?.message);
       }
-      return setFormLoading(false);
     } catch (error) {
       setFormLoading(false);
       return error?.message;
+    } finally {
+      setFormLoading(false);
     }
   };
 
@@ -76,6 +86,7 @@ const Profile = () => {
       {/* modals  */}
       <LicenseModal />
       <IdentityModal />
+      <SelfieModal />
       <EmailVerifyModal />
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
         <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center justify-between">
@@ -89,7 +100,7 @@ const Profile = () => {
                 currentUser?.kycApproved == "yes"
                   ? "bg-green-500"
                   : "bg-red-500"
-              } text-white px-1 lg:px-4 py-1 rounded-sm`}
+              } text-white px-1 lg:px-4 py-1 rounded-md`}
             >
               {currentUser?.kycApproved == "yes" ? "Verified" : "Not Verified"}
             </span>
@@ -170,13 +181,28 @@ const Profile = () => {
                 labelDesc={"Alternative Contact Number"}
                 placeholderDesc={"Enter Alternative Phone Number"}
                 value={currentUser?.altContact || ""}
+                checkValue={currentUser?.contact || ""}
+                inputError={inputError}
+                setInputError={setInputError}
+                required={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 mb-5">
+            <div className="w-full lg:flex-1">
+              <TextAreaBox
+                name={"addressProof"}
+                placeholderDesc={"Enter Address"}
+                labelDesc={"Enter Address"}
+                labelId={"address"}
+                value={currentUser?.addressProof || ""}
               />
             </div>
           </div>
           <button
             type="submit"
             className="bg-theme px-4 py-2 text-gray-100 rounded-lg hover:bg-theme-dark transition duration-200 ease-in-out disabled:bg-gray-400 w-full lg:w-auto"
-            disabled={formLoading || !isValidDOB}
+            disabled={formLoading || !isValidDOB || inputError !== ""}
           >
             {formLoading ? <Spinner message={"loading.."} /> : "Update Profile"}
           </button>

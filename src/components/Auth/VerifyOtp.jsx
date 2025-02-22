@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import Spinner from "../Spinner/Spinner";
-// import { toggleLoginModal } from "../../Redux/ModalSlice/ModalSlice";
 import { handleUser } from "../../Data";
-import {
-  // handleLoadingUserData,
-  handleSignIn,
-} from "../../Redux/UserSlice/UserSlice";
+import { handleSignIn } from "../../Redux/UserSlice/UserSlice";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 
 const VerifyOtp = ({
@@ -20,6 +16,7 @@ const VerifyOtp = ({
   setSecondChanger,
   isTimerActive,
   setTimerActive,
+  setRestValue,
 }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
   const [onOtpSubmit, setOnOtpSubmit] = useState(0);
@@ -36,31 +33,43 @@ const VerifyOtp = ({
     setOtpInput(newOtp);
     //submit trigger
     const combinedOtp = newOtp.join("");
-    // console.log(combinedOtp);
     // after all field are filled auto submit
     if (combinedOtp.length == 6) {
       setOnOtpSubmit(combinedOtp);
       handleLogin(null, combinedOtp);
     }
-
     // move to next input if current field is filled
     if (value && index < 6 - 1 && inputRef.current[index + 1]) {
       inputRef.current[index + 1].focus();
     }
   };
 
+  // const handlePaste = (e) => {
+  //   const paste = e.clipboardData.getData("text").trim();
+  //   if (paste.length === 6 && /^[0-9]+$/.test(paste)) {
+  //     const newOtp = paste.split("");
+  //     setOtpInput(newOtp);
+  //     const combinedOtp = newOtp.join("");
+  //     if (combinedOtp.length === 6) {
+  //       // Submit OTP when all fields are filled
+  //       setOnOtpSubmit(combinedOtp);
+  //       // handleLogin(null, combinedOtp);
+  //     }
+  //   }
+  // };
+
   // Handle pasting OTP into the inputs
   const handlePaste = (e) => {
+    e.preventDefault();
     const paste = e.clipboardData.getData("text").trim();
-    if (paste.length === 6 && /^[0-9]+$/.test(paste)) {
+
+    if (paste.length === 6 && /^[0-9]{6}$/.test(paste)) {
       const newOtp = paste.split("");
       setOtpInput(newOtp);
+
       const combinedOtp = newOtp.join("");
-      if (combinedOtp.length === 6) {
-        // Submit OTP when all fields are filled
-        setOnOtpSubmit(combinedOtp);
-        handleLogin(null, combinedOtp);
-      }
+      setOnOtpSubmit(combinedOtp);
+      handleLogin(null, combinedOtp);
     }
   };
 
@@ -80,29 +89,11 @@ const VerifyOtp = ({
     }
   };
 
-  // autofill otp only for dev mode
-  const handleOtpDev = () => {
-    if (otp) {
-      const pastedData = otp.toString().slice(0, 6);
-      const newOtp = [...otpInput];
-      for (let i = 0; i < 6 && i < 6; i++) {
-        newOtp[i] = pastedData[i];
-        if (inputRef.current[i]) {
-          inputRef.current[i].focus();
-        }
-      }
-      setOtpInput(newOtp);
-      setOnOtpSubmit(otp);
-    }
-  };
-
   useEffect(() => {
     //move focus to the first input
     if (inputRef.current[0]) {
       inputRef.current[0].focus();
     }
-    // autofill otp only for dev mode
-    // handleOtpDev();
   }, []);
 
   useEffect(() => {
@@ -118,6 +109,7 @@ const VerifyOtp = ({
     return () => clearInterval(interval);
   }, [isTimerActive, seconds]);
 
+  // handle login
   const handleLogin = async (e, otp) => {
     setLoading(true);
     if (e) e.preventDefault();
@@ -149,14 +141,24 @@ const VerifyOtp = ({
 
   // resending otp
   const handleSendOtpAgain = async () => {
-    if (phone == 0) return;
-    const response = await handleUser("/optGernet", { contact: phone });
+    let response;
+    if (phone != 0) {
+      response = await handleUser("/otpGenerat", { contact: phone });
+    } else if (email != "") {
+      response = await handleUser("/emailOtp", { email: email });
+    }
     if (response?.status == 200) {
-      setSecondChanger(0);
+      setSecondChanger(30);
       setTimerActive(true);
     } else {
       handleAsyncError(dispatch, "unable to send otp! try again");
     }
+  };
+
+  // resting the input so that can revert back to input
+  const handleRestOtpScreen = async () => {
+    setOtpValue(false);
+    setRestValue && setRestValue("");
   };
 
   return (
@@ -166,13 +168,13 @@ const VerifyOtp = ({
           Code sent to {email != "" ? email : `+91-(${phone})`}
         </p>
         <div
-          className="flex items-center justify-around gap-2 lg:gap-4 mx-auto mt-2 mb-4"
+          className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
           onPaste={handlePaste}
         >
           {otpInput.map((value, index) => (
             <input
               key={index}
-              type="text"
+              type="number"
               value={value}
               ref={(input) => (inputRef.current[index] = input)}
               onChange={(e) => handleChange(index, e)}
@@ -183,23 +185,39 @@ const VerifyOtp = ({
             />
           ))}
         </div>
-        <div className="flex items-center flex-col justify-between mb-5">
+
+        <div className="flex items-center flex-col justify-between mb-1">
           <p className="lg:text-gray-600 text-sm text-gray-400">
             Didn't receive code?
           </p>
           <div className="flex items-center space-x-2">
             <button
-              className="px-3 py-2 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
+              className="px-3 py-2 text-sm font-medium text-center rounded hover:text-gray-500 text-theme disabled:text-gray-400"
               disabled={isTimerActive}
               type="button"
               onClick={handleSendOtpAgain}
             >
-              {seconds == 0
+              {seconds === 0
                 ? "Request Again"
-                : `Request Again (00:00:${seconds})`}
+                : `Request Again (00:00:${
+                    seconds < 10 ? `0${seconds}` : seconds
+                  })`}
             </button>
           </div>
         </div>
+        {/* back to number page  */}
+        {setRestValue && (
+          <div className="flex items-center flex-col justify-between mb-5">
+            <button
+              className="px-3 py-1 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
+              type="button"
+              onClick={handleRestOtpScreen}
+            >
+              Change Number
+            </button>
+          </div>
+        )}
+
         <button
           className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
           type="submit"

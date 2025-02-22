@@ -1,17 +1,37 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const fetchingData = async (endpoint) => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
-    );
-    // console.log(response?.data);
-    return response?.data;
-  } catch (error) {
-    return {
-      message: `no data found.`,
-      type: "error",
-    };
+// const fetchingData = async (endpoint) => {
+//   try {
+//     const response = await axios.get(
+//       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
+//     );
+//     return response?.data;
+//   } catch (error) {
+//     return {
+//       message: `no data found.`,
+//       type: "error",
+//     };
+//   }
+// };
+
+const fetchingData = async (endpoint, retries = 5, delay = 500) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
+      );
+      return response?.data;
+    } catch (error) {
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } else {
+        console.error("All retry attempts failed.");
+        const navigate = useNavigate(); // React Router navigation
+        navigate("*");
+        throw error;
+      }
+    }
   }
 };
 
@@ -139,18 +159,33 @@ const handleuploadDocument = async (data) => {
 
 const sendConfirmBookingToNumber = (data) => {
   return axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/sendConfirmBookingToNumber`,
+    `${import.meta.env.VITE_BACKEND_URL}/sendBookingDetailesTosocial`,
     data
   );
 };
 
-const getCouponData = async (couponCode, totalprice) => {
+const sendEmailForBookingDetails = (data) => {
+  return axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/sendEmailForBookingDetails`,
+    data
+  );
+};
+
+const updateCouponCount = (id) => {
+  return axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/updateCouponCount?_id=${id}`,
+    { _id: id }
+  );
+};
+
+const getCouponData = async (couponCode, totalprice, isExtra) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/applyCoupon`,
       {
         couponName: couponCode,
         totalAmount: totalprice,
+        isExtra: isExtra,
       }
     );
     return response?.data;
@@ -172,4 +207,6 @@ export {
   handlePostData,
   sendConfirmBookingToNumber,
   getCouponData,
+  updateCouponCount,
+  sendEmailForBookingDetails,
 };

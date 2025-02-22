@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { formatPrice } from "../../utils";
+import {
+  formatDateTimeComingFromDatabase,
+  formatDateTimeForUser,
+  formatPrice,
+} from "../../utils";
 
-const RideCard = ({ item, formatedDateAndTime = null, id }) => {
+const RideCard = ({ item, id }) => {
   const [isPageActive, setIsPageActive] = useState(false);
+  const [bookingStart, setBookingStart] = useState("");
+  const [bookingEnd, setBookingEnd] = useState("");
+  const [createdOn, setCreatedOn] = useState("");
 
   // this is to change the functionality based on url
   useEffect(() => {
@@ -14,8 +21,14 @@ const RideCard = ({ item, formatedDateAndTime = null, id }) => {
     }
   }, [location.href]);
 
+  useEffect(() => {
+    setBookingStart(formatDateTimeForUser(item?.BookingStartDateAndTime));
+    setBookingEnd(formatDateTimeForUser(item?.BookingEndDateAndTime));
+    setCreatedOn(formatDateTimeComingFromDatabase(item?.createdAt));
+  }, [item]);
+
   return (
-    <Link to={isPageActive ? `/my-rides/summary/${item?.bookingId}` : "#"}>
+    <Link to={isPageActive ? `/my-rides/summary/${item?._id}` : "#"}>
       <div
         className={`px-4 py-2 rounded-lg border-2 cursor-pointer ${
           isPageActive ? "shadow-md hover:shadow-lg" : ""
@@ -26,22 +39,65 @@ const RideCard = ({ item, formatedDateAndTime = null, id }) => {
             <img
               src={item?.vehicleImage}
               className="w-full h-full object-contain"
+              loading="lazy"
               alt={item?.vehicleName}
             />
           </div>
           <div>
-            <h2 className="font-bold uppercase mb-2 text-md lg:text-lg">
-              {item?.vehicleBrand} {item?.vehicleName}
-            </h2>
+            <div className="lg:flex items-center mb-2">
+              <div>
+                <h2 className="font-bold uppercase text-md lg:text-lg">
+                  {item?.vehicleBrand} {item?.vehicleName}
+                </h2>
+                {(item?.rideStatus === "ongoing" ||
+                  item?.rideStatus === "completed") &&
+                  location.pathname.includes("my-rides/summary/") && (
+                    <small className="text-gray-400 italic">
+                      Vehicle Number:({item?.vehicleBasic?.vehicleNumber})
+                    </small>
+                  )}
+              </div>
+              {isPageActive && (
+                <>
+                  <span className="lg:mx-1 hidden lg:inline">|</span>
+                  <span
+                    className={`${
+                      (item?.paymentStatus === "partially_paid" &&
+                        "bg-orange-400") ||
+                      (item?.paymentStatus === "partiallyPay" &&
+                        "bg-orange-400") ||
+                      (item?.paymentStatus === "pending" && "bg-orange-400") ||
+                      (item?.paymentStatus === "failed" && "bg-theme") ||
+                      (item?.paymentStatus === "refunded" && "bg-theme") ||
+                      (item?.paymentStatus === "paid" &&
+                        "bg-green-500 bg-opacity-80")
+                    } text-gray-100 px-2 rounded-full cursor-pointer capitalize ml-2`}
+                  >
+                    {item?.paymentStatus.replace("_", " ")}
+                  </span>
+                </>
+              )}
+            </div>
             <p className="mb-2 text-xs lg:text-sm text-gray-400">
               <span>Booking ID: #{item?.bookingId}</span>
               <span className="mx-1 hidden lg:inline">|</span>
               <span className="block lg:inline">
-                Booking Date <span className="hidden lg:inline">And Time</span>:{" "}
-                {formatedDateAndTime == null
-                  ? item?.bookingDate
-                  : `${formatedDateAndTime?.date} :
-              ${formatedDateAndTime?.time}`}
+                Booked On: {""}
+                {createdOn}
+              </span>
+            </p>
+            <p className="mb-2 text-xs lg:text-sm text-gray-400">
+              <span className="block mb-2">
+                Booking Start Date{" "}
+                <span className="hidden lg:inline">And Time</span>:{" "}
+                {`${bookingStart?.date} :
+              ${bookingStart?.time}`}
+              </span>
+              <span className="block">
+                Booking End Date{" "}
+                <span className="hidden lg:inline">And Time</span>:{" "}
+                {`${bookingEnd?.date} :
+              ${bookingEnd?.time}`}
               </span>
             </p>
             <p className="text-xs lg:text-sm text-gray-400 mb-2 capitalize">

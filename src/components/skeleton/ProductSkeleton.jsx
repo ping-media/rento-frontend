@@ -2,7 +2,6 @@ const ProductSkeleton = () => {
   return (
     <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative animate-pulse">
       <div className="top-4 right-0 absolute">
-        <div className="h-4 w-12 bg-gray-400 rounded mb-1"></div>
         <div className="h-4 w-12 bg-gray-400 rounded"></div>
       </div>
       <div className="px-3 py-2">

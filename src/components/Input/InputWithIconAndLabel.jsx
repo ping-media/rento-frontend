@@ -7,13 +7,29 @@ const InputWithIconAndLabel = ({
   labelDesc,
   value,
   required = false,
+  inputError,
+  setInputError,
+  checkValue,
 }) => {
   const [inputValue, setInputValue] = useState(value && value);
+  // for vailding the input value
+  const handleError = () => {
+    if (setInputError && checkValue) {
+      checkValue && checkValue === inputValue
+        ? setInputError("alt contact & contact cannot be same")
+        : setInputError("");
+    }
+    return;
+  };
   return (
     <>
       <div className="text-gray-500">
         <label htmlFor={labelId} className="font-semibold mb-2">
           {labelDesc}
+          {required && <span className="mx-1 text-red-500">*</span>}
+          {inputError && inputError != "" && (
+            <span className="text-theme">{inputError}</span>
+          )}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-3 my-auto h-6 flex items-center border-r pr-2">
@@ -29,6 +45,7 @@ const InputWithIconAndLabel = ({
             onChange={(e) => setInputValue(e.target.value)}
             required={required}
             disabled={name == "contact"}
+            onBlur={handleError}
           />
         </div>
       </div>

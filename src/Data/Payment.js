@@ -1,6 +1,11 @@
 import axios from "axios";
 import favicon from "../assets/favicon.ico";
-import { sendConfirmBookingToNumber } from ".";
+import {
+  handlePostData,
+  sendEmailForBookingDetails,
+  updateCouponCount,
+} from ".";
+// import { toggleBookingDoneModal } from "../Redux/ModalSlice/ModalSlice";
 
 export const razorPayment = async (
   currentUser,
@@ -22,6 +27,7 @@ export const razorPayment = async (
   const handleBookVehicle = async (response) => {
     try {
       setBookingLoading && setBookingLoading(true);
+      // dispatch(toggleBookingDoneModal());
       // for booking vehicle
       const updatedData = {
         ...data,
@@ -44,10 +50,33 @@ export const razorPayment = async (
       localStorage.removeItem("tempBooking");
 
       if (bookingResponse?.status == 200) {
+        // dispatch(toggleBookingDoneModal());
+        const timeLineData = {
+          currentBooking_id: bookingResponse?.data?._id,
+          timeLine: [
+            {
+              title: "Payment Done",
+              date: new Date().toLocaleString(),
+              paymentAmount:
+                bookingResponse?.data?.bookingPrice?.discountTotalPrice &&
+                bookingResponse?.data?.bookingPrice?.discountTotalPrice > 0
+                  ? bookingResponse?.data?.bookingPrice?.discountTotalPrice
+                  : bookingResponse?.data?.bookingPrice?.userPaid &&
+                    bookingResponse?.data?.bookingPrice?.userPaid > 0
+                  ? bookingResponse?.data?.bookingPrice?.userPaid
+                  : bookingResponse?.data?.bookingPrice?.totalPrice,
+            },
+          ],
+        };
+        await handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
-        navigate(`/my-rides/summary/${updatedData?.bookingId}`);
+        navigate(`/my-rides/summary/${updatedData?._id}`);
         dispatch(handleRestCoupon());
-        sendConfirmBookingToNumber(updatedData);
+        // sending booking confirm to whatsapp & email
+        sendEmailForBookingDetails(updatedData);
+        // checking whether user used the coupon or not if not than return
+        if (!updatedData?.discountCuopon?.couponId) return;
+        updateCouponCount(updatedData?.discountCuopon?.couponId);
       } else {
         handleAsyncError(dispatch, bookingResponse?.message);
       }
@@ -126,7 +155,6 @@ export const createOrderId = async (data) => {
       `${import.meta.env.VITE_BACKEND_URL}/createOrderId`,
       options
     );
-
     return response?.data;
   } catch (error) {
     console.error(

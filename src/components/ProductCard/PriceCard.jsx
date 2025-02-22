@@ -7,31 +7,55 @@ import {
 } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
+import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice";
 
 const PriceCard = ({
   perDayCost,
+  vehiclePlan,
   vehiclePlanData,
-  BookingStartDateAndTime,
-  BookingEndDateAndTime,
+  queryParmsData,
 }) => {
   const bookingStartDateTime =
-    BookingStartDateAndTime && formatDateTimeForUser(BookingStartDateAndTime);
+    queryParmsData?.BookingStartDateAndTime &&
+    formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
   const bookingEndDateTime =
-    BookingEndDateAndTime && formatDateTimeForUser(BookingEndDateAndTime);
+    queryParmsData?.BookingEndDateAndTime &&
+    formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState(false);
   const [vehicleRentCost, setVehicleRentCost] = useState(0);
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
-  const { tempCouponDiscount, tempCouponTotalAmount } = useSelector(
-    (state) => state.coupon
-  );
+  const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
+  const [discountPrice, setDiscountPrice] = useState(0);
+  const [discounttotalPrice, setDiscounttotalPrice] = useState(0);
+  const {
+    tempCouponDiscount,
+    tempCouponDiscountTotal,
+    tempCouponName,
+    isDiscountZero,
+    loading,
+  } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
+
+  // for getting plan price
+  useEffect(() => {
+    if (vehiclePlan != null && vehiclePlan?.length > 0) {
+      const plan = vehiclePlan?.find(
+        (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
+      );
+      setAppliedVehiclePlan(plan);
+    } else {
+      setAppliedVehiclePlan(null);
+    }
+  }, []);
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
-    if (vehiclePlanData != null) {
+    if (appliedVehiclePlan != null && appliedVehiclePlan?.planPrice) {
+      setVehicleRentCost(Number(appliedVehiclePlan?.planPrice));
+    } else if (vehiclePlanData != null) {
       if (perDayCost) {
         setVehicleRentCost(Number(vehiclePlanData?.planPrice));
       }
@@ -41,14 +65,27 @@ const PriceCard = ({
         setGSTCost(
           Number(
             calculateTax(
-              Number(vehiclePlanData?.planPrice) + extraAddOnCost,
+              Number(
+                appliedVehiclePlan != null && appliedVehiclePlan?.planPrice > 0
+                  ? appliedVehiclePlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ) + parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
               18
             )
           )
         );
       } else {
         setGSTCost(
-          Number(calculateTax(Number(vehiclePlanData?.planPrice), 18))
+          Number(
+            calculateTax(
+              Number(
+                appliedVehiclePlan != null && appliedVehiclePlan?.planPrice > 0
+                  ? appliedVehiclePlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ),
+              18
+            )
+          )
         );
       }
     } else {
@@ -83,7 +120,7 @@ const PriceCard = ({
                     bookingEndDateTime?.date
                   )
                 ) +
-                Number(extraAddOnCost),
+                parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
               18
             )
           )
@@ -105,8 +142,9 @@ const PriceCard = ({
         );
       }
     }
-  }, [isExtraChecked]);
+  }, [isExtraChecked, appliedVehiclePlan]);
 
+  // price list
   const priceDetails = [
     {
       title: "Vehicle Rental Cost",
@@ -116,7 +154,8 @@ const PriceCard = ({
     {
       title: "Extra Helmet Price",
       name: "extraAddonPrice",
-      price: parseInt(extraAddOnCost),
+      // do this because we don't need to take helmet price more than 200
+      price: parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
     },
     {
       title: "GST(18% Applied)",
@@ -125,6 +164,7 @@ const PriceCard = ({
     },
   ];
 
+  // for calculating price based on helmet add or not
   useEffect(() => {
     (() => {
       if (vehicleRentCost != 0 && extraAddOnCost != 0 && gSTCost != 0) {
@@ -140,9 +180,22 @@ const PriceCard = ({
     })();
   }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
 
+  const handleChangeExtraAddonPrice = () => {
+    setIsExtraChecked(!isExtraChecked);
+    dispatch(handleChangeExtraChecked(!isExtraChecked));
+  };
+
+  // changing price based discount and addon
+  useEffect(() => {
+    if (!loading) {
+      setDiscountPrice(Math.ceil(tempCouponDiscountTotal).toFixed(2));
+      setDiscounttotalPrice(Math.ceil(tempCouponDiscount).toFixed(2));
+    }
+  }, [loading]);
+
   return (
     <>
-      <div className="mt-6 mb-14 lg:mb-1">
+      <div className="px-4 mt-6 mb-4 lg:mb-2">
         <ul className="leading-7 pb-3 border-b-2 border-gray-300">
           {priceDetails.map((item, index) => (
             <li
@@ -168,16 +221,18 @@ const PriceCard = ({
                   item?.name == "extraAddonPrice") && (
                   <p className="text-xs text-gray-400">
                     (
-                    {` ₹${
-                      item?.name == "extraAddonPrice" ? 50 : perDayCost
-                    } x ${
-                      vehiclePlanData != null
-                        ? vehiclePlanData?.planDuration
-                        : getDurationInDays(
-                            BookingStartDateAndTime,
-                            BookingEndDateAndTime
-                          )
-                    } day`}
+                    {item?.name == "bookingPrice" && appliedVehiclePlan != null
+                      ? "Package Applied"
+                      : ` ₹${
+                          item?.name == "extraAddonPrice" ? 50 : perDayCost
+                        } x ${
+                          vehiclePlanData != null
+                            ? vehiclePlanData?.planDuration
+                            : getDurationInDays(
+                                queryParmsData?.BookingStartDateAndTime,
+                                queryParmsData?.BookingEndDateAndTime
+                              )
+                        } day`}
                     )
                   </p>
                 )}
@@ -187,39 +242,46 @@ const PriceCard = ({
           ))}
         </ul>
         {/* total price  & discount Price */}
-        <div className={`${isExtraChecked ? "pt-2 pb-10" : "pt-2 pb-6"}`}>
-          {tempCouponDiscount && (
+        <div className={`${isExtraChecked ? "pt-2 pb-6" : "pt-2 pb-6"}`}>
+          {tempCouponDiscount && tempCouponDiscount != null && (
             <div className="flex items-center justify-between mb-1">
               <input
                 type="hidden"
                 name="discountPrice"
                 value={tempCouponDiscount}
               />
-              <span className="text-gray-500">Discount Amount</span>
+              <div>
+                <span className="text-gray-500">Discount Amount</span>
+                <span className="block text-xs text-gray-400">
+                  coupon: ({tempCouponName})
+                </span>
+              </div>
               <span className="font-semibold">
                 -₹{formatPrice(tempCouponDiscount)}
               </span>
             </div>
           )}
+
           <div className="flex items-center justify-between">
             <input type="hidden" name="totalPrice" value={totalPrice} />
             <input
               type="hidden"
               name="discounttotalPrice"
-              value={Number(tempCouponTotalAmount)}
+              value={tempCouponDiscountTotal}
             />
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
-              {tempCouponTotalAmount
-                ? formatPrice(Number(tempCouponTotalAmount))
+              {tempCouponDiscountTotal != null &&
+              (isDiscountZero === true || tempCouponDiscountTotal > 0)
+                ? formatPrice(tempCouponDiscountTotal)
                 : formatPrice(totalPrice)}
             </span>
           </div>
         </div>
       </div>
       {/* extra helmet  */}
-      <div className="bg-yellow-200 -mx-4 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg absolute bottom-2 w-full">
+      <div className="bg-yellow-200 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg bottom-2 w-full">
         <div className="mb-1">
           <label
             htmlFor="hr"
@@ -229,7 +291,7 @@ const PriceCard = ({
               id="hr"
               type="checkbox"
               className="peer hidden"
-              onChange={() => setIsExtraChecked(!isExtraChecked)}
+              onChange={handleChangeExtraAddonPrice}
             />
             <div
               htmlFor="hr"

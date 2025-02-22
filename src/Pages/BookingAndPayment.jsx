@@ -17,6 +17,7 @@ import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { handlebooking } from "../Data";
 import { createOrderId, razorPayment } from "../Data/Payment";
 import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
+import BookingSuccessModal from "../components/Modals/BookingSuccessModal";
 
 const BookingAndPayment = () => {
   const { tempBookingData, loading } = useSelector((state) => state.booking);
@@ -54,12 +55,15 @@ const BookingAndPayment = () => {
   useEffect(() => {
     const tempBooking = JSON.parse(localStorage.getItem("tempBooking"));
     if (!tempBooking) return;
-    navigate(`/my-rides/summary/${tempBooking?.bookingId}`);
+    navigate(`/my-rides/summary/${tempBooking?._id}`);
   }, []);
 
   return !loading ? (
     tempBookingData && (
       <div className="w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
+        {/* this modal is going to open after payment is done  */}
+        <BookingSuccessModal />
+        {/* continue to form..  */}
         <form onSubmit={handleSubmitBookingData}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
@@ -82,6 +86,13 @@ const BookingAndPayment = () => {
                   bookingPrice={
                     tempBookingData && tempBookingData?.bookingPrice
                   }
+                  bookingPackage={
+                    tempBookingData && tempBookingData?.discountCuopon
+                  }
+                  packageApplied={
+                    tempBookingData &&
+                    tempBookingData?.bookingPrice?.isPackageApplied
+                  }
                   BookingStartDateAndTime={
                     tempBookingData && tempBookingData?.BookingStartDateAndTime
                   }
@@ -90,12 +101,18 @@ const BookingAndPayment = () => {
                   }
                 />
               </div>
+
               <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-center justify-center w-full">
                 <div className="py-3 border-b-2 border-gray-300 w-full">
                   <h2 className="font-semibold">Payment Method</h2>
                 </div>
-                <BookingPaymentCard />
+                <BookingPaymentCard
+                  isDiscountZeroApplied={
+                    tempBookingData?.bookingPrice?.isDiscountZero
+                  }
+                />
               </div>
+
               <div className="mt-1 order-5 w-full">
                 <button
                   className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
@@ -103,7 +120,11 @@ const BookingAndPayment = () => {
                   type="submit"
                 >
                   {!bookingLoading ? (
-                    "Make Payment"
+                    tempBookingData?.bookingPrice?.isDiscountZero === true ? (
+                      "Confirm Booking"
+                    ) : (
+                      "Make Payment"
+                    )
                   ) : (
                     <Spinner message={"booking..."} />
                   )}

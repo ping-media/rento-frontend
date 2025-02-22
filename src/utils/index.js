@@ -337,6 +337,41 @@ const formatDateTimeForUser = (input) => {
   };
 };
 
+const formatDateTimeISTForUser = (input) => {
+  const date = new Date(input);
+
+  // Convert to IST
+  const IST_OFFSET = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+  const istDate = new Date(date.getTime() + IST_OFFSET);
+
+  const year = istDate.getUTCFullYear();
+  const month = istDate.getUTCMonth(); // 0-based index
+  const day = istDate.getUTCDate();
+
+  const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
+  const formattedDate = new Date(Date.UTC(year, month, day)).toLocaleDateString(
+    "en-GB",
+    dateOptions
+  );
+
+  const hours = istDate.getUTCHours();
+  const minutes = istDate.getUTCMinutes();
+  const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
+
+  // Format the time as per IST
+  const formattedTime = new Date(
+    Date.UTC(year, month, day, hours, minutes)
+  ).toLocaleTimeString("en-GB", {
+    ...timeOptions,
+    timeZone: "UTC", // Explicitly use IST offset calculated
+  });
+
+  return {
+    date: formattedDate,
+    time: formattedTime,
+  };
+};
+
 const nextDayFromCurrent = (date) => {
   const nextDay = date;
   nextDay.setDate(nextDay.getDate() + 1); // Increment the day by 1
@@ -371,6 +406,27 @@ const getRoundedDateTime = (value) => {
   );
   const isoString = utcDate.toISOString();
   return isoString.split(".")[0] + "Z";
+};
+
+const RoundedDateTimeAndToNextHour = (value) => {
+  // Get the current local date and time
+  const currentDate = new Date(value); // Ensure we don't mutate the original date
+
+  const localMinutes = currentDate.getMinutes();
+
+  if (localMinutes >= 1) {
+    // As soon as minutes turn 01 or more, set to the next full hour
+    currentDate.setHours(currentDate.getHours() + 1);
+  }
+
+  currentDate.setMinutes(0);
+  currentDate.setSeconds(0); // Reset seconds to 0
+
+  const utcDate = new Date(
+    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
+  );
+
+  return utcDate.toISOString().split(".")[0] + "Z";
 };
 
 const addDaysToDate = (dateString, daysToAdd) => {
@@ -440,6 +496,63 @@ const isUser18 = (dob) => {
   return age >= 18;
 };
 
+const formatDateTimeComingFromDatabase = (input) => {
+  const date = new Date(input);
+
+  // Format the date
+  const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
+  const formattedDate = date.toLocaleDateString("en-GB", dateOptions);
+
+  return formattedDate;
+};
+
+const convertTo24HourFormat = (time12h) => {
+  const [time, modifier] = time12h.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (modifier === "PM" && hours !== 12) {
+    hours += 12;
+  }
+  if (modifier === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}`;
+};
+
+const format24HourFormatTime = (hour) => {
+  // Validate input
+  if (hour < 0 || hour > 23 || isNaN(hour)) {
+    throw new Error("Invalid hour. Please provide a number between 0 and 23.");
+  }
+
+  // Convert to 12-hour format
+  const period = hour >= 12 ? "PM" : "AM";
+  const formattedHour = hour % 12 || 12; // 12-hour clock (convert 0 to 12)
+  return `${formattedHour.toString().padStart(2, "0")}:00 ${period}`;
+};
+
+const formatTimeForProductCard = (isoString) => {
+  let date = new Date(isoString);
+
+  date.setUTCHours(date.getUTCHours() + 1);
+
+  const day = date.getUTCDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getUTCFullYear();
+
+  let hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+  const amPm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12 || 12; // Convert 24-hour to 12-hour format
+
+  return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -466,4 +579,10 @@ export {
   updateStationId,
   updateQueryParams,
   isUser18,
+  formatDateTimeComingFromDatabase,
+  convertTo24HourFormat,
+  formatDateTimeISTForUser,
+  format24HourFormatTime,
+  formatTimeForProductCard,
+  RoundedDateTimeAndToNextHour,
 };

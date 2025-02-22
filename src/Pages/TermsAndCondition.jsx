@@ -1,12 +1,12 @@
 const TermsAndCondition = () => {
   return (
     <div className="flex items-center justify-between w-[95%] lg:w-[90%] mx-auto py-2.5">
-      <div class="max-w-4xl lg:max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 class="text-2xl font-semibold text-gray-900 mb-6">
+      <div className="max-w-4xl lg:max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">
           Rento Bikes Terms of Use: A General Guide for Use
         </h1>
 
-        <p class="text-gray-700 mb-6">
+        <p className="text-gray-700 mb-6">
           These Terms of Use govern your use of this website and other services
           provided by Rento Bikes (the “Services”). These Terms of Use, together
           with our Privacy Policy, Disclaimer, and any other terms specifically
@@ -19,10 +19,12 @@ const TermsAndCondition = () => {
           the Company.
         </p>
 
-        <hr class="border-gray-300 mb-6" />
+        <hr className="border-gray-300 mb-6" />
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Defined Terms</h2>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          Defined Terms
+        </h2>
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>
             <strong>Conditions</strong>: These General Conditions of Use for
             renting vehicles and related services.
@@ -40,12 +42,12 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           General Conditions
         </h2>
 
-        <h3 class="font-semibold text-gray-900 mb-2">User Information</h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-4">
+        <h3 className="font-semibold text-gray-900 mb-2">User Information</h3>
+        <ul className="list-disc pl-6 text-gray-700 mb-4">
           <li>
             Users must provide accurate personal information, including name,
             age, contact details, residential and office addresses, and email.
@@ -53,10 +55,10 @@ const TermsAndCondition = () => {
           <li>Users must be over 18 years old at the time of registration.</li>
         </ul>
 
-        <h3 class="font-semibold text-gray-900 mb-2">
+        <h3 className="font-semibold text-gray-900 mb-2">
           Valid License and Documents
         </h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-4">
+        <ul className="list-disc pl-6 text-gray-700 mb-4">
           <li>
             Users must possess a valid MVWG (Motor Vehicle with Gear) or MVWOG
             (Motor Vehicle without Gear) license, as applicable. International
@@ -69,8 +71,8 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <h3 class="font-semibold text-gray-900 mb-2">Rental Charges</h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Rental Charges</h3>
+        <ul className="list-disc pl-6 text-gray-700 mb-4">
           <li>
             The rental rate is as shown on the website, with a minimum booking
             tenure of 24 hours.
@@ -85,8 +87,8 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <h3 class="font-semibold text-gray-900 mb-2">Use of the Vehicle</h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <h3 className="font-semibold text-gray-900 mb-2">Use of the Vehicle</h3>
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>
             Users must inspect the vehicle for physical or mechanical defects
             before riding and report any issues to the Company.
@@ -102,14 +104,14 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <hr class="border-gray-300 mb-6" />
+        <hr className="border-gray-300 mb-6" />
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Fees and Penalties
         </h2>
 
-        <h3 class="font-semibold text-gray-900 mb-2">Late Fees</h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Late Fees</h3>
+        <ul className="list-disc pl-6 text-gray-700 mb-4">
           <li>
             Late returns incur a penalty of ₹50/hour for scooters and ₹100/hour
             for bikes, in addition to the standard hourly fee.
@@ -120,8 +122,8 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <h3 class="font-semibold text-gray-900 mb-2">Damage and Theft</h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Damage and Theft</h3>
+        <ul className="list-disc pl-6 text-gray-700 mb-4">
           <li>
             Users are liable for repair costs for any damages caused to the
             vehicle, including helmet damages.
@@ -136,27 +138,28 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <h3 class="font-semibold text-gray-900 mb-2">Cancellations</h3>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <h3 className="font-semibold text-gray-900 mb-2">Cancellations</h3>
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>
-            <span class="font-semibold">Before 72 hours</span>: 25% deduction.
+            <span className="font-semibold">Before 72 hours</span>: 25%
+            deduction.
           </li>
           <li>
-            <span class="font-semibold">24-72 hours</span>: 75% deduction.
+            <span className="font-semibold">24-72 hours</span>: 75% deduction.
           </li>
           <li>
-            <span class="font-semibold">0-24 hours or no-show</span>: 100%
+            <span className="font-semibold">0-24 hours or no-show</span>: 100%
             deduction.
           </li>
           <li>Refunds take 7-10 business days to process.</li>
         </ul>
 
-        <hr class="border-gray-300 mb-6" />
+        <hr className="border-gray-300 mb-6" />
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Maintenance and Return
         </h2>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>
             Users are responsible for keeping the vehicle clean and returning it
             in good working condition.
@@ -168,10 +171,10 @@ const TermsAndCondition = () => {
           <li>Vehicles must be returned on time to the designated location.</li>
         </ul>
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Prohibited Uses
         </h2>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>Engaging in illegal or reckless activities.</li>
           <li>Driving under the influence of alcohol or drugs.</li>
           <li>
@@ -180,10 +183,10 @@ const TermsAndCondition = () => {
           <li>Modifying or attaching external fixtures to the vehicle.</li>
         </ul>
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Trip Extensions
         </h2>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>
             Extensions must be requested at least three hours before the
             scheduled drop-off time.
@@ -191,10 +194,10 @@ const TermsAndCondition = () => {
           <li>Unauthorized extensions will result in penalties.</li>
         </ul>
 
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Termination of Agreement
         </h2>
-        <ul class="list-disc pl-6 text-gray-700 mb-6">
+        <ul className="list-disc pl-6 text-gray-700 mb-6">
           <li>
             Violation of any conditions may lead to immediate termination of the
             rental agreement, forfeiture of rental charges, and liability for
@@ -202,12 +205,12 @@ const TermsAndCondition = () => {
           </li>
         </ul>
 
-        <hr class="border-gray-300 mb-6" />
+        <hr className="border-gray-300 mb-6" />
 
-        <p class="text-gray-700 text-lg">
+        <p className="text-gray-700 text-lg">
           For more information or assistance, contact Rento Bikes at{" "}
-          <a href="tel:+919916864268" class="font-semibold text-gray-900">
-            +91 9916864268
+          <a href="tel:+918884488891" className="font-semibold text-gray-900">
+            +91 8884488891
           </a>
           .
         </p>

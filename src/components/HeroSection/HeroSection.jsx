@@ -4,6 +4,7 @@ const HeroSection = ({ imageUrl }) => {
       <img
         src={imageUrl}
         className="w-full h-full object-cover"
+        loading="lazy"
         alt="HERO-BANNER"
       />
     </div>

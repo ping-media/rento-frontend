@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-// import { useDispatch } from "react-redux";
 import {
   formatDateTimeForUser,
   formatPrice,
@@ -8,23 +7,19 @@ import {
 } from "../../utils";
 
 const BookingInfoCard = ({
-  // vehicleNumber,
   vehicleImage,
   vehicleName,
   vehicleType,
   vehicleBrand,
   stationName,
-  // perDayCost,
   bookingPrice,
   vehicleBasic,
-  // freeKms,
   BookingStartDateAndTime,
   BookingEndDateAndTime,
 }) => {
   const vehicleImageRef = useRef(null);
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
   const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
-  // const dispatch = useDispatch();
 
   //converting time into readable format
   useEffect(() => {
@@ -43,6 +38,7 @@ const BookingInfoCard = ({
             src={vehicleImage}
             className="w-full h-full object-cover rounded-lg"
             alt={vehicleName}
+            loading="lazy"
             onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
             ref={vehicleImageRef}
           />
@@ -62,9 +58,9 @@ const BookingInfoCard = ({
             <h2 className="font-bold uppercase text-xl">
               {vehicleBrand} {vehicleName}
             </h2>
-            <span className="text-xs text-gray-500">
+            {/* <span className="text-xs text-gray-500">
               (Vehicle Number: {vehicleBasic?.vehicleNumber})
-            </span>
+            </span> */}
           </div>
         ) : (
           <div className="h-4 w-32 bg-gray-400 rounded mb-3"></div>
@@ -193,7 +189,18 @@ const BookingInfoCard = ({
             </svg>
           </span>
           <div>
-            <p className={`text-lg`}>
+            {bookingPrice?.isPackageApplied === true && (
+              <p className={`text-lg`}>
+                ₹{formatPrice(Number(bookingPrice?.bookingPrice))}
+              </p>
+            )}
+            <p
+              className={`${
+                bookingPrice?.isPackageApplied === true
+                  ? "text-sm line-through"
+                  : "text-lg"
+              }`}
+            >
               ₹{formatPrice(Number(bookingPrice?.rentAmount))}/
               <span className="text-sm">day</span>
             </p>

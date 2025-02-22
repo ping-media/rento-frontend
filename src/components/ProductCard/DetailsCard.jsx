@@ -1,17 +1,24 @@
-const DetailsCard = ({ extraKmCharge }) => {
+const DetailsCard = ({
+  refundableDeposit,
+  extraKmCharge,
+  lateFee,
+  speedLimit,
+}) => {
   const details = [
     "No Questions Asked Refund",
     `Extra ₹${extraKmCharge}/km + GST after free limit`,
-    "Zero Deposit",
+    `₹${refundableDeposit} Deposit Amount`,
     "1 complimentary Helmet",
+    `₹${lateFee}/hr Late Amount`,
+    `${speedLimit}km/hr Speed Limit`,
   ];
   return (
-    <div className="border-t-2 border-gray-300 bg-white px-4 py-1.5">
-      <h3 className="font-semibold mb-2 uppercase">Rent Details</h3>
-      <ul className="flex flex-wrap w-full gap-2 items-center">
+    <div className="border-t-2 border-gray-300 bg-white mt-3 px-4 py-1.5">
+      <h3 className="font-semibold mb-2 lg:mb-5 uppercase">Rent Details</h3>
+      <ul className="flex flex-wrap leading-7 w-full gap-2 lg:gap-4 items-center">
         {details.map((item, index) => (
           <li className="flex items-center w-full lg:w-[49%] gap-2" key={index}>
-            <div className="w-7 h-7 p-1 bg-green-500 rounded-full">
+            <div className="w-5 h-5 lg:w-7 lg:h-7 p-1 bg-green-500 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"

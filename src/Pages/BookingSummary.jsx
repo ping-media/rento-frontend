@@ -28,7 +28,9 @@ const BookingSummary = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
-  const { tempCouponName, tempCouponId } = useSelector((state) => state.coupon);
+  const { tempCouponName, tempCouponId, isDiscountZero } = useSelector(
+    (state) => state.coupon
+  );
   const [bookingLoading, setBookingLoading] = useState(false);
   // for getting queryparms value
   const [queryParms] = useSearchParams();
@@ -57,7 +59,7 @@ const BookingSummary = () => {
     (async () => {
       dispatch(fetchingVehicles());
       const result = await fetchingData(
-        `/getVehicleTblData?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
+        `/getAllVehiclesAvailable?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
       // console.log(result);
       dispatch(addVehiclesData(result?.data));
@@ -76,7 +78,6 @@ const BookingSummary = () => {
       })();
     }
   }, []);
-  // console.log(vehicles);
 
   // for send to detail and payment page
   const handleCreateBookingSubmit = (e) => {
@@ -90,6 +91,7 @@ const BookingSummary = () => {
       addTempBookingData,
       setBookingLoading,
       vehiclePlanData,
+      isDiscountZero,
       dispatch,
       id,
       updateQueryParams,
@@ -101,35 +103,47 @@ const BookingSummary = () => {
 
   return !loading && !vehicleLoading ? (
     vehicles.length > 0 ? (
-      <div className="w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
+      <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
         <form onSubmit={handleCreateBookingSubmit}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7">
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 lg:h-[95%]">
                 <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
-                  <h2 className="font-semibold">Booking Summary</h2>
+                  <h2 className="font-semibold text-base mx-1">
+                    Booking Summary
+                  </h2>
                   <h2 className="font-semibold hidden lg:block">Price</h2>
                 </div>
                 <InfoCard
                   {...vehicles[0]}
                   vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
-                  {...queryParmsData}
+                  queryParmsData={queryParmsData}
                 />
-                <DetailsCard extraKmCharge={vehicles[0]?.extraKmsCharges} />
+                <DetailsCard
+                  refundableDeposit={vehicles[0]?.refundableDeposit}
+                  extraKmCharge={vehicles[0]?.extraKmsCharges}
+                  lateFee={vehicles[0]?.lateFee}
+                  speedLimit={vehicles[0]?.speedLimit}
+                />
               </div>
-              <PromoCard />
             </div>
 
             <div className="flex flex-wrap col-span-3">
-              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full relative">
-                <div className="py-3 border-b-2 border-gray-300">
+              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 relative order-1 w-full relative">
+                <div className="px-4 py-3 border-b-2 border-gray-300">
                   <h2 className="font-semibold">Total Price</h2>
                 </div>
                 <PriceCard
                   perDayCost={vehicles[0]?.perDayCost}
+                  vehiclePlan={
+                    vehicles[0]?.vehiclePlan ? vehicles[0]?.vehiclePlan : null
+                  }
                   vehiclePlanData={vehiclePlanData ? vehiclePlanData[0] : null}
-                  {...queryParmsData}
+                  queryParmsData={queryParmsData}
                 />
+              </div>
+              <div className="w-full order-2 mb-3">
+                <PromoCard />
               </div>
               <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-center justify-center lg:max-h-48">
                 <Checkbox

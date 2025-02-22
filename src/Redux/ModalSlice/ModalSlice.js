@@ -13,6 +13,8 @@ const ModalSlice = createSlice({
     isIdentityModalActive: false,
     isMainSideBarActive: false,
     isEmailVerifyModalActive: false,
+    isSelfieModalActive: false,
+    isBookingDone: false,
   },
   reducers: {
     toggleLoginModal: (state) => {
@@ -45,6 +47,12 @@ const ModalSlice = createSlice({
     toggleEmailVerifyModal: (state) => {
       state.isEmailVerifyModalActive = !state.isEmailVerifyModalActive;
     },
+    toggleBookingDoneModal: (state) => {
+      state.isBookingDone = !state.isBookingDone;
+    },
+    toggleSelfieModal: (state) => {
+      state.isSelfieModalActive = !state.isSelfieModalActive;
+    },
     handleRestAll: (state) => {
       state.isLoginModalActive = false;
       state.isRegisterModalActive = false;
@@ -55,6 +63,7 @@ const ModalSlice = createSlice({
       state.isIdentityModalActive = false;
       state.isMainSideBarActive = false;
       state.isEmailVerifyModalActive = false;
+      state.isBookingDone = false;
     },
   },
 });
@@ -70,6 +79,8 @@ export const {
   toggleIdentityModal,
   toggleSideBarModal,
   toggleEmailVerifyModal,
+  toggleBookingDoneModal,
+  toggleSelfieModal,
   handleRestAll,
 } = ModalSlice.actions;
 

@@ -19,13 +19,16 @@ import {
 import { handleSearchVehicleData } from "../Data/Functions";
 import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
+import Pagination from "../components/SearchRide/Pagination";
 
 const Search = () => {
   const navigate = useNavigate();
   const [queryParms] = useSearchParams();
-  // const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const dispatch = useDispatch();
-  const { loading, vehicles } = useSelector((state) => state.vehicles);
+  const { loading, vehicles, pagination } = useSelector(
+    (state) => state.vehicles
+  );
+  const [currentPage, setCurrentPage] = useState(pagination?.page);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
@@ -42,9 +45,10 @@ const Search = () => {
       newQueryParmsData,
       location,
       selectedLocation,
-      id
+      id,
+      pagination?.page
     );
-  }, [customLocation, selectedLocation]);
+  }, [customLocation, selectedLocation, pagination?.page]);
 
   // picking date from url and convert the data to show date in mobile view
   useEffect(() => {
@@ -114,7 +118,7 @@ const Search = () => {
         </button>
       </div>
 
-      <div className="mt-10 mb-4 w-[90%] mx-auto">
+      <div className="mt-5 lg:mt-10 mb-4 w-[95%] lg:w-[90%] mx-auto">
         <div className="grid grid-cols-4 w-full">
           {/* 25% column */}
           <div
@@ -122,7 +126,7 @@ const Search = () => {
               !isFilterActive
                 ? "hidden lg:block"
                 : "fixed w-full bg-white h-full left-0 top-0 z-20"
-            } col-span-1 px-4`}
+            } col-span-1 px-2 lg:px-4`}
           >
             <div className="lg:hidden py-2 border-b-2 px-4 flex items-center justify-between">
               <h2 className="text-xl uppercase font-bold">
@@ -150,11 +154,18 @@ const Search = () => {
           </div>
 
           {/* 75% column */}
-          <div className="col-span-4 lg:col-span-3 px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="col-span-4 lg:col-span-3 px-1">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {!loading ? (
-                vehicles?.length > 0 ? (
-                  vehicles?.map((item, index) => <Card {...item} key={index} />)
+                Object.entries(vehicles)?.length > 0 ? (
+                  <>
+                    {vehicles?.availableVehicles?.map((item, index) => (
+                      <Card {...item} key={index} />
+                    ))}
+                    {vehicles?.excludedVehicles?.map((item, index) => (
+                      <Card {...item} isSold={true} key={index} />
+                    ))}
+                  </>
                 ) : (
                   <div className="col-span-3">
                     <ErrorNotFound errorMessage={"No Vehicles Found."} />
@@ -166,6 +177,15 @@ const Search = () => {
                   .map((_, index) => <ProductSkeleton key={index} />)
               )}
             </div>
+            {pagination?.totalPages > 1 && (
+              <div className="flex w-full items-center justify-end mt-5">
+                <Pagination
+                  totalNumberOfPages={pagination?.totalPages}
+                  currentPage={currentPage}
+                  setPageChanger={setCurrentPage}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

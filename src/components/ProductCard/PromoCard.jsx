@@ -4,17 +4,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCouponData } from "../../Data";
 import {
   addTempCouponDetails,
-  handleRestCoupon,
+  handleRestCouponWithPrice,
 } from "../../Redux/CouponSlice/CouponSlice";
 import PreLoader from "../skeleton/PreLoader";
 
 const PromoCard = () => {
   const [CouponCode, setCouponCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
   const { tempTotalPrice, tempCouponName, tempCouponId } = useSelector(
     (state) => state.coupon
   );
+  const { isExtraAddonChecked } = useSelector((state) => state.vehicles);
   const dispatch = useDispatch();
+
+  // setting the couponName in input if present
+  useEffect(() => {
+    if (tempCouponName) {
+      return setCouponCode(tempCouponName);
+    }
+  }, [tempCouponName]);
+
+  // updating the coupon with price
+  useEffect(() => {
+    if (tempCouponId && tempCouponId != "" && CouponCode && CouponCode != "") {
+      handleApplyCoupon();
+    }
+  }, [tempTotalPrice]);
 
   // apply CouponCode
   const handleApplyCoupon = async () => {
@@ -24,15 +40,23 @@ const PromoCard = () => {
       return handleAsyncError(dispatch, "uable to apply coupon!");
     setLoading(true);
     try {
-      const response = await getCouponData(CouponCode, tempTotalPrice);
+      const response = await getCouponData(
+        CouponCode,
+        tempTotalPrice,
+        isExtraAddonChecked
+      );
       if (response?.status == 200) {
-        handleAsyncError(dispatch, "Coupon Applied.", "success");
+        !isCouponApplied &&
+          handleAsyncError(dispatch, "Coupon Applied.", "success");
+        setIsCouponApplied(true);
         dispatch(
           addTempCouponDetails({
             couponName: CouponCode,
-            discountPrice: parseInt(response?.data?.discount.toFixed(2)),
-            totalPrice: parseInt(response?.data?.finalAmount.toFixed(2)),
-            id: response?.data?._id,
+            discountType: Number(response?.data?.discount),
+            discount: Number(response?.data?.finalAmount),
+            isDiscountZeroResponse: response?.data?.isDiscountZero,
+            id: response?.data?.coupon?._id,
+            isExtra: response?.data?.isExtra,
           })
         );
       } else {
@@ -48,15 +72,9 @@ const PromoCard = () => {
   // remove CouponCode
   const handleReomveCoupon = async () => {
     setCouponCode("");
-    return dispatch(handleRestCoupon());
+    setIsCouponApplied(false);
+    return dispatch(handleRestCouponWithPrice());
   };
-
-  // setting the couponName in input if present
-  useEffect(() => {
-    if (tempCouponName) {
-      return setCouponCode(tempCouponName);
-    }
-  }, [tempCouponName]);
 
   return (
     <>
@@ -68,24 +86,28 @@ const PromoCard = () => {
         </div>
         <div className="w-full h-10 relative flex items-center px-4 mb-3">
           <input
-            className="w-full h-full bg-white font-light placeholder-slate-400 contrast-more:placeholder-slate-500 border-2 border-slate-200 outline-none rounded-lg focus:border-theme focus:ring-theme focus:ring-1 px-3"
+            className="w-full h-full bg-white font-light placeholder-slate-400 contrast-more:placeholder-slate-500 border-2 border-slate-200 outline-none rounded-lg focus:border-theme focus:ring-theme focus:ring-1 px-3 uppercase disabled:bg-gray-300 disabled:bg-opacity-50"
             placeholder="Enter Promo Coupon Here"
             value={CouponCode}
-            onChange={(e) => setCouponCode(e.target.value)}
+            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
             type="text"
             readOnly={tempCouponId != ""}
           />
           <div className="w-10 absolute block right-8 fill-theme">
             {tempCouponId === "" ? (
-              <button
-                className={`text-theme disabled:text-gray-500`}
-                type="button"
-                disabled={tempCouponId != "" || CouponCode.length < 6}
-                onClick={handleApplyCoupon}
-              >
-                apply
-              </button>
+              CouponCode.length > 0 && (
+                // apply coupon button
+                <button
+                  className={`text-theme disabled:text-gray-500`}
+                  type="button"
+                  disabled={tempCouponId != "" || CouponCode.length < 5}
+                  onClick={handleApplyCoupon}
+                >
+                  Apply
+                </button>
+              )
             ) : (
+              // remove coupon button
               <button
                 className={`text-theme`}
                 type="button"

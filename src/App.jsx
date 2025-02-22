@@ -3,6 +3,7 @@ import "./App.css";
 import { lazy, Suspense } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
+const Payment = lazy(() => import("./Pages/Payment"));
 const Home = lazy(() => import("./Pages/Home"));
 const Search = lazy(() => import("./Pages/Search"));
 const BookingSummary = lazy(() => import("./Pages/BookingSummary"));
@@ -56,6 +57,7 @@ const App = () => {
               element={<TermsAndCondition />}
             />
             <Route path="refund-return" exact element={<RefundAndReturn />} />
+            <Route path="/payment/:id" exact element={<Payment />} />
           </Route>
           <Route path="*" exact element={<ErrorPageNotFound />} />
         </Routes>

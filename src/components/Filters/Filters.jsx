@@ -22,13 +22,11 @@ const Filters = () => {
   useEffect(() => {
     const newQueryParmsData = Object.fromEntries(queryParms.entries());
     const { category, brand, vehiclePlan } = newQueryParmsData;
-    // console.log(category, brand, vehiclePlan);
 
     if (category != undefined) {
       setInputCategory(category?.toLowerCase());
     }
     if (brand != undefined) {
-      // console.log(category, brand, vehiclePlan);
       setInputbrand(brand?.toLowerCase());
     }
     if (vehiclePlan != undefined) {
@@ -42,32 +40,33 @@ const Filters = () => {
   // this function will run after user apply any filter
   const handleSubmitFilters = (e) => {
     e.preventDefault();
-    // Create a new URLSearchParams object to manipulate query params
-    const updatedQueryParms = new URLSearchParams(location.search);
+
+    // Create a new URLSearchParams object to manipulate query params based on location.search
+    const updatedQueryParams = new URLSearchParams(queryParms);
 
     // Set parameters if they are valid
     if (inputCategory !== "") {
-      updatedQueryParms.set("category", inputCategory.toLowerCase());
+      updatedQueryParams.set("category", inputCategory.toLowerCase());
     } else {
-      updatedQueryParms.delete("category");
+      updatedQueryParams.delete("category");
     }
 
     if (inputbrand !== "Choose Brand" && inputbrand !== "") {
-      updatedQueryParms.set("brand", inputbrand.toLowerCase());
+      updatedQueryParams.set("brand", inputbrand.toLowerCase());
     } else {
-      updatedQueryParms.delete("brand");
+      updatedQueryParams.delete("brand");
     }
 
     if (inputPlanId !== "") {
-      updatedQueryParms.set("vehiclePlan", inputPlanId);
+      updatedQueryParams.set("vehiclePlan", inputPlanId);
     } else {
-      updatedQueryParms.delete("vehiclePlan");
+      updatedQueryParams.delete("vehiclePlan");
     }
 
-    // Update the queryParams using pushState or replaceState
-    const newUrl = `${location.pathname}?${updatedQueryParms.toString()}`;
-    setQueryParms(newUrl);
+    // Update the query parameters using React Router's setQueryParms (does not modify the path)
+    setQueryParms(updatedQueryParams);
 
+    // Optionally close the filter modal if active
     if (isFilterActive === true) {
       dispatch(toggleFilter());
     }
@@ -92,7 +91,6 @@ const Filters = () => {
       queryParms.delete("vehiclePlan");
       setInputPlanId("");
     }
-
     return setQueryParms(queryParms);
   };
 
@@ -106,7 +104,7 @@ const Filters = () => {
               queryParms.get("category") ||
               queryParms.get("vehiclePlan")) && (
               <button
-                className="px-1 py-1 border hover:border-theme hover:text-theme rounded"
+                className="px-1 py-1 border hover:border-theme hover:text-theme rounded flex gap-1"
                 type="button"
                 onClick={handleClearFilters}
               >
@@ -124,6 +122,7 @@ const Filters = () => {
                     d="M6 18 18 6M6 6l12 12"
                   />
                 </svg>
+                <span className="text-xs">Rest All</span>
               </button>
             )}
           </div>
@@ -169,10 +168,7 @@ const Filters = () => {
         </div>
         <h2 className="font-semibold mb-2">Choose Packages</h2>
         <div className="mb-5">
-          <CheckboxFilter
-            vehiclePlan={inputPlanId}
-            setPlanIdChanger={setInputPlanId}
-          />
+          <CheckboxFilter setPlanIdChanger={setInputPlanId} />
         </div>
         <button
           type="submit"

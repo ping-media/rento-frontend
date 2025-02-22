@@ -4,8 +4,10 @@ const initialState = {
   tempTotalPrice: "",
   tempCouponName: "",
   tempCouponId: "",
+  tempCouponDiscountTotal: "",
   tempCouponDiscount: "",
-  tempCouponTotalAmount: "",
+  isDiscountZero: false,
+  tempCouponExtra: false,
   loading: false,
 };
 
@@ -20,17 +22,34 @@ const CouponSlice = createSlice({
       state.tempTotalPrice = action.payload;
     },
     addTempCouponDetails: (state, action) => {
-      const { couponName, totalPrice, discountPrice, id } = action.payload;
+      const {
+        couponName,
+        discountType,
+        discount,
+        id,
+        isDiscountZeroResponse,
+        isExtra,
+      } = action.payload;
       state.tempCouponName = couponName;
-      state.tempCouponDiscount = discountPrice;
-      state.tempCouponTotalAmount = totalPrice;
+      state.tempCouponDiscount = discountType;
+      state.tempCouponDiscountTotal = discount;
+      state.isDiscountZero = isDiscountZeroResponse;
       state.tempCouponId = id;
+      state.tempCouponExtra = isExtra;
     },
     removeTempTotalPrice: (state) => {
       state.tempTotalPrice = "";
     },
     handleEndLoading: (state) => {
       state.loading = false;
+    },
+    handleRestCouponWithPrice: (state) => {
+      state.tempCouponName = "";
+      state.tempCouponId = "";
+      state.tempCouponDiscountTotal = "";
+      state.tempCouponDiscount = "";
+      state.isDiscountZero = false;
+      state.tempCouponExtra = false;
     },
     handleRestCoupon: () => initialState,
   },
@@ -40,6 +59,7 @@ export const {
   handleStartLoading,
   addTempTotalPrice,
   addTempCouponDetails,
+  handleRestCouponWithPrice,
   removeTempTotalPrice,
   handleEndLoading,
   handleRestCoupon,

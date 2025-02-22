@@ -1,36 +1,34 @@
 import { useDispatch, useSelector } from "react-redux";
-import { toggleLicenseModal } from "../../Redux/ModalSlice/ModalSlice";
+import { toggleSelfieModal } from "../../Redux/ModalSlice/ModalSlice";
 import InputFile from "../Input/InputFile";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import { handleuploadDocument } from "../../Data";
 import { useState } from "react";
 import Spinner from "../Spinner/Spinner";
 
-const LicenseModal = () => {
+const SelfieModal = () => {
   const dispatch = useDispatch();
-  const { isLicenseModalActive } = useSelector((state) => state.modals);
+  const { isSelfieModalActive } = useSelector((state) => state.modals);
   const { currentUser } = useSelector((state) => state.user);
   const [formLoading, setFormLoading] = useState(false);
   const [frontImage, setFrontImage] = useState(null);
-  const [backImage, setBackImage] = useState(null);
 
-  const handleUploadLicense = async (e) => {
+  const handleUploadSelfie = async (e) => {
     setFormLoading(true);
     e.preventDefault();
     let formData = new FormData(e.target);
     let result = Object.fromEntries(formData.entries());
     if (!result) return handleAsyncError(dispatch, "choose vaild image first!");
-    // appending other details before sending it s
+    // appending other details before sending it
     formData.append("userId", currentUser?._id);
-    formData.append("docType", "license");
+    formData.append("docType", "Selfie");
 
     try {
       const response = await handleuploadDocument(formData);
-      if (response?.status == 200) {
+      if (response?.status === 200) {
         handleAsyncError(dispatch, response?.message, "success");
         setFrontImage(null);
-        setBackImage(null);
-        dispatch(toggleLicenseModal());
+        dispatch(toggleSelfieModal());
       } else {
         handleAsyncError(dispatch, response?.message);
       }
@@ -44,16 +42,16 @@ const LicenseModal = () => {
     <>
       <div
         className={`fixed ${
-          !isLicenseModalActive && "hidden"
+          !isSelfieModalActive && "hidden"
         } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
       >
         <div className="relative top-5 lg:top-20 mx-auto shadow-xl rounded bg-white max-w-2xl">
           <div className="flex items-center justify-between px-4 py-2">
             <h2 className="font-bold text-2xl uppercase">
-              upload <span className="text-theme">License</span>
+              upload <span className="text-theme">Selfie</span>
             </h2>
             <button
-              onClick={() => dispatch(toggleLicenseModal())}
+              onClick={() => dispatch(toggleSelfieModal())}
               type="button"
               className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             >
@@ -75,40 +73,26 @@ const LicenseModal = () => {
           <div className="p-6 pt-5 text-center">
             <form
               className="flex flex-wrap gap-4"
-              onSubmit={handleUploadLicense}
+              onSubmit={handleUploadSelfie}
             >
               <div className="w-full lg:flex-1 order-1 lg:order-2">
-                <div className="flex items-center gap-2">
-                  <div className="mb-5 flex-1">
-                    <InputFile
-                      name={"images"}
-                      labelDesc={"Front License Image"}
-                      labelId={"licenseFrontImage"}
-                      image={frontImage}
-                      setImage={setFrontImage}
-                    />
-                  </div>
-                  <div className="mb-5 flex-1">
-                    <InputFile
-                      name={"images"}
-                      labelDesc={"Back License Image"}
-                      labelId={"licenseBackImage"}
-                      image={backImage}
-                      setImage={setBackImage}
-                    />
-                  </div>
+                <div className="mb-5">
+                  <InputFile
+                    name={"images"}
+                    labelDesc={"Selfie"}
+                    labelId={"SelfieImage"}
+                    image={frontImage}
+                    setImage={setFrontImage}
+                  />
                 </div>
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                  disabled={
-                    formLoading ||
-                    (frontImage && backImage != null ? false : true)
-                  }
+                  disabled={formLoading || (frontImage != null ? false : true)}
                 >
                   {formLoading ? (
                     <Spinner message={"loading..."} />
                   ) : (
-                    "Upload Driving License"
+                    "Upload Selfie"
                   )}
                 </button>
               </div>
@@ -120,4 +104,4 @@ const LicenseModal = () => {
   );
 };
 
-export default LicenseModal;
+export default SelfieModal;
