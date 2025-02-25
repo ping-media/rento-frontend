@@ -1,21 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  isLoginModalActive: false,
+  isSignOutModalActive: false,
+  isRegisterModalActive: false,
+  isLocationModalActive: false,
+  isFilterActive: false,
+  isSearchUpdatesActive: false,
+  isLicenseModalActive: false,
+  isIdentityModalActive: false,
+  isMainSideBarActive: false,
+  isEmailVerifyModalActive: false,
+  isSelfieModalActive: false,
+  isBookingDone: false,
+};
+
 const ModalSlice = createSlice({
   name: "modals",
-  initialState: {
-    isLoginModalActive: false,
-    isSignOutModalActive: false,
-    isRegisterModalActive: false,
-    isLocationModalActive: false,
-    isFilterActive: false,
-    isSearchUpdatesActive: false,
-    isLicenseModalActive: false,
-    isIdentityModalActive: false,
-    isMainSideBarActive: false,
-    isEmailVerifyModalActive: false,
-    isSelfieModalActive: false,
-    isBookingDone: false,
-  },
+  initialState,
   reducers: {
     toggleLoginModal: (state) => {
       state.isLoginModalActive = !state.isLoginModalActive;
@@ -53,18 +55,7 @@ const ModalSlice = createSlice({
     toggleSelfieModal: (state) => {
       state.isSelfieModalActive = !state.isSelfieModalActive;
     },
-    handleRestAll: (state) => {
-      state.isLoginModalActive = false;
-      state.isRegisterModalActive = false;
-      state.isLocationModalActive = false;
-      state.isFilterActive = false;
-      state.isSearchUpdatesActive = false;
-      state.isLicenseModalActive = false;
-      state.isIdentityModalActive = false;
-      state.isMainSideBarActive = false;
-      state.isEmailVerifyModalActive = false;
-      state.isBookingDone = false;
-    },
+    handleRestAll: () => initialState,
   },
 });
 

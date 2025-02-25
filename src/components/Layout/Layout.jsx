@@ -13,7 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
 import Footer from "../Footer/Footer";
 import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
-import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
+import {
+  handleRestAll,
+  toggleLocationModal,
+} from "../../Redux/ModalSlice/ModalSlice";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
@@ -38,6 +41,8 @@ const Layout = () => {
     if (localStorage.getItem("tempBooking")) {
       localStorage.removeItem("tempBooking");
     }
+    // for closing modal on page change
+    dispatch(handleRestAll());
   }, [location.href]);
 
   // if selectedLocation is not present than open popup modal

@@ -27,7 +27,7 @@ const fetchingData = async (endpoint, retries = 5, delay = 500) => {
         await new Promise((resolve) => setTimeout(resolve, delay));
       } else {
         console.error("All retry attempts failed.");
-        const navigate = useNavigate(); // React Router navigation
+        const navigate = useNavigate();
         navigate("*");
         throw error;
       }
