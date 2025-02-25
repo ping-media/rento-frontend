@@ -33,10 +33,10 @@ const BookingInfoCard = ({
   return (
     <div className="flex justify-between flex-wrap mt-6 mb-4 cursor-default">
       {vehicleImage ? (
-        <div className="w-62 h-40 mx-auto lg:mx-0">
+        <div className="w-52 lg:w-62 h-40 mx-auto lg:mx-0">
           <img
             src={vehicleImage}
-            className="w-full h-full object-cover rounded-lg"
+            className="w-full h-full object-contain rounded-lg"
             alt={vehicleName}
             loading="lazy"
             onError={() => handleErrorImage(vehicleType, vehicleImageRef)}
@@ -58,9 +58,6 @@ const BookingInfoCard = ({
             <h2 className="font-bold uppercase text-xl">
               {vehicleBrand} {vehicleName}
             </h2>
-            {/* <span className="text-xs text-gray-500">
-              (Vehicle Number: {vehicleBasic?.vehicleNumber})
-            </span> */}
           </div>
         ) : (
           <div className="h-4 w-32 bg-gray-400 rounded mb-3"></div>
@@ -171,21 +168,22 @@ const BookingInfoCard = ({
           </div>
         )}
       </div>
-      <div className="mt-2 lg:mt-0">
+      <div className="pl-4 lg:pl-0 mt-2 lg:mt-0">
         <h2 className="font-semibold flex items-center px-4 lg:px-2">
           <span className="lg:hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
               fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
               stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              className="size-6"
             >
-              <line x1="12" y1="1" x2="12" y2="23"></line>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 8.25H9m6 3H9m3 6-3-3h1.5a3 3 0 1 0 0-6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
             </svg>
           </span>
           <div>
@@ -197,8 +195,8 @@ const BookingInfoCard = ({
             <p
               className={`${
                 bookingPrice?.isPackageApplied === true
-                  ? "text-sm line-through"
-                  : "text-lg"
+                  ? "ml-2 lg:ml-0 text-sm line-through"
+                  : "ml-1.5 lg:ml-0 text-lg"
               }`}
             >
               ₹{formatPrice(Number(bookingPrice?.rentAmount))}/
