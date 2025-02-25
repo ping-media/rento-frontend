@@ -1,4 +1,5 @@
 import { camelCaseToSpaceSeparated } from "../../utils";
+import CopyButton from "../Button/CopyButton";
 
 const ThingsToRemember = ({ rides }) => {
   const thingsToRemember = {
@@ -50,6 +51,9 @@ const ThingsToRemember = ({ rides }) => {
                   key.includes("Otp") ? "font-bold" : ""
                 }`}
               >
+                {key.includes("Otp") && (
+                  <CopyButton textToCopy={value?.limit} />
+                )}
                 {key.includes("Limit")
                   ? `${value?.limit} Km/hr`
                   : key.includes("Otp")

@@ -28,14 +28,11 @@ const PriceCard = ({
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
   const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
-  const [discountPrice, setDiscountPrice] = useState(0);
-  const [discounttotalPrice, setDiscounttotalPrice] = useState(0);
   const {
     tempCouponDiscount,
     tempCouponDiscountTotal,
     tempCouponName,
     isDiscountZero,
-    loading,
   } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
 
@@ -49,7 +46,7 @@ const PriceCard = ({
     } else {
       setAppliedVehiclePlan(null);
     }
-  }, []);
+  }, [vehiclePlanData]);
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
@@ -184,14 +181,6 @@ const PriceCard = ({
     setIsExtraChecked(!isExtraChecked);
     dispatch(handleChangeExtraChecked(!isExtraChecked));
   };
-
-  // changing price based discount and addon
-  useEffect(() => {
-    if (!loading) {
-      setDiscountPrice(Math.ceil(tempCouponDiscountTotal).toFixed(2));
-      setDiscounttotalPrice(Math.ceil(tempCouponDiscount).toFixed(2));
-    }
-  }, [loading]);
 
   return (
     <>

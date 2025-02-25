@@ -4,15 +4,15 @@ import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
 import { useEffect, useState } from "react";
 import { addRidesData, fetchingRides } from "../Redux/RidesSlice/RideSlice";
-import { fetchingData, handlebooking } from "../Data";
+import { fetchingData, handlePostData } from "../Data";
 import { useDispatch, useSelector } from "react-redux";
 import PreLoader from "../components/skeleton/PreLoader";
 import RideFareDetails from "../components/ProductCard/RideFareDetails";
 import ThingsToRemember from "../components/ProductCard/ThingsToRemember";
 import BookingError from "../components/Error/BookingError";
-// import { razorPayment } from "../Data/Payment";
-// import { handleUpdateBooking } from "../Data/Functions";
 import PickupImages from "../components/Account/PickupImages";
+import { handleAsyncError } from "../utils/handleAsyncError";
+import Spinner from "../components/Spinner/Spinner";
 
 const RidesSummary = () => {
   const navigate = useNavigate();
@@ -20,9 +20,9 @@ const RidesSummary = () => {
   const { id } = useParams();
   const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
   const [stationLoading, setStationLoading] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingLoading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [images, setImages] = useState([]);
-  const { currentUser } = useSelector((state) => state.user);
   const { rides, loading } = useSelector((state) => state.rides);
 
   // fetching booking data using booking id
@@ -54,18 +54,6 @@ const RidesSummary = () => {
   // for making payment
   const handleMakePayment = async () => {
     const { _id, bookingPrice } = rides[0];
-    // return await razorPayment(
-    //   currentUser,
-    //   rides[0],
-    //   { id: rides[0]?.paymentgatewayOrderId },
-    //   { paymentMethod: rides[0]?.paymentMethod },
-    //   handleUpdateBooking,
-    //   handleAsyncError,
-    //   navigate,
-    //   handlebooking,
-    //   dispatch,
-    //   setBookingLoading
-    // );
     // checking whether user applied Discount or not
     const subAmount =
       bookingPrice?.discountTotalPrice && bookingPrice?.discountTotalPrice > 0
@@ -81,28 +69,26 @@ const RidesSummary = () => {
       bookingPrice?.userPaid && bookingPrice?.userPaid > 0
         ? "partiallyPay"
         : "paid";
-    return navigate(
-      `/payment?id=${_id}&paymentStatus=${paymentStatus}&finalAmount=${finalAmount}`
-    );
-  };
 
-  // for fetching images
-  // const handleFetchPickupImages = async () => {
-  //   try {
-  //     setImagesLoading(true);
-  //     const response = await fetchingData(
-  //       `/getPickupImage?bookingId=${rides && rides[0]?.bookingId}`
-  //     );
-  //     if (response?.status === 200) {
-  //       setImages(response?.data);
-  //       return handleAsyncError(dispatch, response?.message, "success");
-  //     }
-  //   } catch (error) {
-  //     return handleAsyncError(dispatch, error?.message);
-  //   } finally {
-  //     setImagesLoading(false);
-  //   }
-  // };
+    try {
+      setPaymentLoading(true);
+      // encoding before making URL
+      const payload = {
+        id: _id,
+        paymentStatus: paymentStatus,
+        finalAmount: finalAmount,
+      };
+      // requesting jwt token here from backend
+      const encodePayload = await handlePostData("/GeneratePaymentToken", {
+        payload: payload,
+      });
+      return navigate(`/payment/${encodePayload?.token}`);
+    } catch (error) {
+      return handleAsyncError(dispatch, "Unable to make payment! try again.");
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
 
   return (
     <>
@@ -147,11 +133,12 @@ const RidesSummary = () => {
             <div className="flex items-center gap-2">
               {rides[0]?.bookingStatus == "pending" && (
                 <button
-                  className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none rounded-md capitalize border"
+                  className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none rounded-md capitalize border disabled:bg-opacity-50"
                   type="button"
                   onClick={handleMakePayment}
+                  disabled={paymentLoading}
                 >
-                  make payment
+                  {!paymentLoading ? "make payment" : <Spinner />}
                 </button>
               )}
               <div
