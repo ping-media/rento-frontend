@@ -60,7 +60,7 @@ const BookingAndPayment = () => {
 
   return !loading ? (
     tempBookingData && (
-      <div className="w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
+      <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
         {/* this modal is going to open after payment is done  */}
         <BookingSuccessModal />
         {/* continue to form..  */}
