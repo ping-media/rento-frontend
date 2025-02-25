@@ -5,6 +5,28 @@ import {
 } from "../../utils";
 
 const RideFareDetails = ({ rides }) => {
+  // calcuating the left amount
+  const amountLeft =
+    (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
+      Number(rides?.bookingPrice?.AmountLeftAfterUserPaid?.amount)) ||
+    0;
+  const extendAmountLeft =
+    (rides.bookingPrice?.extendAmount?.length > 0 &&
+      rides.bookingPrice?.extendAmount.reduce((sum, transaction) => {
+        return transaction.status === "unpaid" ? sum + transaction.amount : sum;
+      }, 0)) ||
+    0;
+  const diffAmountLeft =
+    (rides.bookingPrice?.diffAmount &&
+      rides.bookingPrice?.diffAmount?.length > 0 &&
+      rides.bookingPrice?.diffAmount.reduce((sum, transaction) => {
+        return transaction.status === "unpaid" ? sum + transaction.amount : sum;
+      }, 0)) ||
+    0;
+
+  const payableBalance =
+    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft);
+
   return (
     <>
       {rides && (
@@ -90,7 +112,6 @@ const RideFareDetails = ({ rides }) => {
                 </li>
               ))}
 
-            {/* Display the totalPrice & user paid & remaining amount last */}
             {/* totalPrice */}
             {rides?.bookingPrice?.totalPrice && (
               <li className="flex items-center justify-between mt-1 my-1">
@@ -113,6 +134,7 @@ const RideFareDetails = ({ rides }) => {
                 </p>
               </li>
             )}
+
             {/* discount price  */}
             {rides?.bookingPrice?.discountPrice > 0 && (
               <li
@@ -133,67 +155,69 @@ const RideFareDetails = ({ rides }) => {
             )}
 
             {/* total price  */}
-            {rides?.bookingPrice?.discountTotalPrice > 0 ||
-              (rides?.bookingPrice?.isDiscountZero === true && (
-                <li
-                  className={`flex items-center justify-between mt-1 my-1 ${
-                    rides?.bookingPrice?.userPaid ? "border-b-2" : ""
-                  }`}
-                >
-                  <p className="text-sm font-bold uppercase text-left">
-                    Total Price
-                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                      {rides?.paymentMethod == "online" &&
-                      rides?.paySuccessId !== "NA"
-                        ? "(Full Paid)"
-                        : rides?.paymentMethod == "partiallyPay"
-                        ? ""
-                        : rides?.bookingPrice?.isDiscountZero === true
-                        ? ""
-                        : "(Need to pay at pickup)"}
-                    </small>
-                  </p>
-                  <p className="text-sm font-bold text-right">
-                    {`₹${formatPrice(
-                      rides?.bookingPrice?.isDiscountZero === true
-                        ? 0
-                        : rides?.bookingPrice?.discountTotalPrice
-                    )}`}
-                  </p>
-                </li>
-              ))}
+            {(rides?.bookingPrice?.discountTotalPrice > 0 ||
+              rides?.bookingPrice?.isDiscountZero === true) && (
+              <li
+                className={`flex items-center justify-between mt-1 my-1 ${
+                  rides?.bookingPrice?.userPaid ? "border-b-2" : ""
+                }`}
+              >
+                <p className="text-sm font-bold uppercase text-left">
+                  Total Price
+                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                    {rides?.paymentMethod == "online" &&
+                    rides?.paySuccessId !== "NA"
+                      ? "(Full Paid)"
+                      : rides?.paymentMethod == "partiallyPay"
+                      ? ""
+                      : rides?.bookingPrice?.isDiscountZero === true
+                      ? ""
+                      : "(Need to pay at pickup)"}
+                  </small>
+                </p>
+                <p className="text-sm font-bold text-right">
+                  {`₹${formatPrice(
+                    rides?.bookingPrice?.isDiscountZero === true
+                      ? 0
+                      : rides?.bookingPrice?.discountTotalPrice
+                  )}`}
+                </p>
+              </li>
+            )}
 
             {/* user paid */}
-            {rides?.bookingPrice?.userPaid > 0 && (
-              <>
-                <li className="flex items-center justify-between mt-1 my-1">
-                  <p className="text-sm font-semibold uppercase text-left">
-                    Amount Paid
-                  </p>
-                  <p className="text-sm font-bold text-right">
-                    {`- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`}
-                  </p>
-                </li>
-                <li className="flex items-center justify-between mt-1 my-1">
-                  <p className="text-sm font-bold uppercase text-left">
-                    Remaining Amount
-                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                      (
-                      {rides?.bookingPrice?.AmountLeftAfterUserPaid
-                        ?.paymentMethod != ""
-                        ? `Paid: ${rides?.bookingPrice?.AmountLeftAfterUserPaid?.paymentMethod}`
-                        : "need to pay at pickup"}
-                      )
-                    </small>
-                  </p>
-                  <p className="text-sm font-bold text-right">
-                    {`₹${formatPrice(
-                      rides?.bookingPrice.AmountLeftAfterUserPaid?.amount
-                    )}`}
-                  </p>
-                </li>
-              </>
-            )}
+            {rides?.bookingPrice?.userPaid > 0 &&
+              rides?.paymentStatus !== "pending" && (
+                <>
+                  <li className="flex items-center justify-between mt-1 my-1">
+                    <p className="text-sm font-semibold uppercase text-left">
+                      Amount Paid
+                    </p>
+                    <p className="text-sm font-bold text-right">
+                      {`- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`}
+                    </p>
+                  </li>
+                  {/* <li className="flex items-center justify-between mt-1 my-1">
+                    <p className="text-sm font-bold uppercase text-left">
+                      Remaining Amount
+                      <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                        (
+                        {rides?.bookingPrice?.AmountLeftAfterUserPaid
+                          ?.paymentMethod != ""
+                          ? `Paid: ${rides?.bookingPrice?.AmountLeftAfterUserPaid?.paymentMethod}`
+                          : "need to pay at pickup"}
+                        )
+                      </small>
+                    </p>
+                    <p className="text-sm font-bold text-right">
+                      {`₹${formatPrice(
+                        rides?.bookingPrice.AmountLeftAfterUserPaid?.amount
+                      )}`}
+                    </p>
+                  </li> */}
+                </>
+              )}
+
             {/* for refund process  */}
             {(rides?.paymentStatus === "refundInt" ||
               rides?.paymentStatus === "refunded") && (
@@ -219,6 +243,7 @@ const RideFareDetails = ({ rides }) => {
                 </p>
               </li>
             )}
+
             {/* difference amount  */}
             {rides?.bookingPrice?.diffAmount && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
@@ -239,6 +264,7 @@ const RideFareDetails = ({ rides }) => {
                 </p>
               </li>
             )}
+
             {/* extend amount  */}
             {rides?.bookingPrice?.extendAmount?.length > 0 && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
@@ -256,6 +282,18 @@ const RideFareDetails = ({ rides }) => {
                       ]?.amount
                     )
                   )}`}
+                </p>
+              </li>
+            )}
+
+            {/* payable balance  */}
+            {rides?.paymentStatus !== "pending" && (
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+                <p className="text-sm font-semibold uppercase text-left">
+                  Payable Balance
+                </p>
+                <p className="text-sm font-bold text-right text-theme">
+                  {`₹${formatPrice(payableBalance)}`}
                 </p>
               </li>
             )}

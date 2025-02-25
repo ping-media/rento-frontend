@@ -20,7 +20,7 @@ const Footer = () => {
             <span className="font-bold cursor-pointer">
               &copy; {new Date().getFullYear()} Rento Bikes.{" "}
             </span>
-            All Right Reserved By{" "}
+            All Rights Reserved By{" "}
             <span className="text-semibold">
               Bongi Mobility Solutions Private Limited
             </span>
