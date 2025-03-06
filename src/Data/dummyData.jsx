@@ -353,7 +353,7 @@ export const faqList = [
   {
     question: "CAN I RESCHEDULE MY BOOKING?",
     answer:
-      "There is no rescheduling of an existing reservation as bikes have already been booked and kept reserved for you by us. You may cancel your current booking and then book a bike with a later date; however a cancellation fee will apply.",
+      "There is no rescheduling of an existing reservation as bikes have already been booked and kept reserved for you by us. You may cancel your current booking and then book a bike with a later date, however a cancellation fee will apply.",
   },
   {
     question: "CAN I EXTEND MY TRIP AFTER IT ENDS?",
@@ -361,14 +361,9 @@ export const faqList = [
       "Extension of trips is always good news for us! However, if you need to extend your bike trip, it must be done before you end your trip and not after as we do not allow extension once you have ended your trip.",
   },
   {
-    question: "HOW DO I PAY?",
-    answer:
-      "You can pay online using debit/credit cards or e-wallets. Cash medium is also acceptable in the outlets for bike rental as well as for other services.",
-  },
-  {
     question: "IS THERE ANY KILOMETER CAPPING?",
     answer:
-      "Yes, you are only allowed to drive a total of 200 kilometres. If you go beyond the allotted number of kilometres, a per-kilometre charge starting at 3 kilometres will be applied to you.",
+      "Yes, you are allowed to drive a certain distance, with charges applied per kilometre depending on the station. The per-kilometre charge will vary based on the station and the applicable rates for each location.",
   },
   {
     question: "WHAT DOCUMENTS ARE REQUIRED TO BOOK A BIKE?",

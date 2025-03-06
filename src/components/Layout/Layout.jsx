@@ -1,5 +1,5 @@
 import { Outlet, useParams } from "react-router-dom";
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, useState } from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
 // lazy loading the below components
@@ -22,6 +22,7 @@ import whatsapp from "../../assets/icons/whatsapp.png";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
+  const [hasMounted, setHasMounted] = useState(false);
   const { user } = useSelector((state) => state.user);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { id } = useParams();
@@ -34,13 +35,16 @@ const Layout = () => {
     }
     // if selectedLocation is not present than open popup modal
     if (selectedLocation === null) {
-      console.log("error");
       dispatch(toggleLocationModal(true));
     }
-  }, [user, selectedLocation]);
+  }, [user, selectedLocation, dispatch]);
 
   // this is to delete the temp booking & coupon data
   useEffect(() => {
+    if (!hasMounted) {
+      setHasMounted(true);
+      return;
+    }
     if (location.pathname == `/search/${id}` || location.pathname == "/") {
       dispatch(handleRestCoupon());
     }

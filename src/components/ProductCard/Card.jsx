@@ -54,7 +54,7 @@ const Card = ({
           />
         )}
         {/* modal & color of vehicle  */}
-        <div className="top-4 right-0 absolute z-10">
+        <div className="top-4 right-0 absolute z-[1]">
           <p
             className="bg-theme-black text-gray-100 px-2 py-1 rounded-l-lg mb-1"
             title="Vehicle Modal"
