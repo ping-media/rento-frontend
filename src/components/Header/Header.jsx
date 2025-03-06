@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   toggleLocationModal,
   toggleLoginModal,
@@ -86,11 +86,15 @@ const Header = memo(() => {
         <div className="flex items-center gap-4">
           <ul className="items-center gap-4 hidden lg:flex">
             {sideMenuList.map((item, index) => (
-              <Link to={`${item?.link}`} key={index}>
-                <li className="text-gray-100 capitalize hover:text-theme transition duration-200 ease-in-out">
-                  {item?.title}
-                </li>
-              </Link>
+              <NavLink
+                to={`${item?.link}`}
+                key={index}
+                className={({ isActive }) =>
+                  `capitalize text-white transition duration-200 ease-in-out text-white hover:text-theme`
+                }
+              >
+                <li className="w-full">{item?.title}</li>
+              </NavLink>
             ))}
           </ul>
           <button

@@ -372,9 +372,9 @@ const formatDateTimeISTForUser = (input) => {
   };
 };
 
-const nextDayFromCurrent = (date) => {
+const nextDayFromCurrent = (date, noOfDay = 1) => {
   const nextDay = date;
-  nextDay.setDate(nextDay.getDate() + 1); // Increment the day by 1
+  nextDay.setDate(nextDay.getDate() + noOfDay);
 
   // return nextDay.toLocaleDateString();
   return nextDay;
@@ -553,6 +553,46 @@ const formatTimeForProductCard = (isoString) => {
   return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
 };
 
+const addDaysToDateForRide = (daysToAdd, dateStr) => {
+  // Split the input date string "Fri, 07 Mar 2025"
+  const dateParts = dateStr.split(", ");
+  const [day, month, year] = dateParts[1].split(" "); // Extract day, month, and year
+
+  // Map month abbreviation to its number (March -> 3, etc.)
+  const monthMap = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  };
+
+  // Create a new Date object using the extracted values
+  const date = new Date(year, monthMap[month], parseInt(day));
+
+  // Add the specified number of days to the date
+  date.setDate(date.getDate() + daysToAdd);
+
+  // Format the new date back to "Fri, 07 Mar 2025"
+  const options = {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  };
+  const newDateStr = date.toLocaleDateString("en-GB", options);
+
+  // Return the new formatted date
+  return newDateStr;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -585,4 +625,5 @@ export {
   format24HourFormatTime,
   formatTimeForProductCard,
   RoundedDateTimeAndToNextHour,
+  addDaysToDateForRide,
 };

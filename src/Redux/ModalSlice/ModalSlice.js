@@ -28,8 +28,9 @@ const ModalSlice = createSlice({
     toggleRegisterModal: (state) => {
       state.isRegisterModalActive = !state.isRegisterModalActive;
     },
-    toggleLocationModal: (state) => {
-      state.isLocationModalActive = !state.isLocationModalActive;
+    toggleLocationModal: (state, action) => {
+      state.isLocationModalActive =
+        action.payload || !state.isLocationModalActive;
     },
     toggleLicenseModal: (state) => {
       state.isLicenseModalActive = !state.isLicenseModalActive;

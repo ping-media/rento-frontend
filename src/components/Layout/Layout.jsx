@@ -17,6 +17,8 @@ import {
   handleRestAll,
   toggleLocationModal,
 } from "../../Redux/ModalSlice/ModalSlice";
+import CallToActionButton from "../CallToAction/CallToActionButton";
+import whatsapp from "../../assets/icons/whatsapp.png";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
@@ -30,7 +32,12 @@ const Layout = () => {
     if (user) {
       dispatch(handleCurrentUser(user));
     }
-  }, [user]);
+    // if selectedLocation is not present than open popup modal
+    if (selectedLocation === null) {
+      console.log("error");
+      dispatch(toggleLocationModal(true));
+    }
+  }, [user, selectedLocation]);
 
   // this is to delete the temp booking & coupon data
   useEffect(() => {
@@ -41,16 +48,11 @@ const Layout = () => {
     if (localStorage.getItem("tempBooking")) {
       localStorage.removeItem("tempBooking");
     }
+    // this will user to top of the screen whenever user change the page
+    window.scrollTo(0, 0);
     // for closing modal on page change
     dispatch(handleRestAll());
   }, [location.href]);
-
-  // if selectedLocation is not present than open popup modal
-  useEffect(() => {
-    if (selectedLocation && Object.keys(selectedLocation)?.length === 0) {
-      dispatch(toggleLocationModal());
-    }
-  }, []);
 
   return (
     <>
@@ -70,8 +72,12 @@ const Layout = () => {
         />
         <Header />
       </header>
-      <main style={{ minHeight: "calc(100vh - 108.8px)" }}>
+      <main className="relative" style={{ minHeight: "calc(100vh - 108.8px)" }}>
         <Outlet />
+        <CallToActionButton
+          image={whatsapp}
+          link={"https://wa.me/+918884488891"}
+        />
       </main>
       <Footer />
     </>

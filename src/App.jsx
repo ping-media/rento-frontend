@@ -3,6 +3,7 @@ import "./App.css";
 import { lazy, Suspense } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
+import UserDocument from "./components/Account/UserDocument";
 const Payment = lazy(() => import("./Pages/Payment"));
 const Home = lazy(() => import("./Pages/Home"));
 const Search = lazy(() => import("./Pages/Search"));
@@ -27,6 +28,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route path="/" exact element={<Home />} />
+            <Route path="/monthly-rental" exact element={<Home />} />
             <Route path="/search" exact element={<Search />} />
             <Route path="/search/:id" exact element={<Search />} />
             <Route path="/explore" exact element={<Search />} />
@@ -44,6 +46,7 @@ const App = () => {
             <Route path="/" element={<LoggedInLayout />}>
               <Route path="profile" exact element={<Profile />} />
               <Route path="my-rides" exact element={<MyRides />} />
+              <Route path="kyc-verification" exact element={<UserDocument />} />
               <Route
                 path="my-rides/summary/:id"
                 exact

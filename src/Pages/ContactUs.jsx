@@ -18,7 +18,7 @@ const ContactUs = () => {
               Contact Us
             </small>
             <h1 className="text-2xl lg:text-4xl font-bold">
-              Feel Free to <span className="text-theme">contact</span> us!
+              Feel free to <span className="text-theme">contact</span> us!
             </h1>
             <p className="text-xs lg:text-sm text-gray-500 my-1">
               We’re here to help—feel free to reach out to us anytime!
