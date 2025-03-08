@@ -27,10 +27,10 @@ const LoginModal = () => {
   };
 
   // for user login
-  const handleLoginUser = async (e) => {
+  const handleLoginUser = async (event) => {
+    event.preventDefault();
     setLoading(true);
-    e.preventDefault();
-    const response = new FormData(e.target);
+    const response = new FormData(event.target);
     let result = Object.fromEntries(response.entries());
     const isValidContact = isValidPhoneNumber(Number(result?.contact));
     if (!isValidContact) {
@@ -65,8 +65,8 @@ const LoginModal = () => {
 
   //this function is to change for login to signup
   const handleRegisterModal = () => {
-    dispatch(toggleLoginModal());
-    dispatch(toggleRegisterModal());
+    dispatch(toggleLoginModal(false));
+    dispatch(toggleRegisterModal(true));
   };
 
   return (
@@ -114,6 +114,7 @@ const LoginModal = () => {
                   <button
                     className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-gray-400 uppercase"
                     disabled={loading || isInputEmpty?.length != 10}
+                    type="submit"
                   >
                     {!loading ? "Sign In" : <Spinner message={"loading"} />}
                   </button>

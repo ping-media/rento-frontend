@@ -10,6 +10,8 @@ currentDatePlusOne.setDate(currentDatePlusOne.getDate() + 1);
 const dateAndTime = RoundedDateTimeAndToNextHour(new Date());
 const nextDayAndTime = RoundedDateTimeAndToNextHour(currentDatePlusOne);
 
+export const isHomeLink = ["/", "/monthly-rental"];
+
 // const items = [
 //   {
 //     productImage: "",
@@ -145,8 +147,8 @@ export const menuList = [
     link: `/explore?BookingStartDateAndTime=${dateAndTime}&BookingEndDateAndTime=${nextDayAndTime}`,
     isPhone: false,
   },
-  { title: "Profile", link: "/profile", isPhone: true },
-  { title: "My Rides", link: "/my-rides", isPhone: true },
+  { title: "Profile", link: "/account/profile", isPhone: true },
+  { title: "My Rides", link: "/account/my-rides", isPhone: true },
   { title: "Logout", link: "", isPhone: true },
 ];
 

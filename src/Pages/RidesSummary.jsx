@@ -189,7 +189,7 @@ const RidesSummary = () => {
                       : rides[0]?.rideStatus === "ongoing"
                       ? "Started"
                       : rides[0]?.rideStatus === "canceled"
-                      ? "Cancelled"
+                      ? "Canceled"
                       : "Completed"}
                   </span>
                 </p>
@@ -260,6 +260,7 @@ const RidesSummary = () => {
                       rides[0]?.paymentStatus === "pending" ||
                       (rides[0]?.paymentStatus === "failed" && "bg-theme") ||
                       (rides[0]?.paymentStatus === "refunded" && "bg-theme") ||
+                      (rides[0]?.paymentStatus === "canceled" && "bg-theme") ||
                       (rides[0]?.paymentStatus === "paid" &&
                         "bg-green-500 bg-opacity-80")
                     } text-gray-100 px-2 py-1 rounded-md cursor-pointer capitalize ml-2`}

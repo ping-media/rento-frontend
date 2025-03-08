@@ -19,14 +19,15 @@ const ModalSlice = createSlice({
   name: "modals",
   initialState,
   reducers: {
-    toggleLoginModal: (state) => {
-      state.isLoginModalActive = !state.isLoginModalActive;
+    toggleLoginModal: (state, action) => {
+      state.isLoginModalActive = action.payload || !state.isLoginModalActive;
     },
     toggleSignOutModal: (state) => {
       state.isSignOutModalActive = !state.isSignOutModalActive;
     },
-    toggleRegisterModal: (state) => {
-      state.isRegisterModalActive = !state.isRegisterModalActive;
+    toggleRegisterModal: (state, action) => {
+      state.isRegisterModalActive =
+        action.payload || !state.isRegisterModalActive;
     },
     toggleLocationModal: (state, action) => {
       state.isLocationModalActive =

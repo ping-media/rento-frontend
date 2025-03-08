@@ -10,10 +10,9 @@ const SideBar = () => {
     {
       menuImg: UserImg,
       title: "Profile",
-      link: "/profile",
-      secondLink: "/kyc-verification",
+      link: "/account/profile",
     },
-    { menuImg: RideImg, title: "MyRides", link: "/my-rides" },
+    { menuImg: RideImg, title: "MyRides", link: "/account/my-rides" },
   ];
   const [currentPage, setCurrentPage] = useState("");
   const location = useLocation();
@@ -21,7 +20,7 @@ const SideBar = () => {
 
   // to change active page class
   useEffect(() => {
-    setCurrentPage(location.pathname.substring(0, 9));
+    setCurrentPage(location.pathname.substring(0, 17));
   }, [location.pathname]);
 
   return (
@@ -56,18 +55,14 @@ const SideBar = () => {
           <Link to={item?.link} key={index}>
             <li
               className={`flex items-center gap-2 my-2 group hover:bg-theme hover:text-gray-100 transition duration-200 ease-in-out rounded-lg ${
-                currentPage === item?.link || item?.secondLink
-                  ? "bg-theme text-gray-100"
-                  : ""
+                currentPage === item?.link ? "bg-theme text-gray-100" : ""
               }`}
             >
               <div className="w-10 h-10 p-1 bg-theme my-1 rounded-lg bg-opacity-50">
                 <img
                   src={item?.menuImg}
                   className={`w-full h-full object-cover group-hover:invert ${
-                    currentPage === item?.link || item?.secondLink
-                      ? "invert"
-                      : ""
+                    currentPage === item?.link ? "invert" : ""
                   }`}
                   alt={item?.title}
                 />

@@ -44,20 +44,6 @@ const VerifyOtp = ({
     }
   };
 
-  // const handlePaste = (e) => {
-  //   const paste = e.clipboardData.getData("text").trim();
-  //   if (paste.length === 6 && /^[0-9]+$/.test(paste)) {
-  //     const newOtp = paste.split("");
-  //     setOtpInput(newOtp);
-  //     const combinedOtp = newOtp.join("");
-  //     if (combinedOtp.length === 6) {
-  //       // Submit OTP when all fields are filled
-  //       setOnOtpSubmit(combinedOtp);
-  //       // handleLogin(null, combinedOtp);
-  //     }
-  //   }
-  // };
-
   // Handle pasting OTP into the inputs
   const handlePaste = (e) => {
     e.preventDefault();

@@ -361,7 +361,7 @@ const handleCreateBookingSubmit = async (
         };
         handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
-        return navigate(`/my-rides/summary/${response?.data?._id}`);
+        return navigate(`/account/my-rides/summary/${response?.data?._id}`);
       } else {
         return handleAsyncError(dispatch, response?.message);
       }
@@ -582,7 +582,7 @@ const handleCreateBookingSubmit = async (
         console.log(newData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
         navigate(
-          `/my-rides/summary/${
+          `/account/my-rides/summary/${
             bookingResponse?.data?.bookingId || newData?.bookingId
           }`
         );

@@ -9,7 +9,6 @@ const Home = () => {
   const { stationLoading } = useSelector((state) => state.station);
   return (
     <>
-      {/* show preloader until station is loading  */}
       {stationLoading && <PreLoader />}
       <HeroSection imageUrl={heroImage} />
       <SearchRide />

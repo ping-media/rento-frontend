@@ -26,6 +26,7 @@ import {
 import { searchData } from "../../Data/Functions";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import PreLoader from "../skeleton/PreLoader";
+import { isHomeLink } from "../../Data/dummyData";
 
 const SearchRide = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const SearchRide = () => {
   const { id } = useParams();
   const [isHomePage, setIsHomePage] = useState(false);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
-  const { stationLoading, selectedStation } = useSelector(
+  const { stationLoading, selectedStation, station } = useSelector(
     (state) => state.station
   );
   const { loading, selectedLocation } = useSelector(
@@ -257,9 +258,9 @@ const SearchRide = () => {
         className={`w-[95%] ${
           location.pathname === "/monthly-rental" ? "lg:w-[75%]" : "lg:w-[90%]"
         } mx-auto px-4 py-2.5 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
-          isHomePage && "-mt-6 md:-mt-28 lg:-mt-14"
+          isHomeLink.includes(location.pathname) && "-mt-6 md:-mt-28 lg:-mt-14"
         } shadow-lg ${
-          !isHomePage
+          !isHomeLink.includes(location.pathname)
             ? isSearchUpdatesActive
               ? "fixed w-full top-0 h-full z-50"
               : "relative hidden lg:block"
@@ -269,7 +270,7 @@ const SearchRide = () => {
       >
         <div
           className={`${
-            isHomePage ? "hidden" : ""
+            isHomeLink.includes(location.pathname) ? "hidden" : ""
           } lg:hidden flex items-center justify-between py-2 border-b-2`}
         >
           <h2 className="font-bold text-xl uppercase">

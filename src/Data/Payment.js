@@ -5,7 +5,6 @@ import {
   sendEmailForBookingDetails,
   updateCouponCount,
 } from ".";
-// import { toggleBookingDoneModal } from "../Redux/ModalSlice/ModalSlice";
 
 export const razorPayment = async (
   currentUser,
@@ -70,7 +69,7 @@ export const razorPayment = async (
         };
         await handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
-        navigate(`/my-rides/summary/${updatedData?._id}`);
+        navigate(`/account/my-rides/summary/${updatedData?._id}`);
         dispatch(handleRestCoupon());
         // sending booking confirm to whatsapp & email
         sendEmailForBookingDetails(updatedData);

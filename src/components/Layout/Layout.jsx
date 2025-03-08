@@ -37,9 +37,8 @@ const Layout = () => {
     if (selectedLocation === null) {
       dispatch(toggleLocationModal(true));
     }
-  }, [user, selectedLocation, dispatch]);
+  }, [user, selectedLocation]);
 
-  // this is to delete the temp booking & coupon data
   useEffect(() => {
     if (!hasMounted) {
       setHasMounted(true);
@@ -54,9 +53,7 @@ const Layout = () => {
     }
     // this will user to top of the screen whenever user change the page
     window.scrollTo(0, 0);
-    // for closing modal on page change
-    dispatch(handleRestAll());
-  }, [location.href]);
+  }, [location.pathname]);
 
   return (
     <>
