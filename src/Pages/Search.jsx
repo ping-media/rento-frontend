@@ -5,24 +5,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductSkeleton from "../components/skeleton/ProductSkeleton";
 import ErrorNotFound from "../components/Error/ErrorNotFound";
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
-import { formatDateTimeForUser, handlePreviousPage } from "../utils";
-import {
-  toggleFilter,
-  toggleSearchUpdate,
-} from "../Redux/ModalSlice/ModalSlice";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { toggleFilter } from "../Redux/ModalSlice/ModalSlice";
 import { handleSearchVehicleData } from "../Data/Functions";
 import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 import Pagination from "../components/SearchRide/Pagination";
 
 const Search = () => {
-  const navigate = useNavigate();
   const [queryParms] = useSearchParams();
   const dispatch = useDispatch();
   const { loading, vehicles, pagination } = useSelector(
@@ -32,9 +22,6 @@ const Search = () => {
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
-  //for showing pickup & dropoff date
-  const [pickup, setPickup] = useState(null);
-  const [dropoff, setDropOff] = useState(null);
   const customLocation = useLocation();
 
   useEffect(() => {
@@ -50,17 +37,6 @@ const Search = () => {
     );
   }, [customLocation, selectedLocation, pagination?.page]);
 
-  // picking date from url and convert the data to show date in mobile view
-  useEffect(() => {
-    const newQueryParmsData = Object.fromEntries(queryParms.entries());
-    const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
-    const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
-    if (pickUpDateAndTime && dropoffDateAndTime) {
-      setPickup(formatDateTimeForUser(pickUpDateAndTime));
-      setDropOff(formatDateTimeForUser(dropoffDateAndTime));
-    }
-  }, [location.href]);
-
   //removing this after we are going to booking
   useEffect(() => {
     dispatch(removeTempDate());
@@ -71,53 +47,6 @@ const Search = () => {
     <>
       {/* search filters  */}
       <SearchRide />
-      {/* mobileSearch  */}
-      <div className="lg:hidden bg-white shadow-md px-6 py-2 lg:py-3 flex items-center justify-between">
-        <button
-          className="flex items-center gap-1 p-1"
-          type="button"
-          onClick={() => handlePreviousPage(navigate)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="size-6"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M19 12H6M12 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <button
-          className="px-4 py-2 border-2 border-theme rounded-lg font-semibold"
-          type="button"
-          onClick={() => dispatch(toggleSearchUpdate())}
-        >
-          <span>{pickup?.date}</span>
-          <span className="mx-1 text-theme">To</span>
-          <span>{dropoff?.date}</span>
-        </button>
-        <button type="button" onClick={() => dispatch(toggleFilter())}>
-          <svg
-            xmln="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
-            />
-          </svg>
-        </button>
-      </div>
-
       <div className="mt-5 lg:mt-10 mb-4 w-[95%] lg:w-[90%] mx-auto">
         <div className="grid grid-cols-4 w-full">
           {/* 25% column */}

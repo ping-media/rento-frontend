@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
-import heroImage from "../assets/images/banner.jpg";
+import ActivaImage from "../assets/images/activa.png";
+import heroImage from "../assets/images/hero-banner.jpg";
 import HeroSection from "../components/HeroSection/HeroSection";
 import SearchRide from "../components/SearchRide/SearchRide";
 import PreLoader from "../components/skeleton/PreLoader";
@@ -10,7 +11,7 @@ const Home = () => {
   return (
     <>
       {stationLoading && <PreLoader />}
-      <HeroSection imageUrl={heroImage} />
+      <HeroSection imageUrl={heroImage} secondImgeUrl={ActivaImage} />
       <SearchRide />
       <Faq />
     </>

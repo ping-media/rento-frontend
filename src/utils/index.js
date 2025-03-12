@@ -593,6 +593,27 @@ const addDaysToDateForRide = (daysToAdd, dateStr) => {
   return newDateStr;
 };
 
+const searchFormatDateOnly = (dateStr) => new Date(dateStr);
+
+const searchFormatTimeOnly = (dateStr) => {
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "UTC",
+  }).format(date);
+};
+
+const isMinimumDuration12Hours = (date1, date2) => {
+  const msInHour = 60 * 60 * 1000;
+  const diffInMs = Math.abs(
+    new Date(date1).getTime() - new Date(date2).getTime()
+  );
+
+  return diffInMs >= 12 * msInHour;
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -626,4 +647,7 @@ export {
   formatTimeForProductCard,
   RoundedDateTimeAndToNextHour,
   addDaysToDateForRide,
+  searchFormatDateOnly,
+  searchFormatTimeOnly,
+  isMinimumDuration12Hours,
 };

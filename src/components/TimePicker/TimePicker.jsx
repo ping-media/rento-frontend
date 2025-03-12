@@ -12,7 +12,7 @@ const TimePicker = ({
 }) => {
   const [timeVisible, setTimeVisible] = useState(false);
   const { selectedStation } = useSelector((state) => state.station);
-  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
+  const [dropdownPosition, setDropdownPosition] = useState("bottom");
   const timePickerRef = useRef(null);
   const buttonRef = useRef(null);
 

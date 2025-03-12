@@ -20,13 +20,19 @@ import {
   convertTo24HourFormat,
   convertToISOString,
   format24HourFormatTime,
+  formatDateTimeForUser,
+  isMinimumDuration12Hours,
   nextDayFromCurrent,
   removeAfterSecondSlash,
+  searchFormatDateOnly,
+  searchFormatTimeOnly,
 } from "../../utils";
 import { searchData } from "../../Data/Functions";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import PreLoader from "../skeleton/PreLoader";
 import { isHomeLink } from "../../Data/dummyData";
+import DateTimePicker from "../DateTimePicker/DateTimePicker";
+import MobileSearchRide from "./MobileSearchRide";
 
 const SearchRide = () => {
   const navigate = useNavigate();
@@ -34,9 +40,8 @@ const SearchRide = () => {
   const location = useLocation();
   const searchRideContainerRef = useRef(null);
   const { id } = useParams();
-  const [isHomePage, setIsHomePage] = useState(false);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
-  const { stationLoading, selectedStation, station } = useSelector(
+  const { stationLoading, selectedStation } = useSelector(
     (state) => state.station
   );
   const { loading, selectedLocation } = useSelector(
@@ -45,6 +50,8 @@ const SearchRide = () => {
   const [isPageLoad, setIsPageLoad] = useState(false);
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
+  const [pickupDateMobile, setPickupDateMobile] = useState("");
+  const [dropoffDateMobile, setDropoffDateMobile] = useState("");
   const [queryParms] = useSearchParams();
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
@@ -62,29 +69,36 @@ const SearchRide = () => {
     e && e.preventDefault();
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
-    let dropDate = result?.dropoffDate;
+    const pickupDate = result.pickup.substring(0, 16);
+    const pickupTime = result.pickup.substring(17, result.pickup.length);
+    let dropoffDate = result?.dropoff?.substring(0, 16) || "";
+    const dropoffTime =
+      result?.dropoff?.substring(17, result.dropoff.length) || "";
+
     // changing the drop date when user is coming from monthly page
     if (location.pathname === "/monthly-rental") {
-      dropDate = addDaysToDateForRide(30, result?.pickupDate);
+      dropoffDate = addDaysToDateForRide(30, pickupDate);
     }
     const covertedTime = parseInt(
-      convertTo24HourFormat(result?.pickupTime).replace(":00", "")
+      convertTo24HourFormat(pickupTime).replace(":00", "")
     );
-    // checking whether the minimum duration should be 1 day or more
-    if (
-      location.pathname !== "/monthly-rental" &&
-      result?.pickupTime !== result?.dropoffTime
-    )
+    // checking whether the minimum duration should be 12 hour or more
+    const isMinDuration = isMinimumDuration12Hours(
+      result.pickup,
+      result.dropoff
+    );
+    // return console.log(result, isMinDuration);
+    if (location.pathname !== "/monthly-rental" && !isMinDuration)
       return handleAsyncError(
         dispatch,
-        "Minimum Interval between dates should be 24 hours"
+        "Minimum Interval between dates should be 12 hours"
       );
 
     //checking whether time is in opening hours
     try {
       if (
         (location.pathname !== "monthly-rental" &&
-          result?.pickupTime === result?.dropoffTime &&
+          pickupTime === dropoffTime &&
           covertedTime >= selectedStation?.openStartTime &&
           covertedTime <= selectedStation?.openEndTime) ||
         (covertedTime >= selectedStation?.openStartTime &&
@@ -99,11 +113,11 @@ const SearchRide = () => {
               `/search/${
                 result?.pickupLocationId
               }?BookingStartDateAndTime=${convertToISOString(
-                result?.pickupDate,
-                result?.pickupTime
+                pickupDate,
+                pickupTime
               )}&BookingEndDateAndTime=${convertToISOString(
-                result?.dropoffDate,
-                result?.dropoffTime
+                dropoffDate,
+                dropoffTime
               )}`
             );
           }
@@ -112,21 +126,21 @@ const SearchRide = () => {
             `/search/${
               result?.pickupLocationId
             }?BookingStartDateAndTime=${convertToISOString(
-              result?.pickupDate,
-              result?.pickupTime
+              pickupDate,
+              pickupTime
             )}&BookingEndDateAndTime=${convertToISOString(
-              dropDate,
-              result?.pickupTime
+              dropoffDate,
+              pickupTime
             )}`
           );
         } else if (location.pathname === "/explore") {
           return navigate(
             `/explore?BookingStartDateAndTime=${convertToISOString(
-              result?.pickupDate,
-              result?.pickupTime
+              pickupDate,
+              pickupTime
             )}&BookingEndDateAndTime=${convertToISOString(
-              result?.dropoffDate,
-              result?.dropoffTime
+              dropoffDate,
+              dropoffTime
             )}`
           );
         }
@@ -140,16 +154,6 @@ const SearchRide = () => {
       navigate(`/error-${error?.message}`);
     }
   };
-
-  // this code is to change the direction of opening the option dropdown whether it goes up or down
-  useEffect(() => {
-    if (
-      location.pathname === "/" ||
-      (location.pathname === "/monthly-rental" && isHomePage === false)
-    ) {
-      setIsHomePage(!isHomePage);
-    }
-  }, [location.href]);
 
   // this function is fetching station based on location id
   const memoizedSearchData = useCallback(() => {
@@ -165,39 +169,6 @@ const SearchRide = () => {
   useEffect(() => {
     memoizedSearchData();
   }, [memoizedSearchData]);
-
-  useEffect(() => {
-    // Destructure BookingStartDateAndTime and BookingEndDateAndTime
-    try {
-      setIsPageLoad(true);
-      const newQueryParms = Object.fromEntries(queryParms.entries());
-      const { BookingStartDateAndTime, BookingEndDateAndTime } = newQueryParms;
-
-      // Function to format dates
-      const formatDateOnly = (dateStr) => new Date(dateStr);
-      const formatTimeOnly = (dateStr) => {
-        const date = new Date(dateStr);
-        return new Intl.DateTimeFormat("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          timeZone: "UTC", // or another time zone
-        }).format(date);
-      };
-
-      // Set state with formatted values
-      if (BookingStartDateAndTime && BookingEndDateAndTime) {
-        setPickupDate(formatDateOnly(BookingStartDateAndTime));
-        setDropoffDate(formatDateOnly(BookingEndDateAndTime));
-        setQueryPickupTime(formatTimeOnly(BookingStartDateAndTime));
-        setQueryDropoffTime(formatTimeOnly(BookingEndDateAndTime));
-      }
-    } catch (error) {
-      return console.error(error?.message);
-    } finally {
-      setIsPageLoad(false);
-    }
-  }, [location.href]);
 
   // this will set time and date for the first time on homepage
   useEffect(() => {
@@ -251,6 +222,30 @@ const SearchRide = () => {
     }
   }, [selectedStation]);
 
+  useEffect(() => {
+    if (!location.pathname.includes("/search/")) return;
+    try {
+      setIsPageLoad(true);
+      const newQueryParmsData = Object.fromEntries(queryParms.entries());
+      const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
+      const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
+      if (pickUpDateAndTime && dropoffDateAndTime) {
+        // for mobile short dates
+        setPickupDateMobile(formatDateTimeForUser(pickUpDateAndTime));
+        setDropoffDateMobile(formatDateTimeForUser(dropoffDateAndTime));
+        // for desktop full view
+        setPickupDate(searchFormatDateOnly(pickUpDateAndTime));
+        setDropoffDate(searchFormatDateOnly(dropoffDateAndTime));
+        setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+        setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+      }
+    } catch (error) {
+      navigate("/error");
+    } finally {
+      setIsPageLoad(false);
+    }
+  }, [location.href]);
+
   return (
     <>
       {isPageLoad && stationLoading && <PreLoader />}
@@ -258,13 +253,13 @@ const SearchRide = () => {
         className={`w-[95%] ${
           location.pathname === "/monthly-rental" ? "lg:w-[75%]" : "lg:w-[90%]"
         } mx-auto px-4 py-2.5 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
-          isHomeLink.includes(location.pathname) && "-mt-6 md:-mt-28 lg:-mt-14"
+          isHomeLink.includes(location.pathname) && "-mt-12 md:-mt-28 lg:-mt-14"
         } shadow-lg ${
           !isHomeLink.includes(location.pathname)
             ? isSearchUpdatesActive
               ? "fixed w-full top-0 h-full z-50"
               : "relative hidden lg:block"
-            : "relative rounded-lg"
+            : "relative rounded-lg z-10"
         }`}
         ref={searchRideContainerRef}
       >
@@ -295,8 +290,8 @@ const SearchRide = () => {
         <form
           className={`flex flex-wrap lg:grid ${
             location.pathname === "/monthly-rental"
-              ? "grid-cols-4"
-              : "grid-cols-6"
+              ? "grid-cols-3"
+              : "grid-cols-4"
           } gap-3 lg:gap-4 ${isSearchUpdatesActive ? "mt-5" : "mt-1"} lg:mt-0`}
           ref={rideSubmitRef}
           onSubmit={handleSearchRide}
@@ -315,60 +310,33 @@ const SearchRide = () => {
             />
           </div>
           <div className="w-full">
-            <label htmlFor="pickup-date" className="text-gray-500 block mb-1">
-              Pick-up Date
+            <label htmlFor="pickup-time" className="text-gray-500 block mb-1">
+              Pick-up Date And Time
             </label>
-            <DatePicker
-              placeholderMessage={"Select Pick-up Date"}
+            <DateTimePicker
               value={pickupDate}
               setValueChanger={setPickupDate}
-              name={"pickupDate"}
+              name={"pickup"}
               setDropoffChanger={setDropoffDate}
-            />
-          </div>
-          <div className="w-full">
-            <label htmlFor="pickup-time" className="text-gray-500 block mb-1">
-              Pick-up Time
-            </label>
-            <TimePicker
-              labelId="pickup-time"
-              value={queryPickupTime}
-              setValueChanger={setQueryPickupTime}
-              name={"pickupTime"}
-              setDropoffChanger={setQueryDropoffTime}
-              date={pickupDate}
+              timeValue={queryPickupTime}
+              setTimeValueChanger={setQueryPickupTime}
             />
           </div>
           {location.pathname !== "/monthly-rental" && (
             <>
               <div className="w-full">
                 <label
-                  htmlFor="dropoff-date"
+                  htmlFor="pickup-time"
                   className="text-gray-500 block mb-1"
                 >
-                  Drop-off Date
+                  Pick-up Date And Time
                 </label>
-                <DatePicker
-                  placeholderMessage={"Select Drop-off Date"}
+                <DateTimePicker
                   value={dropoffDate}
                   setValueChanger={setDropoffDate}
-                  name={"dropoffDate"}
-                />
-              </div>
-              <div className="w-full">
-                <label
-                  htmlFor="dropoff-time"
-                  className="text-gray-500 block mb-1"
-                >
-                  Drop-off Time
-                </label>
-                <TimePicker
-                  labelId="dropoff-time"
-                  value={queryDropoffTime}
-                  setValueChanger={setQueryDropoffTime}
-                  name={"dropoffTime"}
-                  date={dropoffDate}
-                  isDisabled={true}
+                  name={"dropoff"}
+                  timeValue={queryDropoffTime}
+                  setTimeValueChanger={setQueryDropoffTime}
                 />
               </div>
             </>
@@ -379,6 +347,14 @@ const SearchRide = () => {
           />
         </form>
       </div>
+
+      {/* mobile view  layout */}
+      {location.pathname.includes("/search/") && (
+        <MobileSearchRide
+          pickup={pickupDateMobile?.date}
+          dropoff={dropoffDateMobile?.date}
+        />
+      )}
     </>
   );
 };
