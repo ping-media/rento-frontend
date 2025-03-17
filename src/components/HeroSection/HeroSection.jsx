@@ -36,7 +36,7 @@ const HeroSection = ({ imageUrl, secondImgeUrl }) => {
             <div className="absolute w-28 lg:w-40 bg-white/20 top-3 lg:top-9 right-0 backdrop-blur-md border border-gray-100 rounded-md p-1 lg:p-2">
               <p className="italic font-semibold mb-1.5">Rating</p>
               <div className="flex items-center gap-1">
-                {new Array(4).fill(undefined).map((_, index) => (
+                {new Array(5).fill(undefined).map((_, index) => (
                   <img
                     src={star}
                     className="size-4 object-cover"
@@ -44,11 +44,6 @@ const HeroSection = ({ imageUrl, secondImgeUrl }) => {
                     key={index}
                   />
                 ))}
-                <img
-                  src={halfStar}
-                  className="size-4 object-cover"
-                  alt="star_5"
-                />
               </div>
             </div>
             <img

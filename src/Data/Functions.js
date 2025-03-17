@@ -184,6 +184,7 @@ const handleFetchBookingData = (
   }
   const response = new FormData(e.target);
   const result = Object.fromEntries(response.entries());
+  // return console.log(result);
   // ride starting otp
   const startRideOtp = Math.floor(1000 + Math.random() * 9000);
   if (vehicles) {
@@ -603,6 +604,207 @@ const handleCreateBookingSubmit = async (
   }
 };
 
+const handleBookingProcess = async (
+  e,
+  vehicles,
+  queryParmsData,
+  currentUser,
+  toggleLoginModal,
+  addTempBookingData,
+  setBookingLoading,
+  vehiclePlanData,
+  isDiscountZero,
+  dispatch,
+  tempCouponName,
+  tempCouponId,
+  tempBookingData,
+  handleCreateBooking,
+  handleUpdateBooking,
+  createOrderId,
+  razorPayment,
+  handleRestCoupon,
+  handleAsyncError,
+  navigate,
+  removeTempDate,
+  handlebooking
+) => {
+  e.preventDefault();
+  setBookingLoading(true);
+
+  if (!currentUser) {
+    setBookingLoading(false);
+    return dispatch(toggleLoginModal());
+  }
+
+  if (!queryParmsData)
+    return handleAsyncError(dispatch, "unable to book ride now! try again");
+
+  const formData = new FormData(e.target);
+  const result = Object.fromEntries(formData.entries());
+  const startRideOtp = Math.floor(1000 + Math.random() * 9000);
+
+  if (!vehicles || vehicles.length === 0) return;
+  let data;
+  if (tempBookingData === null) {
+    data = {
+      vehicleTableId: vehicles[0]?._id,
+      userId: currentUser?._id,
+      vehicleMasterId: vehicles[0]?.vehicleMasterId,
+      BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
+        ".000Z",
+        "Z"
+      ),
+      BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime.replace(
+        ".000Z",
+        "Z"
+      ),
+      bookingPrice: {
+        bookingPrice: Number(result?.bookingPrice),
+        vehiclePrice: Number(result?.bookingPrice),
+        extraAddonPrice: result?.extraAddonPrice
+          ? Number(result?.extraAddonPrice)
+          : 0,
+        tax: Number(result?.tax),
+        totalPrice: Number(result?.totalPrice),
+        discountPrice: Number(result?.discountPrice || 0),
+        discountTotalPrice: Number(result?.discounttotalPrice || 0),
+        isDiscountZero: isDiscountZero,
+        rentAmount: vehicles[0]?.perDayCost,
+        isPackageApplied: !!vehiclePlanData,
+        extendAmount: [],
+      },
+      vehicleBasic: {
+        refundableDeposit: vehicles[0]?.refundableDeposit,
+        speedLimit: vehicles[0]?.speedLimit,
+        vehicleNumber: vehicles[0]?.vehicleNumber,
+        freeLimit: vehicles[0]?.freeKms,
+        lateFee: vehicles[0]?.lateFee,
+        extraKmCharge: vehicles[0]?.extraKmsCharges,
+        startRide: startRideOtp,
+        endRide: 0,
+      },
+      discountCuopon: { couponName: tempCouponName, couponId: tempCouponId },
+      extendBooking: { oldBooking: [], transactionIds: [] },
+      vehicleName: vehicles[0]?.vehicleName,
+      vehicleBrand: vehicles[0]?.vehicleBrand,
+      vehicleImage: vehicles[0]?.vehicleImage,
+      stationName: vehicles[0]?.stationName,
+      bookingStatus: "pending",
+      paymentStatus: "pending",
+      rideStatus: "pending",
+      paymentMethod: "NA",
+      payInitFrom: "NA",
+      paySuccessId: "NA",
+    };
+
+    dispatch(addTempBookingData(data));
+  }
+
+  try {
+    let storedBooking = localStorage.getItem("tempBooking");
+    if (storedBooking) {
+      data = tempBookingData || JSON.parse(storedBooking);
+    }
+
+    if (data?.bookingPrice?.isDiscountZero) {
+      data = {
+        ...data,
+        paymentMethod: "online",
+        bookingStatus: "done",
+        paymentStatus: "paid",
+      };
+      const response = await handleCreateBooking(
+        data,
+        handlebooking,
+        removeTempDate,
+        handleAsyncError,
+        dispatch
+      );
+
+      if (response?.status === 200) {
+        handleAsyncError(dispatch, "Ride booked successfully.", "success");
+        return navigate(`/account/my-rides/summary/${response?.data?._id}`);
+      }
+    }
+
+    if (!result?.paymentMethod) {
+      setBookingLoading(false);
+      return handleAsyncError(dispatch, "Select payment method first!");
+    }
+
+    if (result?.paymentMethod === "partiallyPay") {
+      const userPaid = parseInt(
+        (data?.bookingPrice?.discountTotalPrice ||
+          data?.bookingPrice?.totalPrice) * 0.2
+      );
+      const AmountLeftAfterUserPaid =
+        (data?.bookingPrice?.discountTotalPrice ||
+          data?.bookingPrice?.totalPrice) - userPaid;
+      data = {
+        ...data,
+        bookingPrice: {
+          ...data.bookingPrice,
+          userPaid,
+          AmountLeftAfterUserPaid,
+        },
+      };
+    }
+
+    data = { ...data, paymentMethod: result?.paymentMethod };
+
+    if (["online", "partiallyPay"].includes(result?.paymentMethod)) {
+      let bookingResponse;
+      if (!storedBooking) {
+        bookingResponse = await handleCreateBooking(
+          data,
+          handlebooking,
+          removeTempDate,
+          handleAsyncError,
+          dispatch
+        );
+      } else {
+        bookingResponse = await handleUpdateBooking(
+          { ...data, paymentMethod: result?.paymentMethod },
+          handlebooking,
+          handleAsyncError,
+          dispatch
+        );
+      }
+
+      if (bookingResponse?.status === 200 || storedBooking) {
+        const orderId = await createOrderId(data);
+        if (orderId?.status === "created") {
+          data = bookingResponse.data;
+          localStorage.setItem("tempBooking", JSON.stringify(data));
+          await handleUpdateBooking(
+            { ...data, paymentgatewayOrderId: orderId?.id },
+            handlebooking,
+            handleAsyncError,
+            dispatch
+          );
+        }
+        return await razorPayment(
+          currentUser,
+          data,
+          orderId,
+          result,
+          // handleUpdateBooking,
+          handleAsyncError,
+          navigate,
+          // handlebooking,
+          dispatch,
+          handleRestCoupon,
+          setBookingLoading
+        );
+      }
+    }
+  } catch (error) {
+    handleAsyncError(dispatch, "Something went wrong while booking ride");
+  } finally {
+    setBookingLoading(false);
+  }
+};
+
 export {
   handleSearchVehicleData,
   fetchingPlansFilters,
@@ -613,4 +815,5 @@ export {
   handleFetchBookingData,
   handleUpdateBooking,
   handleCreateBookingSubmit,
+  handleBookingProcess,
 };

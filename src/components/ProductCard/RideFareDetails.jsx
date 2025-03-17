@@ -25,7 +25,9 @@ const RideFareDetails = ({ rides }) => {
     0;
 
   const payableBalance =
-    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft);
+    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
+    rides.bookingPrice?.AmountLeftAfterUserPaid ||
+    0;
 
   return (
     <>
@@ -197,24 +199,6 @@ const RideFareDetails = ({ rides }) => {
                       {`- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`}
                     </p>
                   </li>
-                  {/* <li className="flex items-center justify-between mt-1 my-1">
-                    <p className="text-sm font-bold uppercase text-left">
-                      Remaining Amount
-                      <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                        (
-                        {rides?.bookingPrice?.AmountLeftAfterUserPaid
-                          ?.paymentMethod != ""
-                          ? `Paid: ${rides?.bookingPrice?.AmountLeftAfterUserPaid?.paymentMethod}`
-                          : "need to pay at pickup"}
-                        )
-                      </small>
-                    </p>
-                    <p className="text-sm font-bold text-right">
-                      {`₹${formatPrice(
-                        rides?.bookingPrice.AmountLeftAfterUserPaid?.amount
-                      )}`}
-                    </p>
-                  </li> */}
                 </>
               )}
 

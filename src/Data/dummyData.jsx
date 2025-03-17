@@ -169,15 +169,14 @@ export const brands = [
   "Hero",
   "Ather",
   "Ola",
-  "Mahindra",
   "Royal Enfield",
   "Harley-Davidson",
 ];
 export const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
 export const socialIcons = [
-  { icon: facebook, link: "#", label: "facebook" },
-  { icon: instagram, link: "#", label: "instagram" },
+  { icon: facebook, link: "https://www.facebook.com/", label: "facebook" },
+  { icon: instagram, link: "https://www.instagram.com/", label: "instagram" },
 ];
 
 export const quickLink = [
@@ -372,4 +371,9 @@ export const faqList = [
     answer:
       "For us to verify your documents in their original form, you essentially need two documents. Driver's Licence, Aadhaar Card, Election Card, Passport (anyone of these is acceptable).",
   },
+];
+
+export const bookingTermsList = [
+  "Confirm that you are above 18 years of age and you agree to all Terms & Conditions",
+  "The original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of dropping the vehicle.",
 ];

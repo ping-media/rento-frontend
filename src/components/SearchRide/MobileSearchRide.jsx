@@ -1,5 +1,5 @@
 import React from "react";
-import { handlePreviousPage } from "../../utils";
+import { formatDateMobile, handlePreviousPage } from "../../utils";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -35,9 +35,9 @@ const MobileSearchRide = ({ pickup, dropoff }) => {
         type="button"
         onClick={() => dispatch(toggleSearchUpdate())}
       >
-        <span>{pickup}</span>
+        <span>{formatDateMobile(pickup)}</span>
         <span className="mx-1 text-theme">To</span>
-        <span>{dropoff}</span>
+        <span>{formatDateMobile(dropoff)}</span>
       </button>
       <button type="button" onClick={() => dispatch(toggleFilter())}>
         <svg

@@ -200,7 +200,7 @@ const DatePicker = ({
       {/* Calendar + Time Picker Container */}
       {calendarVisible && (
         <div
-          className={`absolute bg-white shadow-md rounded-md mt-1 z-50 border border-gray-300 w-full lg:w-96 p-2 flex ${
+          className={`absolute bg-white shadow-md rounded-md mt-1 z-10 border border-gray-300 w-full lg:w-96 p-2 flex ${
             dropdownPosition === "top" ? "bottom-full mb-2" : "top-full"
           }`}
         >
@@ -297,7 +297,6 @@ const DatePicker = ({
           <div className="w-1/3 pl-2">
             <div className="text-center font-semibold">Time</div>
             <div ref={timePickerRef} className="overflow-y-auto max-h-48">
-              {/* {times.map((time) => ( */}
               {generateTimes().map(({ time, isDisabled }, index) => (
                 <button
                   type="button"

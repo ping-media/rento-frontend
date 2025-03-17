@@ -97,8 +97,10 @@ const VerifyOtp = ({
 
   // handle login
   const handleLogin = async (e, otp) => {
+    if (e && e !== null) {
+      e.preventDefault();
+    }
     setLoading(true);
-    if (e) e.preventDefault();
     let response;
     if (phone != 0) {
       response = await handleUser("/verifyOtp", {
@@ -149,69 +151,67 @@ const VerifyOtp = ({
 
   return (
     <form onSubmit={handleLogin}>
-      <>
-        <p className="text-gray-400 lg:text-gray-600 text-center mb-4">
-          Code sent to {email != "" ? email : `+91-(${phone})`}
+      <p className="text-gray-400 lg:text-gray-600 text-center mb-4">
+        Code sent to {email != "" ? email : `+91-(${phone})`}
+      </p>
+      <div
+        className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
+        onPaste={handlePaste}
+      >
+        {otpInput.map((value, index) => (
+          <input
+            key={index}
+            type="number"
+            value={value}
+            ref={(input) => (inputRef.current[index] = input)}
+            onChange={(e) => handleChange(index, e)}
+            onClick={() => handleClick(index)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            className="rounded-lg border border-gray-300 cursor-text w-10 lg:w-14 aspect-square flex items-center justify-center focus:outline-theme-blue text-center"
+            maxLength={1}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-center flex-col justify-between mb-1">
+        <p className="lg:text-gray-600 text-sm text-gray-400">
+          Didn't receive code?
         </p>
-        <div
-          className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
-          onPaste={handlePaste}
-        >
-          {otpInput.map((value, index) => (
-            <input
-              key={index}
-              type="number"
-              value={value}
-              ref={(input) => (inputRef.current[index] = input)}
-              onChange={(e) => handleChange(index, e)}
-              onClick={() => handleClick(index)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              className="rounded-lg border border-gray-300 cursor-text w-10 lg:w-14 aspect-square flex items-center justify-center focus:outline-theme-blue text-center"
-              maxLength={1}
-            />
-          ))}
+        <div className="flex items-center space-x-2">
+          <button
+            className="px-3 py-2 text-sm font-medium text-center rounded hover:text-gray-500 text-theme disabled:text-gray-400"
+            disabled={isTimerActive}
+            type="button"
+            onClick={handleSendOtpAgain}
+          >
+            {seconds === 0
+              ? "Request Again"
+              : `Request Again (00:00:${
+                  seconds < 10 ? `0${seconds}` : seconds
+                })`}
+          </button>
         </div>
-
-        <div className="flex items-center flex-col justify-between mb-1">
-          <p className="lg:text-gray-600 text-sm text-gray-400">
-            Didn't receive code?
-          </p>
-          <div className="flex items-center space-x-2">
-            <button
-              className="px-3 py-2 text-sm font-medium text-center rounded hover:text-gray-500 text-theme disabled:text-gray-400"
-              disabled={isTimerActive}
-              type="button"
-              onClick={handleSendOtpAgain}
-            >
-              {seconds === 0
-                ? "Request Again"
-                : `Request Again (00:00:${
-                    seconds < 10 ? `0${seconds}` : seconds
-                  })`}
-            </button>
-          </div>
+      </div>
+      {/* back to number page  */}
+      {setRestValue && (
+        <div className="flex items-center flex-col justify-between mb-5">
+          <button
+            className="px-3 py-1 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
+            type="button"
+            onClick={handleRestOtpScreen}
+          >
+            Change Number
+          </button>
         </div>
-        {/* back to number page  */}
-        {setRestValue && (
-          <div className="flex items-center flex-col justify-between mb-5">
-            <button
-              className="px-3 py-1 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
-              type="button"
-              onClick={handleRestOtpScreen}
-            >
-              Change Number
-            </button>
-          </div>
-        )}
+      )}
 
-        <button
-          className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
-          type="submit"
-          disabled={loading || onOtpSubmit.length != 6}
-        >
-          {loading ? <Spinner message={"loading.."} /> : "Verify"}
-        </button>
-      </>
+      <button
+        className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
+        type="submit"
+        disabled={loading || onOtpSubmit.length != 6}
+      >
+        {loading ? <Spinner message={"loading.."} /> : "Verify"}
+      </button>
     </form>
   );
 };

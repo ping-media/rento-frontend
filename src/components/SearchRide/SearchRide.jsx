@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import DatePicker from "../DatePicker/DatePicker";
-import TimePicker from "../TimePicker/TimePicker";
 import Button from "../Button/Button";
 import DropDownButtonWithIcon from "../DropdownButton/DropDownButtonWithIcon";
 import {
@@ -20,8 +18,9 @@ import {
   convertTo24HourFormat,
   convertToISOString,
   format24HourFormatTime,
-  formatDateTimeForUser,
-  isMinimumDuration12Hours,
+  formatTimeWithoutSeconds,
+  isMinimumDurationHours,
+  isSecondTimeSmaller,
   nextDayFromCurrent,
   removeAfterSecondSlash,
   searchFormatDateOnly,
@@ -50,8 +49,6 @@ const SearchRide = () => {
   const [isPageLoad, setIsPageLoad] = useState(false);
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
-  const [pickupDateMobile, setPickupDateMobile] = useState("");
-  const [dropoffDateMobile, setDropoffDateMobile] = useState("");
   const [queryParms] = useSearchParams();
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
@@ -70,7 +67,14 @@ const SearchRide = () => {
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
     const pickupDate = result.pickup.substring(0, 16);
-    const pickupTime = result.pickup.substring(17, result.pickup.length);
+    const checkTime = isSecondTimeSmaller(
+      formatTimeWithoutSeconds(new Date().toLocaleTimeString()),
+      result.pickup.substring(17, result.pickup.length)
+    );
+    const pickupTime = checkTime
+      ? result.pickup.substring(17, result.pickup.length)
+      : formatTimeWithoutSeconds(new Date().toLocaleTimeString());
+    // return console.log(time, pickupTime);
     let dropoffDate = result?.dropoff?.substring(0, 16) || "";
     const dropoffTime =
       result?.dropoff?.substring(17, result.dropoff.length) || "";
@@ -83,11 +87,7 @@ const SearchRide = () => {
       convertTo24HourFormat(pickupTime).replace(":00", "")
     );
     // checking whether the minimum duration should be 12 hour or more
-    const isMinDuration = isMinimumDuration12Hours(
-      result.pickup,
-      result.dropoff
-    );
-    // return console.log(result, isMinDuration);
+    const isMinDuration = isMinimumDurationHours(result.pickup, result.dropoff);
     if (location.pathname !== "/monthly-rental" && !isMinDuration)
       return handleAsyncError(
         dispatch,
@@ -98,7 +98,7 @@ const SearchRide = () => {
     try {
       if (
         (location.pathname !== "monthly-rental" &&
-          pickupTime === dropoffTime &&
+          // pickupTime === dropoffTime &&
           covertedTime >= selectedStation?.openStartTime &&
           covertedTime <= selectedStation?.openEndTime) ||
         (covertedTime >= selectedStation?.openStartTime &&
@@ -230,9 +230,6 @@ const SearchRide = () => {
       const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
       const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
       if (pickUpDateAndTime && dropoffDateAndTime) {
-        // for mobile short dates
-        setPickupDateMobile(formatDateTimeForUser(pickUpDateAndTime));
-        setDropoffDateMobile(formatDateTimeForUser(dropoffDateAndTime));
         // for desktop full view
         setPickupDate(searchFormatDateOnly(pickUpDateAndTime));
         setDropoffDate(searchFormatDateOnly(dropoffDateAndTime));
@@ -351,8 +348,8 @@ const SearchRide = () => {
       {/* mobile view  layout */}
       {location.pathname.includes("/search/") && (
         <MobileSearchRide
-          pickup={pickupDateMobile?.date}
-          dropoff={dropoffDateMobile?.date}
+          pickup={pickupDate?.toLocaleDateString()}
+          dropoff={dropoffDate?.toLocaleDateString()}
         />
       )}
     </>

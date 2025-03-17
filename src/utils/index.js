@@ -605,13 +605,47 @@ const searchFormatTimeOnly = (dateStr) => {
   }).format(date);
 };
 
-const isMinimumDuration12Hours = (date1, date2) => {
+const isMinimumDurationHours = (date1, date2, duration = 12) => {
   const msInHour = 60 * 60 * 1000;
   const diffInMs = Math.abs(
     new Date(date1).getTime() - new Date(date2).getTime()
   );
 
-  return diffInMs >= 12 * msInHour;
+  return diffInMs >= duration * msInHour;
+};
+
+const formatDateMobile = (inputDate) => {
+  if (!inputDate || typeof inputDate !== "string") return "Invalid Date";
+
+  const parts = inputDate.split("/");
+  if (parts.length !== 3) return "Invalid Date";
+
+  const [month, day, year] = parts;
+  const dateObj = new Date(year, month - 1, day);
+
+  return dateObj.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const isSecondTimeSmaller = (time1, time2) => {
+  const convertTo24HourFormat = (time) => {
+    let [hour, minute, period] = time.match(/(\d+):(\d+) (\w{2})/).slice(1);
+    hour = parseInt(hour);
+    minute = parseInt(minute);
+
+    if (period.toUpperCase() === "PM" && hour !== 12) {
+      hour += 12;
+    } else if (period.toUpperCase() === "AM" && hour === 12) {
+      hour = 0;
+    }
+
+    return hour * 60 + minute;
+  };
+
+  return convertTo24HourFormat(time2) < convertTo24HourFormat(time1);
 };
 
 export {
@@ -649,5 +683,7 @@ export {
   addDaysToDateForRide,
   searchFormatDateOnly,
   searchFormatTimeOnly,
-  isMinimumDuration12Hours,
+  isMinimumDurationHours,
+  formatDateMobile,
+  isSecondTimeSmaller,
 };

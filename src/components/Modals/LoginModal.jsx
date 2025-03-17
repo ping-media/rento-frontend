@@ -40,14 +40,15 @@ const LoginModal = () => {
     if (result) {
       try {
         const response = await handleUser("/otpGenerat", result);
-        if (response.status != 200) {
+        if (response.status !== 200) {
           dispatch(addTempContact(result?.contact));
           handleRegisterModal();
         } else if (response?.type === "error") {
           handleAsyncError(dispatch, response?.message);
         } else if (response.status === 500) {
           handleAsyncError(dispatch, "unable to send otp! try again");
-        } else {
+        } else if (response.status === 200) {
+          // return console.log(response);
           setInputNumber(result?.contact);
           setIsOtpSend(true);
           setIsInputEmpty(null);
@@ -56,14 +57,17 @@ const LoginModal = () => {
           handleAsyncError(dispatch, response?.message, "success");
         }
       } catch (error) {
-        return handleAsyncError(dispatch, "unable to send otp! try again");
+        return handleAsyncError(dispatch, "unable to send otp! try again.");
       } finally {
-        return setLoading(false);
+        setLoading(false);
+        return false;
       }
+    } else {
+      return handleAsyncError(dispatch, "Unable to login! try again.");
     }
   };
 
-  //this function is to change for login to signup
+  //this function is to change from login to signup
   const handleRegisterModal = () => {
     dispatch(toggleLoginModal(false));
     dispatch(toggleRegisterModal(true));
@@ -124,6 +128,7 @@ const LoginModal = () => {
                   Don't have an account?{" "}
                   <button
                     className="uppercase text-theme font-semibold text-sm hover:text-theme-dark transition duration-300 ease-in-out"
+                    type="button"
                     onClick={handleRegisterModal}
                   >
                     Sign up

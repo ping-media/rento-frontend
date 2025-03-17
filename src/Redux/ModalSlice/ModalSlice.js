@@ -13,6 +13,7 @@ const initialState = {
   isEmailVerifyModalActive: false,
   isSelfieModalActive: false,
   isBookingDone: false,
+  isBookingTermActive: false,
 };
 
 const ModalSlice = createSlice({
@@ -57,6 +58,9 @@ const ModalSlice = createSlice({
     toggleSelfieModal: (state) => {
       state.isSelfieModalActive = !state.isSelfieModalActive;
     },
+    toggleBookingTermModal: (state) => {
+      state.isBookingTermActive = !state.isBookingTermActive;
+    },
     handleRestAll: () => initialState,
   },
 });
@@ -74,6 +78,7 @@ export const {
   toggleEmailVerifyModal,
   toggleBookingDoneModal,
   toggleSelfieModal,
+  toggleBookingTermModal,
   handleRestAll,
 } = ModalSlice.actions;
 

@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 
 const BookingSuccessModal = () => {
   const { isBookingDone } = useSelector((state) => state.modals);
+  if (!isBookingDone) return;
   return (
     <div
       className={`fixed ${
@@ -10,7 +11,6 @@ const BookingSuccessModal = () => {
     >
       <div className="relative top-5 lg:top-60 mx-auto shadow-xl rounded-xl bg-white max-w-lg">
         <div className="p-4 pt-5 text-center">
-          {/* <div className="w-full p-4 shadow-2xl"> */}
           <div className="text-center">
             <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full">
               <svg
@@ -36,11 +36,7 @@ const BookingSuccessModal = () => {
             <p className="mt-2 lg:mt-3 text-sm lg:text-sm text-gray-800 mb-4">
               Thank you for booking ride with us.
             </p>
-            {/* <p class="mt-4 text-xs lg:text-sm text-gray-400 italic">
-              Redirecting into 10 seconds
-            </p> */}
           </div>
-          {/* </div> */}
         </div>
       </div>
     </div>

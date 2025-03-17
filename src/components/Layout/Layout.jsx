@@ -1,8 +1,7 @@
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import { lazy, useEffect, useState } from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
-// lazy loading the below components
 const LoginModal = lazy(() => import("../Modals/LoginModal"));
 const RegisterModal = lazy(() => import("../Modals/RegisterModal"));
 const LocationModal = lazy(() => import("../Modals/LocationModal"));
@@ -13,10 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
 import Footer from "../Footer/Footer";
 import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
-import {
-  handleRestAll,
-  toggleLocationModal,
-} from "../../Redux/ModalSlice/ModalSlice";
+import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
 import CallToActionButton from "../CallToAction/CallToActionButton";
 import whatsapp from "../../assets/icons/whatsapp.png";
 
@@ -27,6 +23,7 @@ const Layout = () => {
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     // setting decrypt user data

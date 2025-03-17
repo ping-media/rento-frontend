@@ -66,7 +66,6 @@ const handleUser = async (endpoint, data) => {
         },
       }
     );
-    // console.log(response);
     return response?.data || response;
   } catch (error) {
     return {
@@ -111,7 +110,7 @@ const handlebooking = async (data) => {
     return response.data;
   } catch (error) {
     return {
-      message: "something went wrong while siginning in or user verification",
+      message: error?.message,
       type: "error",
     };
   }

@@ -45,6 +45,13 @@ input[type="number"] {
   @apply bg-theme;
 }
 
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
 body {
   font-family: "Mulish", sans-serif !important;
   font-size: 0.9rem !important;

@@ -34,6 +34,7 @@ const PriceCard = ({
     tempCouponName,
     isDiscountZero,
   } = useSelector((state) => state.coupon);
+  const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   // for getting plan price
@@ -151,7 +152,6 @@ const PriceCard = ({
     {
       title: "Extra Helmet Price",
       name: "extraAddonPrice",
-      // do this because we don't need to take helmet price more than 200
       price: parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
     },
     {
@@ -167,7 +167,7 @@ const PriceCard = ({
       if (vehicleRentCost != 0 && extraAddOnCost != 0 && gSTCost != 0) {
         const totalPrice = priceDetails.reduce((total, item) => {
           if (item?.title.includes("Helmet") & !isExtraChecked) {
-            return total; // Do not add the extra helmet price
+            return total;
           }
           return total + item.price;
         }, 0);
@@ -270,8 +270,12 @@ const PriceCard = ({
         </div>
       </div>
       {/* extra helmet  */}
-      <div className="bg-yellow-200 px-4 -mt-4 pt-1 -mb-2 rounded-b-lg bottom-2 w-full">
-        <div className="mb-1">
+      <div
+        className={`bg-yellow-200 px-4 -mt-4 pt-1 ${
+          isExtraChecked || currentUser !== null ? "" : "-mb-2"
+        } rounded-b-lg w-full`}
+      >
+        <div className="pb-1">
           <label
             htmlFor="hr"
             className="flex flex-row items-center gap-2.5 font-semibold"
