@@ -32,7 +32,6 @@ export const razorPayment = async (
   const handleBookVehicle = async (response) => {
     try {
       setBookingLoading && setBookingLoading(true);
-      // dispatch(toggleBookingDoneModal());
       // for booking vehicle
       const updatedData = {
         ...data,
@@ -49,8 +48,6 @@ export const razorPayment = async (
           "Unable to book ride! if payment got deducted than contact support team."
         );
 
-      console.log(updatedData);
-
       // updating booking
       const bookingResponse = await handleUpdateBooking(
         updatedData,
@@ -59,14 +56,11 @@ export const razorPayment = async (
         dispatch
       );
 
-      console.log(bookingResponse);
-
       // deleting temp booking
       localStorage.removeItem("tempBooking");
       dispatch(removeTempBookingData());
 
       if (bookingResponse?.status === 200) {
-        // dispatch(toggleBookingDoneModal());
         const timeLineData = {
           currentBooking_id: bookingResponse?.data?._id,
           timeLine: [
