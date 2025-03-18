@@ -35,9 +35,9 @@ const MobileSearchRide = ({ pickup, dropoff }) => {
         type="button"
         onClick={() => dispatch(toggleSearchUpdate())}
       >
-        <span>{formatDateMobile(pickup)}</span>
+        <span>{pickup != undefined && formatDateMobile(pickup)}</span>
         <span className="mx-1 text-theme">To</span>
-        <span>{formatDateMobile(dropoff)}</span>
+        <span>{dropoff != undefined && formatDateMobile(dropoff)}</span>
       </button>
       <button type="button" onClick={() => dispatch(toggleFilter())}>
         <svg

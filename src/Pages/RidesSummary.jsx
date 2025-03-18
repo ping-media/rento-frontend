@@ -48,7 +48,7 @@ const RidesSummary = () => {
 
   // back button to let them go back to ride page
   const handleBackToRides = () => {
-    navigate("/my-rides");
+    navigate("/account/my-rides");
   };
 
   // for making payment
