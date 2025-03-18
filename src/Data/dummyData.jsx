@@ -1,14 +1,14 @@
 import scooterImage from "../assets/logo/scooter.png";
 import bikeImage from "../assets/logo/bike.png";
-import { RoundedDateTimeAndToNextHour } from "../utils";
+// import { RoundedDateTimeAndToNextHour } from "../utils";
 import facebook from "../assets/icons/facebook.png";
 import instagram from "../assets/icons/instagram.png";
 
 //for setting currentDatePlusOne and sending for explore
-const currentDatePlusOne = new Date();
-currentDatePlusOne.setDate(currentDatePlusOne.getDate() + 1);
-const dateAndTime = RoundedDateTimeAndToNextHour(new Date());
-const nextDayAndTime = RoundedDateTimeAndToNextHour(currentDatePlusOne);
+// const currentDatePlusOne = new Date();
+// currentDatePlusOne.setDate(currentDatePlusOne.getDate() + 1);
+// const dateAndTime = RoundedDateTimeAndToNextHour(new Date());
+// const nextDayAndTime = RoundedDateTimeAndToNextHour(currentDatePlusOne);
 
 export const isHomeLink = ["/", "/monthly-rental"];
 
@@ -142,11 +142,11 @@ export const menuList = [
     link: `/monthly-rental`,
     isPhone: false,
   },
-  {
-    title: "explore",
-    link: `/explore?BookingStartDateAndTime=${dateAndTime}&BookingEndDateAndTime=${nextDayAndTime}`,
-    isPhone: false,
-  },
+  // {
+  //   title: "explore",
+  //   link: `/explore?BookingStartDateAndTime=${dateAndTime}&BookingEndDateAndTime=${nextDayAndTime}`,
+  //   isPhone: false,
+  // },
   { title: "Profile", link: "/account/profile", isPhone: true },
   { title: "My Rides", link: "/account/my-rides", isPhone: true },
   { title: "Logout", link: "", isPhone: true },
