@@ -410,7 +410,7 @@ const getRoundedDateTime = (value) => {
 
 const RoundedDateTimeAndToNextHour = (value) => {
   // Get the current local date and time
-  const currentDate = new Date(value); // Ensure we don't mutate the original date
+  const currentDate = new Date(value);
 
   const localMinutes = currentDate.getMinutes();
 

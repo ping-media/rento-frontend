@@ -23,6 +23,7 @@ import {
   isSecondTimeSmaller,
   nextDayFromCurrent,
   removeAfterSecondSlash,
+  RoundedDateTimeAndToNextHour,
   searchFormatDateOnly,
   searchFormatTimeOnly,
 } from "../../utils";
@@ -53,6 +54,8 @@ const SearchRide = () => {
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
   const rideSubmitRef = useRef(null);
+  // minimum time for booking a ride
+  const MinimumDurationHours = 24;
 
   // if searchFilter modal is active than run this
   const handletoggleSearchUpdate = () => {
@@ -74,7 +77,6 @@ const SearchRide = () => {
     const pickupTime = checkTime
       ? result.pickup.substring(17, result.pickup.length)
       : formatTimeWithoutSeconds(new Date().toLocaleTimeString());
-    // return console.log(time, pickupTime);
     let dropoffDate = result?.dropoff?.substring(0, 16) || "";
     const dropoffTime =
       result?.dropoff?.substring(17, result.dropoff.length) || "";
@@ -87,11 +89,15 @@ const SearchRide = () => {
       convertTo24HourFormat(pickupTime).replace(":00", "")
     );
     // checking whether the minimum duration should be 12 hour or more
-    const isMinDuration = isMinimumDurationHours(result.pickup, result.dropoff);
+    const isMinDuration = isMinimumDurationHours(
+      result.pickup,
+      result.dropoff,
+      MinimumDurationHours
+    );
     if (location.pathname !== "/monthly-rental" && !isMinDuration)
       return handleAsyncError(
         dispatch,
-        "Minimum Interval between dates should be 12 hours"
+        `Minimum Interval between dates should be ${MinimumDurationHours} hours`
       );
 
     //checking whether time is in opening hours
@@ -179,10 +185,6 @@ const SearchRide = () => {
       setQueryPickupTime(new Date().toLocaleTimeString());
       setQueryDropoffTime(new Date().toLocaleTimeString());
     }
-  }, []);
-
-  //  through this we are changing the dropoffdate && dropOffTime by one for one time only
-  useEffect(() => {
     if (pickupDate) {
       setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
     }
@@ -193,7 +195,7 @@ const SearchRide = () => {
 
   // changing date & time if time is passed openning hour
   useEffect(() => {
-    if (selectedStation != null) {
+    if (selectedStation !== null) {
       const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
       const openStartTime = Number(selectedStation?.openStartTime);
@@ -211,7 +213,7 @@ const SearchRide = () => {
           format24HourFormatTime(selectedStation?.openStartTime)
         );
         // change time to openStartTime if current time does not match
-      } else if (currentTime <= openStartTime) {
+      } else if (currentTime < openStartTime) {
         setQueryPickupTime(
           format24HourFormatTime(selectedStation?.openStartTime)
         );

@@ -272,7 +272,7 @@ const PriceCard = ({
       {/* extra helmet  */}
       <div
         className={`bg-yellow-200 px-4 -mt-4 pt-1 ${
-          isExtraChecked || currentUser !== null ? "" : "-mb-2"
+          isExtraChecked || currentUser !== null ? "" : "lg:-mb-2"
         } rounded-b-lg w-full`}
       >
         <div className="pb-1">

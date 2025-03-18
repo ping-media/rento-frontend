@@ -200,7 +200,7 @@ const DatePicker = ({
       {/* Calendar + Time Picker Container */}
       {calendarVisible && (
         <div
-          className={`absolute bg-white shadow-md rounded-md mt-1 z-10 border border-gray-300 w-full lg:w-96 p-2 flex ${
+          className={`absolute bg-white shadow-md rounded-md mt-1 z-30 lg:z-10 border border-gray-300 w-full lg:w-96 p-2 flex ${
             dropdownPosition === "top" ? "bottom-full mb-2" : "top-full"
           }`}
         >

@@ -27,6 +27,7 @@ import BookingTermModal from "../components/Modals/BookingTermModal";
 import { createOrderId, razorPayment } from "../Data/Payment";
 import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
 import { handleAsyncError } from "../utils/handleAsyncError";
+import { handlePreviousPage } from "../utils";
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 
 const BookingSummary = () => {
@@ -125,12 +126,32 @@ const BookingSummary = () => {
         <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
           <form onSubmit={handleCreateBookingSubmit}>
             <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
-              <div className="col-span-7">
+              <div className="col-span-7 mb-3 lg:mb-0">
                 <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 h-full">
                   <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
-                    <h2 className="font-semibold text-base mx-1">
-                      Booking Summary
-                    </h2>
+                    <div className="flex items-center">
+                      <button
+                        className="lg:hidden flex items-center gap-1 p-1"
+                        type="button"
+                        onClick={() => handlePreviousPage(navigate)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="size-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M19 12H6M12 5l-7 7 7 7" />
+                        </svg>
+                      </button>
+                      <h2 className="font-semibold text-base mx-1">
+                        Booking Summary
+                      </h2>
+                    </div>
                     <h2 className="font-semibold hidden lg:block">Price</h2>
                   </div>
                   <InfoCard
