@@ -40,8 +40,8 @@ const ModalSlice = createSlice({
     toggleIdentityModal: (state) => {
       state.isIdentityModalActive = !state.isIdentityModalActive;
     },
-    toggleSideBarModal: (state) => {
-      state.isMainSideBarActive = !state.isMainSideBarActive;
+    toggleSideBarModal: (state, action) => {
+      state.isMainSideBarActive = action.payload || !state.isMainSideBarActive;
     },
     toggleFilter: (state) => {
       state.isFilterActive = !state.isFilterActive;

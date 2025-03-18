@@ -9,7 +9,9 @@ const CustomCheckbox = ({
   const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
-    setSelectedItem(selectedValue || null);
+    const params = new URLSearchParams(window.location.search);
+    const brandQuery = params.get("brand");
+    setSelectedItem(brandQuery || selectedValue || null);
   }, [selectedValue]);
 
   const handleCheckboxChange = (item) => {
@@ -24,7 +26,7 @@ const CustomCheckbox = ({
         <div key={index}>
           <label
             htmlFor={item}
-            className="flex flex-row items-center gap-2.5 text-gray-800 text-sm"
+            className="flex flex-row items-center gap-2.5 text-gray-800 text-sm capitalize"
           >
             <input
               id={item}

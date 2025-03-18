@@ -42,8 +42,7 @@ const Filters = () => {
       updatedQueryParams.set("category", selectedCategory.toLowerCase());
     else updatedQueryParams.delete("category");
 
-    if (selectedBrand)
-      updatedQueryParams.set("brand", selectedBrand.toLowerCase());
+    if (selectedBrand) updatedQueryParams.set("brand", selectedBrand);
     else updatedQueryParams.delete("brand");
 
     if (selectedPlanId) updatedQueryParams.set("vehiclePlan", selectedPlanId);
@@ -101,7 +100,7 @@ const Filters = () => {
           </div>
         </div>
 
-        <h3 className="font-semibold mb-2">Choose Modal</h3>
+        <h3 className="font-semibold mb-2">Choose Brand</h3>
         <div className="mb-5">
           <CustomCheckbox
             options={brands}

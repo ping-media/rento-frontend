@@ -158,19 +158,19 @@ export const Categories = [
 ];
 
 export const brands = [
-  "Vespa",
-  "Honda",
-  "Yamaha",
-  "Suzuki",
+  "vespa",
+  "honda",
+  "yamaha",
+  "suzuki",
   "KTM",
   "BMW",
   "TVS",
-  "Bajaj",
-  "Hero",
-  "Ather",
-  "Ola",
-  "Royal Enfield",
-  "Harley-Davidson",
+  "bajaj",
+  "hero",
+  "ather",
+  "ola",
+  "royal enfield",
+  "harley davidson",
 ];
 export const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
