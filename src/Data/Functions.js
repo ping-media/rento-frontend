@@ -492,12 +492,16 @@ const handleCreateBookingSubmit = async (
             localStorage.setItem("tempBooking", JSON.stringify(oldData));
 
             // updating the booking with payment data
-            await handleUpdateBooking(
+            const response = await handleUpdateBooking(
               updatedData,
               handlebooking,
               handleAsyncError,
               dispatch
             );
+
+            if (response?.status === 200) {
+              updatedData = response?.data;
+            }
 
             // updating the timeline for payment
             const timeLineData = {

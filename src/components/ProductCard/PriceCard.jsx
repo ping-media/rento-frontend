@@ -166,7 +166,7 @@ const PriceCard = ({
     (() => {
       if (vehicleRentCost != 0 && extraAddOnCost != 0 && gSTCost != 0) {
         const totalPrice = priceDetails.reduce((total, item) => {
-          if (item?.title.includes("Helmet") & !isExtraChecked) {
+          if (item?.title?.includes("Helmet") && isExtraChecked === false) {
             return total;
           }
           return total + item.price;

@@ -309,6 +309,7 @@ const DatePicker = ({
                   onClick={() => handleTimeSelect(time)}
                   disabled={isDisabled}
                 >
+                  {console.log(time, timeValue)}
                   {time}
                 </button>
               ))}
