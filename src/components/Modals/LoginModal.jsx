@@ -4,7 +4,7 @@ import {
   toggleRegisterModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import InputWithIcon from "../Input/InputwithIcon";
-import { useState } from "react";
+import React, { useState } from "react";
 import VerifyOtp from "../Auth/VerifyOtp";
 import Spinner from "../Spinner/Spinner";
 import { handleUser } from "../../Data";
@@ -17,8 +17,8 @@ const LoginModal = () => {
   const { isLoginModalActive } = useSelector((state) => state.modals);
   const [loading, setLoading] = useState(false);
   const [isOtpSend, setIsOtpSend] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [isTimerActive, setIsTimerActive] = useState(false);
+  // const [seconds, setSeconds] = useState(0);
+  // const [isTimerActive, setIsTimerActive] = useState(false);
   const [inputNumber, setInputNumber] = useState("");
   const [isInputEmpty, setIsInputEmpty] = useState(null);
 
@@ -52,8 +52,8 @@ const LoginModal = () => {
           setInputNumber(result?.contact);
           setIsOtpSend(true);
           setIsInputEmpty(null);
-          setSeconds(30);
-          setIsTimerActive(true);
+          // setSeconds(30);
+          // setIsTimerActive(true);
           handleAsyncError(dispatch, response?.message, "success");
         }
       } catch (error) {
@@ -105,7 +105,7 @@ const LoginModal = () => {
             </button>
           </div>
 
-          <div className="p-6 pt-2 text-center">
+          <div className="p-6 pt-2 fade-transition text-center">
             {!isOtpSend ? (
               <>
                 <form onSubmit={handleLoginUser} className="mb-6">
@@ -142,10 +142,10 @@ const LoginModal = () => {
                 setOtpValue={setIsOtpSend}
                 setInputValue={setInputNumber}
                 modalChange={toggleLoginModal}
-                seconds={seconds}
-                setSecondChanger={setSeconds}
-                isTimerActive={isTimerActive}
-                setTimerActive={setIsTimerActive}
+                // seconds={seconds}
+                // setSecondChanger={setSeconds}
+                // isTimerActive={isTimerActive}
+                // setTimerActive={setIsTimerActive}
                 setRestValue={setInputNumber}
               />
             )}

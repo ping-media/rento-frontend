@@ -64,3 +64,15 @@ body {
 .font-fingerPoint {
   font-family: "Anton", serif !important;
 }
+
+.fade-transition {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+}

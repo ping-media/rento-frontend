@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   formatDate,
   formatTimeWithoutSeconds,
@@ -24,6 +24,9 @@ const DatePicker = ({
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear] = useState(currentDate.getFullYear());
+  const [minDate, setMinDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   const generateTimes = () => {
     const times = [];
@@ -128,6 +131,24 @@ const DatePicker = ({
       }
     }
   };
+
+  useEffect(
+    useCallback(() => {
+      if (!selectedStation) return;
+
+      const currentTime = new Date();
+      const currentHour = currentTime.getHours();
+      const openEndTime = Number(selectedStation?.openEndTime);
+
+      if (currentHour >= openEndTime) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        setMinDate(tomorrow.toISOString().split("T")[0]);
+      } else {
+        setMinDate(new Date().toISOString().split("T")[0]);
+      }
+    }, [selectedStation])
+  );
 
   useEffect(() => {
     // Bind the event listener
@@ -276,14 +297,24 @@ const DatePicker = ({
                     onClick={() =>
                       handleDateSelect(new Date(currentYear, currentMonth, day))
                     }
-                    // Disable dates before today or any date before the selected date
                     disabled={
+                      // Disable dates before minDate
                       (day &&
-                        new Date(currentYear, currentMonth, day) <
-                          new Date().setHours(0, 0, 0, 0)) ||
+                        new Date(currentYear, currentMonth, day).setHours(
+                          0,
+                          0,
+                          0,
+                          0
+                        ) < new Date(minDate).setHours(0, 0, 0, 0)) ||
+                      // For dropoff date, compare against pickup date if applicable
                       (name === "dropoffDate" &&
-                        new Date(currentYear, currentMonth, day) <
-                          new Date(value).setHours(0, 0, 0, 0))
+                        value &&
+                        new Date(currentYear, currentMonth, day).setHours(
+                          0,
+                          0,
+                          0,
+                          0
+                        ) < new Date(value).setHours(0, 0, 0, 0))
                     }
                   >
                     {day}
@@ -309,7 +340,6 @@ const DatePicker = ({
                   onClick={() => handleTimeSelect(time)}
                   disabled={isDisabled}
                 >
-                  {console.log(time, timeValue)}
                   {time}
                 </button>
               ))}

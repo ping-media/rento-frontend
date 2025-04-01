@@ -76,10 +76,10 @@ const EmailVerifyModal = () => {
               otp={123456}
               email={currentUser && currentUser?.email}
               modalChange={toggleEmailVerifyModal}
-              seconds={seconds}
-              setSecondChanger={setSeconds}
-              isTimerActive={isTimerActive}
-              setTimerActive={setIsTimerActive}
+              // seconds={seconds}
+              // setSecondChanger={setSeconds}
+              // isTimerActive={isTimerActive}
+              // setTimerActive={setIsTimerActive}
             />
           </div>
         </div>

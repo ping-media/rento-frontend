@@ -40,8 +40,11 @@ const ModalSlice = createSlice({
     toggleIdentityModal: (state) => {
       state.isIdentityModalActive = !state.isIdentityModalActive;
     },
-    toggleSideBarModal: (state, action) => {
-      state.isMainSideBarActive = action.payload || !state.isMainSideBarActive;
+    toggleSideBarModal: (state) => {
+      state.isMainSideBarActive = !state.isMainSideBarActive;
+    },
+    closeSideBarModal: (state) => {
+      state.isMainSideBarActive = false;
     },
     toggleFilter: (state) => {
       state.isFilterActive = !state.isFilterActive;
@@ -79,6 +82,7 @@ export const {
   toggleBookingDoneModal,
   toggleSelfieModal,
   toggleBookingTermModal,
+  closeSideBarModal,
   handleRestAll,
 } = ModalSlice.actions;
 

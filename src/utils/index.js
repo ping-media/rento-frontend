@@ -648,6 +648,39 @@ const isSecondTimeSmaller = (time1, time2) => {
   return convertTo24HourFormat(time2) < convertTo24HourFormat(time1);
 };
 
+const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
+  // Parse the ISO datetime strings to Date objects
+  const startDateTime = new Date(startDateTimeStr);
+  const endDateTime = new Date(endDateTimeStr);
+
+  // Check if end date is after start date
+  if (endDateTime <= startDateTime) {
+    return {
+      valid: false,
+      message: "Booking end time must be after booking start time.",
+    };
+  }
+
+  // Calculate the difference in milliseconds
+  const timeDifference = endDateTime - startDateTime;
+
+  // Convert to hours (1000ms * 60s * 60min = 3600000ms per hour)
+  const hoursDifference = timeDifference / 3600000;
+
+  // Check if the difference is at least 24 hours
+  if (hoursDifference < 24) {
+    return {
+      valid: false,
+      message: "Booking minimum duration should at least 24 hours.",
+    };
+  }
+
+  return {
+    valid: true,
+    message: "Booking dates are valid.",
+  };
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -686,4 +719,5 @@ export {
   isMinimumDurationHours,
   formatDateMobile,
   isSecondTimeSmaller,
+  validateBookingDates,
 };

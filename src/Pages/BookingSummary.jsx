@@ -27,7 +27,7 @@ import BookingTermModal from "../components/Modals/BookingTermModal";
 import { createOrderId, razorPayment } from "../Data/Payment";
 import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
 import { handleAsyncError } from "../utils/handleAsyncError";
-import { handlePreviousPage } from "../utils";
+import { handlePreviousPage, validateBookingDates } from "../utils";
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 
 const BookingSummary = () => {
@@ -91,7 +91,16 @@ const BookingSummary = () => {
 
   // for send to detail and payment page
   const handleCreateBookingSubmit = (e) => {
+    e.preventDefault();
     const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
+    const validation = validateBookingDates(
+      queryParmsDataUpdated.BookingStartDateAndTime.replace(".000Z", "Z"),
+      queryParmsDataUpdated.BookingEndDateAndTime.replace(".000Z", "Z")
+    );
+    if (!validation.valid) {
+      handleAsyncError(dispatch, validation.message);
+      return;
+    }
     return handleBookingProcess(
       e,
       vehicles,

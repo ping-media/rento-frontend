@@ -5,7 +5,6 @@ import {
 } from "../../utils";
 
 const RideFareDetails = ({ rides }) => {
-  // calcuating the left amount
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
       Number(rides?.bookingPrice?.AmountLeftAfterUserPaid?.amount)) ||
@@ -26,8 +25,14 @@ const RideFareDetails = ({ rides }) => {
 
   const payableBalance =
     Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
-    rides.bookingPrice?.AmountLeftAfterUserPaid ||
-    0;
+    Number(rides.bookingPrice?.AmountLeftAfterUserPaid) ||
+    (rides?.paymentMethod === "cash" &&
+      Number(
+        rides?.bookingPrice?.discountTotalPrice > 0
+          ? rides?.bookingPrice?.discountTotalPrice
+          : rides?.bookingPrice?.totalPrice
+      ));
+  0;
 
   return (
     <>
@@ -271,7 +276,8 @@ const RideFareDetails = ({ rides }) => {
             )}
 
             {/* payable balance  */}
-            {rides?.paymentStatus !== "pending" && (
+            {(rides?.paymentMethod === "cash" ||
+              rides?.paymentStatus !== "pending") && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
                 <p className="text-sm font-semibold uppercase text-left">
                   Payable Balance

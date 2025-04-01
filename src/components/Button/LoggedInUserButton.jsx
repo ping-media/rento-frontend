@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  toggleSideBarModal,
+  closeSideBarModal,
   toggleSignOutModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 
@@ -42,7 +42,7 @@ const LoggedInUserButton = () => {
 
   const handleLogoutUser = () => {
     dispatch(toggleSignOutModal());
-    dispatch(toggleSideBarModal(false));
+    dispatch(closeSideBarModal());
     if (location.pathname.includes("/booking/payment/")) {
       return navigate("/");
     }

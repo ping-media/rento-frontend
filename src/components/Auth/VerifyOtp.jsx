@@ -12,10 +12,10 @@ const VerifyOtp = ({
   setInputValue,
   modalChange,
   email = "",
-  seconds,
-  setSecondChanger,
-  isTimerActive,
-  setTimerActive,
+  // seconds,
+  // setSecondChanger,
+  // isTimerActive,
+  // setTimerActive,
   setRestValue,
 }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
@@ -23,6 +23,10 @@ const VerifyOtp = ({
   const [loading, setLoading] = useState(false);
   const inputRef = useRef([]);
   const dispatch = useDispatch();
+  const [otpState, setOtpState] = useState({
+    seconds: 30,
+    isTimerActive: true,
+  });
 
   const handleChange = (index, e) => {
     const value = e.target.value;
@@ -82,18 +86,32 @@ const VerifyOtp = ({
     }
   }, []);
 
+  //setting interval between another otp request
+  // useEffect(() => {
+  //   let interval = null;
+  //   if (isTimerActive && seconds > 0) {
+  //     interval = setInterval(() => {
+  //       setSecondChanger((prevSeconds) => prevSeconds - 1);
+  //     }, 1000);
+  //   } else if (seconds === 0) {
+  //     setTimerActive(false);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [isTimerActive, seconds]);
+  // Timer for Resending OTP
   useEffect(() => {
-    //setting interval between another otp request
     let interval = null;
-    if (isTimerActive && seconds > 0) {
+    if (otpState.isTimerActive && otpState.seconds > 0) {
       interval = setInterval(() => {
-        setSecondChanger((prevSeconds) => prevSeconds - 1);
+        setOtpState((prev) => ({ ...prev, seconds: prev.seconds - 1 }));
       }, 1000);
-    } else if (seconds === 0) {
-      setTimerActive(false);
+    } else {
+      setOtpState((prev) => ({ ...prev, isTimerActive: false }));
     }
-    return () => clearInterval(interval);
-  }, [isTimerActive, seconds]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [otpState.isTimerActive, otpState.seconds]);
 
   // handle login
   const handleLogin = async (e, otp) => {
@@ -136,8 +154,10 @@ const VerifyOtp = ({
       response = await handleUser("/emailOtp", { email: email });
     }
     if (response?.status == 200) {
-      setSecondChanger(30);
-      setTimerActive(true);
+      // setSecondChanger(30);
+      // setTimerActive(true);
+      setOtpState((prev) => ({ ...prev, seconds: 30 }));
+      setOtpState((prev) => ({ ...prev, isTimerActive: true }));
     } else {
       handleAsyncError(dispatch, "unable to send otp! try again");
     }
@@ -167,7 +187,7 @@ const VerifyOtp = ({
             onChange={(e) => handleChange(index, e)}
             onClick={() => handleClick(index)}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            className="rounded-lg border border-gray-300 cursor-text w-10 lg:w-14 aspect-square flex items-center justify-center focus:outline-theme-blue text-center"
+            className="rounded-lg border border-gray-300 cursor-text w-10 lg:w-14 aspect-square flex items-center justify-center focus:outline-theme-blue text-center outline-none"
             maxLength={1}
           />
         ))}
@@ -180,14 +200,16 @@ const VerifyOtp = ({
         <div className="flex items-center space-x-2">
           <button
             className="px-3 py-2 text-sm font-medium text-center rounded hover:text-gray-500 text-theme disabled:text-gray-400"
-            disabled={isTimerActive}
+            disabled={otpState.isTimerActive}
             type="button"
             onClick={handleSendOtpAgain}
           >
-            {seconds === 0
+            {otpState.seconds === 0
               ? "Request Again"
               : `Request Again (00:00:${
-                  seconds < 10 ? `0${seconds}` : seconds
+                  otpState.seconds < 10
+                    ? `0${otpState.seconds}`
+                    : otpState.seconds
                 })`}
           </button>
         </div>

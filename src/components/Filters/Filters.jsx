@@ -100,6 +100,16 @@ const Filters = () => {
           </div>
         </div>
 
+        <h3 className="font-semibold mb-2">Choose Packages</h3>
+        <div className="mb-5">
+          <CheckboxFilter
+            setPlanIdChanger={(planId) => {
+              setInputPlanId(planId);
+              handleSubmitFilters(inputCategory, planId, inputBrand);
+            }}
+          />
+        </div>
+
         <h3 className="font-semibold mb-2">Choose Brand</h3>
         <div className="mb-5">
           <CustomCheckbox
@@ -109,16 +119,6 @@ const Filters = () => {
               handleSubmitFilters(inputCategory, inputPlanId, selectedBrand);
             }}
             notFoundMessage="No Brands Found."
-          />
-        </div>
-
-        <h3 className="font-semibold mb-2">Choose Packages</h3>
-        <div className="mb-5">
-          <CheckboxFilter
-            setPlanIdChanger={(planId) => {
-              setInputPlanId(planId);
-              handleSubmitFilters(inputCategory, planId, inputBrand);
-            }}
           />
         </div>
       </form>

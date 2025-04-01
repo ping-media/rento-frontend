@@ -727,13 +727,51 @@ const handleBookingProcess = async (
 
       if (response?.status === 200) {
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
-        return navigate(`/account/my-rides/summary/${response?.data?._id}`);
+        navigate(`/account/my-rides/summary/${response?.data?._id}`);
+        return;
       }
     }
 
     if (!result?.paymentMethod) {
       setBookingLoading(false);
       return handleAsyncError(dispatch, "Select payment method first!");
+    }
+
+    if (result?.paymentMethod === "cash") {
+      data = {
+        ...data,
+        payInitFrom: "Cash",
+        bookingStatus: "done",
+        paymentMethod: result?.paymentMethod,
+      };
+
+      const response = await handleCreateBooking(
+        data,
+        handlebooking,
+        removeTempDate,
+        handleAsyncError,
+        dispatch
+      );
+
+      if (response?.status === 200) {
+        const timeLineData = {
+          currentBooking_id: response?.data?._id,
+          timeLine: [
+            {
+              title: "PAy On Delivery",
+              date: new Date().toLocaleString(),
+              paymentAmount:
+                response?.bookingPrice?.discountTotalPrice > 0
+                  ? response?.bookingPrice?.discountTotalPrice
+                  : response?.bookingPrice?.totalPrice,
+            },
+          ],
+        };
+        handlePostData("/createTimeline", timeLineData);
+        handleAsyncError(dispatch, "Ride booked successfully.", "success");
+        navigate(`/account/my-rides/summary/${response?.data?._id}`);
+        return;
+      }
     }
 
     if (result?.paymentMethod === "partiallyPay") {
@@ -780,12 +818,34 @@ const handleBookingProcess = async (
         if (orderId?.status === "created") {
           data = bookingResponse.data;
           localStorage.setItem("tempBooking", JSON.stringify(data));
-          await handleUpdateBooking(
-            { ...data, paymentgatewayOrderId: orderId?.id },
+          const response = await handleUpdateBooking(
+            {
+              ...data,
+              payInitFrom: "Razorpay",
+              paymentInitiatedDate: orderId?.created_at,
+              paymentgatewayOrderId: orderId?.id,
+              paymentgatewayReceiptId: orderId?.receipt,
+            },
             handlebooking,
             handleAsyncError,
             dispatch
           );
+          if (response?.status === 200) {
+            data = response.data;
+            const timeLineData = {
+              currentBooking_id: data?._id,
+              timeLine: [
+                {
+                  title: "Payment Initiated",
+                  date: new Date().toLocaleString(),
+                },
+              ],
+            };
+            await handlePostData("/createTimeline", timeLineData);
+          } else {
+            handleAsyncError(dispatch, "Unable to confirm payment!.");
+            return;
+          }
         }
         return await razorPayment(
           currentUser,
