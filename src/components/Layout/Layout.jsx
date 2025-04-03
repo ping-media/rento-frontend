@@ -1,8 +1,7 @@
-import { Outlet, useParams } from "react-router-dom";
-import { lazy, useEffect } from "react";
+import { Outlet, useLocation, useParams } from "react-router-dom";
+import { lazy, useEffect, useState } from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
-// lazy loading the below components
 const LoginModal = lazy(() => import("../Modals/LoginModal"));
 const RegisterModal = lazy(() => import("../Modals/RegisterModal"));
 const LocationModal = lazy(() => import("../Modals/LocationModal"));
@@ -13,27 +12,35 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
 import Footer from "../Footer/Footer";
 import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
-import {
-  handleRestAll,
-  toggleLocationModal,
-} from "../../Redux/ModalSlice/ModalSlice";
+import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
+import CallToActionButton from "../CallToAction/CallToActionButton";
+import whatsapp from "../../assets/icons/whatsapp.png";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
+  const [hasMounted, setHasMounted] = useState(false);
   const { user } = useSelector((state) => state.user);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     // setting decrypt user data
     if (user) {
       dispatch(handleCurrentUser(user));
     }
-  }, [user]);
+    // if selectedLocation is not present than open popup modal
+    if (selectedLocation === null) {
+      dispatch(toggleLocationModal(true));
+    }
+  }, [user, selectedLocation]);
 
-  // this is to delete the temp booking & coupon data
   useEffect(() => {
+    if (!hasMounted) {
+      setHasMounted(true);
+      return;
+    }
     if (location.pathname == `/search/${id}` || location.pathname == "/") {
       dispatch(handleRestCoupon());
     }
@@ -41,16 +48,9 @@ const Layout = () => {
     if (localStorage.getItem("tempBooking")) {
       localStorage.removeItem("tempBooking");
     }
-    // for closing modal on page change
-    dispatch(handleRestAll());
-  }, [location.href]);
-
-  // if selectedLocation is not present than open popup modal
-  useEffect(() => {
-    if (selectedLocation && Object.keys(selectedLocation)?.length === 0) {
-      dispatch(toggleLocationModal());
-    }
-  }, []);
+    // this will user to top of the screen whenever user change the page
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <>
@@ -70,8 +70,12 @@ const Layout = () => {
         />
         <Header />
       </header>
-      <main style={{ minHeight: "calc(100vh - 108.8px)" }}>
+      <main className="relative" style={{ minHeight: "calc(100vh - 108.8px)" }}>
         <Outlet />
+        <CallToActionButton
+          image={whatsapp}
+          link={"https://wa.me/+918884488891"}
+        />
       </main>
       <Footer />
     </>

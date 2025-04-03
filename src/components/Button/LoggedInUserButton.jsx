@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { toggleSignOutModal } from "../../Redux/ModalSlice/ModalSlice";
+import {
+  closeSideBarModal,
+  toggleSignOutModal,
+} from "../../Redux/ModalSlice/ModalSlice";
 
 const LoggedInUserButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -39,6 +42,7 @@ const LoggedInUserButton = () => {
 
   const handleLogoutUser = () => {
     dispatch(toggleSignOutModal());
+    dispatch(closeSideBarModal());
     if (location.pathname.includes("/booking/payment/")) {
       return navigate("/");
     }
@@ -73,7 +77,7 @@ const LoggedInUserButton = () => {
         <div className="absolute w-40 top-12 right-0 bg-white flex flex-col items-center text-left gap-2 border border-gray-200 rounded-xl p-2 shadow-xl z-50">
           <Link
             className="py-1.5 px-1.5 hover:bg-theme rounded-md hover:text-white transition duration-200 ease-in-ou w-full"
-            to={"/profile"}
+            to={"/account/profile"}
           >
             <span className="inline-flex mr-1">
               <svg
@@ -95,7 +99,7 @@ const LoggedInUserButton = () => {
           </Link>
           <Link
             className="py-1.5 px-1.5 hover:bg-theme rounded-md hover:text-white transition duration-200 ease-in-out w-full"
-            to={"/my-rides"}
+            to={"/account/my-rides"}
           >
             <span className="inline-flex mr-1">
               <svg

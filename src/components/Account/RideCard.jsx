@@ -14,7 +14,7 @@ const RideCard = ({ item, id }) => {
 
   // this is to change the functionality based on url
   useEffect(() => {
-    if (location.pathname == "/my-rides") {
+    if (location.pathname == "/account/my-rides") {
       setIsPageActive(true);
     } else {
       setIsPageActive(false);
@@ -28,7 +28,7 @@ const RideCard = ({ item, id }) => {
   }, [item]);
 
   return (
-    <Link to={isPageActive ? `/my-rides/summary/${item?._id}` : "#"}>
+    <Link to={isPageActive ? `/account/my-rides/summary/${item?._id}` : "#"}>
       <div
         className={`px-4 py-2 rounded-lg border-2 cursor-pointer ${
           isPageActive ? "shadow-md hover:shadow-lg" : ""
@@ -51,7 +51,7 @@ const RideCard = ({ item, id }) => {
                 </h2>
                 {(item?.rideStatus === "ongoing" ||
                   item?.rideStatus === "completed") &&
-                  location.pathname.includes("my-rides/summary/") && (
+                  location.pathname.includes("/account/my-rides/summary/") && (
                     <small className="text-gray-400 italic">
                       Vehicle Number:({item?.vehicleBasic?.vehicleNumber})
                     </small>
@@ -69,6 +69,7 @@ const RideCard = ({ item, id }) => {
                       (item?.paymentStatus === "pending" && "bg-orange-400") ||
                       (item?.paymentStatus === "failed" && "bg-theme") ||
                       (item?.paymentStatus === "refunded" && "bg-theme") ||
+                      (item?.paymentStatus === "canceled" && "bg-theme") ||
                       (item?.paymentStatus === "paid" &&
                         "bg-green-500 bg-opacity-80")
                     } text-gray-100 px-2 rounded-full cursor-pointer capitalize ml-2`}

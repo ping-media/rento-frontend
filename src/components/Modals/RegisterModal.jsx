@@ -11,10 +11,11 @@ import Spinner from "../Spinner/Spinner";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import VerifyOtp from "../Auth/VerifyOtp";
 import { removeTempContact } from "../../Redux/UserSlice/UserSlice";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const RegisterModal = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isRegisterModalActive } = useSelector((state) => state.modals);
   const [isverfiyOtpActive, setIsVerfiyOtpActive] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -69,6 +70,12 @@ const RegisterModal = () => {
       dispatch(removeTempContact());
     }
   }, [isRegisterModalActive]);
+
+  // sending the user to term & condition page and close modal
+  const handleChangeLink = () => {
+    dispatch(toggleRegisterModal(false));
+    return navigate("/terms-and-conditions");
+  };
 
   return (
     <div
@@ -139,12 +146,12 @@ const RegisterModal = () => {
                 </button>
                 <p className="mt-4 text-sm text-gray-600">
                   By signing up, I accept the{" "}
-                  <Link
-                    to={"/terms-and-conditions"}
+                  <button
+                    onClick={handleChangeLink}
                     className="text-theme cursor-pointer hover:text-theme-dark hover:underline transition duration-300 ease-in-out"
                   >
                     Terms and Conditions
-                  </Link>
+                  </button>
                 </p>
               </form>
 

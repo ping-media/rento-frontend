@@ -14,7 +14,7 @@ import {
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import { getUserDocuments } from "../../Data/Functions";
 
-const UserDocument = () => {
+const UserDocument = ({ pageTitle = "upload documents" }) => {
   const dispatch = useDispatch();
   const { currentUser, userDocument, loading } = useSelector(
     (state) => state.user
@@ -44,7 +44,8 @@ const UserDocument = () => {
     <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white">
       <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center flex-wrap gap-2 lg:gap-0 justify-between">
         <h2 className="font-bold text-xl uppercase w-full lg:w-auto">
-          upload <span className="text-theme">documents</span>
+          {pageTitle?.split(" ")[0]}{" "}
+          <span className="text-theme">{pageTitle?.split(" ")[1]}</span>
         </h2>
         <div className="flex items-center gap-2">
           {(userDocument == null ||

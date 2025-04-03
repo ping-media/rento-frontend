@@ -9,30 +9,23 @@ const CheckboxFilter = ({ setPlanIdChanger }) => {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
 
   const handleCheckboxChange = (planId) => {
-    if (selectedPlanId === planId) {
-      setSelectedPlanId(null);
-      setPlanIdChanger(null);
-    } else {
-      setSelectedPlanId(planId);
-      setPlanIdChanger(planId);
-    }
+    const newPlanId = selectedPlanId === planId ? null : planId;
+
+    setSelectedPlanId(newPlanId);
+    setPlanIdChanger(newPlanId);
   };
 
-  // changing the checkbox state to checked or unchecked based on conditon
+  // Sync state with URL parameters on load
   useEffect(() => {
     const vehiclePlanId = query.get("vehiclePlan") || null;
-    if (vehiclePlanId) {
-      setSelectedPlanId(vehiclePlanId);
-    } else {
-      setSelectedPlanId(null);
-    }
+    setSelectedPlanId(vehiclePlanId);
   }, [query]);
 
   return !filterLoading ? (
     filter.length > 0 ? (
-      <div>
+      <div className="grid grid-cols-2 gap-3">
         {filter?.map((item, index) => (
-          <div className="mb-3" key={item?._id || index}>
+          <div key={item?._id || index}>
             <label
               htmlFor={item?.planName || item}
               className="flex flex-row items-center gap-2.5 text-gray-800 text-sm"
@@ -45,10 +38,7 @@ const CheckboxFilter = ({ setPlanIdChanger }) => {
                 checked={selectedPlanId === item?._id}
                 onChange={() => handleCheckboxChange(item?._id)}
               />
-              <div
-                htmlFor={item?.planName || item}
-                className="h-6 w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition"
-              >
+              <div className="h-6 w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition">
                 <svg
                   fill="none"
                   viewBox="0 0 24 24"

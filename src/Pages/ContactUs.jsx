@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import ContactImg from "../assets/logo/contact.svg";
 import { contactUsLink } from "../Data/dummyData";
 
@@ -18,7 +19,7 @@ const ContactUs = () => {
               Contact Us
             </small>
             <h1 className="text-2xl lg:text-4xl font-bold">
-              Feel Free to <span className="text-theme">contact</span> us!
+              Feel free to <span className="text-theme">contact</span> us!
             </h1>
             <p className="text-xs lg:text-sm text-gray-500 my-1">
               We’re here to help—feel free to reach out to us anytime!
@@ -31,10 +32,22 @@ const ContactUs = () => {
                 <li className="mb-4 cursor-pointer" key={index}>
                   <div className="flex items-center gap-2 text-theme text-medium lg:text-lg">
                     <div>{item?.icon}</div>
-                    <div className="">{item?.name}:</div>
+                    <div>{item?.name}:</div>
                   </div>
                   <div className="text-sm lg:text-lg text-gray-500">
-                    {item?.value}
+                    {item?.name.includes("Contact") ||
+                    item?.name.includes("Email") ? (
+                      <Link
+                        to={`${
+                          item?.name.includes("Contact") ? "tel:+91" : "mailto:"
+                        }${item.value}`}
+                        className="hover:underline underline-offset-4"
+                      >
+                        {item?.value}
+                      </Link>
+                    ) : (
+                      item?.value
+                    )}
                   </div>
                 </li>
               ))}

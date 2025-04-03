@@ -49,7 +49,7 @@ const LocationCard = ({
           />
         </div>
       </Link>
-      <div className="px-4 py-2 w-full lg:w-auto text-sm">
+      <div className="px-2 py-2 w-full lg:w-auto text-sm">
         <ul className="leading-8">
           <li className="capitalize">
             <span className="font-bold mr-2">Pickup Location:</span>

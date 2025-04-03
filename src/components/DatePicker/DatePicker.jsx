@@ -4,7 +4,7 @@ import { formatDate, nextDayFromCurrent } from "../../utils";
 const DatePicker = ({ value, name, setValueChanger, setDropoffChanger }) => {
   const datePickerRef = useRef(null);
   const [calendarVisible, setCalendarVisible] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
+  const [dropdownPosition, setDropdownPosition] = useState("bottom");
 
   // Current date to generate the calendar
   const currentDate = new Date();

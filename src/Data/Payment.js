@@ -1,42 +1,52 @@
 import axios from "axios";
 import favicon from "../assets/favicon.ico";
 import {
+  handlebooking,
   handlePostData,
   sendEmailForBookingDetails,
   updateCouponCount,
 } from ".";
-// import { toggleBookingDoneModal } from "../Redux/ModalSlice/ModalSlice";
+import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
+import { handleUpdateBooking } from "./Functions";
 
 export const razorPayment = async (
   currentUser,
   data,
   orderId,
   result,
-  handleUpdateBooking,
+  // handleUpdateBooking,
   handleAsyncError,
   navigate,
-  handlebooking,
+  // handlebooking,
   dispatch,
   handleRestCoupon,
   setBookingLoading
 ) => {
   if (!data && !currentUser && !orderId && !result)
-    return "Unable to make payment! Please try again.";
+    return handleAsyncError(
+      dispatch,
+      "Unable to make payment! Please try again."
+    );
 
   // function to create booking if after payment is completed
   const handleBookVehicle = async (response) => {
     try {
       setBookingLoading && setBookingLoading(true);
-      // dispatch(toggleBookingDoneModal());
       // for booking vehicle
       const updatedData = {
         ...data,
         bookingStatus: "done",
         paymentStatus:
-          result?.paymentMethod == "partiallyPay" ? "partially_paid" : "paid",
+          result?.paymentMethod === "partiallyPay" ? "partially_paid" : "paid",
         paymentMethod: result?.paymentMethod,
         paySuccessId: response?.razorpay_payment_id,
       };
+
+      if (!updatedData)
+        return handleAsyncError(
+          dispatch,
+          "Unable to book ride! if payment got deducted than contact support team."
+        );
 
       // updating booking
       const bookingResponse = await handleUpdateBooking(
@@ -48,9 +58,9 @@ export const razorPayment = async (
 
       // deleting temp booking
       localStorage.removeItem("tempBooking");
+      dispatch(removeTempBookingData());
 
-      if (bookingResponse?.status == 200) {
-        // dispatch(toggleBookingDoneModal());
+      if (bookingResponse?.status === 200) {
         const timeLineData = {
           currentBooking_id: bookingResponse?.data?._id,
           timeLine: [
@@ -70,7 +80,7 @@ export const razorPayment = async (
         };
         await handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
-        navigate(`/my-rides/summary/${updatedData?._id}`);
+        navigate(`/account/my-rides/summary/${updatedData?._id}`);
         dispatch(handleRestCoupon());
         // sending booking confirm to whatsapp & email
         sendEmailForBookingDetails(updatedData);

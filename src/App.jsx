@@ -5,6 +5,7 @@ import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
 const Payment = lazy(() => import("./Pages/Payment"));
 const Home = lazy(() => import("./Pages/Home"));
+const Kyc = lazy(() => import("./Pages/Kyc"));
 const Search = lazy(() => import("./Pages/Search"));
 const BookingSummary = lazy(() => import("./Pages/BookingSummary"));
 const LoggedInLayout = lazy(() => import("./components/Layout/LoggedInLayout"));
@@ -25,41 +26,33 @@ const App = () => {
     <Router>
       <Suspense fallback={<PreLoader />}>
         <Routes>
+          {/* layout wrapper  */}
           <Route path="/" element={<Layout />}>
-            <Route path="/" exact element={<Home />} />
-            <Route path="/search" exact element={<Search />} />
-            <Route path="/search/:id" exact element={<Search />} />
-            <Route path="/explore" exact element={<Search />} />
-            <Route path="/contact-us" exact element={<ContactUs />} />
-            <Route
-              path="/booking/summary/:id"
-              exact
-              element={<BookingSummary />}
-            />
-            <Route
-              path="booking/payment/:id"
-              exact
-              element={<BookingAndPayment />}
-            />
-            <Route path="/" element={<LoggedInLayout />}>
-              <Route path="profile" exact element={<Profile />} />
-              <Route path="my-rides" exact element={<MyRides />} />
-              <Route
-                path="my-rides/summary/:id"
-                exact
-                element={<RidesSummary />}
-              />
+            <Route path="/" element={<Home />} />
+            <Route path="/monthly-rental" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/search/:id" element={<Search />} />
+            <Route path="/explore" element={<Search />} />
+            <Route path="/contact-us" element={<ContactUs />} />
+            <Route path="/booking/summary/:id" element={<BookingSummary />} />
+            <Route path="booking/payment/:id" element={<BookingAndPayment />} />
+            <Route path="/kyc" element={<Kyc />} />
+            {/* protected routes start here  */}
+            <Route path="/account/" element={<LoggedInLayout />}>
+              <Route path="profile" element={<Profile />} />
+              <Route path="my-rides" element={<MyRides />} />
+              <Route path="my-rides/summary/:id" element={<RidesSummary />} />
             </Route>
-            <Route path="privacy-policy" exact element={<PrivacyPolicy />} />
+            {/* protected routes end here  */}
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
             <Route
               path="terms-and-conditions"
-              exact
               element={<TermsAndCondition />}
             />
-            <Route path="refund-return" exact element={<RefundAndReturn />} />
-            <Route path="/payment/:id" exact element={<Payment />} />
+            <Route path="refund-return" element={<RefundAndReturn />} />
+            <Route path="/payment/:id" element={<Payment />} />
           </Route>
-          <Route path="*" exact element={<ErrorPageNotFound />} />
+          <Route path="*" element={<ErrorPageNotFound />} />
         </Routes>
       </Suspense>
     </Router>

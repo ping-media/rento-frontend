@@ -15,7 +15,7 @@ import {
   handleUpdateSelectedCurrentUser,
 } from "../../Redux/UserSlice/UserSlice.js";
 import TextAreaBox from "../Input/TextAreaBox.jsx";
-import SelfieModal from "../Modals/SelfieModal.jsx";
+const SelfieModal = lazy(() => import("../Modals/SelfieModal.jsx"));
 const IdentityModal = lazy(() => import("../Modals/IdentityModal"));
 const LicenseModal = lazy(() => import("../Modals/LicenseModal"));
 const EmailVerifyModal = lazy(() => import("../Modals/EmailVerifyModal"));

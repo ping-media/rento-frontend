@@ -1,11 +1,14 @@
 import { forwardRef } from "react";
+import { useDispatch } from "react-redux";
+import { toggleBookingTermModal } from "../../Redux/ModalSlice/ModalSlice";
 
 const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
+  const dispatch = useDispatch();
   return (
-    <div className="mb-3">
+    <div>
       <label
         htmlFor={labelId}
-        className="flex flex-row items-center text-xs gap-2.5 text-gray-500"
+        className="flex flex-row items-center text-xs lg:text-sm gap-2.5 text-gray-500"
       >
         <input
           id={labelId}
@@ -32,7 +35,22 @@ const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
             ></path>
           </svg>
         </div>
-        {Message}
+        {Message ? (
+          Message
+        ) : (
+          <p>
+            By clicking, you agree to the
+            <button
+              type="button"
+              className="ml-1 text-theme hover:underline hover:cursor-pointer"
+              onClick={() => {
+                dispatch(toggleBookingTermModal());
+              }}
+            >
+              terms & conditions.
+            </button>
+          </p>
+        )}
       </label>
     </div>
   );

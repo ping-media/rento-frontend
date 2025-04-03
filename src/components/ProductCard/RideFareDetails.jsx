@@ -5,7 +5,6 @@ import {
 } from "../../utils";
 
 const RideFareDetails = ({ rides }) => {
-  // calcuating the left amount
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
       Number(rides?.bookingPrice?.AmountLeftAfterUserPaid?.amount)) ||
@@ -25,7 +24,15 @@ const RideFareDetails = ({ rides }) => {
     0;
 
   const payableBalance =
-    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft);
+    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
+    Number(rides.bookingPrice?.AmountLeftAfterUserPaid) ||
+    (rides?.paymentMethod === "cash" &&
+      Number(
+        rides?.bookingPrice?.discountTotalPrice > 0
+          ? rides?.bookingPrice?.discountTotalPrice
+          : rides?.bookingPrice?.totalPrice
+      ));
+  0;
 
   return (
     <>
@@ -60,6 +67,7 @@ const RideFareDetails = ({ rides }) => {
                   key !== "AmountLeftAfterUserPaid" &&
                   key !== "lateFeeBasedOnHour" &&
                   key !== "lateFeeBasedOnKM" &&
+                  key !== "payOnPickupMethod" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
@@ -197,24 +205,6 @@ const RideFareDetails = ({ rides }) => {
                       {`- ₹${formatPrice(rides?.bookingPrice?.userPaid)}`}
                     </p>
                   </li>
-                  {/* <li className="flex items-center justify-between mt-1 my-1">
-                    <p className="text-sm font-bold uppercase text-left">
-                      Remaining Amount
-                      <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                        (
-                        {rides?.bookingPrice?.AmountLeftAfterUserPaid
-                          ?.paymentMethod != ""
-                          ? `Paid: ${rides?.bookingPrice?.AmountLeftAfterUserPaid?.paymentMethod}`
-                          : "need to pay at pickup"}
-                        )
-                      </small>
-                    </p>
-                    <p className="text-sm font-bold text-right">
-                      {`₹${formatPrice(
-                        rides?.bookingPrice.AmountLeftAfterUserPaid?.amount
-                      )}`}
-                    </p>
-                  </li> */}
                 </>
               )}
 
@@ -287,7 +277,8 @@ const RideFareDetails = ({ rides }) => {
             )}
 
             {/* payable balance  */}
-            {rides?.paymentStatus !== "pending" && (
+            {(rides?.paymentMethod === "cash" ||
+              rides?.paymentStatus !== "pending") && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
                 <p className="text-sm font-semibold uppercase text-left">
                   Payable Balance

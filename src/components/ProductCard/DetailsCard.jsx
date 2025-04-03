@@ -15,7 +15,7 @@ const DetailsCard = ({
   return (
     <div className="border-t-2 border-gray-300 bg-white mt-3 px-4 py-1.5">
       <h3 className="font-semibold mb-2 lg:mb-5 uppercase">Rent Details</h3>
-      <ul className="flex flex-wrap leading-7 w-full gap-2 lg:gap-4 items-center">
+      <ul className="flex flex-wrap leading-5 w-full gap-2 lg:gap-4 items-center">
         {details.map((item, index) => (
           <li className="flex items-center w-full lg:w-[49%] gap-2" key={index}>
             <div className="w-5 h-5 lg:w-7 lg:h-7 p-1 bg-green-500 rounded-full">

@@ -9,7 +9,7 @@ const SummarySkeleton = () => {
               <div className="h-4 w-12 bg-gray-400 bg-opacity-50 rounded mb-1"></div>
             </div>
             <div className="flex justify-between flex-wrap mt-6 mb-4 px-4">
-              <div className="w-52 h-40 mx-auto lg:mx-0 bg-gray-400 bg-opacity-50 rounded-lg"></div>
+              <div className="w-52 h-40 mx-auto lg:mx-0 bg-gray-400 bg-opacity-50 rounded-lg mb-3"></div>
               <div className="max-w-sm">
                 <div className="h-4 w-32 bg-gray-400 bg-opacity-50 rounded mb-3"></div>
                 <div>

@@ -7,8 +7,12 @@ import { useSelector } from "react-redux";
 
 const SideBar = () => {
   const menuList = [
-    { menuImg: UserImg, title: "Profile", link: "/profile" },
-    { menuImg: RideImg, title: "MyRides", link: "/my-rides" },
+    {
+      menuImg: UserImg,
+      title: "Profile",
+      link: "/account/profile",
+    },
+    { menuImg: RideImg, title: "MyRides", link: "/account/my-rides" },
   ];
   const [currentPage, setCurrentPage] = useState("");
   const location = useLocation();
@@ -16,7 +20,7 @@ const SideBar = () => {
 
   // to change active page class
   useEffect(() => {
-    setCurrentPage(location.pathname.substring(0, 9));
+    setCurrentPage(location.pathname.substring(0, 17));
   }, [location.pathname]);
 
   return (

@@ -12,7 +12,7 @@ const TimePicker = ({
 }) => {
   const [timeVisible, setTimeVisible] = useState(false);
   const { selectedStation } = useSelector((state) => state.station);
-  const [dropdownPosition, setDropdownPosition] = useState("bottom"); // 'top' or 'bottom'
+  const [dropdownPosition, setDropdownPosition] = useState("bottom");
   const timePickerRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -179,7 +179,7 @@ const TimePicker = ({
       {/* Time Picker Dropdown */}
       {timeVisible && (
         <div
-          className={`absolute bg-white shadow-md rounded-md mt-1 z-50 border border-gray-300 w-full lg:w-72 ${
+          className={`absolute bg-white shadow-md rounded-md mt-1 z-10 border border-gray-300 w-full lg:w-72 ${
             dropdownPosition === "bottom" ? "top-14" : "bottom-14"
           }`}
         >

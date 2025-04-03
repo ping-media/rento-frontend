@@ -13,23 +13,26 @@ const initialState = {
   isEmailVerifyModalActive: false,
   isSelfieModalActive: false,
   isBookingDone: false,
+  isBookingTermActive: false,
 };
 
 const ModalSlice = createSlice({
   name: "modals",
   initialState,
   reducers: {
-    toggleLoginModal: (state) => {
-      state.isLoginModalActive = !state.isLoginModalActive;
+    toggleLoginModal: (state, action) => {
+      state.isLoginModalActive = action.payload || !state.isLoginModalActive;
     },
     toggleSignOutModal: (state) => {
       state.isSignOutModalActive = !state.isSignOutModalActive;
     },
-    toggleRegisterModal: (state) => {
-      state.isRegisterModalActive = !state.isRegisterModalActive;
+    toggleRegisterModal: (state, action) => {
+      state.isRegisterModalActive =
+        action.payload || !state.isRegisterModalActive;
     },
-    toggleLocationModal: (state) => {
-      state.isLocationModalActive = !state.isLocationModalActive;
+    toggleLocationModal: (state, action) => {
+      state.isLocationModalActive =
+        action.payload || !state.isLocationModalActive;
     },
     toggleLicenseModal: (state) => {
       state.isLicenseModalActive = !state.isLicenseModalActive;
@@ -39,6 +42,9 @@ const ModalSlice = createSlice({
     },
     toggleSideBarModal: (state) => {
       state.isMainSideBarActive = !state.isMainSideBarActive;
+    },
+    closeSideBarModal: (state) => {
+      state.isMainSideBarActive = false;
     },
     toggleFilter: (state) => {
       state.isFilterActive = !state.isFilterActive;
@@ -54,6 +60,9 @@ const ModalSlice = createSlice({
     },
     toggleSelfieModal: (state) => {
       state.isSelfieModalActive = !state.isSelfieModalActive;
+    },
+    toggleBookingTermModal: (state) => {
+      state.isBookingTermActive = !state.isBookingTermActive;
     },
     handleRestAll: () => initialState,
   },
@@ -72,6 +81,8 @@ export const {
   toggleEmailVerifyModal,
   toggleBookingDoneModal,
   toggleSelfieModal,
+  toggleBookingTermModal,
+  closeSideBarModal,
   handleRestAll,
 } = ModalSlice.actions;
 

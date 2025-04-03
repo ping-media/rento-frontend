@@ -372,9 +372,9 @@ const formatDateTimeISTForUser = (input) => {
   };
 };
 
-const nextDayFromCurrent = (date) => {
+const nextDayFromCurrent = (date, noOfDay = 1) => {
   const nextDay = date;
-  nextDay.setDate(nextDay.getDate() + 1); // Increment the day by 1
+  nextDay.setDate(nextDay.getDate() + noOfDay);
 
   // return nextDay.toLocaleDateString();
   return nextDay;
@@ -410,7 +410,7 @@ const getRoundedDateTime = (value) => {
 
 const RoundedDateTimeAndToNextHour = (value) => {
   // Get the current local date and time
-  const currentDate = new Date(value); // Ensure we don't mutate the original date
+  const currentDate = new Date(value);
 
   const localMinutes = currentDate.getMinutes();
 
@@ -553,6 +553,134 @@ const formatTimeForProductCard = (isoString) => {
   return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
 };
 
+const addDaysToDateForRide = (daysToAdd, dateStr) => {
+  // Split the input date string "Fri, 07 Mar 2025"
+  const dateParts = dateStr.split(", ");
+  const [day, month, year] = dateParts[1].split(" "); // Extract day, month, and year
+
+  // Map month abbreviation to its number (March -> 3, etc.)
+  const monthMap = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  };
+
+  // Create a new Date object using the extracted values
+  const date = new Date(year, monthMap[month], parseInt(day));
+
+  // Add the specified number of days to the date
+  date.setDate(date.getDate() + daysToAdd);
+
+  // Format the new date back to "Fri, 07 Mar 2025"
+  const options = {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  };
+  const newDateStr = date.toLocaleDateString("en-GB", options);
+
+  // Return the new formatted date
+  return newDateStr;
+};
+
+const searchFormatDateOnly = (dateStr) => new Date(dateStr);
+
+const searchFormatTimeOnly = (dateStr) => {
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "UTC",
+  }).format(date);
+};
+
+const isMinimumDurationHours = (date1, date2, duration = 12) => {
+  const msInHour = 60 * 60 * 1000;
+  const diffInMs = Math.abs(
+    new Date(date1).getTime() - new Date(date2).getTime()
+  );
+
+  return diffInMs >= duration * msInHour;
+};
+
+const formatDateMobile = (inputDate) => {
+  if (!inputDate || typeof inputDate !== "string") return "Invalid Date";
+
+  const parts = inputDate.split("/");
+  if (parts.length !== 3) return "Invalid Date";
+
+  const [month, day, year] = parts;
+  const dateObj = new Date(year, month - 1, day);
+
+  return dateObj.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const isSecondTimeSmaller = (time1, time2) => {
+  const convertTo24HourFormat = (time) => {
+    let [hour, minute, period] = time.match(/(\d+):(\d+) (\w{2})/).slice(1);
+    hour = parseInt(hour);
+    minute = parseInt(minute);
+
+    if (period.toUpperCase() === "PM" && hour !== 12) {
+      hour += 12;
+    } else if (period.toUpperCase() === "AM" && hour === 12) {
+      hour = 0;
+    }
+
+    return hour * 60 + minute;
+  };
+
+  return convertTo24HourFormat(time2) < convertTo24HourFormat(time1);
+};
+
+const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
+  // Parse the ISO datetime strings to Date objects
+  const startDateTime = new Date(startDateTimeStr);
+  const endDateTime = new Date(endDateTimeStr);
+
+  // Check if end date is after start date
+  if (endDateTime <= startDateTime) {
+    return {
+      valid: false,
+      message: "Booking end time must be after booking start time.",
+    };
+  }
+
+  // Calculate the difference in milliseconds
+  const timeDifference = endDateTime - startDateTime;
+
+  // Convert to hours (1000ms * 60s * 60min = 3600000ms per hour)
+  const hoursDifference = timeDifference / 3600000;
+
+  // Check if the difference is at least 24 hours
+  if (hoursDifference < 24) {
+    return {
+      valid: false,
+      message: "Booking minimum duration should at least 24 hours.",
+    };
+  }
+
+  return {
+    valid: true,
+    message: "Booking dates are valid.",
+  };
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -585,4 +713,11 @@ export {
   format24HourFormatTime,
   formatTimeForProductCard,
   RoundedDateTimeAndToNextHour,
+  addDaysToDateForRide,
+  searchFormatDateOnly,
+  searchFormatTimeOnly,
+  isMinimumDurationHours,
+  formatDateMobile,
+  isSecondTimeSmaller,
+  validateBookingDates,
 };

@@ -48,7 +48,7 @@ const RidesSummary = () => {
 
   // back button to let them go back to ride page
   const handleBackToRides = () => {
-    navigate("/my-rides");
+    navigate("/account/my-rides");
   };
 
   // for making payment
@@ -142,21 +142,13 @@ const RidesSummary = () => {
                 </button>
               )}
               <div
-                className={`${
-                  (rides[0]?.bookingStatus == "done" &&
-                    "bg-green-500 bg-opacity-80 hover:bg-opacity-100") ||
-                  (rides[0]?.bookingStatus == "extended" &&
-                    "bg-green-500 bg-opacity-80 hover:bg-opacity-100") ||
-                  (rides[0]?.bookingStatus == "canceled" && "bg-theme") ||
-                  (rides[0]?.bookingStatus == "pending" && "bg-orange-400")
-                } text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 shadow-md outline-none border-0 rounded-md cursor-pointer`}
+                className={`bg-theme hover:bg-opacity-80 text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 shadow-md outline-none border-0 rounded-md cursor-pointer`}
               >
                 Booking Status:{" "}
                 <span className="uppercase">{rides[0]?.bookingStatus}</span>
               </div>
             </div>
           </div>
-          {/* lg:max-h-96 */}
           <div className="lg:overflow-hidden lg:hover:overflow-y-auto no-scrollbar">
             <div className="mb-5">
               <div className="flex justify-between items-center mt-1 mb-3">
@@ -189,7 +181,7 @@ const RidesSummary = () => {
                       : rides[0]?.rideStatus === "ongoing"
                       ? "Started"
                       : rides[0]?.rideStatus === "canceled"
-                      ? "Cancelled"
+                      ? "Canceled"
                       : "Completed"}
                   </span>
                 </p>
@@ -260,9 +252,10 @@ const RidesSummary = () => {
                       rides[0]?.paymentStatus === "pending" ||
                       (rides[0]?.paymentStatus === "failed" && "bg-theme") ||
                       (rides[0]?.paymentStatus === "refunded" && "bg-theme") ||
+                      (rides[0]?.paymentStatus === "canceled" && "bg-theme") ||
                       (rides[0]?.paymentStatus === "paid" &&
                         "bg-green-500 bg-opacity-80")
-                    } text-gray-100 px-2 py-1 rounded-md cursor-pointer capitalize ml-2`}
+                    } text-white px-2.5 py-1 rounded-md cursor-pointer capitalize ml-2`}
                   >
                     {rides[0]?.paymentStatus.replace("_", " ")}
                   </span>
