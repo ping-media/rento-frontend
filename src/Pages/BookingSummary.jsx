@@ -234,7 +234,7 @@ const BookingSummary = () => {
                         "Make Payment"
                       )
                     ) : (
-                      <Spinner message={"loading..."} />
+                      <Spinner message={"Do not go back while booking..."} />
                     )}
                   </button>
                 </div>

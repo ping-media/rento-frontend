@@ -758,7 +758,7 @@ const handleBookingProcess = async (
           currentBooking_id: response?.data?._id,
           timeLine: [
             {
-              title: "PAy On Delivery",
+              title: "Pay Later",
               date: new Date().toLocaleString(),
               paymentAmount:
                 response?.bookingPrice?.discountTotalPrice > 0
@@ -767,7 +767,7 @@ const handleBookingProcess = async (
             },
           ],
         };
-        handlePostData("/createTimeline", timeLineData);
+        await handlePostData("/createTimeline", timeLineData);
         handleAsyncError(dispatch, "Ride booked successfully.", "success");
         navigate(`/account/my-rides/summary/${response?.data?._id}`);
         return;
