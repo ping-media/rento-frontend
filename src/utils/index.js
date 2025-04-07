@@ -120,12 +120,12 @@ const formatTimeWithoutSeconds = (timeStr) => {
     hours = (hours + 1) % 24;
   }
   // Step 3: Convert back to 12-hour format and return the time string
-  let formattedHour = hours % 12; // Convert back to 12-hour format
+  let formattedHour = hours % 12;
   formattedHour = formattedHour === 0 ? 12 : formattedHour;
   const formattedMinute = minutes < 10 ? `0${minutes}` : minutes;
   const formattedPeriod = hours >= 12 ? "PM" : "AM";
 
-  return `${formattedHour}:${formattedMinute} ${formattedPeriod}`; // Return the formatted time string
+  return `${formattedHour}:${formattedMinute} ${formattedPeriod}`;
 };
 
 const formatDateWithDayName = (inputDate) => {

@@ -88,6 +88,15 @@ const SearchRide = () => {
     const covertedTime = parseInt(
       convertTo24HourFormat(pickupTime).replace(":00", "")
     );
+
+    if (new Date(result.pickup) > new Date(result.dropoff)) {
+      handleAsyncError(
+        dispatch,
+        "Drop Date and time should be ahead of pickup date and time."
+      );
+      return;
+    }
+
     // checking whether the minimum duration should be 12 hour or more
     const isMinDuration = isMinimumDurationHours(
       result.pickup,
