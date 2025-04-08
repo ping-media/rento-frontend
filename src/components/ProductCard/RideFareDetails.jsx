@@ -134,6 +134,8 @@ const RideFareDetails = ({ rides }) => {
                       ? "(Full Paid)"
                       : rides?.paymentMethod == "partiallyPay"
                       ? ""
+                      : rides?.bookingPrice?.payOnPickupMethod
+                      ? `(${rides?.bookingPrice?.payOnPickupMethod})`
                       : "(need to pay at pickup)"}
                   </small>
                 </p>
@@ -180,6 +182,8 @@ const RideFareDetails = ({ rides }) => {
                       ? ""
                       : rides?.bookingPrice?.isDiscountZero === true
                       ? ""
+                      : rides?.bookingPrice?.payOnPickupMethod
+                      ? `(${rides?.bookingPrice?.payOnPickupMethod})`
                       : "(Need to pay at pickup)"}
                   </small>
                 </p>

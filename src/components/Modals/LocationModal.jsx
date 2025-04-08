@@ -8,11 +8,11 @@ import {
 import { useEffect, useState } from "react";
 import { fetchingData } from "../../Data";
 import Spinner from "../Spinner/Spinner";
+import Location from "../../assets/logo/location.png";
 
 const LocationModal = () => {
   const dispatch = useDispatch();
   const { isLocationModalActive } = useSelector((state) => state.modals);
-  // const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const [loading, setLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
 
@@ -35,8 +35,10 @@ const LocationModal = () => {
         try {
           setLoading(true);
           const result = await fetchingData("/getLocation");
-          if (result.status == 200) {
+          if (result?.status === 200) {
             return setLocationList(result?.data);
+          } else {
+            setLocationList([]);
           }
         } catch (error) {
           console.log(error.message);
@@ -83,28 +85,43 @@ const LocationModal = () => {
           <div className="p-6 pt-5 text-center">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-6 lg:gap-4 w-full overflow-hidden h-96 overflow-y-auto no-scrollbar">
               {!loading ? (
-                locationList?.length > 0 &&
-                locationList.map((item) => (
-                  <button
-                    className="w-full h-32 lg:h-40"
-                    onClick={() =>
-                      handleChangeLocation({
-                        locationName: item?.locationName,
-                        locationId: item?._id,
-                      })
-                    }
-                    key={item?._id}
-                  >
-                    <img
-                      src={item?.locationImage}
-                      className="w-full h-full object-cover rounded-lg"
-                      alt="SEARCH_LOCATION"
-                    />
-                    <h2 className="text-gray-600 font-semibold capitalize mt-2">
-                      {item?.locationName}
-                    </h2>
-                  </button>
-                ))
+                locationList?.length > 0 ? (
+                  locationList.map((item) => (
+                    <button
+                      className="w-full h-32 lg:h-40"
+                      onClick={() =>
+                        handleChangeLocation({
+                          locationName: item?.locationName,
+                          locationId: item?._id,
+                        })
+                      }
+                      key={item?._id}
+                    >
+                      <img
+                        src={item?.locationImage}
+                        className="w-full h-full object-cover rounded-lg"
+                        alt="SEARCH_LOCATION"
+                      />
+                      <h2 className="text-gray-600 font-semibold capitalize mt-2">
+                        {item?.locationName}
+                      </h2>
+                    </button>
+                  ))
+                ) : (
+                  <div className="col-span-full flex items-center justify-center h-full">
+                    <div>
+                      <img
+                        src={Location}
+                        className="w-24 h-24 mx-auto object-contain"
+                        loading="lazy"
+                        alt="LOCATION"
+                      />
+                      <p className="text-center font-semibold italic text-gray-500">
+                        No Location Found.
+                      </p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-center col-span-full">
                   <Spinner

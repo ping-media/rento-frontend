@@ -84,7 +84,7 @@ const BookingPaymentCard = ({ isDiscountZeroApplied }) => {
                 />
               </svg>
             </div>
-            <h2 className="text-md">Pay On Pickup</h2>
+            <h2 className="text-md">Pay Later</h2>
           </div>
           <input
             type="radio"

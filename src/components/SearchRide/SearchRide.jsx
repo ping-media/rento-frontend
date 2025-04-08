@@ -23,7 +23,7 @@ import {
   isSecondTimeSmaller,
   nextDayFromCurrent,
   removeAfterSecondSlash,
-  RoundedDateTimeAndToNextHour,
+  // RoundedDateTimeAndToNextHour,
   searchFormatDateOnly,
   searchFormatTimeOnly,
 } from "../../utils";
@@ -88,6 +88,15 @@ const SearchRide = () => {
     const covertedTime = parseInt(
       convertTo24HourFormat(pickupTime).replace(":00", "")
     );
+
+    if (new Date(result.pickup) > new Date(result.dropoff)) {
+      handleAsyncError(
+        dispatch,
+        "Drop Date and time should be ahead of pickup date and time."
+      );
+      return;
+    }
+
     // checking whether the minimum duration should be 12 hour or more
     const isMinDuration = isMinimumDurationHours(
       result.pickup,
@@ -184,18 +193,19 @@ const SearchRide = () => {
       setDropoffDate(nextDayFromCurrent(new Date()));
       setQueryPickupTime(new Date().toLocaleTimeString());
       setQueryDropoffTime(new Date().toLocaleTimeString());
+
+      if (pickupDate) {
+        setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
+      }
+      if (queryPickupTime != "") {
+        setQueryDropoffTime(queryPickupTime);
+      }
     }
-    if (pickupDate) {
-      setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
-    }
-    if (queryPickupTime != "") {
-      setQueryDropoffTime(queryPickupTime);
-    }
-  }, []);
+  }, [location.pathname]);
 
   // changing date & time if time is passed openning hour
   useEffect(() => {
-    if (selectedStation !== null) {
+    if (location.pathname === "/" && selectedStation !== null) {
       const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
       const openStartTime = Number(selectedStation?.openStartTime);
