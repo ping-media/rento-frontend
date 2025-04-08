@@ -45,6 +45,9 @@ const TimePicker = ({
         const timeString = `${hourString}:${minuteString} ${period}`;
         const timeDate = parseTime(timeString);
 
+        // const isDisabled = isToday && timeDate < currentTime;
+        // times.push({ time: timeString, isDisabled });
+
         const isOutsideAllowedRange =
           hour < selectedStation?.openStartTime ||
           hour > selectedStation?.openEndTime;

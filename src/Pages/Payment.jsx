@@ -139,7 +139,7 @@ const Payment = () => {
         );
         if (getBookingData?.status === 200) {
           currentBooking.current = getBookingData?.data[0];
-          setBookingFetched(true); // Mark as fetched
+          setBookingFetched(true);
           if (decodedParams?.order) {
             if (
               currentBooking.current?.paymentgatewayOrderId ===
