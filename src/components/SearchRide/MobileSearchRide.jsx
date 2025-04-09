@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDateMobile, handlePreviousPage } from "../../utils";
+import { formatDate, handlePreviousPage } from "../../utils";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -11,7 +11,7 @@ const MobileSearchRide = ({ pickup, dropoff }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   return (
-    <div className="lg:hidden bg-white shadow-md px-6 py-2 lg:py-3 flex items-center justify-between">
+    <div className="lg:hidden bg-white shadow-md px-3.5 py-2 lg:py-3 flex items-center justify-between">
       <button
         className="flex items-center gap-1 p-1"
         type="button"
@@ -35,9 +35,9 @@ const MobileSearchRide = ({ pickup, dropoff }) => {
         type="button"
         onClick={() => dispatch(toggleSearchUpdate())}
       >
-        <span>{pickup != undefined && formatDateMobile(pickup)}</span>
+        <span>{pickup != undefined && formatDate(new Date(pickup))}</span>
         <span className="mx-1 text-theme">To</span>
-        <span>{dropoff != undefined && formatDateMobile(dropoff)}</span>
+        <span>{dropoff != undefined && formatDate(new Date(dropoff))}</span>
       </button>
       <button type="button" onClick={() => dispatch(toggleFilter())}>
         <svg

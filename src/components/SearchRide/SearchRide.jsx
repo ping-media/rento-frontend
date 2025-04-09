@@ -383,10 +383,7 @@ const SearchRide = () => {
 
       {/* mobile view  layout */}
       {location.pathname.includes("/search/") && (
-        <MobileSearchRide
-          pickup={pickupDate?.toLocaleDateString()}
-          dropoff={dropoffDate?.toLocaleDateString()}
-        />
+        <MobileSearchRide pickup={pickupDate} dropoff={dropoffDate} />
       )}
     </>
   );
