@@ -71,12 +71,24 @@ const SearchRide = () => {
     const result = Object.fromEntries(response.entries());
     const pickupDate = result.pickup.substring(0, 16);
     const checkTime = isSecondTimeSmaller(
-      formatTimeWithoutSeconds(new Date().toLocaleTimeString()),
+      formatTimeWithoutSeconds(
+        new Date().toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        })
+      ),
       result.pickup.substring(17, result.pickup.length)
     );
     const pickupTime = checkTime
       ? result.pickup.substring(17, result.pickup.length)
-      : formatTimeWithoutSeconds(new Date().toLocaleTimeString());
+      : formatTimeWithoutSeconds(
+          new Date().toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          })
+        );
     let dropoffDate = result?.dropoff?.substring(0, 16) || "";
     const dropoffTime =
       result?.dropoff?.substring(17, result.dropoff.length) || "";
@@ -191,8 +203,20 @@ const SearchRide = () => {
     if (location.pathname === "/") {
       setPickupDate(new Date());
       setDropoffDate(nextDayFromCurrent(new Date()));
-      setQueryPickupTime(new Date().toLocaleTimeString());
-      setQueryDropoffTime(new Date().toLocaleTimeString());
+      setQueryPickupTime(
+        new Date().toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        })
+      );
+      setQueryDropoffTime(
+        new Date().toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        })
+      );
 
       if (pickupDate) {
         setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
@@ -359,10 +383,7 @@ const SearchRide = () => {
 
       {/* mobile view  layout */}
       {location.pathname.includes("/search/") && (
-        <MobileSearchRide
-          pickup={pickupDate?.toLocaleDateString()}
-          dropoff={dropoffDate?.toLocaleDateString()}
-        />
+        <MobileSearchRide pickup={pickupDate} dropoff={dropoffDate} />
       )}
     </>
   );

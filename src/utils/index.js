@@ -614,21 +614,43 @@ const isMinimumDurationHours = (date1, date2, duration = 12) => {
   return diffInMs >= duration * msInHour;
 };
 
-const formatDateMobile = (inputDate) => {
-  if (!inputDate || typeof inputDate !== "string") return "Invalid Date";
+// const formatDateMobile = (inputDate) => {
+//   // Return early if input is invalid
+//   if (!inputDate || typeof inputDate !== "string") return "Invalid Date";
 
-  const parts = inputDate.split("/");
-  if (parts.length !== 3) return "Invalid Date";
+//   try {
+//     // Explicitly split and construct the date to avoid any ambiguity
+//     const parts = inputDate.trim().split("/");
+//     if (parts.length !== 3) return "Invalid Date";
 
-  const [month, day, year] = parts;
-  const dateObj = new Date(year, month - 1, day);
+//     // Get month, day, year - explicitly treating as mm/dd/yyyy format
+//     const month = parseInt(parts[0], 10) - 1; // 0-indexed months in JS
+//     const day = parseInt(parts[1], 10);
+//     const year = parseInt(parts[2], 10);
 
-  return dateObj.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
+//     // Validate the parts
+//     if (isNaN(month) || isNaN(day) || isNaN(year)) return "Invalid Date";
+//     if (month < 0 || month > 11 || day < 1 || day > 31) return "Invalid Date";
+
+//     // Create date manually to ensure proper interpretation
+//     const date = new Date(year, month, day);
+
+//     // Check if date is valid by verifying the components match what we set
+//     if (
+//       date.getFullYear() !== year ||
+//       date.getMonth() !== month ||
+//       date.getDate() !== day
+//     ) {
+//       return "Invalid Date";
+//     }
+
+//     // Format using date-fns with explicit formatting
+//     return format(date, "dd MMM yyyy");
+//   } catch (error) {
+//     console.error("Date formatting error:", error);
+//     return "Invalid Date";
+//   }
+// };
 
 const isSecondTimeSmaller = (time1, time2) => {
   const convertTo24HourFormat = (time) => {
@@ -717,7 +739,7 @@ export {
   searchFormatDateOnly,
   searchFormatTimeOnly,
   isMinimumDurationHours,
-  formatDateMobile,
+  // formatDateMobile,
   isSecondTimeSmaller,
   validateBookingDates,
 };
