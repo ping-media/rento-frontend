@@ -35,17 +35,19 @@ const Payment = () => {
         _id: currentBooking.current?._id,
         bookingStatus: decodedParams?.paymentStatus ? "done" : "extended",
         paymentStatus:
-          decodedParams?.paymentStatus || currentBooking.current?.paymentStatus,
-        paymentMethod: "online",
+          decodedParams?.paymentStatus ||
+          currentBooking?.current?.paymentStatus,
+        paymentMethod: decodedParams?.paymentMethod || "online",
         paymentgatewayOrderId:
-          decodedParams?.order || currentBooking.current?.paymentgatewayOrderId,
+          decodedParams?.order ||
+          currentBooking?.current?.paymentgatewayOrderId,
         paySuccessId: response?.razorpay_payment_id,
         extendBooking: {
-          oldBooking: currentBooking.current?.oldBooking,
+          oldBooking: currentBooking?.current?.oldBooking,
           transactionIds: [
-            ...(currentBooking.current?.extendBooking?.transactionIds || []),
-            currentBooking.current?.paymentgatewayOrderId,
-            currentBooking.current?.paySuccessId,
+            ...(currentBooking?.current?.extendBooking?.transactionIds || []),
+            currentBooking?.current?.paymentgatewayOrderId,
+            currentBooking?.current?.paySuccessId,
           ],
         },
       };
