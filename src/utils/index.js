@@ -310,7 +310,7 @@ const formatDateTimeForUser = (input) => {
   const date = new Date(input);
 
   const year = date.getUTCFullYear();
-  const month = date.getUTCMonth(); // 0-based index
+  const month = date.getUTCMonth();
   const day = date.getUTCDate();
 
   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
@@ -323,7 +323,6 @@ const formatDateTimeForUser = (input) => {
   const minutes = date.getUTCMinutes();
   const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
 
-  // Format the time as per the desired format (e.g. '10:00 pm')
   const formattedTime = new Date(
     Date.UTC(year, month, day, hours, minutes)
   ).toLocaleTimeString("en-GB", {

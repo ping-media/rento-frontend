@@ -17,7 +17,7 @@ import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
 import {
   handleBookingProcess,
   handleCreateBooking,
-  handleFetchBookingData,
+  // handleFetchBookingData,
   handleUpdateBooking,
 } from "../Data/Functions";
 import Spinner from "../components/Spinner/Spinner";
