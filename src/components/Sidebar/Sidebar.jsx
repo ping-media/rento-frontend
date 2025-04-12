@@ -34,11 +34,6 @@ const Sidebar = () => {
     >
       <div className="w-[80%] bg-white h-full">
         <div className="bg-theme-black px-4 py-2.5 flex items-center justify-between mb-3">
-          {/* <Link to={"/"}>
-            <h1 className="font-bold text-theme text-3xl font-fingerPoint tracking-wide">
-              RENTO BIKES
-            </h1>
-          </Link> */}
           <Link
             to={"/"}
             className="w-12 h-12 lg:w-14 lg:h-14 p-1.5 rounded-full bg-white"

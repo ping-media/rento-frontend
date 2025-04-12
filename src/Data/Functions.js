@@ -852,10 +852,8 @@ const handleBookingProcess = async (
           data,
           orderId,
           result,
-          // handleUpdateBooking,
           handleAsyncError,
           navigate,
-          // handlebooking,
           dispatch,
           handleRestCoupon,
           setBookingLoading
