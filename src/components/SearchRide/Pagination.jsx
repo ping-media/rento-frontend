@@ -6,43 +6,40 @@ const Pagination = ({ totalNumberOfPages, currentPage, setPageChanger }) => {
   const dispatch = useDispatch();
   //going back to previous page
   const handlePrevPageChange = () => {
-    if (pagination?.page > 1) {
-      setPageChanger(pagination?.page - 1);
-      dispatch(handleChangePage(pagination?.page - 1));
+    if (Number(pagination?.page) > 1) {
+      setPageChanger(Number(pagination?.page) - 1);
+      dispatch(handleChangePage(Number(pagination?.page) - 1));
     }
   };
   // going to next page
   const handleNextPageChange = () => {
-    if (pagination?.page <= totalNumberOfPages) {
-      setPageChanger(pagination?.page + 1);
-      dispatch(handleChangePage(pagination?.page + 1));
+    if (pagination?.page <= Number(totalNumberOfPages)) {
+      setPageChanger(Number(pagination?.page) + 1);
+      dispatch(handleChangePage(Number(pagination?.page) + 1));
     }
   };
-  //jump to any page when you click on that page number
+
   const handleJumpPageChange = (number) => {
     dispatch(handleChangePage(number));
     return setPageChanger(number);
   };
-  //handle the pagination page number adding ellipses where it is need
+
   const getPaginationItems = () => {
     const items = [];
-    const maxPagesToShow = pagination?.limit; // Total number of page buttons to display
+    const maxPagesToShow =
+      totalNumberOfPages > pagination?.limit ? pagination?.limit : 5;
 
-    // If total pages are less than or equal to max pages to show, just return all pages
     if (totalNumberOfPages <= maxPagesToShow) {
       for (let i = 1; i <= totalNumberOfPages; i++) {
         items.push(i);
       }
     } else {
-      // Always show the first page
       items.push(1);
 
-      // Logic to show ellipses and pages
       if (currentPage > 3) {
         items.push("...");
       }
 
-      // Calculate the range of pages to show around the current page
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalNumberOfPages - 1, pagination?.page + 1);
 

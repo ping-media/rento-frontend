@@ -14,10 +14,8 @@ export const razorPayment = async (
   data,
   orderId,
   result,
-  // handleUpdateBooking,
   handleAsyncError,
   navigate,
-  // handlebooking,
   dispatch,
   handleRestCoupon,
   setBookingLoading
@@ -127,7 +125,6 @@ export const razorPayment = async (
     description: "Payment for your booking",
     image: favicon,
     handler: (response) => {
-      // console.log(response);
       if (response) {
         return handleBookVehicle(response);
       } else {

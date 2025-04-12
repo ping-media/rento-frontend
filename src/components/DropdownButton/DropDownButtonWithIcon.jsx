@@ -25,7 +25,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
       if (!loading) {
         setChangeLoading(true);
         // when changing the location this will run
-        if (isLocationChange == true && station.length > 0) {
+        if (isLocationChange === true && station.length > 0) {
           setSelectedValue(station[0]?.stationName);
           setSelectedValueId(station[0]?.stationId);
           // for updating the url based on new station
@@ -34,14 +34,13 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
           dispatch(handleCheckLocationChange());
         } else if (station.length > 0 && value) {
           const stationDataById = station?.filter(
-            (item) => item?.stationId == value
+            (item) => item?.stationId === value
           );
           setSelectedValue(stationDataById[0]?.stationName);
           setSelectedValueId(stationDataById[0]?.stationId);
         } else if (station.length > 0) {
           setSelectedValue(station[0]?.stationName);
           setSelectedValueId(station[0]?.stationId);
-          dispatch(addCurrentStation(station[0]));
         } else {
           setSelectedValue("No Station Found");
         }
@@ -51,6 +50,13 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
       return error?.message;
     }
   }, [loading, station]);
+
+  // for changing selectedStation whenever station list change so that station time can change too
+  useEffect(() => {
+    if (station?.length > 0) {
+      dispatch(addCurrentStation(station[0]));
+    }
+  }, [station]);
 
   // for changing station when we click on station
   const handleLocationChange = (item) => {
@@ -76,9 +82,9 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
 
       // Set position based on available space
       if (spaceBelow < 150 && spaceAbove > spaceBelow) {
-        setDropdownPosition("top"); // Position above the button
+        setDropdownPosition("top");
       } else {
-        setDropdownPosition("bottom"); // Position below the button
+        setDropdownPosition("bottom");
       }
     }
   };

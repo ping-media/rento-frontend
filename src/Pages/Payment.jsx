@@ -37,7 +37,10 @@ const Payment = () => {
         paymentStatus:
           decodedParams?.paymentStatus ||
           currentBooking?.current?.paymentStatus,
-        paymentMethod: decodedParams?.paymentMethod || "online",
+        paymentMethod:
+          (decodedParams?.paymentMethod === "partiallyPay"
+            ? "partially_paid"
+            : decodedParams?.paymentMethod) || "online",
         paymentgatewayOrderId:
           decodedParams?.order ||
           currentBooking?.current?.paymentgatewayOrderId,

@@ -20,11 +20,13 @@ const Search = () => {
   );
   const [currentPage, setCurrentPage] = useState(pagination?.page);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
+  const { selectedStation } = useSelector((state) => state.station);
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
   const customLocation = useLocation();
 
   useEffect(() => {
+    if (!id) return;
     //this function help to search data
     const newQueryParmsData = Object.fromEntries(queryParms.entries());
     handleSearchVehicleData(
@@ -32,10 +34,10 @@ const Search = () => {
       newQueryParmsData,
       location,
       selectedLocation,
-      id,
+      selectedStation?.stationId || id,
       pagination?.page
     );
-  }, [customLocation, selectedLocation, pagination?.page]);
+  }, [customLocation.search, pagination?.page, selectedStation]);
 
   //removing this after we are going to booking
   useEffect(() => {
