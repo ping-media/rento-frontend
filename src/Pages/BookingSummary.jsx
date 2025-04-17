@@ -82,7 +82,6 @@ const BookingSummary = () => {
         const result = await fetchingData(
           `/getPlanData?_id=${queryParmsData?.vehiclePlan}`
         );
-        // console.log(result);
         setVehiclePlanData(result?.data);
         return setVehicleLoading(false);
       })();

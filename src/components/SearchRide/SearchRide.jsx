@@ -54,6 +54,7 @@ const SearchRide = () => {
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
   const rideSubmitRef = useRef(null);
+  const hasFirstRender = useRef(false);
   // minimum time for booking a ride
   const MinimumDurationHours = 24;
 
@@ -80,6 +81,7 @@ const SearchRide = () => {
       ),
       result.pickup.substring(17, result.pickup.length)
     );
+
     const pickupTime = checkTime
       ? result.pickup.substring(17, result.pickup.length)
       : formatTimeWithoutSeconds(
@@ -109,7 +111,7 @@ const SearchRide = () => {
       return;
     }
 
-    // checking whether the minimum duration should be 12 hour or more
+    // checking whether the minimum duration should be 24 hour or more
     const isMinDuration = isMinimumDurationHours(
       result.pickup,
       result.dropoff,
@@ -191,10 +193,16 @@ const SearchRide = () => {
       addStationData,
       loading
     );
-  }, [selectedLocation]);
+  }, [loading, selectedLocation]);
 
   useEffect(() => {
-    memoizedSearchData();
+    if (location.pathname.includes("/search/") && !hasFirstRender.current) {
+      hasFirstRender.current = true;
+      return;
+    }
+    if (location.pathname === "/" || hasFirstRender.current) {
+      memoizedSearchData();
+    }
   }, [memoizedSearchData]);
 
   // this will set time and date for the first time on homepage
@@ -229,7 +237,8 @@ const SearchRide = () => {
 
   // changing date & time if time is passed openning hour
   useEffect(() => {
-    if (location.pathname === "/" && selectedStation !== null) {
+    // if (location.pathname === "/" && selectedStation !== null) {
+    if (selectedStation !== null) {
       const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
       const openStartTime = Number(selectedStation?.openStartTime);
@@ -265,10 +274,10 @@ const SearchRide = () => {
       const newQueryParmsData = Object.fromEntries(queryParms.entries());
       const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
       const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
+      // for desktop full view
       if (pickUpDateAndTime && dropoffDateAndTime) {
-        // for desktop full view
-        setPickupDate(searchFormatDateOnly(pickUpDateAndTime));
-        setDropoffDate(searchFormatDateOnly(dropoffDateAndTime));
+        setPickupDate(new Date(pickUpDateAndTime.split("T")[0]));
+        setDropoffDate(new Date(dropoffDateAndTime.split("T")[0]));
         setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
         setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
       }
@@ -277,7 +286,7 @@ const SearchRide = () => {
     } finally {
       setIsPageLoad(false);
     }
-  }, [location.href]);
+  }, [location.pathname]);
 
   return (
     <>
@@ -362,7 +371,7 @@ const SearchRide = () => {
                   htmlFor="pickup-time"
                   className="text-gray-500 block mb-1"
                 >
-                  Pick-up Date And Time
+                  Drop-off Date And Time
                 </label>
                 <DateTimePicker
                   value={dropoffDate}

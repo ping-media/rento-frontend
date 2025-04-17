@@ -701,7 +701,9 @@ const handleBookingProcess = async (
       paySuccessId: "NA",
     };
 
-    dispatch(addTempBookingData(data));
+    if (result?.paymentMethod !== "cash") {
+      dispatch(addTempBookingData(data));
+    }
   }
 
   try {
@@ -814,7 +816,8 @@ const handleBookingProcess = async (
       }
 
       if (bookingResponse?.status === 200 || storedBooking) {
-        const orderId = await createOrderId(data);
+        // const orderId = await createOrderId(data);
+        const orderId = await createOrderId(bookingResponse?.data);
         if (orderId?.status === "created") {
           data = bookingResponse.data;
           localStorage.setItem("tempBooking", JSON.stringify(data));
@@ -831,7 +834,7 @@ const handleBookingProcess = async (
             dispatch
           );
           if (response?.status === 200) {
-            data = response.data;
+            data = response?.data;
             const timeLineData = {
               currentBooking_id: data?._id,
               timeLine: [

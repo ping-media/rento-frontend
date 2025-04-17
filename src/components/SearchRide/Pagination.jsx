@@ -26,8 +26,9 @@ const Pagination = ({ totalNumberOfPages, currentPage, setPageChanger }) => {
 
   const getPaginationItems = () => {
     const items = [];
-    const maxPagesToShow =
-      totalNumberOfPages > pagination?.limit ? pagination?.limit : 5;
+    // const maxPagesToShow =
+    //   totalNumberOfPages > pagination?.limit ? pagination?.limit : 5;
+    const maxPagesToShow = 5;
 
     if (totalNumberOfPages <= maxPagesToShow) {
       for (let i = 1; i <= totalNumberOfPages; i++) {

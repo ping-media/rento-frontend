@@ -372,10 +372,9 @@ const formatDateTimeISTForUser = (input) => {
 };
 
 const nextDayFromCurrent = (date, noOfDay = 1) => {
-  const nextDay = date;
+  // const nextDay = date;
+  const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + noOfDay);
-
-  // return nextDay.toLocaleDateString();
   return nextDay;
 };
 
@@ -592,7 +591,17 @@ const addDaysToDateForRide = (daysToAdd, dateStr) => {
   return newDateStr;
 };
 
-const searchFormatDateOnly = (dateStr) => new Date(dateStr);
+// const searchFormatDateOnly = (dateStr) => new Date(dateStr);
+const searchFormatDateOnly = (utcString) => {
+  const date = new Date(utcString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 const searchFormatTimeOnly = (dateStr) => {
   const date = new Date(dateStr);
@@ -702,6 +711,13 @@ const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
   };
 };
 
+const getEarliestDate = (array, key) => {
+  return array?.reduce((earliest, item) => {
+    const date = item[key] ? new Date(item[key]) : null;
+    return !earliest || (date && date < earliest) ? date : earliest;
+  }, null);
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -741,4 +757,5 @@ export {
   // formatDateMobile,
   isSecondTimeSmaller,
   validateBookingDates,
+  getEarliestDate,
 };

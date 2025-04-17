@@ -68,7 +68,7 @@ const DatePicker = ({
   const handleDateSelect = (date) => {
     if (!date) return;
     setValueChanger(date);
-    if (setDropoffChanger && name === "pickupDate") {
+    if (setDropoffChanger && name === "pickup") {
       const tempDropoffDate = nextDayFromCurrent(date);
       setDropoffChanger(tempDropoffDate);
     }

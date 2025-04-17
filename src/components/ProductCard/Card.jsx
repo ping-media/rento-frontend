@@ -1,9 +1,14 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import bikeImage from "../../assets/logo/bike.png";
-import soldOutImage from "../../assets/logo/sold-out.svg";
+// import soldOutImage from "../../assets/logo/sold-out.svg";
 import scooterImage from "../../assets/logo/scooter.png";
 import { useEffect, useRef, useState } from "react";
-import { formatPrice, handleErrorImage, updateQueryParams } from "../../utils";
+import {
+  formatPrice,
+  getEarliestDate,
+  handleErrorImage,
+  updateQueryParams,
+} from "../../utils";
 import SoldOutCard from "./SoldOutCard";
 
 const Card = ({
@@ -16,10 +21,11 @@ const Card = ({
   vehicleModel,
   freeKms,
   extraKmsCharges,
-  isSold = false,
   BookingEndDate,
   MaintenanceEndDate,
+  vehicleDetails,
   _id,
+  isSold = false,
 }) => {
   const [queryParms] = useSearchParams();
   const productImageRef = useRef(null);
@@ -44,20 +50,42 @@ const Card = ({
     navigate(bookingUrl);
   };
 
+  const earliestBookingEndDate = getEarliestDate(
+    vehicleDetails,
+    "BookingEndDate"
+  );
+  const earliestMaintenanceEndDate = getEarliestDate(
+    vehicleDetails,
+    "MaintenanceEndDate"
+  );
+
   return (
     <div onClick={sendToRideSummary} className="relative">
       <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
-        {((isSold && BookingEndDate) || (isSold && MaintenanceEndDate)) && (
+        {((isSold && earliestBookingEndDate !== null) ||
+          (isSold && earliestMaintenanceEndDate !== null)) && (
           <SoldOutCard
-            BookingEndDate={BookingEndDate}
-            MaintenanceEndDate={MaintenanceEndDate}
+            BookingEndDate={earliestBookingEndDate}
+            MaintenanceEndDate={earliestMaintenanceEndDate}
           />
         )}
-        {/* modal & color of vehicle  */}
+        {/* vehicle left */}
+        {!isSold && (
+          <div className="top-4 left-0 absolute z-[1]">
+            <p
+              className="bg-theme-black text-gray-100 px-2 py-1 rounded-r-lg mb-1"
+              title="Vehicle_Count"
+            >
+              {vehicleDetails?.length > 20 ? "20+" : vehicleDetails?.length}{" "}
+              Left
+            </p>
+          </div>
+        )}
+        {/*vehicle modal*/}
         <div className="top-4 right-0 absolute z-[1]">
           <p
             className="bg-theme-black text-gray-100 px-2 py-1 rounded-l-lg mb-1"
-            title="Vehicle Modal"
+            title="Vehicle_Modal"
           >
             {vehicleModel}
           </p>

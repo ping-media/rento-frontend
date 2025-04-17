@@ -100,6 +100,9 @@ const Header = memo(() => {
           <button
             className="border-2 border-theme px-4 py-2 text-gray-100 flex items-center gap-1.5 rounded-md uppercase"
             onClick={() => dispatch(toggleLocationModal())}
+            disabled={
+              location.pathname.includes("/booking/summary/") ? true : false
+            }
           >
             <span>
               <svg

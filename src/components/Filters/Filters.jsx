@@ -58,7 +58,9 @@ const Filters = () => {
       <form>
         <div className="mb-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold mb-3">Filters</h2>
+            <h2 className="text-lg font-semibold uppercase tracking-wider mb-3">
+              Filters
+            </h2>
           </div>
 
           <div className="flex items-center lg:justify-between gap-2">
