@@ -17,9 +17,13 @@ const RideSlice = createSlice({
       state.rides = action.payload;
       state.loading = false;
     },
+    removeRidesData: (state) => {
+      state.rides = [];
+    },
   },
 });
 
-export const { fetchingRides, addRidesData } = RideSlice.actions;
+export const { fetchingRides, addRidesData, removeRidesData } =
+  RideSlice.actions;
 
 export default RideSlice.reducer;

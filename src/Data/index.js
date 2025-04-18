@@ -86,7 +86,6 @@ const handlePostData = async (endpoint, data) => {
         },
       }
     );
-    // console.log(response);
     return response?.data || response;
   } catch (error) {
     return {

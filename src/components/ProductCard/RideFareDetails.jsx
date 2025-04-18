@@ -23,15 +23,16 @@ const RideFareDetails = ({ rides }) => {
       }, 0)) ||
     0;
 
-  const payableBalance =
-    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
-    Number(rides.bookingPrice?.AmountLeftAfterUserPaid) ||
-    (rides?.paymentMethod === "cash" &&
-      Number(
-        rides?.bookingPrice?.discountTotalPrice > 0
-          ? rides?.bookingPrice?.discountTotalPrice
-          : rides?.bookingPrice?.totalPrice
-      ));
+  const payableBalance = rides?.bookingPrice?.payOnPickupMethod
+    ? 0
+    : Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
+      Number(rides.bookingPrice?.AmountLeftAfterUserPaid) ||
+      (rides?.paymentMethod === "cash" &&
+        Number(
+          rides?.bookingPrice?.discountTotalPrice > 0
+            ? rides?.bookingPrice?.discountTotalPrice
+            : rides?.bookingPrice?.totalPrice
+        ));
   0;
 
   return (
@@ -135,7 +136,7 @@ const RideFareDetails = ({ rides }) => {
                       : rides?.paymentMethod == "partiallyPay"
                       ? ""
                       : rides?.bookingPrice?.payOnPickupMethod
-                      ? `(${rides?.bookingPrice?.payOnPickupMethod})`
+                      ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
                       : "(need to pay at pickup)"}
                   </small>
                 </p>
@@ -183,7 +184,7 @@ const RideFareDetails = ({ rides }) => {
                       : rides?.bookingPrice?.isDiscountZero === true
                       ? ""
                       : rides?.bookingPrice?.payOnPickupMethod
-                      ? `(${rides?.bookingPrice?.payOnPickupMethod})`
+                      ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
                       : "(Need to pay at pickup)"}
                   </small>
                 </p>
