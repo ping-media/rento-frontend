@@ -65,6 +65,15 @@ const SearchRide = () => {
     }
   };
 
+  // checking whether it lies in opening hours or not
+  const isWithinOperatingHours = (time, startTime, endTime) => {
+    if (startTime > endTime) {
+      return time >= startTime || time <= endTime;
+    } else {
+      return time >= startTime && time <= endTime;
+    }
+  };
+
   // for searching vehicles
   const handleSearchRide = (e) => {
     e && e.preventDefault();
@@ -117,6 +126,7 @@ const SearchRide = () => {
       result.dropoff,
       MinimumDurationHours
     );
+
     if (location.pathname !== "/monthly-rental" && !isMinDuration)
       return handleAsyncError(
         dispatch,
@@ -126,6 +136,43 @@ const SearchRide = () => {
     //checking whether time is in opening hours
     try {
       if (
+        !isWithinOperatingHours(
+          covertedTime,
+          selectedStation?.openStartTime,
+          selectedStation?.openEndTime
+        )
+      ) {
+        if (
+          location.pathname === "/" ||
+          removeAfterSecondSlash(location.pathname) === "/search"
+        ) {
+          if (result?.pickupLocationId !== "") {
+            return navigate(
+              `/search/${
+                result?.pickupLocationId
+              }?BookingStartDateAndTime=${convertToISOString(
+                pickupDate,
+                result.pickup.substring(17, result.pickup.length)
+              )}&BookingEndDateAndTime=${convertToISOString(
+                dropoffDate,
+                dropoffTime
+              )}`
+            );
+          }
+        } else if (location.pathname === "/monthly-rental") {
+          return navigate(
+            `/search/${
+              result?.pickupLocationId
+            }?BookingStartDateAndTime=${convertToISOString(
+              pickupDate,
+              result.pickup.substring(17, result.pickup.length)
+            )}&BookingEndDateAndTime=${convertToISOString(
+              dropoffDate,
+              pickupTime
+            )}`
+          );
+        }
+      } else if (
         (location.pathname !== "monthly-rental" &&
           // pickupTime === dropoffTime &&
           covertedTime >= selectedStation?.openStartTime &&
@@ -160,16 +207,6 @@ const SearchRide = () => {
             )}&BookingEndDateAndTime=${convertToISOString(
               dropoffDate,
               pickupTime
-            )}`
-          );
-        } else if (location.pathname === "/explore") {
-          return navigate(
-            `/explore?BookingStartDateAndTime=${convertToISOString(
-              pickupDate,
-              pickupTime
-            )}&BookingEndDateAndTime=${convertToISOString(
-              dropoffDate,
-              dropoffTime
             )}`
           );
         }

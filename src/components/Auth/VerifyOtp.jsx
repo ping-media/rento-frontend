@@ -171,9 +171,21 @@ const VerifyOtp = ({
 
   return (
     <form onSubmit={handleLogin}>
-      <p className="text-gray-400 lg:text-gray-600 text-center mb-4">
-        Code sent to {email != "" ? email : `+91-(${phone})`}
-      </p>
+      <div className="flex items-center justify-center gap-1 mb-4">
+        <p className="text-gray-400 lg:text-gray-600 text-center">
+          Code sent to {email != "" ? email : `+91-(${phone})`}
+        </p>
+        {/* back to number page  */}
+        {setRestValue && (
+          <button
+            className="text-sm font-medium text-center rounded text-gray-500 text-theme hover:text-gray-500 disabled:text-gray-400"
+            type="button"
+            onClick={handleRestOtpScreen}
+          >
+            Edit
+          </button>
+        )}
+      </div>
       <div
         className="flex items-center justify-around gap-2 mx-auto mt-2 mb-4"
         onPaste={handlePaste}
@@ -214,19 +226,6 @@ const VerifyOtp = ({
           </button>
         </div>
       </div>
-      {/* back to number page  */}
-      {setRestValue && (
-        <div className="flex items-center flex-col justify-between mb-5">
-          <button
-            className="px-3 py-1 text-sm font-medium text-center rounded text-gray-500 hover:text-theme disabled:text-gray-400"
-            type="button"
-            onClick={handleRestOtpScreen}
-          >
-            Change Number
-          </button>
-        </div>
-      )}
-
       <button
         className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
         type="submit"

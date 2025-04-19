@@ -17,10 +17,10 @@ import BookingError from "../components/Error/BookingError";
 import PickupImages from "../components/Account/PickupImages";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import Spinner from "../components/Spinner/Spinner";
-import ExtendBooking from "../components/Account/ExtendBooking";
-const ExtendBookingModal = lazy(() =>
-  import("../components/Modals/ExtendBookingModal")
-);
+// import ExtendBooking from "../components/Account/ExtendBooking";
+// const ExtendBookingModal = lazy(() =>
+//   import("../components/Modals/ExtendBookingModal")
+// );
 
 const RidesSummary = () => {
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ const RidesSummary = () => {
   return (
     <>
       {loading && <PreLoader />}
-      <ExtendBookingModal />
+      {/* <ExtendBookingModal /> */}
       {rides?.length == 1 ? (
         <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
           <div className="mb-1 flex items-center gap-3">
