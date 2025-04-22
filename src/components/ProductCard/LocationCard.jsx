@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import PreLoader from "../skeleton/PreLoader";
 import { useEffect, useState } from "react";
 import { fetchingData } from "../../Data";
+import { useSelector } from "react-redux";
 
 const LocationCard = ({
   stationName,
@@ -11,6 +12,7 @@ const LocationCard = ({
   stationLoading,
 }) => {
   const [stationUser, setStationUser] = useState([]);
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   // for fetching station master details
   useEffect(() => {
     if (stationMasterUserId) {
@@ -19,7 +21,6 @@ const LocationCard = ({
         const stationMasterResponse = await fetchingData(
           `/getStationData?stationId=${stationId}`
         );
-        // formatting data for user readability
         setStationUser({
           stationData: stationMasterResponse?.data[0],
         });
@@ -53,11 +54,11 @@ const LocationCard = ({
         <ul className="leading-8">
           <li className="capitalize">
             <span className="font-bold mr-2">Pickup Location:</span>
-            {stationName}
+            {stationName || selectedLocation?.locationName || ""}
           </li>
           <li className="capitalize">
             <span className="font-bold mr-2">LandMark:</span>
-            {stationName}
+            {stationName || selectedLocation?.locationName || ""}
           </li>
           <li className="capitalize">
             <span className="font-bold mr-2">Manager Name:</span>

@@ -1,0 +1,27 @@
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleBookingExtendModal } from "../../Redux/ModalSlice/ModalSlice";
+
+const ExtendBookingButton = () => {
+  const { rides } = useSelector((state) => state.rides);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(toggleBookingExtendModal());
+    };
+  }, []);
+
+  return (
+    <button
+      type="button"
+      className="w-full px-4 py-2 bg-theme/90 text-white rounded-md shadow-md hover:bg-theme-dark transition-all duration-300 ease-in-out uppercase font-semibold tracking-wider disabled:bg-gray-600/50"
+      onClick={() => dispatch(toggleBookingExtendModal())}
+      disabled={rides[0]?.BookingEndDateAndTime < new Date().toLocaleString()}
+    >
+      Extend Ride
+    </button>
+  );
+};
+
+export default ExtendBookingButton;

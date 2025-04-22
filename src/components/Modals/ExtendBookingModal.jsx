@@ -9,11 +9,12 @@ import {
 } from "../../utils/index";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import Spinner from "../Spinner/Spinner";
-import { handlePostData } from "../../Data";
+import { fetchingData, handlePostData } from "../../Data";
 import { toggleBookingExtendModal } from "../../Redux/ModalSlice/ModalSlice";
 import { createOrderId } from "../../Data/Payment";
 import { openRazorpayPayment } from "../../utils/razorpay";
 import { useNavigate } from "react-router-dom";
+import { updateRidesData } from "../../Redux/RidesSlice/RideSlice";
 
 const ExtendBookingModal = () => {
   const { isBookingExtendModalActive } = useSelector((state) => state.modals);
@@ -59,6 +60,16 @@ const ExtendBookingModal = () => {
     };
     if (!data) return;
 
+    const isVehicleFree = await fetchingData(
+      `/getAllVehiclesAvailable?_id=${data?.vehicleTableId}&BookingStartDateAndTime=${data?.BookingStartDateAndTime}&BookingEndDateAndTime=${data?.BookingEndDateAndTime}`
+    );
+    if (isVehicleFree?.status === 200) {
+      if (isVehicleFree?.data?.length === 0) {
+        handleAsyncError(dispatch, isVehicleFree?.message);
+        return;
+      }
+    }
+
     try {
       setFormLoading(true);
 
@@ -78,16 +89,17 @@ const ExtendBookingModal = () => {
 
         data = {
           ...data,
-          paymentInitiatedDate: orderId?.created_at,
-          paymentgatewayOrderId: orderId?.id,
-          paymentgatewayReceiptId: orderId?.receipt,
-          paySuccessId: response?.response?.razorpay_payment_id,
+          extendAmount: {
+            ...data?.extendAmount,
+            paymentMethod: "online",
+            status: "paid",
+          },
           extendBooking: {
             oldBooking: rides[0]?.extendBooking?.oldBooking,
             transactionIds: [
               ...(rides[0]?.extendBooking?.transactionIds || []),
-              rides[0]?.paymentgatewayOrderId,
-              rides[0]?.paySuccessId,
+              orderId?.id,
+              response?.response?.razorpay_payment_id,
             ],
           },
         };
@@ -105,16 +117,22 @@ const ExtendBookingModal = () => {
         }
       );
       if (response?.status === 200) {
-        // dispatch(handleUpdateExtendVehicle(data));
+        const { contact, firstName, managerContact, ...restData } = data;
+        dispatch(updateRidesData(restData));
         // updating the timeline for booking
-        // const timeLineData = await updateTimeLineForPayment(
-        //   data,
-        //   token,
-        //   "Booking Extended"
-        // );
-        // for updating timeline redux data
-        // dispatch(updateTimeLineData(timeLineData));
-        // dispatch(toggleBookingExtendModal());
+        const timeLineData = {
+          currentBooking_id: data?._id,
+          timeLine: [
+            {
+              title: "Payment Received",
+              date: new Date().toLocaleString(),
+              paymentAmount: finalAmount,
+              id: data?.extendAmount?.id,
+            },
+          ],
+        };
+        await handlePostData("/createTimeline", timeLineData);
+        handleAsyncError(dispatch, "Booking extend successfully");
         handleCloseModal();
         return handleAsyncError(dispatch, response?.message, "success");
       } else {

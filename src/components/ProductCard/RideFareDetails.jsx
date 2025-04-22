@@ -69,6 +69,7 @@ const RideFareDetails = ({ rides }) => {
                   key !== "lateFeeBasedOnHour" &&
                   key !== "lateFeeBasedOnKM" &&
                   key !== "payOnPickupMethod" &&
+                  key !== "lateFeePaymentMethod" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
@@ -130,8 +131,11 @@ const RideFareDetails = ({ rides }) => {
                     ? "Subtotal"
                     : "Total Price"}
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    {rides?.paymentMethod == "online" &&
-                    rides?.paySuccessId != "NA"
+                    {rides?.bookingPrice?.discountPrice &&
+                    rides?.bookingPrice?.discountPrice != 0
+                      ? ""
+                      : rides?.paymentMethod == "online" &&
+                        rides?.paySuccessId != "NA"
                       ? "(Full Paid)"
                       : rides?.paymentMethod == "partiallyPay"
                       ? ""
@@ -245,7 +249,11 @@ const RideFareDetails = ({ rides }) => {
                 <p className="text-sm font-semibold uppercase text-left">
                   Difference Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    ( need to pay this amount )
+                    {rides?.bookingPrice?.diffAmount[
+                      rides?.bookingPrice?.diffAmount?.length - 1
+                    ]?.status === "paid"
+                      ? "(Paid)"
+                      : "(need to pay this amount)"}
                   </small>
                 </p>
                 <p className="text-sm font-bold text-right">
@@ -266,7 +274,11 @@ const RideFareDetails = ({ rides }) => {
                 <p className="text-sm font-semibold uppercase text-left">
                   Extend Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    (New Price For Extend booking )
+                    {rides?.bookingPrice?.extendAmount[
+                      rides?.bookingPrice?.extendAmount?.length - 1
+                    ]?.status === "paid"
+                      ? "(Paid)"
+                      : "(New Price For Extend booking)"}
                   </small>
                 </p>
                 <p className="text-sm font-bold text-right text-theme">

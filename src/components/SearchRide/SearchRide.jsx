@@ -24,7 +24,7 @@ import {
   nextDayFromCurrent,
   removeAfterSecondSlash,
   // RoundedDateTimeAndToNextHour,
-  searchFormatDateOnly,
+  // searchFormatDateOnly,
   searchFormatTimeOnly,
 } from "../../utils";
 import { searchData } from "../../Data/Functions";
@@ -315,8 +315,14 @@ const SearchRide = () => {
       if (pickUpDateAndTime && dropoffDateAndTime) {
         setPickupDate(new Date(pickUpDateAndTime.split("T")[0]));
         setDropoffDate(new Date(dropoffDateAndTime.split("T")[0]));
-        setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
-        setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+        setQueryPickupTime(
+          formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
+        );
+        setQueryDropoffTime(
+          formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime))
+        );
+        //   setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+        //   setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
       }
     } catch (error) {
       navigate("/error");
