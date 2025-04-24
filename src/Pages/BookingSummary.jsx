@@ -37,6 +37,7 @@ const BookingSummary = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
+  const { selectedStation } = useSelector((state) => state.station);
   const { tempCouponName, tempCouponId, isDiscountZero } = useSelector(
     (state) => state.coupon
   );
@@ -88,10 +89,85 @@ const BookingSummary = () => {
     }
   }, []);
 
+  const convertHourTo24HourTime = (hour) => {
+    const h = parseInt(hour, 10);
+    if (isNaN(h) || h < 0 || h > 23) {
+      return "00:00:00Z";
+    }
+    const paddedHour = h.toString().padStart(2, "0");
+    return `${paddedHour}:00:00Z`;
+  };
+
+  const getCurrentLocalTime = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
+  const validateTimes = (
+    enteredStartTime,
+    enteredEndTime,
+    openTime,
+    closeTime,
+    currentTime
+  ) => {
+    const stripZ = (t) => t.replace("Z", "");
+
+    const startTime = stripZ(enteredStartTime);
+    const endTime = stripZ(enteredEndTime);
+    const open = stripZ(openTime);
+    const close = stripZ(closeTime);
+    const now = stripZ(currentTime);
+
+    // Check if start and end time are within open-close range
+    const isWithinStationHours = startTime >= open && endTime <= close;
+
+    if (!isWithinStationHours) {
+      return {
+        valid: false,
+        message: "Booking time must be within station working hours.",
+      };
+    }
+    // Check if start time is before current time (not allowed)
+    if (startTime < now) {
+      return {
+        valid: false,
+        message: "Booking start time cannot be in the past.",
+      };
+    }
+
+    return {
+      valid: true,
+      message: "Booking time is valid.",
+    };
+  };
+
   // for send to detail and payment page
   const handleCreateBookingSubmit = (e) => {
     e.preventDefault();
     const queryParmsDataUpdated = Object.fromEntries(queryParms.entries());
+    const openTime = selectedStation
+      ? convertHourTo24HourTime(selectedStation?.openStartTime)
+      : "0";
+    const endTime = selectedStation
+      ? convertHourTo24HourTime(selectedStation?.openEndTime)
+      : "0";
+    const currentTime = getCurrentLocalTime();
+    // checking time and station time
+    const timeValidation = validateTimes(
+      queryParmsDataUpdated.BookingStartDateAndTime.split("T")[1],
+      queryParmsDataUpdated.BookingEndDateAndTime.split("T")[1],
+      openTime,
+      endTime,
+      currentTime
+    );
+    if (!timeValidation.valid) {
+      handleAsyncError(dispatch, timeValidation.message);
+      return;
+    }
+    // checking minimum duration
     const validation = validateBookingDates(
       queryParmsDataUpdated.BookingStartDateAndTime.replace(".000Z", "Z"),
       queryParmsDataUpdated.BookingEndDateAndTime.replace(".000Z", "Z")
@@ -100,6 +176,7 @@ const BookingSummary = () => {
       handleAsyncError(dispatch, validation.message);
       return;
     }
+
     return handleBookingProcess(
       e,
       vehicles,

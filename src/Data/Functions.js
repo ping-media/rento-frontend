@@ -777,7 +777,7 @@ const handleBookingProcess = async (
     }
 
     if (result?.paymentMethod === "partiallyPay") {
-      const userPaid = parseInt(
+      const userPaid = Math.round(
         (data?.bookingPrice?.discountTotalPrice ||
           data?.bookingPrice?.totalPrice) * 0.2
       );

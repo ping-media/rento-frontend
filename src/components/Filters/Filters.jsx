@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleFilter } from "../../Redux/ModalSlice/ModalSlice";
@@ -9,6 +9,7 @@ import CheckboxFilter from "../Input/CheckBoxFilter";
 
 const Filters = () => {
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
+  const { filter } = useSelector((state) => state.filter);
   const { isFilterActive } = useSelector((state) => state.modals);
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -20,15 +21,23 @@ const Filters = () => {
   const [inputPlanId, setInputPlanId] = useState("");
 
   // Fetch filters from URL params
+  const fetchPlans = useCallback(() => {
+    const commonId = id || selectedLocation?.locationId;
+    if (commonId) {
+      fetchingPlansFilters(dispatch, commonId);
+    }
+  }, [id, selectedLocation, dispatch]);
+
   useEffect(() => {
     const newQueryParamsData = Object.fromEntries(queryParms.entries());
     setInputCategory(newQueryParamsData.category?.toLowerCase() || "");
     setInputBrand(newQueryParamsData.brand?.toLowerCase() || "");
     setInputPlanId(newQueryParamsData.vehiclePlan || "");
 
-    const commonId = id || selectedLocation?.locationId;
-    if (commonId) fetchingPlansFilters(dispatch, commonId);
-  }, [queryParms, id, selectedLocation, dispatch]);
+    if (!filter || filter.length === 0) {
+      fetchPlans();
+    }
+  }, [queryParms, fetchPlans, filter]);
 
   // Function to update filters
   const handleSubmitFilters = (

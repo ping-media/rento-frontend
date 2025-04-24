@@ -1,4 +1,25 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { formatPrice } from "../../utils";
+
 const BookingPaymentCard = ({ isDiscountZeroApplied }) => {
+  const { tempTotalPrice, tempCouponDiscountTotal } = useSelector(
+    (state) => state.coupon
+  );
+  const [finalPrice, setFinalPrice] = useState(0);
+
+  useEffect(() => {
+    if (Number(tempTotalPrice) !== 0 || Number(tempCouponDiscountTotal) !== 0) {
+      setFinalPrice(
+        Math.round(
+          (Number(tempCouponDiscountTotal) !== 0
+            ? Number(tempCouponDiscountTotal)
+            : Number(tempTotalPrice)) * 0.2
+        )
+      );
+    }
+  }, [tempTotalPrice, tempCouponDiscountTotal]);
+
   return (
     <>
       {isDiscountZeroApplied === true && (
@@ -26,7 +47,9 @@ const BookingPaymentCard = ({ isDiscountZeroApplied }) => {
                 />
               </svg>
             </div>
-            <h2 className="text-md">Pay 20%(Advanced)</h2>
+            <h2 className="text-md">
+              Pay 20%(₹{formatPrice(finalPrice)} Advance)
+            </h2>
           </div>
           <input
             type="radio"

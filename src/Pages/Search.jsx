@@ -86,9 +86,13 @@ const Search = () => {
 
           {/* 75% column */}
           <div className="col-span-4 lg:col-span-3 px-1">
-            <h3 className="mb-3 font-bold text-lg text-right">
-              {pagination?.totalRecords || 0} Vehicles Found
-            </h3>
+            {!loading ? (
+              <h3 className="mb-3 font-bold text-lg text-right">
+                {pagination?.totalRecords || 0} Vehicles Found
+              </h3>
+            ) : (
+              <div className="mb-3 ml-auto font-bold text-lg bg-gray-400/50 rounded animate-pulse w-20 h-5"></div>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {!loading ? (
                 Object.entries(vehicles)?.length > 0 ? (

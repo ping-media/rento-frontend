@@ -47,7 +47,7 @@ const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
                 dispatch(toggleBookingTermModal());
               }}
             >
-              terms & conditions.
+              Terms & Conditions.
             </button>
           </p>
         )}

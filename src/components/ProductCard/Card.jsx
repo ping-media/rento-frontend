@@ -10,6 +10,7 @@ import {
   updateQueryParams,
 } from "../../utils";
 import SoldOutCard from "./SoldOutCard";
+import { useSelector } from "react-redux";
 
 const Card = ({
   perDayCost,
@@ -34,12 +35,36 @@ const Card = ({
   const navigate = useNavigate();
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
+  const { filter } = useSelector((state) => state.filter);
+
+  // for getting BookingEndDateAndTime when there is vehiclePlan id is present
+  const addDaysToISOString = (dateStr, daysToAdd) => {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return dateStr;
+    }
+    date.setUTCDate(date.getUTCDate() + daysToAdd);
+    return date.toISOString().replace(".000Z", "Z");
+  };
 
   useEffect(() => {
+    const planId = queryParmsData?.vehiclePlan || "";
+    let updatedQueryParams = { ...queryParmsData };
+    if (planId !== "") {
+      const plan = filter?.find((p) => p?._id === planId);
+
+      if (plan?.planDuration) {
+        updatedQueryParams.BookingEndDateAndTime = addDaysToISOString(
+          queryParmsData?.BookingStartDateAndTime,
+          Number(plan.planDuration)
+        );
+      }
+    }
     const url =
       !BookingEndDate && !MaintenanceEndDate
-        ? updateQueryParams("/booking/summary/", _id, queryParmsData)
-        : `?${queryParmsData}`;
+        ? updateQueryParams("/booking/summary/", _id, updatedQueryParams)
+        : `?${updatedQueryParams}`;
+
     setBookingUrl(url);
   }, []);
 

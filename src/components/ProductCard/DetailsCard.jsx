@@ -1,3 +1,5 @@
+import { formatPrice } from "../../utils";
+
 const DetailsCard = ({
   refundableDeposit,
   extraKmCharge,
@@ -6,11 +8,15 @@ const DetailsCard = ({
 }) => {
   const details = [
     "No Questions Asked Refund",
-    `Extra ₹${extraKmCharge}/km + GST after free limit`,
-    `₹${refundableDeposit} Deposit Amount`,
+    `Extra ₹${
+      extraKmCharge ? formatPrice(Number(extraKmCharge)) : "--"
+    }/KM + GST after free limit`,
+    `₹${
+      refundableDeposit ? formatPrice(Number(refundableDeposit)) : "--"
+    } Deposit Amount`,
     "1 complimentary Helmet",
-    `₹${lateFee}/hr Late Amount`,
-    `${speedLimit}km/hr Speed Limit`,
+    `₹${lateFee ? formatPrice(Number(lateFee)) : "--"}/hr Late Amount`,
+    `${speedLimit ? speedLimit : "--"}km/hr Speed Limit`,
   ];
   return (
     <div className="border-t-2 border-gray-300 bg-white mt-3 px-4 py-1.5">

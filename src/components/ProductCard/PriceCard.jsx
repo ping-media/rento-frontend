@@ -48,7 +48,6 @@ const PriceCard = ({
       );
       setAppliedVehiclePlan(currentPlan);
     }
-
     if (currentPlan !== null && currentPlan?.planPrice) {
       setVehicleRentCost(Number(currentPlan?.planPrice));
       setExtraAddOnCost(
@@ -68,7 +67,7 @@ const PriceCard = ({
               currentPlan !== null && currentPlan?.planPrice > 0
                 ? currentPlan?.planPrice
                 : vehiclePlanData?.planPrice
-            ) + parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+            ) + Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
             taxPercentage
           )
         );
@@ -85,18 +84,6 @@ const PriceCard = ({
         );
       }
     } else if (vehiclePlanData !== null) {
-      if (perDayCost) {
-        setVehicleRentCost(Number(vehiclePlanData?.planPrice));
-      }
-      setExtraAddOnCost(
-        extraHelmetPrice *
-          Number(
-            getDurationInDays(
-              bookingStartDateTime?.date,
-              bookingEndDateTime?.date
-            )
-          )
-      );
       //setting gst price if helemet is selected or not
       if (isExtraChecked && extraAddOnCost) {
         setGSTCost(
@@ -105,7 +92,7 @@ const PriceCard = ({
               vehiclePlanData !== null && vehiclePlanData?.planPrice > 0
                 ? vehiclePlanData?.planPrice
                 : currentPlan?.planPrice
-            ) + parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+            ) + Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
             taxPercentage
           )
         );
@@ -153,7 +140,7 @@ const PriceCard = ({
                     bookingEndDateTime?.date
                   )
                 ) +
-                parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+                Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
               taxPercentage
             )
           )
@@ -182,17 +169,17 @@ const PriceCard = ({
     {
       title: "Vehicle Rental Cost",
       name: "bookingPrice",
-      price: parseInt(vehicleRentCost),
+      price: Math.round(vehicleRentCost),
     },
     {
       title: "Extra Helmet Price",
       name: "extraAddonPrice",
-      price: parseInt(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+      price: Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
     },
     {
       title: "GST(18% Applied)",
       name: "tax",
-      price: parseInt(gSTCost),
+      price: Math.round(gSTCost),
     },
   ];
 
@@ -206,8 +193,8 @@ const PriceCard = ({
           }
           return total + item.price;
         }, 0);
-        setTotalPrice(totalPrice?.toFixed(2));
-        dispatch(addTempTotalPrice(totalPrice?.toFixed(2)));
+        setTotalPrice(totalPrice);
+        dispatch(addTempTotalPrice(totalPrice));
       }
     })();
   }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
@@ -344,9 +331,12 @@ const PriceCard = ({
             Need Extra Helmet
           </label>
         </div>
-        <small className="italic text-gray-600">
-          Extra cost <span className="font-bold">₹{extraHelmetPrice}/day</span>{" "}
-          will apply for extra helmet
+        <small className="text-gray-700">
+          An extra cost of{" "}
+          <span className="font-bold">
+            ₹{formatPrice(extraHelmetPrice)}/day
+          </span>{" "}
+          will apply for an additional helmet.
         </small>
       </div>
     </>

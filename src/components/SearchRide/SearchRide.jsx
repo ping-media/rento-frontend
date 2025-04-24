@@ -15,6 +15,7 @@ import {
 } from "../../Redux/StationSlice/StationSlice";
 import {
   addDaysToDateForRide,
+  convertLocalToUTCISOString,
   convertTo24HourFormat,
   convertToISOString,
   format24HourFormatTime,
@@ -23,6 +24,7 @@ import {
   isSecondTimeSmaller,
   nextDayFromCurrent,
   removeAfterSecondSlash,
+  removeSecondsFromTimeString,
   // RoundedDateTimeAndToNextHour,
   // searchFormatDateOnly,
   searchFormatTimeOnly,
@@ -50,7 +52,7 @@ const SearchRide = () => {
   const [isPageLoad, setIsPageLoad] = useState(false);
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
-  const [queryParms] = useSearchParams();
+  const [queryParms, setQueryParms] = useSearchParams();
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
   const rideSubmitRef = useRef(null);
@@ -79,27 +81,9 @@ const SearchRide = () => {
     e && e.preventDefault();
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
-    const pickupDate = result.pickup.substring(0, 16);
-    const checkTime = isSecondTimeSmaller(
-      formatTimeWithoutSeconds(
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      ),
-      result.pickup.substring(17, result.pickup.length)
-    );
 
-    const pickupTime = checkTime
-      ? result.pickup.substring(17, result.pickup.length)
-      : formatTimeWithoutSeconds(
-          new Date().toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })
-        );
+    const pickupDate = result.pickup.substring(0, 16);
+    const pickupTime = result.pickup.substring(17, result.pickup.length);
     let dropoffDate = result?.dropoff?.substring(0, 16) || "";
     const dropoffTime =
       result?.dropoff?.substring(17, result.dropoff.length) || "";
@@ -132,54 +116,21 @@ const SearchRide = () => {
         dispatch,
         `Minimum Interval between dates should be ${MinimumDurationHours} hours`
       );
-
-    //checking whether time is in opening hours
+    // checking whether the time is in opening hour
+    if (
+      !isWithinOperatingHours(
+        covertedTime,
+        selectedStation?.openStartTime,
+        selectedStation?.openEndTime
+      )
+    ) {
+      return handleAsyncError(
+        dispatch,
+        `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
+      );
+    }
     try {
-      if (
-        !isWithinOperatingHours(
-          covertedTime,
-          selectedStation?.openStartTime,
-          selectedStation?.openEndTime
-        )
-      ) {
-        if (
-          location.pathname === "/" ||
-          removeAfterSecondSlash(location.pathname) === "/search"
-        ) {
-          if (result?.pickupLocationId !== "") {
-            return navigate(
-              `/search/${
-                result?.pickupLocationId
-              }?BookingStartDateAndTime=${convertToISOString(
-                pickupDate,
-                result.pickup.substring(17, result.pickup.length)
-              )}&BookingEndDateAndTime=${convertToISOString(
-                dropoffDate,
-                dropoffTime
-              )}`
-            );
-          }
-        } else if (location.pathname === "/monthly-rental") {
-          return navigate(
-            `/search/${
-              result?.pickupLocationId
-            }?BookingStartDateAndTime=${convertToISOString(
-              pickupDate,
-              result.pickup.substring(17, result.pickup.length)
-            )}&BookingEndDateAndTime=${convertToISOString(
-              dropoffDate,
-              pickupTime
-            )}`
-          );
-        }
-      } else if (
-        (location.pathname !== "monthly-rental" &&
-          // pickupTime === dropoffTime &&
-          covertedTime >= selectedStation?.openStartTime &&
-          covertedTime <= selectedStation?.openEndTime) ||
-        (covertedTime >= selectedStation?.openStartTime &&
-          covertedTime <= selectedStation?.openEndTime)
-      ) {
+      if (location.pathname !== "monthly-rental") {
         if (
           location.pathname === "/" ||
           removeAfterSecondSlash(location.pathname) === "/search"
@@ -210,11 +161,6 @@ const SearchRide = () => {
             )}`
           );
         }
-      } else {
-        return handleAsyncError(
-          dispatch,
-          `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
-        );
       }
     } catch (error) {
       navigate(`/error-${error?.message}`);
@@ -242,27 +188,18 @@ const SearchRide = () => {
     }
   }, [memoizedSearchData]);
 
-  // this will set time and date for the first time on homepage
   useEffect(() => {
-    // Set default dates if data not found
+    // this will set time and date for the first time on homepage
     if (location.pathname === "/") {
+      const currentTime = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      });
       setPickupDate(new Date());
       setDropoffDate(nextDayFromCurrent(new Date()));
-      setQueryPickupTime(
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      );
-      setQueryDropoffTime(
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      );
-
+      setQueryPickupTime(currentTime);
+      setQueryDropoffTime(currentTime);
       if (pickupDate) {
         setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
       }
@@ -274,7 +211,6 @@ const SearchRide = () => {
 
   // changing date & time if time is passed openning hour
   useEffect(() => {
-    // if (location.pathname === "/" && selectedStation !== null) {
     if (selectedStation !== null) {
       const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
@@ -311,18 +247,56 @@ const SearchRide = () => {
       const newQueryParmsData = Object.fromEntries(queryParms.entries());
       const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
       const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
+      // for checking station time
+      const currentHour = new Date().getHours();
+      const openStartTime = Number(selectedStation?.openStartTime);
       // for desktop full view
       if (pickUpDateAndTime && dropoffDateAndTime) {
-        setPickupDate(new Date(pickUpDateAndTime.split("T")[0]));
-        setDropoffDate(new Date(dropoffDateAndTime.split("T")[0]));
-        setQueryPickupTime(
-          formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
+        const withinStationTime = currentHour < openStartTime;
+        const currentTime = new Date()?.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const pickupDate = pickUpDateAndTime.split("T")[0];
+        const dropoffDate = dropoffDateAndTime.split("T")[0];
+        const querypickupDateTime = convertLocalToUTCISOString(
+          `${new Date(
+            pickupDate
+          ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
         );
-        setQueryDropoffTime(
-          formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime))
+        const querydropoffDateTime = convertLocalToUTCISOString(
+          `${new Date(
+            dropoffDate
+          ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
         );
-        //   setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
-        //   setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+
+        setPickupDate(new Date(pickupDate));
+        setDropoffDate(new Date(dropoffDate));
+
+        // if (searchFormatTimeOnly(pickUpDateAndTime) < currentTime) {
+        // if (pickUpDateAndTime < querypickupDateTime) {
+        // console.log(
+        //   pickUpDateAndTime <
+        //     convertLocalToUTCISOString(
+        //       `${new Date(pickupDate).toLocaleDateString()} ${currentTime}`
+        //     )
+        // );
+        if (
+          pickUpDateAndTime <
+          convertLocalToUTCISOString(
+            `${new Date(pickupDate).toLocaleDateString()} ${currentTime}` &&
+              withinStationTime
+          )
+        ) {
+          setQueryPickupTime(formatTimeWithoutSeconds(currentTime));
+          setQueryDropoffTime(formatTimeWithoutSeconds(currentTime));
+          queryParms.set("BookingStartDateAndTime", querypickupDateTime);
+          queryParms.set("BookingEndDateAndTime", querydropoffDateTime);
+          setQueryParms(queryParms);
+        } else {
+          setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+          setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+        }
       }
     } catch (error) {
       navigate("/error");
@@ -405,6 +379,7 @@ const SearchRide = () => {
               setDropoffChanger={setDropoffDate}
               timeValue={queryPickupTime}
               setTimeValueChanger={setQueryPickupTime}
+              setDropTimeValueChanger={setQueryDropoffTime}
             />
           </div>
           {location.pathname !== "/monthly-rental" && (
