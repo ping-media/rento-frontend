@@ -1,6 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../Account/Sidebar";
 import { useSelector } from "react-redux";
+import { Suspense } from "react";
+import PreLoader from "../skeleton/PreLoader";
 
 const LoggedInLayout = () => {
   const { user } = useSelector((state) => state.user);
@@ -10,7 +12,9 @@ const LoggedInLayout = () => {
         <SideBar />
       </div>
       <div className="col-span-4 lg:col-span-3">
-        <Outlet />
+        <Suspense fallback={<PreLoader />}>
+          <Outlet />
+        </Suspense>
       </div>
     </div>
   ) : (
