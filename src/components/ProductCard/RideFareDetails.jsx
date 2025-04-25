@@ -70,6 +70,8 @@ const RideFareDetails = ({ rides }) => {
                   key !== "lateFeeBasedOnKM" &&
                   key !== "payOnPickupMethod" &&
                   key !== "lateFeePaymentMethod" &&
+                  key !== "additionFeePaymentMethod" &&
+                  key !== "additionalPrice" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
