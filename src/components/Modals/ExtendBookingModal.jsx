@@ -23,6 +23,7 @@ const ExtendBookingModal = () => {
   const [extendPrice, setExtendPrice] = useState(0);
   const [newDate, setNewDate] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [plan, setPlan] = useState({ data: null, loading: false });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -145,6 +146,20 @@ const ExtendBookingModal = () => {
     }
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        setPlan((prev) => ({ ...prev, loading: true }));
+        const response = await fetchingData("/getPlanData?page=1&limit=50");
+        if (response.status === 200) {
+          setPlan((prev) => ({ ...prev, data: response?.data }));
+        }
+      } finally {
+        setPlan((prev) => ({ ...prev, loading: false }));
+      }
+    })();
+  }, []);
+
   // after closing the modal clear all the state to default
   const handleCloseModal = () => {
     setExtensionDays(0);
@@ -155,10 +170,18 @@ const ExtendBookingModal = () => {
   // for showing extend vehicle price on based on days
   useEffect(() => {
     if (Number(extensionDays) !== 0) {
-      const price = calculatePriceForExtendBooking(
-        rides[0]?.bookingPrice?.rentAmount,
-        extensionDays
+      const hasPlan = plan?.data.filter(
+        (plan) => Number(plan?.planDuration) === Number(extensionDays)
       );
+      const planPrice = hasPlan?.length > 0 ? Number(hasPlan[0]?.planPrice) : 0;
+      const price =
+        planPrice > 0
+          ? planPrice
+          : calculatePriceForExtendBooking(
+              rides[0]?.bookingPrice?.rentAmount,
+              extensionDays
+            );
+
       if (Number(price) > 0) {
         setExtendPrice(price);
       }

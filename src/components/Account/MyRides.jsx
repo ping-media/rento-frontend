@@ -25,6 +25,10 @@ const MyRides = () => {
     }
   }, [currentUser]);
 
+  if (loading) {
+    return <PreLoader />;
+  }
+
   // Tab content array
   const tabs = [
     {
