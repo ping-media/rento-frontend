@@ -25,6 +25,10 @@ const MyRides = () => {
     }
   }, [currentUser]);
 
+  if (loading) {
+    return <PreLoader />;
+  }
+
   // Tab content array
   const tabs = [
     {
@@ -44,12 +48,22 @@ const MyRides = () => {
     },
     {
       name: "Ongoing",
-      content: rides && rides.filter((item) => item?.rideStatus === "ongoing"),
+      content:
+        rides &&
+        rides.filter(
+          (item) =>
+            item?.rideStatus === "ongoing" && item?.paymentStatus !== "refunded"
+        ),
     },
     {
       name: "Completed",
       content:
-        rides && rides.filter((item) => item?.rideStatus === "completed"),
+        rides &&
+        rides.filter(
+          (item) =>
+            item?.rideStatus === "completed" &&
+            item?.paymentStatus !== "refunded"
+        ),
     },
     {
       name: "Cancelled",
@@ -60,7 +74,8 @@ const MyRides = () => {
             item?.paymentStatus === "canceled" ||
             item?.paymentStatus === "failed" ||
             item?.bookingStatus === "canceled" ||
-            item?.rideStatus === "canceled"
+            item?.rideStatus === "canceled" ||
+            item?.paymentStatus === "refunded"
         ),
     },
     {

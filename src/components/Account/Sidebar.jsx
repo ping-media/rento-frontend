@@ -58,7 +58,7 @@ const SideBar = () => {
                 currentPage === item?.link ? "bg-theme text-gray-100" : ""
               }`}
             >
-              <div className="w-10 h-10 p-1 bg-theme my-1 rounded-lg bg-opacity-50">
+              <div className="w-10 h-10 p-1">
                 <img
                   src={item?.menuImg}
                   className={`w-full h-full object-cover group-hover:invert ${

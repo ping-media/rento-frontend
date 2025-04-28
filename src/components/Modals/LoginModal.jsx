@@ -17,8 +17,6 @@ const LoginModal = () => {
   const { isLoginModalActive } = useSelector((state) => state.modals);
   const [loading, setLoading] = useState(false);
   const [isOtpSend, setIsOtpSend] = useState(false);
-  // const [seconds, setSeconds] = useState(0);
-  // const [isTimerActive, setIsTimerActive] = useState(false);
   const [inputNumber, setInputNumber] = useState("");
   const [isInputEmpty, setIsInputEmpty] = useState(null);
 
@@ -48,12 +46,9 @@ const LoginModal = () => {
         } else if (response.status === 500) {
           handleAsyncError(dispatch, "unable to send otp! try again");
         } else if (response.status === 200) {
-          // return console.log(response);
           setInputNumber(result?.contact);
           setIsOtpSend(true);
           setIsInputEmpty(null);
-          // setSeconds(30);
-          // setIsTimerActive(true);
           handleAsyncError(dispatch, response?.message, "success");
         }
       } catch (error) {
@@ -142,10 +137,6 @@ const LoginModal = () => {
                 setOtpValue={setIsOtpSend}
                 setInputValue={setInputNumber}
                 modalChange={toggleLoginModal}
-                // seconds={seconds}
-                // setSecondChanger={setSeconds}
-                // isTimerActive={isTimerActive}
-                // setTimerActive={setIsTimerActive}
                 setRestValue={setInputNumber}
               />
             )}

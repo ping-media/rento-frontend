@@ -291,12 +291,12 @@ const handleUpdateBooking = async (
   dispatch
 ) => {
   try {
-    if (!data)
+    if (!data && data._id)
       return handleAsyncError(
         dispatch,
         "something went wrong while booking Ride"
       );
-    const response = await handlebooking(data);
+    const response = await handlebooking(data, data?._id);
     if (response?.status == 200) {
       return response;
     } else {
@@ -640,11 +640,21 @@ const handleBookingProcess = async (
     return dispatch(toggleLoginModal());
   }
 
+  if (!currentUser?._id) {
+    return handleAsyncError(dispatch, "user not found! try again");
+  }
+
   if (!queryParmsData)
     return handleAsyncError(dispatch, "unable to book ride now! try again");
 
   const formData = new FormData(e.target);
   const result = Object.fromEntries(formData.entries());
+
+  if (!result?.paymentMethod) {
+    setBookingLoading(false);
+    return handleAsyncError(dispatch, "Select payment method first!");
+  }
+
   const startRideOtp = Math.floor(1000 + Math.random() * 9000);
 
   if (!vehicles || vehicles.length === 0) return;
@@ -692,6 +702,7 @@ const handleBookingProcess = async (
       vehicleName: vehicles[0]?.vehicleName,
       vehicleBrand: vehicles[0]?.vehicleBrand,
       vehicleImage: vehicles[0]?.vehicleImage,
+      stationId: vehicles[0]?.stationId,
       stationName: vehicles[0]?.stationName,
       bookingStatus: "pending",
       paymentStatus: "pending",
@@ -701,7 +712,9 @@ const handleBookingProcess = async (
       paySuccessId: "NA",
     };
 
-    dispatch(addTempBookingData(data));
+    if (result?.paymentMethod !== "cash") {
+      dispatch(addTempBookingData(data));
+    }
   }
 
   try {
@@ -730,11 +743,6 @@ const handleBookingProcess = async (
         navigate(`/account/my-rides/summary/${response?.data?._id}`);
         return;
       }
-    }
-
-    if (!result?.paymentMethod) {
-      setBookingLoading(false);
-      return handleAsyncError(dispatch, "Select payment method first!");
     }
 
     if (result?.paymentMethod === "cash") {
@@ -775,7 +783,7 @@ const handleBookingProcess = async (
     }
 
     if (result?.paymentMethod === "partiallyPay") {
-      const userPaid = parseInt(
+      const userPaid = Math.round(
         (data?.bookingPrice?.discountTotalPrice ||
           data?.bookingPrice?.totalPrice) * 0.2
       );
@@ -787,7 +795,10 @@ const handleBookingProcess = async (
         bookingPrice: {
           ...data.bookingPrice,
           userPaid,
-          AmountLeftAfterUserPaid,
+          AmountLeftAfterUserPaid: {
+            amount: Math.round(AmountLeftAfterUserPaid),
+            status: "unpaid",
+          },
         },
       };
     }
@@ -814,9 +825,9 @@ const handleBookingProcess = async (
       }
 
       if (bookingResponse?.status === 200 || storedBooking) {
+        data = { ...data, ...bookingResponse.data };
         const orderId = await createOrderId(data);
         if (orderId?.status === "created") {
-          data = bookingResponse.data;
           localStorage.setItem("tempBooking", JSON.stringify(data));
           const response = await handleUpdateBooking(
             {
@@ -831,7 +842,7 @@ const handleBookingProcess = async (
             dispatch
           );
           if (response?.status === 200) {
-            data = response.data;
+            data = response?.data;
             const timeLineData = {
               currentBooking_id: data?._id,
               timeLine: [
@@ -861,7 +872,11 @@ const handleBookingProcess = async (
       }
     }
   } catch (error) {
-    handleAsyncError(dispatch, "Something went wrong while booking ride");
+    handleAsyncError(
+      dispatch,
+      "Something went wrong while booking ride",
+      error?.message
+    );
   } finally {
     setBookingLoading(false);
   }

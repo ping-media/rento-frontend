@@ -2,8 +2,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeISTForUser } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
-import { useEffect, useState } from "react";
-import { addRidesData, fetchingRides } from "../Redux/RidesSlice/RideSlice";
+import { lazy, useEffect, useState } from "react";
+import {
+  addRidesData,
+  fetchingRides,
+  removeRidesData,
+} from "../Redux/RidesSlice/RideSlice";
 import { fetchingData, handlePostData } from "../Data";
 import { useDispatch, useSelector } from "react-redux";
 import PreLoader from "../components/skeleton/PreLoader";
@@ -13,6 +17,10 @@ import BookingError from "../components/Error/BookingError";
 import PickupImages from "../components/Account/PickupImages";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import Spinner from "../components/Spinner/Spinner";
+import ExtendBookingButton from "../components/Account/ExtendBookingButton";
+const ExtendBookingModal = lazy(() =>
+  import("../components/Modals/ExtendBookingModal")
+);
 
 const RidesSummary = () => {
   const navigate = useNavigate();
@@ -20,7 +28,6 @@ const RidesSummary = () => {
   const { id } = useParams();
   const [formatedDateAndTime, setFormatedDateAndTime] = useState(null);
   const [stationLoading, setStationLoading] = useState(false);
-  const [bookingLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [images, setImages] = useState([]);
   const { rides, loading } = useSelector((state) => state.rides);
@@ -31,20 +38,25 @@ const RidesSummary = () => {
       (async () => {
         dispatch(fetchingRides());
         const result = await fetchingData(`/getBookings?_id=${id}`);
+        dispatch(addRidesData(result?.data));
+        if (result?.status !== 200) return;
         const response = await fetchingData(
           `/getPickupImage?bookingId=${result?.data[0]?.bookingId}`
         );
         if (response?.status === 200) {
           setImages(response?.data);
         }
-        dispatch(addRidesData(result?.data));
         // formatting data for user readability
         setFormatedDateAndTime(
           formatDateTimeISTForUser(result?.data[0]?.createdAt)
         );
       })();
     }
-  }, [bookingLoading]);
+
+    return () => {
+      dispatch(removeRidesData());
+    };
+  }, []);
 
   // back button to let them go back to ride page
   const handleBackToRides = () => {
@@ -93,6 +105,7 @@ const RidesSummary = () => {
   return (
     <>
       {loading && <PreLoader />}
+      <ExtendBookingModal />
       {rides?.length == 1 ? (
         <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
           <div className="mb-1 flex items-center gap-3">
@@ -264,6 +277,9 @@ const RidesSummary = () => {
               <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
                 <RideFareDetails rides={rides && rides[0]} />
               </div>
+            </div>
+            <div className="mb-5">
+              <ExtendBookingButton />
             </div>
             <div className="mb-5">
               <h2 className="font-semibold mb-3 flex items-center gap-1">

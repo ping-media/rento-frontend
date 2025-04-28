@@ -16,6 +16,7 @@ const DatePicker = ({
   setDropoffChanger,
   timeValue,
   setTimeValueChanger,
+  setDropTimeValueChanger,
 }) => {
   const datePickerRef = useRef(null);
   const timePickerRef = useRef(null);
@@ -68,7 +69,7 @@ const DatePicker = ({
   const handleDateSelect = (date) => {
     if (!date) return;
     setValueChanger(date);
-    if (setDropoffChanger && name === "pickupDate") {
+    if (setDropoffChanger && name === "pickup") {
       const tempDropoffDate = nextDayFromCurrent(date);
       setDropoffChanger(tempDropoffDate);
     }
@@ -76,6 +77,9 @@ const DatePicker = ({
 
   const handleTimeSelect = (time) => {
     setTimeValueChanger(time);
+    if (setDropTimeValueChanger && name === "pickup") {
+      setDropTimeValueChanger(time);
+    }
     setCalendarVisible(false);
   };
 

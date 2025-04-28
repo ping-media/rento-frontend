@@ -146,13 +146,14 @@ export const razorPayment = async (
 };
 
 // for creating order id
-export const createOrderId = async (data) => {
+export const createOrderId = async (data, finalAmount) => {
   if (!data) return "unable to process payment.";
-  const payableAmount =
-    data?.bookingPrice?.userPaid ||
-    data?.bookingPrice?.discountTotalPrice ||
-    data?.bookingPrice?.totalPrice ||
-    100;
+  const payableAmount = finalAmount
+    ? finalAmount
+    : data?.bookingPrice?.userPaid ||
+      data?.bookingPrice?.discountTotalPrice ||
+      data?.bookingPrice?.totalPrice ||
+      100;
 
   const amount = payableAmount;
   const options = { amount: amount, booking_id: data?.bookingId };

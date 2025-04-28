@@ -15,6 +15,7 @@ import {
 } from "../../Redux/StationSlice/StationSlice";
 import {
   addDaysToDateForRide,
+  convertLocalToUTCISOString,
   convertTo24HourFormat,
   convertToISOString,
   format24HourFormatTime,
@@ -23,8 +24,9 @@ import {
   isSecondTimeSmaller,
   nextDayFromCurrent,
   removeAfterSecondSlash,
+  removeSecondsFromTimeString,
   // RoundedDateTimeAndToNextHour,
-  searchFormatDateOnly,
+  // searchFormatDateOnly,
   searchFormatTimeOnly,
 } from "../../utils";
 import { searchData } from "../../Data/Functions";
@@ -50,10 +52,11 @@ const SearchRide = () => {
   const [isPageLoad, setIsPageLoad] = useState(false);
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
-  const [queryParms] = useSearchParams();
+  const [queryParms, setQueryParms] = useSearchParams();
   const [queryPickupTime, setQueryPickupTime] = useState("");
   const [queryDropoffTime, setQueryDropoffTime] = useState("");
   const rideSubmitRef = useRef(null);
+  const hasFirstRender = useRef(false);
   // minimum time for booking a ride
   const MinimumDurationHours = 24;
 
@@ -64,31 +67,23 @@ const SearchRide = () => {
     }
   };
 
+  // checking whether it lies in opening hours or not
+  const isWithinOperatingHours = (time, startTime, endTime) => {
+    if (startTime > endTime) {
+      return time >= startTime || time <= endTime;
+    } else {
+      return time >= startTime && time <= endTime;
+    }
+  };
+
   // for searching vehicles
   const handleSearchRide = (e) => {
     e && e.preventDefault();
     const response = new FormData(e.target);
     const result = Object.fromEntries(response.entries());
+
     const pickupDate = result.pickup.substring(0, 16);
-    const checkTime = isSecondTimeSmaller(
-      formatTimeWithoutSeconds(
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      ),
-      result.pickup.substring(17, result.pickup.length)
-    );
-    const pickupTime = checkTime
-      ? result.pickup.substring(17, result.pickup.length)
-      : formatTimeWithoutSeconds(
-          new Date().toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })
-        );
+    const pickupTime = result.pickup.substring(17, result.pickup.length);
     let dropoffDate = result?.dropoff?.substring(0, 16) || "";
     const dropoffTime =
       result?.dropoff?.substring(17, result.dropoff.length) || "";
@@ -109,28 +104,33 @@ const SearchRide = () => {
       return;
     }
 
-    // checking whether the minimum duration should be 12 hour or more
+    // checking whether the minimum duration should be 24 hour or more
     const isMinDuration = isMinimumDurationHours(
       result.pickup,
       result.dropoff,
       MinimumDurationHours
     );
+
     if (location.pathname !== "/monthly-rental" && !isMinDuration)
       return handleAsyncError(
         dispatch,
         `Minimum Interval between dates should be ${MinimumDurationHours} hours`
       );
-
-    //checking whether time is in opening hours
+    // checking whether the time is in opening hour
+    if (
+      !isWithinOperatingHours(
+        covertedTime,
+        selectedStation?.openStartTime,
+        selectedStation?.openEndTime
+      )
+    ) {
+      return handleAsyncError(
+        dispatch,
+        `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
+      );
+    }
     try {
-      if (
-        (location.pathname !== "monthly-rental" &&
-          // pickupTime === dropoffTime &&
-          covertedTime >= selectedStation?.openStartTime &&
-          covertedTime <= selectedStation?.openEndTime) ||
-        (covertedTime >= selectedStation?.openStartTime &&
-          covertedTime <= selectedStation?.openEndTime)
-      ) {
+      if (location.pathname !== "monthly-rental") {
         if (
           location.pathname === "/" ||
           removeAfterSecondSlash(location.pathname) === "/search"
@@ -160,22 +160,7 @@ const SearchRide = () => {
               pickupTime
             )}`
           );
-        } else if (location.pathname === "/explore") {
-          return navigate(
-            `/explore?BookingStartDateAndTime=${convertToISOString(
-              pickupDate,
-              pickupTime
-            )}&BookingEndDateAndTime=${convertToISOString(
-              dropoffDate,
-              dropoffTime
-            )}`
-          );
         }
-      } else {
-        return handleAsyncError(
-          dispatch,
-          `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
-        );
       }
     } catch (error) {
       navigate(`/error-${error?.message}`);
@@ -191,33 +176,30 @@ const SearchRide = () => {
       addStationData,
       loading
     );
-  }, [selectedLocation]);
+  }, [loading, selectedLocation]);
 
   useEffect(() => {
-    memoizedSearchData();
+    if (location.pathname.includes("/search/") && !hasFirstRender.current) {
+      hasFirstRender.current = true;
+      return;
+    }
+    if (location.pathname === "/" || hasFirstRender.current) {
+      memoizedSearchData();
+    }
   }, [memoizedSearchData]);
 
-  // this will set time and date for the first time on homepage
   useEffect(() => {
-    // Set default dates if data not found
+    // this will set time and date for the first time on homepage
     if (location.pathname === "/") {
+      const currentTime = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      });
       setPickupDate(new Date());
       setDropoffDate(nextDayFromCurrent(new Date()));
-      setQueryPickupTime(
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      );
-      setQueryDropoffTime(
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      );
-
+      setQueryPickupTime(currentTime);
+      setQueryDropoffTime(currentTime);
       if (pickupDate) {
         setDropoffDate(nextDayFromCurrent(new Date(pickupDate)));
       }
@@ -229,7 +211,7 @@ const SearchRide = () => {
 
   // changing date & time if time is passed openning hour
   useEffect(() => {
-    if (location.pathname === "/" && selectedStation !== null) {
+    if (selectedStation !== null) {
       const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
       const openStartTime = Number(selectedStation?.openStartTime);
@@ -265,19 +247,63 @@ const SearchRide = () => {
       const newQueryParmsData = Object.fromEntries(queryParms.entries());
       const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
       const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
+      // for checking station time
+      const currentHour = new Date().getHours();
+      const openStartTime = Number(selectedStation?.openStartTime);
+      // for desktop full view
       if (pickUpDateAndTime && dropoffDateAndTime) {
-        // for desktop full view
-        setPickupDate(searchFormatDateOnly(pickUpDateAndTime));
-        setDropoffDate(searchFormatDateOnly(dropoffDateAndTime));
-        setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
-        setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+        const withinStationTime = currentHour < openStartTime;
+        const currentTime = new Date()?.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const pickupDate = pickUpDateAndTime.split("T")[0];
+        const dropoffDate = dropoffDateAndTime.split("T")[0];
+        const querypickupDateTime = convertLocalToUTCISOString(
+          `${new Date(
+            pickupDate
+          ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
+        );
+        const querydropoffDateTime = convertLocalToUTCISOString(
+          `${new Date(
+            dropoffDate
+          ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
+        );
+
+        setPickupDate(new Date(pickupDate));
+        setDropoffDate(new Date(dropoffDate));
+
+        // if (searchFormatTimeOnly(pickUpDateAndTime) < currentTime) {
+        // if (pickUpDateAndTime < querypickupDateTime) {
+        // console.log(
+        //   pickUpDateAndTime <
+        //     convertLocalToUTCISOString(
+        //       `${new Date(pickupDate).toLocaleDateString()} ${currentTime}`
+        //     )
+        // );
+        if (
+          pickUpDateAndTime <
+          convertLocalToUTCISOString(
+            `${new Date(pickupDate).toLocaleDateString()} ${currentTime}` &&
+              withinStationTime
+          )
+        ) {
+          setQueryPickupTime(formatTimeWithoutSeconds(currentTime));
+          setQueryDropoffTime(formatTimeWithoutSeconds(currentTime));
+          queryParms.set("BookingStartDateAndTime", querypickupDateTime);
+          queryParms.set("BookingEndDateAndTime", querydropoffDateTime);
+          setQueryParms(queryParms);
+        } else {
+          setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+          setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+        }
       }
     } catch (error) {
       navigate("/error");
     } finally {
       setIsPageLoad(false);
     }
-  }, [location.href]);
+  }, [location.pathname]);
 
   return (
     <>
@@ -353,6 +379,7 @@ const SearchRide = () => {
               setDropoffChanger={setDropoffDate}
               timeValue={queryPickupTime}
               setTimeValueChanger={setQueryPickupTime}
+              setDropTimeValueChanger={setQueryDropoffTime}
             />
           </div>
           {location.pathname !== "/monthly-rental" && (
@@ -362,7 +389,7 @@ const SearchRide = () => {
                   htmlFor="pickup-time"
                   className="text-gray-500 block mb-1"
                 >
-                  Pick-up Date And Time
+                  Drop-off Date And Time
                 </label>
                 <DateTimePicker
                   value={dropoffDate}

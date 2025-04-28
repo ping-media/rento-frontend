@@ -32,7 +32,7 @@ const stationPersistConfig = {
   key: "station",
   version: "1",
   storage,
-  whitelist: ["station"],
+  whitelist: ["station", "selectedStation"],
 };
 
 const vehiclePersistConfig = {

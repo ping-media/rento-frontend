@@ -7,8 +7,9 @@ import {
 const RideFareDetails = ({ rides }) => {
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
-      Number(rides?.bookingPrice?.AmountLeftAfterUserPaid?.amount)) ||
-    0;
+    rides?.bookingPrice?.AmountLeftAfterUserPaid?.status !== "paid"
+      ? Number(rides?.bookingPrice?.AmountLeftAfterUserPaid?.amount)
+      : 0) || 0;
   const extendAmountLeft =
     (rides.bookingPrice?.extendAmount?.length > 0 &&
       rides.bookingPrice?.extendAmount.reduce((sum, transaction) => {
@@ -23,15 +24,16 @@ const RideFareDetails = ({ rides }) => {
       }, 0)) ||
     0;
 
-  const payableBalance =
-    Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
-    Number(rides.bookingPrice?.AmountLeftAfterUserPaid) ||
-    (rides?.paymentMethod === "cash" &&
-      Number(
-        rides?.bookingPrice?.discountTotalPrice > 0
-          ? rides?.bookingPrice?.discountTotalPrice
-          : rides?.bookingPrice?.totalPrice
-      ));
+  const payableBalance = rides?.bookingPrice?.payOnPickupMethod
+    ? 0
+    : Number(amountLeft) + Number(extendAmountLeft) + Number(diffAmountLeft) ||
+      Number(rides.bookingPrice?.AmountLeftAfterUserPaid) ||
+      (rides?.paymentMethod === "cash" &&
+        Number(
+          rides?.bookingPrice?.discountTotalPrice > 0
+            ? rides?.bookingPrice?.discountTotalPrice
+            : rides?.bookingPrice?.totalPrice
+        ));
   0;
 
   return (
@@ -43,7 +45,9 @@ const RideFareDetails = ({ rides }) => {
               <span className="font-bold">Package:</span>
               {`(${getDurationInDays(
                 rides?.BookingStartDateAndTime,
-                rides?.BookingEndDateAndTime
+                rides?.extendBooking?.originalEndDate
+                  ? rides?.extendBooking?.originalEndDate
+                  : rides?.BookingEndDateAndTime
               )} days Package Applied)`}
             </div>
           )}
@@ -68,6 +72,9 @@ const RideFareDetails = ({ rides }) => {
                   key !== "lateFeeBasedOnHour" &&
                   key !== "lateFeeBasedOnKM" &&
                   key !== "payOnPickupMethod" &&
+                  key !== "lateFeePaymentMethod" &&
+                  key !== "additionFeePaymentMethod" &&
+                  key !== "additionalPrice" &&
                   !(key === "extraAddonPrice" && value === 0)
               ) // Exclude totalPrice
               .map(([key, value]) => (
@@ -129,13 +136,16 @@ const RideFareDetails = ({ rides }) => {
                     ? "Subtotal"
                     : "Total Price"}
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    {rides?.paymentMethod == "online" &&
-                    rides?.paySuccessId != "NA"
+                    {rides?.bookingPrice?.discountPrice &&
+                    rides?.bookingPrice?.discountPrice != 0
+                      ? ""
+                      : rides?.paymentMethod == "online" &&
+                        rides?.paySuccessId != "NA"
                       ? "(Full Paid)"
                       : rides?.paymentMethod == "partiallyPay"
                       ? ""
                       : rides?.bookingPrice?.payOnPickupMethod
-                      ? `(${rides?.bookingPrice?.payOnPickupMethod})`
+                      ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
                       : "(need to pay at pickup)"}
                   </small>
                 </p>
@@ -183,7 +193,7 @@ const RideFareDetails = ({ rides }) => {
                       : rides?.bookingPrice?.isDiscountZero === true
                       ? ""
                       : rides?.bookingPrice?.payOnPickupMethod
-                      ? `(${rides?.bookingPrice?.payOnPickupMethod})`
+                      ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
                       : "(Need to pay at pickup)"}
                   </small>
                 </p>
@@ -212,39 +222,17 @@ const RideFareDetails = ({ rides }) => {
                 </>
               )}
 
-            {/* for refund process  */}
-            {(rides?.paymentStatus === "refundInt" ||
-              rides?.paymentStatus === "refunded") && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
-                <p className="text-sm font-semibold uppercase text-left">
-                  Refund Amount
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    (
-                    {`${
-                      rides?.paymentStatus === "refundInt"
-                        ? "Refund Request Received"
-                        : "Refunded"
-                    }`}
-                    )
-                  </small>
-                </p>
-                <p className="text-sm font-bold text-right">
-                  {rides?.bookingPrice?.userPaid
-                    ? `₹${formatPrice(rides?.bookingPrice?.userPaid)}`
-                    : rides?.bookingPrice?.discountTotalPrice > 0
-                    ? `₹${formatPrice(rides?.bookingPrice?.discountTotalPrice)}`
-                    : `₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
-                </p>
-              </li>
-            )}
-
             {/* difference amount  */}
             {rides?.bookingPrice?.diffAmount && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
                 <p className="text-sm font-semibold uppercase text-left">
                   Difference Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    ( need to pay this amount )
+                    {rides?.bookingPrice?.diffAmount[
+                      rides?.bookingPrice?.diffAmount?.length - 1
+                    ]?.status === "paid"
+                      ? "(Paid)"
+                      : "(need to pay this amount)"}
                   </small>
                 </p>
                 <p className="text-sm font-bold text-right">
@@ -265,7 +253,11 @@ const RideFareDetails = ({ rides }) => {
                 <p className="text-sm font-semibold uppercase text-left">
                   Extend Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    (New Price For Extend booking )
+                    {rides?.bookingPrice?.extendAmount[
+                      rides?.bookingPrice?.extendAmount?.length - 1
+                    ]?.status === "paid"
+                      ? "(Paid)"
+                      : "(New Price For Extend booking)"}
                   </small>
                 </p>
                 <p className="text-sm font-bold text-right text-theme">

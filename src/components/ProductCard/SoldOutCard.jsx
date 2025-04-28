@@ -4,16 +4,16 @@ import { formatTimeForProductCard } from "../../utils/index";
 const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
   return (
     <div className="absolute w-full h-full bg-white bg-opacity-40 z-10 rounded-b-lg">
-      <div className="w-full h-[81%]">
+      <div className="w-full h-[78.5%] lg:h-[81%] flex items-center justify-center">
         <img
           src={soldOutImage}
-          className="w-full h-full object-contain"
+          className="w-full lg:w-80 h-full lg:h-80 object-contain"
           loading="lazy"
           alt="SOLD_OUT"
         />
       </div>
       <p
-        className="flex items-center px-1 lg:px-2 py-1 h-[10%] bg-theme-black text-gray-100 text-xs lg:text-sm truncate"
+        className="flex items-center px-1 lg:px-2 py-1 h-[12%] lg:h-[10%] bg-theme-black text-gray-100 text-xs lg:text-sm truncate"
         title={
           (MaintenanceEndDate &&
             formatTimeForProductCard(MaintenanceEndDate)) ||

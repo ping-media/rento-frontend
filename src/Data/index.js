@@ -86,7 +86,6 @@ const handlePostData = async (endpoint, data) => {
         },
       }
     );
-    // console.log(response);
     return response?.data || response;
   } catch (error) {
     return {
@@ -96,10 +95,11 @@ const handlePostData = async (endpoint, data) => {
   }
 };
 
-const handlebooking = async (data) => {
+const handlebooking = async (data, bookingId = "") => {
   try {
+    const id = bookingId ? `?_id=${bookingId}` : "";
     const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/createBooking`,
+      `${import.meta.env.VITE_BACKEND_URL}/createBooking${id}`,
       data,
       {
         headers: {

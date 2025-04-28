@@ -1,4 +1,4 @@
-import { camelCaseToSpaceSeparated } from "../../utils";
+import { camelCaseToSpaceSeparated, formatPrice } from "../../utils";
 import CopyButton from "../Button/CopyButton";
 
 const ThingsToRemember = ({ rides }) => {
@@ -17,12 +17,12 @@ const ThingsToRemember = ({ rides }) => {
         "Utilise the total distance limit of the package as per your will all kms in a day or some kms per day.",
     },
     excessCharge: {
-      limit: rides?.vehicleBasic?.extraKmCharge,
+      limit: formatPrice(Number(rides?.vehicleBasic?.extraKmCharge)),
       message:
         "Extra charges are applicable if the distance limit exceeds the package.",
     },
     lateFee: {
-      limit: rides?.vehicleBasic?.lateFee,
+      limit: formatPrice(Number(rides?.vehicleBasic?.lateFee)),
       message: "Be sure to drop the vehicle in time to avoid any charges.",
     },
     speedLimit: {
@@ -58,7 +58,7 @@ const ThingsToRemember = ({ rides }) => {
                   ? `${value?.limit} Km/hr`
                   : key.includes("Otp")
                   ? value?.limit
-                  : `₹ ${value?.limit || 0}/hr`}
+                  : `₹${value?.limit || 0}/hr`}
               </p>
             </li>
           );

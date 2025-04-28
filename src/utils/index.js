@@ -22,9 +22,9 @@ const showGreeting = () => {
 
   if (hours >= 5 && hours < 12) {
     greeting = "Good Morning";
-  } else if (hours >= 12 && hours < 17) {
+  } else if (hours >= 12 && hours < 16) {
     greeting = "Good Afternoon";
-  } else if (hours >= 17 && hours < 21) {
+  } else if (hours >= 16 && hours < 21) {
     greeting = "Good Evening";
   } else {
     greeting = "Good Night";
@@ -74,67 +74,40 @@ const formatDate = (dateStr) => {
   return formattedDate.replace(/^(\w{3}) (\d{2} \w{3} \d{4})$/, "$1, $2");
 };
 
-// const formatTimeWithoutSeconds = (timeStr) => {
-//   // Step 1: Parse the time string into a Date object
-//   const [time, period] = timeStr.split(" "); // Split time and AM/PM
-//   let [hours, minutes] = time.split(":").map(Number); // Split hours and minutes
-
-//   // Convert to 24-hour time for easier manipulation
-//   if (period === "PM" && hours !== 12) {
-//     hours += 12; // Convert PM times except 12 PM to 24-hour format
-//   } else if (period === "AM" && hours === 12) {
-//     hours = 0; // Convert 12 AM to 0 hour
-//   }
-
-//   // Step 2: Round the minutes to the nearest half hour
-//   if (minutes >= 45) {
-//     minutes = 0; // Round to the next hour if minutes are 45 or greater
-//     hours = (hours + 1) % 24; // Ensure hours wrap around correctly (i.e., 23 becomes 0)
-//   } else {
-//     minutes = 0; // Round down to 00 if minutes are less than 15
-//   }
-
-//   // Step 3: Convert back to 12-hour format and return the time string
-//   let formattedHour = hours % 12; // Convert back to 12-hour format
-//   formattedHour = formattedHour === 0 ? 12 : formattedHour; // 0 hour should be 12 in 12-hour format
-//   const formattedMinute = minutes < 10 ? `0${minutes}` : minutes; // Format minutes
-//   const formattedPeriod = hours >= 12 ? "PM" : "AM"; // Determine AM/PM period
-
-//   return `${formattedHour}:${formattedMinute} ${formattedPeriod}`; // Return the formatted time string
-// };
-
 const formatTimeWithoutSeconds = (timeStr) => {
-  // Step 1: Parse the time string into a Date object
   const [time, period] = timeStr.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
+  const seconds = new Date().getSeconds();
 
-  // Convert to 24-hour time for easier manipulation
+  // Convert to 24-hour format
   if (period === "PM" && hours !== 12) {
     hours += 12;
   } else if (period === "AM" && hours === 12) {
     hours = 0;
   }
-  // Step 2: Round the minutes to the nearest hour
-  if (minutes > 0) {
-    minutes = 0;
+  // if (minutes >= 50) {
+  //   hours = (hours + 2) % 24;
+  // }
+  // Round up to next hour if minutes or seconds > 0
+  if (minutes > 0 && seconds > 0) {
     hours = (hours + 1) % 24;
   }
-  // Step 3: Convert back to 12-hour format and return the time string
+
+  // Convert back to 12-hour format
   let formattedHour = hours % 12;
   formattedHour = formattedHour === 0 ? 12 : formattedHour;
-  const formattedMinute = minutes < 10 ? `0${minutes}` : minutes;
   const formattedPeriod = hours >= 12 ? "PM" : "AM";
 
-  return `${formattedHour}:${formattedMinute} ${formattedPeriod}`;
+  return `${formattedHour}:00 ${formattedPeriod}`;
 };
 
 const formatDateWithDayName = (inputDate) => {
   const date = new Date(inputDate);
 
   const formatter = new Intl.DateTimeFormat("en-GB", {
-    weekday: "short", // "Sat"
-    day: "2-digit", // "16"
-    month: "short", // "Nov"
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
   });
 
   return formatter.format(date);
@@ -208,6 +181,19 @@ const formatDateToSlash = (dateStr) => {
   return `${day}/${month}/${year}`;
 };
 
+// const calculateTax = (amount, taxPercentage) => {
+//   // Ensure the inputs are valid numbers
+//   if (isNaN(amount) || isNaN(taxPercentage)) {
+//     return "Invalid input";
+//   }
+
+//   // Calculate the tax based on the given percentage
+//   const taxAmount = (taxPercentage / 100) * amount;
+
+//   // Round the result to 2 decimal places and return it
+//   return taxAmount.toFixed(2); // This will return a string, but it ensures two decimal places
+// };
+
 const calculateTax = (amount, taxPercentage) => {
   // Ensure the inputs are valid numbers
   if (isNaN(amount) || isNaN(taxPercentage)) {
@@ -218,7 +204,7 @@ const calculateTax = (amount, taxPercentage) => {
   const taxAmount = (taxPercentage / 100) * amount;
 
   // Round the result to 2 decimal places and return it
-  return taxAmount.toFixed(2); // This will return a string, but it ensures two decimal places
+  return parseInt(taxAmount);
 };
 
 const convertToISOString = (dropoffDate, dropoffTime) => {
@@ -239,31 +225,31 @@ const convertToISOString = (dropoffDate, dropoffTime) => {
     "Dec",
   ];
 
-  const day = parseInt(dateParts[0], 10); // Convert day to integer
-  const month = monthNames.indexOf(dateParts[1]); // Get the month index
-  const year = parseInt(dateParts[2], 10); // Convert year to integer
+  const day = parseInt(dateParts[0], 10);
+  const month = monthNames.indexOf(dateParts[1]);
+  const year = parseInt(dateParts[2], 10);
 
   // Create the initial date object in UTC time
   const date = new Date(Date.UTC(year, month, day));
 
   // Step 2: Parse the time string ("6:00 PM") into 24-hour format
   const timeParts = dropoffTime.split(" ");
-  const [hour, minute] = timeParts[0].split(":"); // Split the time into hour and minute
-  let hours = parseInt(hour, 10); // Convert hour to integer
-  const ampm = timeParts[1]; // AM or PM
+  const [hour, minute] = timeParts[0].split(":");
+  let hours = parseInt(hour, 10);
+  const ampm = timeParts[1];
 
   // Convert 12-hour time to 24-hour time
   if (ampm === "PM" && hours !== 12) {
-    hours += 12; // Convert PM hour to 24-hour format, except for 12 PM (noon)
+    hours += 12;
   } else if (ampm === "AM" && hours === 12) {
-    hours = 0; // 12 AM is midnight, so set hours to 0
+    hours = 0;
   }
 
   // Step 3: Set the time (hours and minutes) in the Date object in UTC
-  date.setUTCHours(hours, parseInt(minute, 10), 0, 0); // Set the time (hours, minutes, seconds, milliseconds)
+  date.setUTCHours(hours, parseInt(minute, 10), 0, 0);
 
   // Step 4: Convert the Date object to an ISO string and remove milliseconds
-  const isoString = date.toISOString().slice(0, 19) + "Z"; // Remove milliseconds and append 'Z' for UTC
+  const isoString = date?.toISOString().slice(0, 19) + "Z";
 
   return isoString;
 };
@@ -372,10 +358,9 @@ const formatDateTimeISTForUser = (input) => {
 };
 
 const nextDayFromCurrent = (date, noOfDay = 1) => {
-  const nextDay = date;
+  // const nextDay = date;
+  const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + noOfDay);
-
-  // return nextDay.toLocaleDateString();
   return nextDay;
 };
 
@@ -439,7 +424,7 @@ const camelCaseToSpaceSeparated = (str) => {
 };
 
 const formatPrice = (price) => {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(price);
@@ -547,9 +532,10 @@ const formatTimeForProductCard = (isoString) => {
   const minutes = date.getUTCMinutes().toString().padStart(2, "0");
   const amPm = hours >= 12 ? "PM" : "AM";
 
-  hours = hours % 12 || 12; // Convert 24-hour to 12-hour format
+  hours = hours % 12 || 12;
 
-  return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
+  // return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
+  return `${day} ${month}, ${year}, ${hours}:00 ${amPm}`;
 };
 
 const addDaysToDateForRide = (daysToAdd, dateStr) => {
@@ -592,7 +578,17 @@ const addDaysToDateForRide = (daysToAdd, dateStr) => {
   return newDateStr;
 };
 
-const searchFormatDateOnly = (dateStr) => new Date(dateStr);
+// const searchFormatDateOnly = (dateStr) => new Date(dateStr);
+const searchFormatDateOnly = (utcString) => {
+  const date = new Date(utcString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 const searchFormatTimeOnly = (dateStr) => {
   const date = new Date(dateStr);
@@ -673,7 +669,6 @@ const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
   // Parse the ISO datetime strings to Date objects
   const startDateTime = new Date(startDateTimeStr);
   const endDateTime = new Date(endDateTimeStr);
-
   // Check if end date is after start date
   if (endDateTime <= startDateTime) {
     return {
@@ -681,13 +676,10 @@ const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
       message: "Booking end time must be after booking start time.",
     };
   }
-
   // Calculate the difference in milliseconds
   const timeDifference = endDateTime - startDateTime;
-
   // Convert to hours (1000ms * 60s * 60min = 3600000ms per hour)
   const hoursDifference = timeDifference / 3600000;
-
   // Check if the difference is at least 24 hours
   if (hoursDifference < 24) {
     return {
@@ -700,6 +692,86 @@ const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
     valid: true,
     message: "Booking dates are valid.",
   };
+};
+
+const getEarliestDate = (array, key) => {
+  return array?.reduce((earliest, item) => {
+    const date = item[key] ? new Date(item[key]) : null;
+    return !earliest || (date && date < earliest) ? date : earliest;
+  }, null);
+};
+
+const addOneMinute = (dateTimeString) => {
+  const date = new Date(dateTimeString);
+  // Add 1 minute (60,000 milliseconds) to the date
+  date.setTime(date.getTime() + 60 * 1000);
+  return date?.toISOString().split(".")[0] + "Z";
+};
+
+const calculatePriceForExtendBooking = (
+  perDayCost,
+  extensionDays,
+  extraAddonPrice = 0
+) => {
+  const bookingPrice = Number(perDayCost) * Number(extensionDays);
+  const AddonPrice =
+    Number(extraAddonPrice) > 0
+      ? Number(extraAddonPrice) * Number(extensionDays)
+      : 0;
+  const newAddOnPrice = AddonPrice < 200 ? AddonPrice : 200;
+  const newBookingPrice = bookingPrice + newAddOnPrice;
+  const tax = calculateTax(newBookingPrice, 18);
+  const extendAmount = Number(newBookingPrice) + Number(tax);
+  return extendAmount;
+};
+
+const formatFullDateAndTime = (dateString) => {
+  const date = new Date(dateString);
+  // Format the date using Intl.DateTimeFormat with short month format
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC", // Ensure IST time zone
+  });
+  return formatter.format(date);
+};
+
+const addDaysToDateForExtend = (dateString, days) => {
+  const date = new Date(dateString);
+  if (isNaN(date)) {
+    throw new Error(
+      "Invalid date format. Please use a valid ISO 8601 date string."
+    );
+  }
+  // Add the specified number of days to the date's timestamp
+  const updatedDate = new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+  // Return the updated date in UTC ISO 8601 format
+  return updatedDate.toISOString().replace(".000Z", "Z");
+};
+
+const convertLocalToUTCISOString = (dateTimeStr) => {
+  const localDate = new Date(dateTimeStr);
+  if (isNaN(localDate.getTime())) {
+    throw new Error("Invalid date format");
+  }
+
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, "0");
+  const day = String(localDate.getDate()).padStart(2, "0");
+  const hours = String(localDate.getHours()).padStart(2, "0");
+  const minutes = String(localDate.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:00Z`;
+};
+
+const removeSecondsFromTimeString = (timeStr) => {
+  const [time, period] = timeStr.split(" ");
+  const [hour, minute] = time.split(":");
+  return `${hour}:${minute} ${period}`;
 };
 
 export {
@@ -741,4 +813,11 @@ export {
   // formatDateMobile,
   isSecondTimeSmaller,
   validateBookingDates,
+  getEarliestDate,
+  addOneMinute,
+  calculatePriceForExtendBooking,
+  formatFullDateAndTime,
+  addDaysToDateForExtend,
+  convertLocalToUTCISOString,
+  removeSecondsFromTimeString,
 };

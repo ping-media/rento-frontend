@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../Spinner/Spinner";
 import PreLoader from "../skeleton/PreLoader";
 import { handleCheckLocationChange } from "../../Redux/LocationSlice/LocationSlice";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { updateStationId } from "../../utils";
 import { addCurrentStation } from "../../Redux/StationSlice/StationSlice";
+import { toggleSearchUpdate } from "../../Redux/ModalSlice/ModalSlice";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
-  const { loading, station } = useSelector((state) => state.station);
+  const { loading, station, selectedStation } = useSelector(
+    (state) => state.station
+  );
   const { isLocationChange } = useSelector((state) => state.selectedLocation);
+  const { isSearchUpdatesActive } = useSelector((state) => state.modals);
   const [changeStationLoading, setChangeLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueId, setSelectedValueId] = useState("");
@@ -19,8 +23,22 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
+  const firstRunOnSearchPage = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // we don't want to render for the first time on search page so just set the value
+    if (location.pathname.includes("/search/")) {
+      if (!firstRunOnSearchPage.current) {
+        firstRunOnSearchPage.current = true;
+        const stationDataById = station?.filter(
+          (item) => item?.stationId === value
+        );
+        setSelectedValue(stationDataById[0]?.stationName);
+        setSelectedValueId(stationDataById[0]?.stationId);
+        return;
+      }
+    }
     try {
       if (!loading) {
         setChangeLoading(true);
@@ -30,6 +48,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
           setSelectedValueId(station[0]?.stationId);
           // for updating the url based on new station
           updateStationId(customLocation, station[0]?.stationId);
+          dispatch(addCurrentStation(station[0]));
           // changing the flag to false so that this function don't run every time
           dispatch(handleCheckLocationChange());
         } else if (station.length > 0 && value) {
@@ -38,9 +57,11 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
           );
           setSelectedValue(stationDataById[0]?.stationName);
           setSelectedValueId(stationDataById[0]?.stationId);
+          dispatch(addCurrentStation(station[0]));
         } else if (station.length > 0) {
           setSelectedValue(station[0]?.stationName);
           setSelectedValueId(station[0]?.stationId);
+          dispatch(addCurrentStation(station[0]));
         } else {
           setSelectedValue("No Station Found");
         }
@@ -49,21 +70,32 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
     } catch (error) {
       return error?.message;
     }
-  }, [loading, station]);
-
-  // for changing selectedStation whenever station list change so that station time can change too
-  useEffect(() => {
-    if (station?.length > 0) {
-      dispatch(addCurrentStation(station[0]));
-    }
   }, [station]);
+
+  // when someone refresh the page
+  useEffect(() => {
+    if (selectedStation === null) {
+      const stationDataById = station?.filter(
+        (item) => item?.stationId === value
+      );
+      dispatch(addCurrentStation(stationDataById));
+    }
+  }, []);
 
   // for changing station when we click on station
   const handleLocationChange = (item) => {
     setSelectedValueId(item?.stationId);
     setSelectedValue(item?.stationName);
-    // adding current station data for changing time based on station
     dispatch(addCurrentStation(item));
+    isSearchUpdatesActive && dispatch(toggleSearchUpdate());
+
+    if (location.pathname.includes("/search/")) {
+      const pathSegments = location.pathname.split("/");
+      pathSegments[pathSegments.length - 1] = item.stationId;
+      const newPath = pathSegments.join("/");
+      const updatedUrl = `${newPath}${location.search}`;
+      navigate(updatedUrl, { replace: true });
+    }
   };
 
   // For closing the dropdown menu when the user clicks outside anywhere on screen
