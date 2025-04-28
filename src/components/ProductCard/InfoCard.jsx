@@ -8,10 +8,10 @@ import {
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
-import { useDispatch, useSelector } from "react-redux";
-import { addTempDate } from "../../Redux/ProductSlice/ProductsSlice";
-import { changeAccordingToPlan } from "../../Data/Functions";
-import { useSearchParams } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { addTempDate } from "../../Redux/ProductSlice/ProductsSlice";
+// import { changeAccordingToPlan } from "../../Data/Functions";
+// import { useSearchParams } from "react-router-dom";
 
 const InfoCard = ({
   vehiclePlanData,
