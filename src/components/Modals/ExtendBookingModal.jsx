@@ -34,7 +34,8 @@ const ExtendBookingModal = () => {
 
     const finalAmount = calculatePriceForExtendBooking(
       rides[0]?.bookingPrice?.rentAmount,
-      extensionDays
+      extensionDays,
+      Number(rides[0]?.bookingPrice?.extraAddonPrice)
     );
 
     let data = {
