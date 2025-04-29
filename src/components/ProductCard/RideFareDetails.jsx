@@ -33,8 +33,8 @@ const RideFareDetails = ({ rides }) => {
           rides?.bookingPrice?.discountTotalPrice > 0
             ? rides?.bookingPrice?.discountTotalPrice
             : rides?.bookingPrice?.totalPrice
-        ));
-  0;
+        )) ||
+      0;
 
   return (
     <>
