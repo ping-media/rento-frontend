@@ -298,8 +298,14 @@ const SearchRide = () => {
           //   formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime)),
           //   formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
           // );
-          setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
-          setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+          // setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+          // setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+          setQueryDropoffTime(
+            formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime))
+          );
+          setQueryPickupTime(
+            formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
+          );
         }
       }
     } finally {
