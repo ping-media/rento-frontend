@@ -21,10 +21,10 @@ import {
   format24HourFormatTime,
   formatTimeWithoutSeconds,
   isMinimumDurationHours,
-  isSecondTimeSmaller,
+  // isSecondTimeSmaller,
   nextDayFromCurrent,
   removeAfterSecondSlash,
-  removeSecondsFromTimeString,
+  // removeSecondsFromTimeString,
   // RoundedDateTimeAndToNextHour,
   // searchFormatDateOnly,
   searchFormatTimeOnly,
@@ -294,12 +294,12 @@ const SearchRide = () => {
           queryParms.set("BookingEndDateAndTime", querydropoffDateTime);
           setQueryParms(queryParms);
         } else {
-          setQueryDropoffTime(
-            formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime))
-          );
-          setQueryPickupTime(
-            formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
-          );
+          // console.log(
+          //   formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime)),
+          //   formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
+          // );
+          setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+          setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
         }
       }
     } catch (error) {
@@ -413,9 +413,9 @@ const SearchRide = () => {
       </div>
 
       {/* mobile view  layout */}
-      {location.pathname.includes("/search/") && (
+      {/* {location.pathname.includes("/search/") && (
         <MobileSearchRide pickup={pickupDate} dropoff={dropoffDate} />
-      )}
+      )} */}
     </>
   );
 };
