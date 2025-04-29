@@ -294,8 +294,12 @@ const SearchRide = () => {
           queryParms.set("BookingEndDateAndTime", querydropoffDateTime);
           setQueryParms(queryParms);
         } else {
-          setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
-          setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+          setQueryDropoffTime(
+            formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime))
+          );
+          setQueryPickupTime(
+            formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
+          );
         }
       }
     } catch (error) {
