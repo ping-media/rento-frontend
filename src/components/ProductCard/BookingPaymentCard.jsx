@@ -9,14 +9,13 @@ const BookingPaymentCard = ({ isDiscountZeroApplied }) => {
   const [finalPrice, setFinalPrice] = useState(0);
 
   useEffect(() => {
-    if (Number(tempTotalPrice) !== 0 || Number(tempCouponDiscountTotal) !== 0) {
-      setFinalPrice(
-        Math.round(
-          (Number(tempCouponDiscountTotal) !== 0
-            ? Number(tempCouponDiscountTotal)
-            : Number(tempTotalPrice)) * 0.2
-        )
-      );
+    const priceToUse =
+      Number(tempCouponDiscountTotal) !== 0
+        ? Number(tempCouponDiscountTotal)
+        : Number(tempTotalPrice);
+
+    if (priceToUse !== 0) {
+      setFinalPrice(Math.round(priceToUse * 0.2));
     }
   }, [tempTotalPrice, tempCouponDiscountTotal]);
 
