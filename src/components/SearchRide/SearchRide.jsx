@@ -302,9 +302,10 @@ const SearchRide = () => {
           setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
         }
       }
-    } catch (error) {
-      navigate(`/error?message=${error?.message}`);
     } finally {
+      // catch (error) {
+      //   navigate(`/error?message=${error?.message}`);
+      // }
       setIsPageLoad(false);
     }
   }, [location.pathname]);
