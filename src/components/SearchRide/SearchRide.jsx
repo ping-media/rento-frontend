@@ -270,8 +270,10 @@ const SearchRide = () => {
           ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
         );
 
-        setPickupDate(new Date(pickupDate));
-        setDropoffDate(new Date(dropoffDate));
+        // setPickupDate(new Date(pickupDate));
+        // setDropoffDate(new Date(dropoffDate));
+        setPickupDate(pickupDate);
+        setDropoffDate(dropoffDate);
 
         // if (searchFormatTimeOnly(pickUpDateAndTime) < currentTime) {
         // if (pickUpDateAndTime < querypickupDateTime) {
