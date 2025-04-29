@@ -269,11 +269,9 @@ const SearchRide = () => {
             dropoffDate
           ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
         );
-
-        // setPickupDate(new Date(pickupDate));
-        // setDropoffDate(new Date(dropoffDate));
-        setPickupDate(pickupDate);
-        setDropoffDate(dropoffDate);
+        const checkDate = pickupDate;
+        setPickupDate(new Date(pickupDate));
+        setDropoffDate(new Date(dropoffDate));
 
         // if (searchFormatTimeOnly(pickUpDateAndTime) < currentTime) {
         // if (pickUpDateAndTime < querypickupDateTime) {
@@ -283,12 +281,13 @@ const SearchRide = () => {
         //       `${new Date(pickupDate).toLocaleDateString()} ${currentTime}`
         //     )
         // );
+        // console.log(
+        //   checkDate,
+        //   convertLocalToUTCISOString(`${checkDate} ${currentTime}`)
+        // );
         if (
           pickUpDateAndTime <
-          convertLocalToUTCISOString(
-            `${new Date(pickupDate).toLocaleDateString()} ${currentTime}` &&
-              withinStationTime
-          )
+          convertLocalToUTCISOString(`${checkDate} ${currentTime}`)
         ) {
           setQueryPickupTime(formatTimeWithoutSeconds(currentTime));
           setQueryDropoffTime(formatTimeWithoutSeconds(currentTime));
@@ -422,9 +421,9 @@ const SearchRide = () => {
       </div>
 
       {/* mobile view  layout */}
-      {/* {location.pathname.includes("/search/") && (
+      {location.pathname.includes("/search/") && (
         <MobileSearchRide pickup={pickupDate} dropoff={dropoffDate} />
-      )} */}
+      )}
     </>
   );
 };

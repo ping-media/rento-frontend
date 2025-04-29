@@ -31,7 +31,7 @@ const MobileSearchRide = ({ pickup, dropoff }) => {
         </svg>
       </button>
       <button
-        className="px-4 py-2 border-2 border-theme rounded-lg font-semibold"
+        className="text-sm px-4 py-2 border-2 border-theme rounded-lg font-semibold"
         type="button"
         onClick={() => dispatch(toggleSearchUpdate())}
       >
