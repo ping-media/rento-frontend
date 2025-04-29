@@ -28,6 +28,8 @@ import {
   // RoundedDateTimeAndToNextHour,
   // searchFormatDateOnly,
   searchFormatTimeOnly,
+  timeStringToMillisecondsWithoutSeconds,
+  updateTimeInISOString,
 } from "../../utils";
 import { searchData } from "../../Data/Functions";
 import { handleAsyncError } from "../../utils/handleAsyncError";
@@ -250,69 +252,52 @@ const SearchRide = () => {
       // for checking station time
       const currentHour = new Date().getHours();
       const openStartTime = Number(selectedStation?.openStartTime);
-      // for desktop full view
-      if (pickUpDateAndTime && dropoffDateAndTime) {
-        const withinStationTime = currentHour < openStartTime;
-        const currentTime = new Date()?.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+      const openEndTime = Number(selectedStation?.openEndTime);
+      const currentTime = new Date().toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      const pickupTime = pickUpDateAndTime?.split("T")[1]?.replace("Z", "");
+      const withinStationTime =
+        currentHour > openStartTime && currentHour < openEndTime;
+      // console.log(currentHour, openStartTime, openEndTime, withinStationTime);
+
+      if (pickUpDateAndTime && dropoffDateAndTime && withinStationTime) {
         const pickupDate = pickUpDateAndTime.split("T")[0];
         const dropoffDate = dropoffDateAndTime.split("T")[0];
-        const querypickupDateTime = convertLocalToUTCISOString(
-          `${new Date(
-            pickupDate
-          ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
-        );
-        const querydropoffDateTime = convertLocalToUTCISOString(
-          `${new Date(
-            dropoffDate
-          ).toLocaleDateString()} ${formatTimeWithoutSeconds(currentTime)}`
-        );
-        const checkDate = pickupDate;
         setPickupDate(new Date(pickupDate));
         setDropoffDate(new Date(dropoffDate));
-
-        // if (searchFormatTimeOnly(pickUpDateAndTime) < currentTime) {
-        // if (pickUpDateAndTime < querypickupDateTime) {
-        // console.log(
-        //   pickUpDateAndTime <
-        //     convertLocalToUTCISOString(
-        //       `${new Date(pickupDate).toLocaleDateString()} ${currentTime}`
-        //     )
-        // );
-        // console.log(
-        //   checkDate,
-        //   convertLocalToUTCISOString(`${checkDate} ${currentTime}`)
-        // );
         if (
-          pickUpDateAndTime <
-          convertLocalToUTCISOString(`${checkDate} ${currentTime}`)
+          timeStringToMillisecondsWithoutSeconds(currentTime) >
+          timeStringToMillisecondsWithoutSeconds(pickupTime)
         ) {
           setQueryPickupTime(formatTimeWithoutSeconds(currentTime));
           setQueryDropoffTime(formatTimeWithoutSeconds(currentTime));
-          queryParms.set("BookingStartDateAndTime", querypickupDateTime);
-          queryParms.set("BookingEndDateAndTime", querydropoffDateTime);
+          queryParms.set(
+            "BookingStartDateAndTime",
+            updateTimeInISOString(
+              pickUpDateAndTime,
+              formatTimeWithoutSeconds(currentTime)
+            ).replace(".000Z", "Z")
+          );
+          queryParms.set(
+            "BookingEndDateAndTime",
+            updateTimeInISOString(
+              dropoffDateAndTime,
+              formatTimeWithoutSeconds(currentTime)
+            ).replace(".000Z", "Z")
+          );
           setQueryParms(queryParms);
         } else {
-          // console.log(
-          //   formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime)),
-          //   formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
-          // );
-          // setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
-          // setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
-          setQueryDropoffTime(
-            formatTimeWithoutSeconds(searchFormatTimeOnly(dropoffDateAndTime))
-          );
-          setQueryPickupTime(
-            formatTimeWithoutSeconds(searchFormatTimeOnly(pickUpDateAndTime))
-          );
+          setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+          setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
         }
       }
+    } catch (error) {
+      navigate("/error");
     } finally {
-      // catch (error) {
-      //   navigate(`/error?message=${error?.message}`);
-      // }
       setIsPageLoad(false);
     }
   }, [location.pathname]);

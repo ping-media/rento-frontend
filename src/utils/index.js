@@ -774,6 +774,28 @@ const removeSecondsFromTimeString = (timeStr) => {
   return `${hour}:${minute} ${period}`;
 };
 
+const timeStringToMillisecondsWithoutSeconds = (timeStr) => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return (hours * 60 + minutes) * 60 * 1000;
+};
+
+const updateTimeInISOString = (isoDateStr, newTimeStr) => {
+  const [hour, minutePart] = newTimeStr.split(":");
+  const [minute, meridian] = minutePart.split(" ");
+  let hours = parseInt(hour, 10);
+
+  if (meridian.toUpperCase() === "PM" && hours !== 12) {
+    hours += 12;
+  } else if (meridian.toUpperCase() === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  const dateOnly = new Date(isoDateStr);
+  dateOnly.setUTCHours(hours, parseInt(minute), 0, 0);
+
+  return dateOnly.toISOString();
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -820,4 +842,6 @@ export {
   addDaysToDateForExtend,
   convertLocalToUTCISOString,
   removeSecondsFromTimeString,
+  timeStringToMillisecondsWithoutSeconds,
+  updateTimeInISOString,
 };
