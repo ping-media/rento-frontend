@@ -299,7 +299,7 @@ const SearchRide = () => {
         }
       }
     } catch (error) {
-      navigate("/error");
+      navigate(`/error?message=${error?.message}`);
     } finally {
       setIsPageLoad(false);
     }
