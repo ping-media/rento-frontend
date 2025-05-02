@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDate, handlePreviousPage } from "../../utils";
+import { handlePreviousPage } from "../../utils";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -7,9 +7,20 @@ import {
   toggleSearchUpdate,
 } from "../../Redux/ModalSlice/ModalSlice";
 
+const formatDate = (dateStr) => {
+  const formattedDate = new Intl.DateTimeFormat("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+  }).format(dateStr);
+
+  return formattedDate.replace(/^(\w{3}) (\d{2} \w{3} \d{4})$/, "$1, $2");
+};
+
 const MobileSearchRide = ({ pickup, dropoff }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   return (
     <div className="lg:hidden bg-white shadow-md px-3.5 py-2 lg:py-3 flex items-center justify-between">
       <button
@@ -30,19 +41,38 @@ const MobileSearchRide = ({ pickup, dropoff }) => {
           <path d="M19 12H6M12 5l-7 7 7 7" />
         </svg>
       </button>
-      <button
-        className="text-sm px-4 py-2 border-2 border-theme rounded-lg font-semibold"
-        type="button"
-        onClick={() => dispatch(toggleSearchUpdate())}
-      >
-        <span>
-          {pickup != undefined && formatDate(new Date(pickup) || "--")}
-        </span>
-        <span className="mx-1 text-theme">To</span>
-        <span>
-          {dropoff != undefined && formatDate(new Date(dropoff) || "--")}
-        </span>
-      </button>
+      {!pickup || !dropoff ? (
+        <button className="w-52 px-4 py-2 border border-gray-500/50 rounded animate-pulse bg-gray-500/50"></button>
+      ) : (
+        <button
+          className="text-sm px-4 py-2 flex items-center border border-gray-500/50 rounded font-semibold"
+          type="button"
+          onClick={() => dispatch(toggleSearchUpdate())}
+        >
+          <span className="text-theme">
+            {pickup !== null ? formatDate(pickup) : "--"}
+          </span>
+          <span className="mx-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="size-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+              />
+            </svg>
+          </span>
+          <span className="text-theme">
+            {dropoff !== null ? formatDate(dropoff) : "--"}
+          </span>
+        </button>
+      )}
       <button type="button" onClick={() => dispatch(toggleFilter())}>
         <svg
           xmln="http://www.w3.org/2000/svg"

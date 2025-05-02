@@ -28,6 +28,7 @@ import { createOrderId, razorPayment } from "../Data/Payment";
 import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import { handlePreviousPage, validateBookingDates } from "../utils";
+import { handleSelectedAddOn } from "../Redux/AddOnSlice/AddOnSlice";
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 
 const BookingSummary = () => {
@@ -38,6 +39,7 @@ const BookingSummary = () => {
   const dispatch = useDispatch();
   const { loading, vehicles } = useSelector((state) => state.vehicles);
   const { selectedStation } = useSelector((state) => state.station);
+  const { selectedAddOn } = useSelector((state) => state.addon);
   const { tempCouponName, tempCouponId, isDiscountZero } = useSelector(
     (state) => state.coupon
   );
@@ -61,6 +63,9 @@ const BookingSummary = () => {
     } else if (isAllFieldChecked) {
       setIsAllFieldChecked(!isAllFieldChecked);
     }
+    return () => {
+      dispatch(handleSelectedAddOn([]));
+    };
   }, [isTermsChecked]);
 
   //fetching the vehicle info based on vehicleId from url and if vehicle plan id present than search that too
@@ -199,7 +204,8 @@ const BookingSummary = () => {
       handleAsyncError,
       navigate,
       removeTempDate,
-      handlebooking
+      handlebooking,
+      selectedAddOn
     );
   };
 
@@ -211,7 +217,7 @@ const BookingSummary = () => {
         <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
           <form onSubmit={handleCreateBookingSubmit}>
             <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
-              <div className="col-span-7 mb-3 lg:mb-0">
+              <div className="col-span-7 mb-3 w-full lg:mb-0">
                 <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 h-full">
                   <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
                     <div className="flex items-center">

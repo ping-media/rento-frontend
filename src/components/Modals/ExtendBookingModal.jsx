@@ -1,9 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   addDaysToDateForExtend,
   addOneMinute,
   calculatePriceForExtendBooking,
+  calculateTotalAddOnPrice,
   formatFullDateAndTime,
   formatPrice,
 } from "../../utils/index";
@@ -24,6 +25,7 @@ const ExtendBookingModal = () => {
   const [newDate, setNewDate] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [plan, setPlan] = useState({ data: null, loading: false });
+  const inputRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,14 +35,14 @@ const ExtendBookingModal = () => {
     if (!newDate) return;
 
     const finalAmount = calculatePriceForExtendBooking(
-      rides[0]?.bookingPrice?.rentAmount,
+      rides[0]?.vehicleTableId?.perDayCost,
       extensionDays,
       Number(rides[0]?.bookingPrice?.extraAddonPrice)
     );
 
     let data = {
       _id: rides[0]?._id,
-      vehicleTableId: rides[0]?.vehicleTableId,
+      vehicleTableId: rides[0]?.vehicleTableId?._id,
       BookingStartDateAndTime: addOneMinute(
         rides[0]?.BookingEndDateAndTime
       ).replace(".000Z", "Z"),
@@ -127,7 +129,7 @@ const ExtendBookingModal = () => {
           timeLine: [
             {
               title: "Payment Received",
-              date: new Date().toLocaleString(),
+              date: Date.now(),
               paymentAmount: finalAmount,
               id: data?.extendAmount?.id,
             },
@@ -148,18 +150,24 @@ const ExtendBookingModal = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        setPlan((prev) => ({ ...prev, loading: true }));
-        const response = await fetchingData("/getPlanData?page=1&limit=50");
-        if (response.status === 200) {
-          setPlan((prev) => ({ ...prev, data: response?.data }));
-        }
-      } finally {
-        setPlan((prev) => ({ ...prev, loading: false }));
-      }
-    })();
-  }, []);
+    // (async () => {
+    //   try {
+    //     setPlan((prev) => ({ ...prev, loading: true }));
+    //     const response = await fetchingData("/getPlanData?page=1&limit=50");
+    //     if (response.status === 200) {
+    //       setPlan((prev) => ({ ...prev, data: response?.data }));
+    //     }
+    //   } finally {
+    //     setPlan((prev) => ({ ...prev, loading: false }));
+    //   }
+    // })();
+    if (plan?.data === null && rides[0]?.vehicleTableId?.vehiclePlan?.length) {
+      setPlan((prev) => ({
+        ...prev,
+        data: rides[0]?.vehicleTableId?.vehiclePlan,
+      }));
+    }
+  }, [rides]);
 
   // after closing the modal clear all the state to default
   const handleCloseModal = () => {
@@ -168,19 +176,37 @@ const ExtendBookingModal = () => {
     dispatch(toggleBookingExtendModal());
   };
 
+  useEffect(() => {
+    if (isBookingExtendModalActive && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isBookingExtendModalActive]);
+
   // for showing extend vehicle price on based on days
   useEffect(() => {
     if (Number(extensionDays) !== 0) {
-      const hasPlan = plan?.data.filter(
-        (plan) => Number(plan?.planDuration) === Number(extensionDays)
-      );
+      const hasPlan =
+        plan?.data?.length > 0
+          ? plan?.data?.filter(
+              (plan) => Number(plan?.planDuration) === Number(extensionDays)
+            )
+          : [];
       const planPrice = hasPlan?.length > 0 ? Number(hasPlan[0]?.planPrice) : 0;
+      const extraAddonPrice =
+        rides[0]?.bookingPrice?.extraAddonDetails &&
+        rides[0]?.bookingPrice?.extraAddonDetails?.length > 0
+          ? calculateTotalAddOnPrice(
+              rides[0]?.bookingPrice?.extraAddonDetails,
+              extensionDays
+            )
+          : 0;
       const price =
         planPrice > 0
           ? planPrice
           : calculatePriceForExtendBooking(
-              rides[0]?.bookingPrice?.rentAmount,
-              extensionDays
+              rides[0]?.vehicleTableId?.perDayCost,
+              extensionDays,
+              extraAddonPrice
             );
 
       if (Number(price) > 0) {
@@ -260,6 +286,7 @@ const ExtendBookingModal = () => {
               <input
                 type="number"
                 id="extension"
+                ref={inputRef}
                 className="w-full px-5 py-3 block rounded-md ring-1 ring-inset ring-gray-400 focus:text-gray-800 outline-none capitalize disabled:bg-gray-400 disabled:bg-opacity-20 mt-2"
                 placeholder="Enter Extension Day's"
                 value={extensionDays > 0 ? extensionDays : ""}

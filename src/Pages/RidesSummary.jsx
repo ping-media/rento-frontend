@@ -107,10 +107,10 @@ const RidesSummary = () => {
       {loading && <PreLoader />}
       <ExtendBookingModal />
       {rides?.length == 1 ? (
-        <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
+        <div className="border-2 rounded-lg p-2 lg:px-4 lg:py-2 shadow-md bg-white mb-3">
           <div className="mb-1 flex items-center gap-3">
             <button
-              className="flex lg:hidden items-center gap-1 p-1.5 rounded-lg border-2 border-theme bg-theme text-gray-100"
+              className="flex lg:hidden items-center gap-1 p-1.5 rounded-lg outline-none hover:bg-theme hover:text-gray-100"
               type="button"
               onClick={handleBackToRides}
             >
@@ -126,13 +126,12 @@ const RidesSummary = () => {
               >
                 <path d="M19 12H6M12 5l-7 7 7 7" />
               </svg>
-              <span className="text-sm">Back</span>
             </button>
             <h2 className="font-bold text-lg lg:text-xl uppercase py-2">
               Booking <span className="text-theme">Information</span>
             </h2>
           </div>
-          <div className="px-4 py-3.5 -mx-4 bg-lighter-gray flex flex-wrap gap-2 items-center justify-between mb-5 text-sm">
+          <div className="px-2 py-3.5 -mx-4 lg:-mx-4 bg-gray-400/20 flex flex-wrap gap-2 items-center justify-between mb-5 text-sm">
             <div className="flex items-center">
               <p className="font-semibold w-full lg:w-auto text-gray-600">
                 <span className="block lg:inline">

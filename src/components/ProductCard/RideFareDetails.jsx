@@ -54,7 +54,7 @@ const RideFareDetails = ({ rides }) => {
           <ul className="w-full leading-8">
             {Object.entries(rides?.bookingPrice)
               .filter(
-                ([key, value]) =>
+                ([key]) =>
                   key !== "totalPrice" &&
                   key !== "vehiclePrice" &&
                   key !== "rentAmount" &&
@@ -75,61 +75,122 @@ const RideFareDetails = ({ rides }) => {
                   key !== "lateFeePaymentMethod" &&
                   key !== "additionFeePaymentMethod" &&
                   key !== "additionalPrice" &&
-                  !(key === "extraAddonPrice" && value === 0)
+                  key !== "refundAmount" &&
+                  key !== "extraAddonPrice"
               ) // Exclude totalPrice
-              .map(([key, value]) => (
-                <li
-                  key={key}
-                  className="flex items-center justify-between border-b-2"
-                >
-                  <div className="my-1">
-                    <p className="text-sm font-semibold uppercase">
-                      {key == "tax"
-                        ? `${camelCaseToSpaceSeparated(key)} (18% GST)`
-                        : camelCaseToSpaceSeparated(key)}
-                    </p>
-                    {key != "tax" &&
-                      key != "userPaid" &&
-                      value != 0 &&
-                      !rides?.bookingPrice.isPackageApplied && (
-                        <p className="text-xs text-gray-500 mb-1">
-                          (
-                          {key == "extraAddonPrice"
-                            ? `₹${50} x ${getDurationInDays(
-                                rides?.BookingStartDateAndTime,
+              .map(([key, value]) => {
+                if (typeof value === "object") {
+                  return (
+                    value?.length > 0 &&
+                    value?.map((item, index) => (
+                      <li
+                        key={`key-${index}`}
+                        className="flex items-center justify-between border-b-2 text-sm"
+                      >
+                        <div className="my-1">
+                          <p className="text-sm font-semibold uppercase">
+                            {item?.name}
+                          </p>
+                          <p className="text-xs text-gray-500 mb-1">
+                            (
+                            {`₹${item?.amount} x ${getDurationInDays(
+                              rides?.BookingStartDateAndTime,
+                              rides?.extendBooking?.originalEndDate ||
                                 rides?.BookingEndDateAndTime
-                              )} ${
+                            )} ${
+                              getDurationInDays(
+                                rides?.BookingStartDateAndTime,
+                                rides?.extendBooking?.originalEndDate ||
+                                  rides?.BookingEndDateAndTime
+                              ) == 1
+                                ? "day"
+                                : "days"
+                            }`}
+                            )
+                          </p>
+                        </div>
+                        <p>{`₹${formatPrice(
+                          item?.maxAmount > 0
+                            ? item?.amount *
                                 getDurationInDays(
                                   rides?.BookingStartDateAndTime,
-                                  rides?.BookingEndDateAndTime
-                                ) == 1
-                                  ? "day"
-                                  : "days"
-                              } (Extra Helmet)`
-                            : `₹${
-                                rides?.bookingPrice?.rentAmount
-                              } x ${getDurationInDays(
-                                rides?.BookingStartDateAndTime,
-                                rides?.BookingEndDateAndTime
-                              )} ${
+                                  rides?.extendBooking?.originalEndDate ||
+                                    rides?.BookingEndDateAndTime
+                                ) >
+                              item?.maxAmount
+                              ? item?.maxAmount
+                              : item?.amount *
                                 getDurationInDays(
                                   rides?.BookingStartDateAndTime,
-                                  rides?.BookingEndDateAndTime
-                                ) == 1
-                                  ? "day"
-                                  : "days"
-                              }`}
-                          )
+                                  rides?.extendBooking?.originalEndDate ||
+                                    rides?.BookingEndDateAndTime
+                                )
+                            : item?.amount *
+                                getDurationInDays(
+                                  rides?.BookingStartDateAndTime,
+                                  rides?.extendBooking?.originalEndDate ||
+                                    rides?.BookingEndDateAndTime
+                                )
+                        )}`}</p>
+                      </li>
+                    ))
+                  );
+                } else {
+                  return (
+                    <li
+                      key={key}
+                      className="flex items-center justify-between border-b-2"
+                    >
+                      <div className="my-1">
+                        <p className="text-sm font-semibold uppercase">
+                          {key == "tax"
+                            ? `${camelCaseToSpaceSeparated(key)} (18% GST)`
+                            : camelCaseToSpaceSeparated(key)}
                         </p>
-                      )}
-                  </div>
-                  <p>{`₹${formatPrice(value)}`}</p>
-                </li>
-              ))}
+                        {key != "tax" &&
+                          key != "userPaid" &&
+                          value != 0 &&
+                          !rides?.bookingPrice.isPackageApplied && (
+                            <p className="text-xs text-gray-500 mb-1">
+                              (
+                              {key == "extraAddonPrice"
+                                ? `₹${50} x ${getDurationInDays(
+                                    rides?.BookingStartDateAndTime,
+                                    rides?.BookingEndDateAndTime
+                                  )} ${
+                                    getDurationInDays(
+                                      rides?.BookingStartDateAndTime,
+                                      rides?.BookingEndDateAndTime
+                                    ) == 1
+                                      ? "day"
+                                      : "days"
+                                  } (Extra Helmet)`
+                                : `₹${
+                                    rides?.bookingPrice?.rentAmount
+                                  } x ${getDurationInDays(
+                                    rides?.BookingStartDateAndTime,
+                                    rides?.BookingEndDateAndTime
+                                  )} ${
+                                    getDurationInDays(
+                                      rides?.BookingStartDateAndTime,
+                                      rides?.BookingEndDateAndTime
+                                    ) == 1
+                                      ? "day"
+                                      : "days"
+                                  }`}
+                              )
+                            </p>
+                          )}
+                      </div>
+                      <p>{`₹${formatPrice(value)}`}</p>
+                    </li>
+                  );
+                }
+              })}
 
             {/* totalPrice */}
             {rides?.bookingPrice?.totalPrice && (
-              <li className="flex items-center justify-between mt-1 my-1">
+              <li className="flex items-center justify-between mt-1 my-1 text-sm">
                 <p className="text-sm font-bold uppercase text-left">
                   {rides?.bookingPrice?.discountPrice &&
                   rides?.bookingPrice?.discountPrice != 0
@@ -158,7 +219,7 @@ const RideFareDetails = ({ rides }) => {
             {/* discount price  */}
             {rides?.bookingPrice?.discountPrice > 0 && (
               <li
-                className={`flex items-center justify-between mt-1 my-1 ${
+                className={`flex items-center justify-between mt-1 my-1 text-sm ${
                   rides?.bookingPrice?.discountPrice ? "border-t-2" : ""
                 }`}
               >
@@ -178,7 +239,7 @@ const RideFareDetails = ({ rides }) => {
             {(rides?.bookingPrice?.discountTotalPrice > 0 ||
               rides?.bookingPrice?.isDiscountZero === true) && (
               <li
-                className={`flex items-center justify-between mt-1 my-1 ${
+                className={`flex items-center justify-between mt-1 my-1 text-sm ${
                   rides?.bookingPrice?.userPaid ? "border-b-2" : ""
                 }`}
               >
@@ -211,7 +272,7 @@ const RideFareDetails = ({ rides }) => {
             {rides?.bookingPrice?.userPaid > 0 &&
               rides?.paymentStatus !== "pending" && (
                 <>
-                  <li className="flex items-center justify-between mt-1 my-1">
+                  <li className="flex items-center justify-between mt-1 my-1 text-sm">
                     <p className="text-sm font-semibold uppercase text-left">
                       Amount Paid
                     </p>
@@ -224,7 +285,7 @@ const RideFareDetails = ({ rides }) => {
 
             {/* difference amount  */}
             {rides?.bookingPrice?.diffAmount && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
                 <p className="text-sm font-semibold uppercase text-left">
                   Difference Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
@@ -249,7 +310,7 @@ const RideFareDetails = ({ rides }) => {
 
             {/* extend amount  */}
             {rides?.bookingPrice?.extendAmount?.length > 0 && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
                 <p className="text-sm font-semibold uppercase text-left">
                   Extend Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
@@ -275,7 +336,7 @@ const RideFareDetails = ({ rides }) => {
             {/* payable balance  */}
             {(rides?.paymentMethod === "cash" ||
               rides?.paymentStatus !== "pending") && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
                 <p className="text-sm font-semibold uppercase text-left">
                   Payable Balance
                 </p>
@@ -285,7 +346,7 @@ const RideFareDetails = ({ rides }) => {
               </li>
             )}
             {/* refunded amount */}
-            <li className="flex items-center justify-between pt-1 mt-1 border-t-2">
+            <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
               <p className="text-sm font-semibold uppercase text-left">
                 Refundable Deposit Amount
                 <small className="font-semibold text-xs mx-1 block text-gray-400 italic">

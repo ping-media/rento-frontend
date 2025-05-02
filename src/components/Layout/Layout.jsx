@@ -15,11 +15,14 @@ import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
 import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
 import CallToActionButton from "../CallToAction/CallToActionButton";
 import whatsapp from "../../assets/icons/whatsapp.png";
+import { addAddOn, startLoading } from "../../Redux/AddOnSlice/AddOnSlice";
+import { fetchingData } from "../../Data";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
   const [hasMounted, setHasMounted] = useState(false);
   const { user } = useSelector((state) => state.user);
+  const { addon } = useSelector((state) => state.addon);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -51,6 +54,18 @@ const Layout = () => {
     // this will user to top of the screen whenever user change the page
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (addon?.length > 0) return;
+
+    (async () => {
+      dispatch(startLoading());
+      const response = await fetchingData("/addOn?page=1&limit=50");
+      if (response?.status === 200) {
+        dispatch(addAddOn(response));
+      }
+    })();
+  }, []);
 
   return (
     <>

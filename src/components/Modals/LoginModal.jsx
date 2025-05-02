@@ -55,7 +55,6 @@ const LoginModal = () => {
         return handleAsyncError(dispatch, "unable to send otp! try again.");
       } finally {
         setLoading(false);
-        return false;
       }
     } else {
       return handleAsyncError(dispatch, "Unable to login! try again.");

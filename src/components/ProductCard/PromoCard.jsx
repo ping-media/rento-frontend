@@ -98,18 +98,18 @@ const PromoCard = () => {
               CouponCode.length > 0 && (
                 // apply coupon button
                 <button
-                  className={`text-theme disabled:text-gray-500`}
+                  className={`text-sm text-theme disabled:text-gray-500`}
                   type="button"
                   disabled={tempCouponId != "" || CouponCode.length < 5}
                   onClick={handleApplyCoupon}
                 >
-                  Apply
+                  apply
                 </button>
               )
             ) : (
               // remove coupon button
               <button
-                className={`text-theme`}
+                className={`text-sm text-theme`}
                 type="button"
                 onClick={handleReomveCoupon}
               >

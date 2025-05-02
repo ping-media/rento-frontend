@@ -107,7 +107,7 @@ const Payment = () => {
           timeLine: [
             {
               title: "Payment Received",
-              date: new Date().toLocaleString(),
+              date: Date.now(),
               paymentAmount: decodedParams?.finalAmount,
               id: decodedParams.paymentId,
             },

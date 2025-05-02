@@ -12,7 +12,7 @@ const Alert = ({ error, errorType = "error" }) => {
   }, []);
 
   return (
-    <div className="fixed right-2 z-50 top-16 w-72">
+    <div className="fixed right-2 z-50 top-16 min-w-72">
       <div
         id={`toast-${errorType}`}
         className="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow"

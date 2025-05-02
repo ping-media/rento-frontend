@@ -7,7 +7,7 @@ import PreLoader from "../skeleton/PreLoader";
 const LoggedInLayout = () => {
   const { user } = useSelector((state) => state.user);
   return user != null ? (
-    <div className="grid grid-cols-4 w-[90%] my-10 mx-auto gap-2">
+    <div className="grid grid-cols-4 my-5 lg:my-10 w-11/12 mx-auto gap-2">
       <div className="hidden lg:block col-span-1">
         <SideBar />
       </div>
