@@ -262,7 +262,6 @@ const SearchRide = () => {
       const pickupTime = pickUpDateAndTime?.split("T")[1]?.replace("Z", "");
       const withinStationTime =
         currentHour > openStartTime && currentHour < openEndTime;
-      // console.log(currentHour, openStartTime, openEndTime, withinStationTime);
 
       if (pickUpDateAndTime && dropoffDateAndTime && withinStationTime) {
         const pickupDate = pickUpDateAndTime.split("T")[0];
@@ -294,6 +293,13 @@ const SearchRide = () => {
           setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
           setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
         }
+      } else {
+        const pickupDate = pickUpDateAndTime.split("T")[0];
+        const dropoffDate = dropoffDateAndTime.split("T")[0];
+        setPickupDate(new Date(pickupDate));
+        setDropoffDate(new Date(dropoffDate));
+        setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+        setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
       }
     } catch (error) {
       navigate("/error");
