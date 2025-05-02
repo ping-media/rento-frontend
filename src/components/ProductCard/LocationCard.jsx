@@ -61,13 +61,13 @@ const LocationCard = ({
             {stationName || selectedLocation?.locationName || ""}
           </li>
           <li className="capitalize">
-            <span className="font-bold mr-2">Manager Name:</span>
+            <span className="font-bold mr-2">Full Name:</span>
             {stationUser
               ? `${stationMasterUserId?.firstName} ${stationMasterUserId?.lastName}`
               : "Test User"}
           </li>
           <li className="flex items-center gap-1">
-            <span className="font-bold mr-2">Manager Phone Number:</span>
+            <span className="font-bold mr-2">Contact:</span>
             <div className="flex items-center gap-1">
               <Link
                 className="text-blue-400 hover:underline"
@@ -77,7 +77,7 @@ const LocationCard = ({
               </Link>
               {stationMasterUserId?.altContact && (
                 <>
-                  <span className="mr-1">,</span>
+                  <span>,</span>
                   <Link
                     className="text-blue-400 hover:underline"
                     to={`tel:${

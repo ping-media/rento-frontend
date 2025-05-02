@@ -714,11 +714,8 @@ const calculatePriceForExtendBooking = (
   extraAddonPrice = 0
 ) => {
   const bookingPrice = Number(perDayCost) * Number(extensionDays);
-  const AddonPrice =
-    Number(extraAddonPrice) > 0
-      ? Number(extraAddonPrice) * Number(extensionDays)
-      : 0;
-  const newAddOnPrice = AddonPrice < 200 ? AddonPrice : 200;
+  const AddonPrice = Number(extraAddonPrice);
+  const newAddOnPrice = AddonPrice;
   const newBookingPrice = bookingPrice + newAddOnPrice;
   const tax = calculateTax(newBookingPrice, 18);
   const extendAmount = Number(newBookingPrice) + Number(tax);
@@ -796,6 +793,19 @@ const updateTimeInISOString = (isoDateStr, newTimeStr) => {
   return dateOnly.toISOString();
 };
 
+const calculateTotalAddOnPrice = (addOns, days) => {
+  return addOns.reduce((total, item) => {
+    const multiplied = item.amount * days;
+
+    const finalAmount =
+      item.maxAmount > 0 && multiplied > item.maxAmount
+        ? item.maxAmount
+        : multiplied;
+
+    return total + finalAmount;
+  }, 0);
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -844,4 +854,5 @@ export {
   removeSecondsFromTimeString,
   timeStringToMillisecondsWithoutSeconds,
   updateTimeInISOString,
+  calculateTotalAddOnPrice,
 };

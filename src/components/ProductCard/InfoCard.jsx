@@ -8,10 +8,6 @@ import {
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
-// import { useDispatch, useSelector } from "react-redux";
-// import { addTempDate } from "../../Redux/ProductSlice/ProductsSlice";
-// import { changeAccordingToPlan } from "../../Data/Functions";
-// import { useSearchParams } from "react-router-dom";
 
 const InfoCard = ({
   vehiclePlanData,
@@ -29,12 +25,7 @@ const InfoCard = ({
   const vehicleImageRef = useRef(null);
   const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
   const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
-  // const [updatedBookingEndDateAndTime, setUpdatedBookingEndDateAndTime] =
-  //   useState(null);
   const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
-  // const dispatch = useDispatch();
-  // const { tempDate } = useSelector((state) => state.vehicles);
-  // const [queryParms, setQueryParms] = useSearchParams();
 
   //converting time into readable format
   useEffect(() => {
@@ -53,17 +44,6 @@ const InfoCard = ({
 
   // if user comes to this page using plan
   useEffect(() => {
-    // changeAccordingToPlan(
-    //   vehiclePlanData,
-    //   queryParmsData?.BookingEndDateAndTime,
-    //   setUpdatedBookingEndDateAndTime,
-    //   dispatch,
-    //   addTempDate,
-    //   tempDate,
-    //   addDaysToDate,
-    //   queryParms,
-    //   setQueryParms
-    // );
     if (vehiclePlan && vehiclePlan?.length > 0) {
       const plan = vehiclePlan?.find(
         (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
@@ -124,7 +104,7 @@ const InfoCard = ({
             </span>
             <div>
               <p>Pickup Location</p>
-              <p>{stationName}</p>
+              <p className="capitalize">{stationName}</p>
             </div>
           </div>
         ) : (

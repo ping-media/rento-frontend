@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   calculateTax,
+  calculateTotalAddOnPrice,
   formatDateTimeForUser,
   formatPrice,
   getDurationInDays,
@@ -8,6 +9,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
 import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice";
+import PreLoader from "../skeleton/PreLoader";
+import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 
 const PriceCard = ({
   perDayCost,
@@ -15,6 +18,7 @@ const PriceCard = ({
   vehiclePlanData,
   queryParmsData,
 }) => {
+  const { addon, selectedAddOn, loading } = useSelector((state) => state.addon);
   const bookingStartDateTime =
     queryParmsData?.BookingStartDateAndTime &&
     formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
@@ -23,7 +27,7 @@ const PriceCard = ({
     formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
 
   const [totalPrice, setTotalPrice] = useState(0);
-  const [isExtraChecked, setIsExtraChecked] = useState(false);
+  const [isExtraChecked, setIsExtraChecked] = useState([]);
   const [vehicleRentCost, setVehicleRentCost] = useState(0);
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
@@ -34,10 +38,12 @@ const PriceCard = ({
     tempCouponName,
     isDiscountZero,
   } = useSelector((state) => state.coupon);
-  const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const taxPercentage = 18;
-  const extraHelmetPrice = 50;
+  const duration = getDurationInDays(
+    queryParmsData?.BookingStartDateAndTime,
+    queryParmsData?.BookingEndDateAndTime
+  );
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
@@ -50,24 +56,20 @@ const PriceCard = ({
     }
     if (currentPlan !== null && currentPlan?.planPrice) {
       setVehicleRentCost(Number(currentPlan?.planPrice));
-      setExtraAddOnCost(
-        extraHelmetPrice *
-          Number(
-            getDurationInDays(
-              bookingStartDateTime?.date,
-              bookingEndDateTime?.date
-            )
-          )
-      );
+      const AddOnAmount =
+        isExtraChecked?.length > 0
+          ? calculateTotalAddOnPrice(isExtraChecked, duration)
+          : 0;
+      setExtraAddOnCost(AddOnAmount);
 
-      if (isExtraChecked && extraAddOnCost) {
+      if (isExtraChecked?.length > 0) {
         setGSTCost(
           calculateTax(
             Number(
               currentPlan !== null && currentPlan?.planPrice > 0
                 ? currentPlan?.planPrice
                 : vehiclePlanData?.planPrice
-            ) + Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+            ) + Math.round(AddOnAmount),
             taxPercentage
           )
         );
@@ -85,14 +87,19 @@ const PriceCard = ({
       }
     } else if (vehiclePlanData !== null) {
       //setting gst price if helemet is selected or not
-      if (isExtraChecked && extraAddOnCost) {
+      const AddOnAmount =
+        isExtraChecked?.length > 0
+          ? calculateTotalAddOnPrice(isExtraChecked, duration)
+          : 0;
+      setExtraAddOnCost(AddOnAmount);
+      if (isExtraChecked?.length > 0) {
         setGSTCost(
           calculateTax(
             Number(
               vehiclePlanData !== null && vehiclePlanData?.planPrice > 0
                 ? vehiclePlanData?.planPrice
                 : currentPlan?.planPrice
-            ) + Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+            ) + Math.round(AddOnAmount),
             taxPercentage
           )
         );
@@ -120,16 +127,20 @@ const PriceCard = ({
             )
         );
       }
-      setExtraAddOnCost(
-        extraHelmetPrice *
-          Number(
-            getDurationInDays(
-              bookingStartDateTime?.date,
-              bookingEndDateTime?.date
+      const AddOnAmount =
+        isExtraChecked?.length > 0
+          ? calculateTotalAddOnPrice(
+              isExtraChecked,
+              Number(
+                getDurationInDays(
+                  bookingStartDateTime?.date,
+                  bookingEndDateTime?.date
+                )
+              )
             )
-          )
-      );
-      if (isExtraChecked && extraAddOnCost) {
+          : 0;
+      setExtraAddOnCost(AddOnAmount);
+      if (isExtraChecked?.length > 0) {
         setGSTCost(
           Number(
             calculateTax(
@@ -140,7 +151,7 @@ const PriceCard = ({
                     bookingEndDateTime?.date
                   )
                 ) +
-                Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
+                Math.round(AddOnAmount),
               taxPercentage
             )
           )
@@ -164,95 +175,99 @@ const PriceCard = ({
     }
   }, [isExtraChecked]);
 
-  // price list
-  const priceDetails = [
-    {
-      title: "Vehicle Rental Cost",
-      name: "bookingPrice",
-      price: Math.round(vehicleRentCost),
-    },
-    {
-      title: "Extra Helmet Price",
-      name: "extraAddonPrice",
-      price: Math.round(extraAddOnCost > 200 ? 200 : extraAddOnCost),
-    },
-    {
-      title: "GST(18% Applied)",
-      name: "tax",
-      price: Math.round(gSTCost),
-    },
-  ];
-
-  // for calculating price based on helmet add or not
   useEffect(() => {
-    (() => {
-      if (vehicleRentCost != 0 && extraAddOnCost != 0 && gSTCost != 0) {
-        const totalPrice = priceDetails.reduce((total, item) => {
-          if (item?.title?.includes("Helmet") && isExtraChecked === false) {
-            return total;
-          }
-          return total + item.price;
-        }, 0);
-        setTotalPrice(totalPrice);
-        dispatch(addTempTotalPrice(totalPrice));
-      }
-    })();
+    if (selectedAddOn?.length > 0) {
+      setIsExtraChecked(selectedAddOn);
+    }
+  }, []);
+
+  // for calculating total price based on addons
+  useEffect(() => {
+    const totalPrice =
+      Number(vehicleRentCost) + Number(extraAddOnCost) + Number(gSTCost);
+    setTotalPrice(totalPrice);
+    dispatch(addTempTotalPrice(totalPrice));
   }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
 
-  const handleChangeExtraAddonPrice = () => {
-    setIsExtraChecked(!isExtraChecked);
-    dispatch(handleChangeExtraChecked(!isExtraChecked));
+  // adding addon in booking
+  const handleChangeExtraAddonPrice = (item) => {
+    const exists =
+      isExtraChecked?.length > 0
+        ? isExtraChecked?.some((i) => i?._id === item?._id)
+        : false;
+    if (!exists) {
+      const updated = [...(isExtraChecked || []), item];
+      setIsExtraChecked(updated);
+      dispatch(handleSelectedAddOn(updated));
+      dispatch(handleChangeExtraChecked(true));
+    } else {
+      setIsExtraChecked(isExtraChecked?.filter((i) => i?._id !== item?._id));
+      dispatch(
+        handleSelectedAddOn(isExtraChecked?.filter((i) => i?._id !== item?._id))
+      );
+      dispatch(handleChangeExtraChecked(false));
+    }
   };
 
-  return (
+  return !loading ? (
     <>
-      <div className="px-4 mt-6 mb-4 lg:mb-2">
+      <div className="px-4 mt-2">
         <ul className="leading-7 pb-3 border-b-2 border-gray-300">
-          {priceDetails.map((item, index) => (
-            <li
-              className={`${
-                item?.title.includes("Helmet") & !isExtraChecked ? "hidden" : ""
-              } flex items-center justify-between`}
-              key={index}
-            >
-              <input
-                type="hidden"
-                name={item?.name}
-                value={
-                  item?.title?.includes("Helmet")
-                    ? isExtraChecked
-                      ? item?.price
-                      : ""
-                    : item?.price
-                }
-              />
-              <div>
-                <p className="text-gray-500 ">{item?.title}</p>
-                {(item?.name == "bookingPrice" ||
-                  item?.name == "extraAddonPrice") && (
+          {/* vehicle Rental Price  */}
+          <li className={`flex items-center justify-between`}>
+            <input type="hidden" name="bookingPrice" value={vehicleRentCost} />
+            <input
+              type="hidden"
+              name="extraAddonPrice"
+              value={extraAddOnCost}
+            />
+            <div>
+              <p className="text-gray-500 ">Vehicle Rental Cost</p>
+              <p className="text-xs text-gray-400">
+                {appliedVehiclePlan !== null
+                  ? `(${duration} Package Applied)`
+                  : ` ₹${perDayCost} x ${
+                      vehiclePlanData != null
+                        ? vehiclePlanData?.planDuration
+                        : getDurationInDays(
+                            queryParmsData?.BookingStartDateAndTime,
+                            queryParmsData?.BookingEndDateAndTime
+                          )
+                    } day`}
+              </p>
+            </div>
+            <span className="font-semibold">
+              ₹{formatPrice(vehicleRentCost)}
+            </span>
+          </li>
+          {/* extra Add on Data  */}
+          {isExtraChecked?.length > 0 &&
+            isExtraChecked?.map((item, index) => (
+              <li className="flex items-center justify-between" key={index}>
+                <div>
+                  <p className="text-gray-500 capitalize">{item?.name}</p>
                   <p className="text-xs text-gray-400">
-                    (
-                    {item?.name == "bookingPrice" && appliedVehiclePlan !== null
-                      ? "Package Applied"
-                      : ` ₹${
-                          item?.name == "extraAddonPrice"
-                            ? extraHelmetPrice
-                            : perDayCost
-                        } x ${
-                          vehiclePlanData != null
-                            ? vehiclePlanData?.planDuration
-                            : getDurationInDays(
-                                queryParmsData?.BookingStartDateAndTime,
-                                queryParmsData?.BookingEndDateAndTime
-                              )
-                        } day`}
-                    )
+                    ({`₹${item?.amount} x ${duration} day`})
                   </p>
-                )}
-              </div>
-              <span className="font-semibold">₹{formatPrice(item?.price)}</span>
-            </li>
-          ))}
+                </div>
+                <span className="font-semibold">
+                  ₹
+                  {item?.maxAmount === 0
+                    ? formatPrice(item?.amount * duration)
+                    : item?.amount * duration > item?.maxAmount
+                    ? formatPrice(item?.maxAmount)
+                    : formatPrice(item?.amount * duration)}
+                </span>
+              </li>
+            ))}
+          {/* tax Price  */}
+          <li className={`flex items-center justify-between`}>
+            <input type="hidden" name="tax" value={gSTCost} />
+            <div>
+              <p className="text-gray-500 ">GST(18% Applied)</p>
+            </div>
+            <span className="font-semibold">₹{formatPrice(gSTCost)}</span>
+          </li>
         </ul>
         {/* total price  & discount Price */}
         <div className={`${isExtraChecked ? "pt-2 pb-6" : "pt-2 pb-6"}`}>
@@ -294,52 +309,40 @@ const PriceCard = ({
         </div>
       </div>
       {/* extra helmet  */}
-      <div
-        className={`bg-yellow-200 px-4 -mt-4 pt-1 ${
-          isExtraChecked || currentUser !== null ? "" : "lg:-mb-2"
-        } rounded-b-lg w-full`}
-      >
-        <div className="pb-1">
-          <label
-            htmlFor="hr"
-            className="flex flex-row items-center gap-2.5 font-semibold"
-          >
-            <input
-              id="hr"
-              type="checkbox"
-              className="peer hidden"
-              onChange={handleChangeExtraAddonPrice}
-            />
-            <div
-              htmlFor="hr"
-              className="h-6 w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition"
-            >
-              <svg
-                fill="none"
-                viewBox="0 0 24 24"
-                className="w-5 h-5 stroke-gray-100"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4 12.6111L8.92308 17.5L20 6.5"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-              </svg>
-            </div>
-            Need Extra Helmet
-          </label>
-        </div>
-        <small className="text-gray-700">
-          An extra cost of{" "}
-          <span className="font-bold">
-            ₹{formatPrice(extraHelmetPrice)}/day
-          </span>{" "}
-          will apply for an additional helmet.
-        </small>
+      <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 pt-1 rounded-b-lg w-full">
+        {addon?.length > 0 &&
+          addon
+            ?.filter((f) => f.status !== "inactive")
+            ?.map((item, index) => (
+              <React.Fragment key={index}>
+                <div>
+                  <label
+                    htmlFor={item?.name}
+                    className="flex flex-row items-center gap-2.5 font-semibold capitalize"
+                  >
+                    <input
+                      id={item?.name}
+                      type="checkbox"
+                      className="h-5 w-5 accent-red-600 outline-none"
+                      checked={isExtraChecked?.some((i) => i._id === item._id)}
+                      onChange={() => handleChangeExtraAddonPrice(item)}
+                    />
+                    Need {item?.name}
+                  </label>
+                </div>
+                <small className="text-gray-700">
+                  An extra cost of{" "}
+                  <span className="font-bold">
+                    ₹{formatPrice(item?.amount)}/day
+                  </span>{" "}
+                  will apply for {item?.name}.
+                </small>
+              </React.Fragment>
+            ))}
       </div>
     </>
+  ) : (
+    <PreLoader />
   );
 };
 

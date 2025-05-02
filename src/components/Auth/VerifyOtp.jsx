@@ -20,6 +20,7 @@ const VerifyOtp = ({
 }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
   const [onOtpSubmit, setOnOtpSubmit] = useState(0);
+  const [firstLoad, setFirstLoad] = useState(true);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef([]);
   const dispatch = useDispatch();
@@ -100,17 +101,21 @@ const VerifyOtp = ({
   // }, [isTimerActive, seconds]);
   // Timer for Resending OTP
   useEffect(() => {
-    let interval = null;
-    if (otpState.isTimerActive && otpState.seconds > 0) {
-      interval = setInterval(() => {
-        setOtpState((prev) => ({ ...prev, seconds: prev.seconds - 1 }));
-      }, 1000);
-    } else {
-      setOtpState((prev) => ({ ...prev, isTimerActive: false }));
+    try {
+      let interval = null;
+      if (otpState.isTimerActive && otpState.seconds > 0) {
+        interval = setInterval(() => {
+          setOtpState((prev) => ({ ...prev, seconds: prev.seconds - 1 }));
+        }, 1000);
+      } else {
+        setOtpState((prev) => ({ ...prev, isTimerActive: false }));
+      }
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    } finally {
+      setFirstLoad(false);
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
   }, [otpState.isTimerActive, otpState.seconds]);
 
   // handle login
@@ -158,6 +163,7 @@ const VerifyOtp = ({
       // setTimerActive(true);
       setOtpState((prev) => ({ ...prev, seconds: 30 }));
       setOtpState((prev) => ({ ...prev, isTimerActive: true }));
+      handleAsyncError(dispatch, "Otp resend successfully.", "success");
     } else {
       handleAsyncError(dispatch, "unable to send otp! try again");
     }
@@ -182,7 +188,7 @@ const VerifyOtp = ({
             type="button"
             onClick={handleRestOtpScreen}
           >
-            Edit
+            Change Contact
           </button>
         )}
       </div>

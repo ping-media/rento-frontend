@@ -270,7 +270,7 @@ const handleCreateBooking = async (
         timeLine: [
           {
             title: "Booking Created",
-            date: new Date().toLocaleString(),
+            date: Date.now(),
           },
         ],
       };
@@ -356,7 +356,7 @@ const handleCreateBookingSubmit = async (
           timeLine: [
             {
               title: "Booking Done",
-              date: new Date().toLocaleString(),
+              date: Date.now(),
             },
           ],
         };
@@ -509,7 +509,7 @@ const handleCreateBookingSubmit = async (
               timeLine: [
                 {
                   title: "Payment Initiated",
-                  date: new Date().toLocaleString(),
+                  date: Date.now(),
                 },
               ],
             };
@@ -630,7 +630,8 @@ const handleBookingProcess = async (
   handleAsyncError,
   navigate,
   removeTempDate,
-  handlebooking
+  handlebooking,
+  selectedAddOn
 ) => {
   e.preventDefault();
   setBookingLoading(true);
@@ -675,6 +676,7 @@ const handleBookingProcess = async (
       bookingPrice: {
         bookingPrice: Number(result?.bookingPrice),
         vehiclePrice: Number(result?.bookingPrice),
+        extraAddonDetails: selectedAddOn,
         extraAddonPrice: result?.extraAddonPrice
           ? Number(result?.extraAddonPrice)
           : 0,
@@ -716,7 +718,8 @@ const handleBookingProcess = async (
       dispatch(addTempBookingData(data));
     }
   }
-
+  // console.log(data);
+  // return;
   try {
     let storedBooking = localStorage.getItem("tempBooking");
     if (storedBooking) {
@@ -767,7 +770,7 @@ const handleBookingProcess = async (
           timeLine: [
             {
               title: "Pay Later",
-              date: new Date().toLocaleString(),
+              date: Date.now(),
               paymentAmount:
                 response?.bookingPrice?.discountTotalPrice > 0
                   ? response?.bookingPrice?.discountTotalPrice
@@ -848,7 +851,7 @@ const handleBookingProcess = async (
               timeLine: [
                 {
                   title: "Payment Initiated",
-                  date: new Date().toLocaleString(),
+                  date: Date.now(),
                 },
               ],
             };

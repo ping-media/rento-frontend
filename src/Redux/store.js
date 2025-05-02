@@ -12,6 +12,7 @@ import filterReducer from "./FiltersSlice/FiltersSlice.js";
 import RideReducer from "./RidesSlice/RideSlice.js";
 import BookingReducer from "./BookingSlice/BookingSlice.js";
 import CouponReducer from "./CouponSlice/CouponSlice.js";
+import AddOnReducer from "./AddOnSlice/AddOnSlice.js";
 
 const userPersistConfig = {
   key: "user",
@@ -49,6 +50,13 @@ const bookingPersistConfig = {
   storage,
   whitelist: ["tempBookingData", "isBookingDetailsActive"],
   blacklist: ["loading"],
+};
+
+const addonPersistConfig = {
+  key: "addon",
+  version: "1",
+  storage,
+  whitelist: ["selectedAddOn"],
 };
 
 const couponPersistConfig = {
@@ -90,6 +98,7 @@ const persistedCouponReducer = persistReducer(
   couponPersistConfig,
   CouponReducer
 );
+const addonCouponReducer = persistReducer(addonPersistConfig, AddOnReducer);
 
 const store = configureStore({
   reducer: {
@@ -102,6 +111,7 @@ const store = configureStore({
     error: errorReducer,
     filter: filterReducer,
     rides: RideReducer,
+    addon: addonCouponReducer,
     coupon: persistedCouponReducer,
   },
   middleware: (getDefaultMiddleware) =>

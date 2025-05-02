@@ -64,7 +64,7 @@ export const razorPayment = async (
           timeLine: [
             {
               title: "Payment Done",
-              date: new Date().toLocaleString(),
+              date: Date.now(),
               paymentAmount:
                 bookingResponse?.data?.bookingPrice?.discountTotalPrice &&
                 bookingResponse?.data?.bookingPrice?.discountTotalPrice > 0
