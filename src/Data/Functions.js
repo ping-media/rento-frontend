@@ -34,7 +34,7 @@ const handleSearchVehicleData = async (
     let url = "/getVehicleTblData?";
 
     // Common parameters
-    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}&page=${page}`;
+    const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}&page=${page}&bypassLimit=true`;
 
     if (location.pathname !== "/explore") {
       // For non-explore path
