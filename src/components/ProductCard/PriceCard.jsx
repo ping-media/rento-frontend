@@ -18,7 +18,9 @@ const PriceCard = ({
   vehiclePlanData,
   queryParmsData,
 }) => {
-  const { addon, selectedAddOn, loading } = useSelector((state) => state.addon);
+  const { addon, general, selectedAddOn, loading } = useSelector(
+    (state) => state.addon
+  );
   const bookingStartDateTime =
     queryParmsData?.BookingStartDateAndTime &&
     formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
@@ -39,11 +41,18 @@ const PriceCard = ({
     isDiscountZero,
   } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
-  const taxPercentage = 18;
+
   const duration = getDurationInDays(
     queryParmsData?.BookingStartDateAndTime,
     queryParmsData?.BookingEndDateAndTime
   );
+
+  const taxPercentage =
+    general?.status === "active" ? Number(general?.percentage) : 0;
+
+  if (general?.status === "active" && taxPercentage === 0) {
+    return <PreLoader />;
+  }
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
@@ -63,27 +72,31 @@ const PriceCard = ({
       setExtraAddOnCost(AddOnAmount);
 
       if (isExtraChecked?.length > 0) {
-        setGSTCost(
-          calculateTax(
-            Number(
-              currentPlan !== null && currentPlan?.planPrice > 0
-                ? currentPlan?.planPrice
-                : vehiclePlanData?.planPrice
-            ) + Math.round(AddOnAmount),
-            taxPercentage
-          )
-        );
+        if (taxPercentage > 0) {
+          setGSTCost(
+            calculateTax(
+              Number(
+                currentPlan !== null && currentPlan?.planPrice > 0
+                  ? currentPlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ) + Math.round(AddOnAmount),
+              taxPercentage
+            )
+          );
+        }
       } else {
-        setGSTCost(
-          calculateTax(
-            Number(
-              currentPlan !== null && currentPlan?.planPrice > 0
-                ? currentPlan?.planPrice
-                : vehiclePlanData?.planPrice
-            ),
-            taxPercentage
-          )
-        );
+        if (taxPercentage > 0) {
+          setGSTCost(
+            calculateTax(
+              Number(
+                currentPlan !== null && currentPlan?.planPrice > 0
+                  ? currentPlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ),
+              taxPercentage
+            )
+          );
+        }
       }
     } else if (vehiclePlanData !== null) {
       //setting gst price if helemet is selected or not
@@ -93,27 +106,31 @@ const PriceCard = ({
           : 0;
       setExtraAddOnCost(AddOnAmount);
       if (isExtraChecked?.length > 0) {
-        setGSTCost(
-          calculateTax(
-            Number(
-              vehiclePlanData !== null && vehiclePlanData?.planPrice > 0
-                ? vehiclePlanData?.planPrice
-                : currentPlan?.planPrice
-            ) + Math.round(AddOnAmount),
-            taxPercentage
-          )
-        );
+        if (taxPercentage > 0) {
+          setGSTCost(
+            calculateTax(
+              Number(
+                vehiclePlanData !== null && vehiclePlanData?.planPrice > 0
+                  ? vehiclePlanData?.planPrice
+                  : currentPlan?.planPrice
+              ) + Math.round(AddOnAmount),
+              taxPercentage
+            )
+          );
+        }
       } else {
-        setGSTCost(
-          calculateTax(
-            Number(
-              currentPlan !== null && currentPlan?.planPrice > 0
-                ? currentPlan?.planPrice
-                : vehiclePlanData?.planPrice
-            ),
-            taxPercentage
-          )
-        );
+        if (taxPercentage > 0) {
+          setGSTCost(
+            calculateTax(
+              Number(
+                currentPlan !== null && currentPlan?.planPrice > 0
+                  ? currentPlan?.planPrice
+                  : vehiclePlanData?.planPrice
+              ),
+              taxPercentage
+            )
+          );
+        }
       }
     } else {
       if (perDayCost) {
@@ -141,36 +158,40 @@ const PriceCard = ({
           : 0;
       setExtraAddOnCost(AddOnAmount);
       if (isExtraChecked?.length > 0) {
-        setGSTCost(
-          Number(
-            calculateTax(
-              Number(perDayCost) *
-                Number(
-                  getDurationInDays(
-                    bookingStartDateTime?.date,
-                    bookingEndDateTime?.date
-                  )
-                ) +
-                Math.round(AddOnAmount),
-              taxPercentage
+        if (taxPercentage > 0) {
+          setGSTCost(
+            Number(
+              calculateTax(
+                Number(perDayCost) *
+                  Number(
+                    getDurationInDays(
+                      bookingStartDateTime?.date,
+                      bookingEndDateTime?.date
+                    )
+                  ) +
+                  Math.round(AddOnAmount),
+                taxPercentage
+              )
             )
-          )
-        );
+          );
+        }
       } else {
-        setGSTCost(
-          Number(
-            calculateTax(
-              Number(perDayCost) *
-                Number(
-                  getDurationInDays(
-                    bookingStartDateTime?.date,
-                    bookingEndDateTime?.date
-                  )
-                ),
-              taxPercentage
+        if (taxPercentage > 0) {
+          setGSTCost(
+            Number(
+              calculateTax(
+                Number(perDayCost) *
+                  Number(
+                    getDurationInDays(
+                      bookingStartDateTime?.date,
+                      bookingEndDateTime?.date
+                    )
+                  ),
+                taxPercentage
+              )
             )
-          )
-        );
+          );
+        }
       }
     }
   }, [isExtraChecked]);
@@ -212,7 +233,13 @@ const PriceCard = ({
   return !loading ? (
     <>
       <div className="px-4 mt-2">
-        <ul className="leading-7 pb-3 border-b-2 border-gray-300">
+        <ul
+          className={`leading-7 ${
+            general?.status === "active"
+              ? "pb-3"
+              : "pb-3 md:pt-4 md:-pb-6 lg:pt-3 lg:pb-5"
+          } border-b-2 border-gray-300`}
+        >
           {/* vehicle Rental Price  */}
           <li className={`flex items-center justify-between`}>
             <input type="hidden" name="bookingPrice" value={vehicleRentCost} />
@@ -260,16 +287,41 @@ const PriceCard = ({
                 </span>
               </li>
             ))}
+
           {/* tax Price  */}
-          <li className={`flex items-center justify-between`}>
-            <input type="hidden" name="tax" value={gSTCost} />
+          {general?.status === "active" && (
+            <li className={`flex items-center justify-between`}>
+              <input type="hidden" name="tax" value={gSTCost} />
+              <div>
+                <p className="text-gray-500 ">GST(18% Applied)</p>
+              </div>
+              <span className="font-semibold">₹{formatPrice(gSTCost)}</span>
+            </li>
+          )}
+
+          {/* <li className="flex items-center justify-between">
+            <span className="text-gray-500">Sub Total</span>
             <div>
-              <p className="text-gray-500 ">GST(18% Applied)</p>
+              <span
+                className={`${
+                  tempCouponDiscountTotal != null &&
+                  (isDiscountZero === true || tempCouponDiscountTotal > 0)
+                    ? "block line-through"
+                    : "font-semibold"
+                }`}
+              >
+                ₹{formatPrice(subTotal)}
+              </span>
+              {tempCouponDiscountTotal != null &&
+                (isDiscountZero === true || tempCouponDiscountTotal > 0) && (
+                  <span className="font-semibold">
+                    ₹{formatPrice(subTotal - tempCouponDiscount)}
+                  </span>
+                )}
             </div>
-            <span className="font-semibold">₹{formatPrice(gSTCost)}</span>
-          </li>
+          </li> */}
         </ul>
-        {/* total price  & discount Price */}
+        {/* total price & discount Price */}
         <div className={`${isExtraChecked ? "pt-2 pb-6" : "pt-2 pb-6"}`}>
           {tempCouponDiscount && tempCouponDiscount != null && (
             <div className="flex items-center justify-between mb-1">
@@ -289,6 +341,28 @@ const PriceCard = ({
               </span>
             </div>
           )}
+
+          {/* <div className="flex items-center justify-between">
+            <span className="text-gray-500">Sub Total</span>
+            <div>
+              <span
+                className={`${
+                  tempCouponDiscountTotal != null &&
+                  (isDiscountZero === true || tempCouponDiscountTotal > 0)
+                    ? "text-xs block line-through"
+                    : "font-semibold"
+                }`}
+              >
+                ₹{formatPrice(subTotal)}
+              </span>
+              {tempCouponDiscountTotal != null &&
+                (isDiscountZero === true || tempCouponDiscountTotal > 0) && (
+                  <span className="font-semibold">
+                    ₹{formatPrice(subTotal - tempCouponDiscount)}
+                  </span>
+                )}
+            </div>
+          </div> */}
 
           <div className="flex items-center justify-between">
             <input type="hidden" name="totalPrice" value={totalPrice} />
