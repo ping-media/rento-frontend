@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   addon: [],
+  general: null,
   selectedAddOn: [],
   pagination: null,
   loading: false,
@@ -15,8 +16,9 @@ const AddOnSlice = createSlice({
       state.loading = true;
     },
     addAddOn: (state, action) => {
-      const { data, pagination } = action.payload;
+      const { data, GST, pagination } = action.payload;
       state.addon = data?.filter((item) => item?.status === "active");
+      state.general = GST;
       state.pagination = pagination;
       state.loading = false;
     },
