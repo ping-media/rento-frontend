@@ -185,8 +185,8 @@ const PriceCard = ({
   useEffect(() => {
     const totalPrice =
       Number(vehicleRentCost) + Number(extraAddOnCost) + Number(gSTCost);
-    setTotalPrice(totalPrice);
-    dispatch(addTempTotalPrice(totalPrice));
+    setTotalPrice(Math.round(totalPrice));
+    dispatch(addTempTotalPrice(Math.round(totalPrice)));
   }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
 
   // adding addon in booking
@@ -285,7 +285,7 @@ const PriceCard = ({
                 </span>
               </div>
               <span className="font-semibold">
-                -₹{formatPrice(tempCouponDiscount)}
+                -₹{formatPrice(Math.round(tempCouponDiscount))}
               </span>
             </div>
           )}
@@ -295,20 +295,20 @@ const PriceCard = ({
             <input
               type="hidden"
               name="discounttotalPrice"
-              value={tempCouponDiscountTotal}
+              value={Math.round(tempCouponDiscountTotal)}
             />
             <span className="text-gray-500">Payable Amount</span>
             <span className="font-semibold">
               ₹
               {tempCouponDiscountTotal != null &&
               (isDiscountZero === true || tempCouponDiscountTotal > 0)
-                ? formatPrice(tempCouponDiscountTotal)
+                ? formatPrice(Math.round(tempCouponDiscountTotal))
                 : formatPrice(totalPrice)}
             </span>
           </div>
         </div>
       </div>
-      {/* extra helmet  */}
+      {/* extra accessories  */}
       <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 pt-1 rounded-b-lg w-full">
         {addon?.length > 0 &&
           addon
