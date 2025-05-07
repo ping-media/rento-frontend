@@ -681,9 +681,9 @@ const handleBookingProcess = async (
           ? Number(result?.extraAddonPrice)
           : 0,
         tax: Number(result?.tax),
-        totalPrice: Number(result?.totalPrice),
-        discountPrice: Number(result?.discountPrice || 0),
-        discountTotalPrice: Number(result?.discounttotalPrice || 0),
+        totalPrice: Math.round(Number(result?.totalPrice)),
+        discountPrice: Math.round(Number(result?.discountPrice || 0)),
+        discountTotalPrice: Math.round(Number(result?.discounttotalPrice || 0)),
         isDiscountZero: isDiscountZero,
         rentAmount: vehicles[0]?.perDayCost,
         isPackageApplied: !!vehiclePlanData,
