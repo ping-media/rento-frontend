@@ -33,6 +33,8 @@ const PriceCard = ({
   const [vehicleRentCost, setVehicleRentCost] = useState(0);
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
+  const [discountedTotal, setDiscountedTotal] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
   const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
   const {
     tempCouponDiscount,
@@ -70,68 +72,12 @@ const PriceCard = ({
           ? calculateTotalAddOnPrice(isExtraChecked, duration)
           : 0;
       setExtraAddOnCost(AddOnAmount);
-
-      if (isExtraChecked?.length > 0) {
-        if (taxPercentage > 0) {
-          setGSTCost(
-            calculateTax(
-              Number(
-                currentPlan !== null && currentPlan?.planPrice > 0
-                  ? currentPlan?.planPrice
-                  : vehiclePlanData?.planPrice
-              ) + Math.round(AddOnAmount),
-              taxPercentage
-            )
-          );
-        }
-      } else {
-        if (taxPercentage > 0) {
-          setGSTCost(
-            calculateTax(
-              Number(
-                currentPlan !== null && currentPlan?.planPrice > 0
-                  ? currentPlan?.planPrice
-                  : vehiclePlanData?.planPrice
-              ),
-              taxPercentage
-            )
-          );
-        }
-      }
     } else if (vehiclePlanData !== null) {
-      //setting gst price if helemet is selected or not
       const AddOnAmount =
         isExtraChecked?.length > 0
           ? calculateTotalAddOnPrice(isExtraChecked, duration)
           : 0;
       setExtraAddOnCost(AddOnAmount);
-      if (isExtraChecked?.length > 0) {
-        if (taxPercentage > 0) {
-          setGSTCost(
-            calculateTax(
-              Number(
-                vehiclePlanData !== null && vehiclePlanData?.planPrice > 0
-                  ? vehiclePlanData?.planPrice
-                  : currentPlan?.planPrice
-              ) + Math.round(AddOnAmount),
-              taxPercentage
-            )
-          );
-        }
-      } else {
-        if (taxPercentage > 0) {
-          setGSTCost(
-            calculateTax(
-              Number(
-                currentPlan !== null && currentPlan?.planPrice > 0
-                  ? currentPlan?.planPrice
-                  : vehiclePlanData?.planPrice
-              ),
-              taxPercentage
-            )
-          );
-        }
-      }
     } else {
       if (perDayCost) {
         setVehicleRentCost(
@@ -157,42 +103,6 @@ const PriceCard = ({
             )
           : 0;
       setExtraAddOnCost(AddOnAmount);
-      if (isExtraChecked?.length > 0) {
-        if (taxPercentage > 0) {
-          setGSTCost(
-            Number(
-              calculateTax(
-                Number(perDayCost) *
-                  Number(
-                    getDurationInDays(
-                      bookingStartDateTime?.date,
-                      bookingEndDateTime?.date
-                    )
-                  ) +
-                  Math.round(AddOnAmount),
-                taxPercentage
-              )
-            )
-          );
-        }
-      } else {
-        if (taxPercentage > 0) {
-          setGSTCost(
-            Number(
-              calculateTax(
-                Number(perDayCost) *
-                  Number(
-                    getDurationInDays(
-                      bookingStartDateTime?.date,
-                      bookingEndDateTime?.date
-                    )
-                  ),
-                taxPercentage
-              )
-            )
-          );
-        }
-      }
     }
   }, [isExtraChecked]);
 
@@ -204,11 +114,35 @@ const PriceCard = ({
 
   // for calculating total price based on addons
   useEffect(() => {
-    const totalPrice =
-      Number(vehicleRentCost) + Number(extraAddOnCost) + Number(gSTCost);
-    setTotalPrice(Math.round(totalPrice));
-    dispatch(addTempTotalPrice(Math.round(totalPrice)));
-  }, [isExtraChecked, vehicleRentCost, extraAddOnCost, gSTCost]);
+    const subTotal = Number(vehicleRentCost) + Number(extraAddOnCost);
+    let gst = 0;
+    if (general?.status === "active") {
+      gst = calculateTax(subTotal, taxPercentage);
+    }
+    const totalPrice = Number(subTotal) + Number(gst);
+    setGSTCost(isNaN(gst) ? 0 : gst);
+    setSubTotal(subTotal);
+    setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
+
+    if (tempCouponName === "") {
+      dispatch(addTempTotalPrice(Math.round(subTotal)));
+    } else {
+      if (isDiscountZero) {
+        setDiscountedTotal(Number(tempCouponDiscountTotal));
+        return;
+      }
+      if (!isNaN(Number(tempCouponDiscountTotal))) {
+        const disountPrice = Number(tempCouponDiscountTotal);
+        let gst = 0;
+        if (general?.status === "active") {
+          gst = calculateTax(disountPrice, taxPercentage);
+        }
+        setGSTCost(isNaN(gst) ? 0 : gst);
+        setDiscountedTotal(disountPrice + gst);
+        setSubTotal(disountPrice);
+      }
+    }
+  }, [isExtraChecked, vehicleRentCost, extraAddOnCost, tempCouponName]);
 
   // adding addon in booking
   const handleChangeExtraAddonPrice = (item) => {
@@ -233,13 +167,7 @@ const PriceCard = ({
   return !loading ? (
     <>
       <div className="px-4 mt-2">
-        <ul
-          className={`leading-7 ${
-            general?.status === "active"
-              ? "pb-3"
-              : "pb-3 md:pt-4 md:-pb-6 lg:pt-3 lg:pb-5"
-          } border-b-2 border-gray-300`}
-        >
+        <ul className={`leading-7 pb-2 border-b-2 border-gray-300`}>
           {/* vehicle Rental Price  */}
           <li className={`flex items-center justify-between`}>
             <input type="hidden" name="bookingPrice" value={vehicleRentCost} />
@@ -251,8 +179,9 @@ const PriceCard = ({
             <div>
               <p className="text-gray-500 ">Vehicle Rental Cost</p>
               <p className="text-xs text-gray-400">
-                {appliedVehiclePlan !== null
-                  ? `(${duration} Package Applied)`
+                (
+                {appliedVehiclePlan
+                  ? `${duration} Package Applied`
                   : ` ₹${perDayCost} x ${
                       vehiclePlanData != null
                         ? vehiclePlanData?.planDuration
@@ -261,12 +190,31 @@ const PriceCard = ({
                             queryParmsData?.BookingEndDateAndTime
                           )
                     } day`}
+                )
               </p>
             </div>
             <span className="font-semibold">
               ₹{formatPrice(vehicleRentCost)}
             </span>
           </li>
+          {tempCouponDiscount && tempCouponDiscount != null && (
+            <li className="flex items-center justify-between mb-1">
+              <input
+                type="hidden"
+                name="discountPrice"
+                value={tempCouponDiscount}
+              />
+              <div>
+                <span className="text-gray-500">Discount Amount</span>
+                <span className="block text-xs text-gray-400">
+                  coupon: ({tempCouponName})
+                </span>
+              </div>
+              <span className="font-semibold">
+                -₹{formatPrice(Math.round(tempCouponDiscount))}
+              </span>
+            </li>
+          )}
           {/* extra Add on Data  */}
           {isExtraChecked?.length > 0 &&
             isExtraChecked?.map((item, index) => (
@@ -288,6 +236,15 @@ const PriceCard = ({
               </li>
             ))}
 
+          <li className="flex items-center justify-between border-t-2 border-gray-300 mt-2">
+            <div>
+              <span className="text-gray-500">Sub Total</span>
+            </div>
+            <span className="font-semibold">
+              ₹{formatPrice(Math.round(subTotal))}
+            </span>
+          </li>
+
           {/* tax Price  */}
           {general?.status === "active" && (
             <li className={`flex items-center justify-between`}>
@@ -298,72 +255,9 @@ const PriceCard = ({
               <span className="font-semibold">₹{formatPrice(gSTCost)}</span>
             </li>
           )}
-
-          {/* <li className="flex items-center justify-between">
-            <span className="text-gray-500">Sub Total</span>
-            <div>
-              <span
-                className={`${
-                  tempCouponDiscountTotal != null &&
-                  (isDiscountZero === true || tempCouponDiscountTotal > 0)
-                    ? "block line-through"
-                    : "font-semibold"
-                }`}
-              >
-                ₹{formatPrice(subTotal)}
-              </span>
-              {tempCouponDiscountTotal != null &&
-                (isDiscountZero === true || tempCouponDiscountTotal > 0) && (
-                  <span className="font-semibold">
-                    ₹{formatPrice(subTotal - tempCouponDiscount)}
-                  </span>
-                )}
-            </div>
-          </li> */}
         </ul>
         {/* total price & discount Price */}
         <div className={`${isExtraChecked ? "pt-2 pb-6" : "pt-2 pb-6"}`}>
-          {tempCouponDiscount && tempCouponDiscount != null && (
-            <div className="flex items-center justify-between mb-1">
-              <input
-                type="hidden"
-                name="discountPrice"
-                value={tempCouponDiscount}
-              />
-              <div>
-                <span className="text-gray-500">Discount Amount</span>
-                <span className="block text-xs text-gray-400">
-                  coupon: ({tempCouponName})
-                </span>
-              </div>
-              <span className="font-semibold">
-                -₹{formatPrice(Math.round(tempCouponDiscount))}
-              </span>
-            </div>
-          )}
-
-          {/* <div className="flex items-center justify-between">
-            <span className="text-gray-500">Sub Total</span>
-            <div>
-              <span
-                className={`${
-                  tempCouponDiscountTotal != null &&
-                  (isDiscountZero === true || tempCouponDiscountTotal > 0)
-                    ? "text-xs block line-through"
-                    : "font-semibold"
-                }`}
-              >
-                ₹{formatPrice(subTotal)}
-              </span>
-              {tempCouponDiscountTotal != null &&
-                (isDiscountZero === true || tempCouponDiscountTotal > 0) && (
-                  <span className="font-semibold">
-                    ₹{formatPrice(subTotal - tempCouponDiscount)}
-                  </span>
-                )}
-            </div>
-          </div> */}
-
           <div className="flex items-center justify-between">
             <input type="hidden" name="totalPrice" value={totalPrice} />
             <input
@@ -376,7 +270,7 @@ const PriceCard = ({
               ₹
               {tempCouponDiscountTotal != null &&
               (isDiscountZero === true || tempCouponDiscountTotal > 0)
-                ? formatPrice(Math.round(tempCouponDiscountTotal))
+                ? formatPrice(Math.round(discountedTotal))
                 : formatPrice(totalPrice)}
             </span>
           </div>

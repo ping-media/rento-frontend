@@ -20,6 +20,7 @@ const Card = ({
   vehicleBrand,
   stationName,
   vehicleModel,
+  vehiclePlan,
   freeKms,
   extraKmsCharges,
   BookingEndDate,
@@ -36,6 +37,7 @@ const Card = ({
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const { filter } = useSelector((state) => state.filter);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   // for getting BookingEndDateAndTime when there is vehiclePlan id is present
   const addDaysToISOString = (dateStr, daysToAdd) => {
@@ -66,6 +68,21 @@ const Card = ({
         : `?${updatedQueryParams}`;
 
     setBookingUrl(url);
+  }, []);
+
+  useEffect(() => {
+    const planId = queryParmsData?.vehiclePlan || "";
+
+    if (planId !== "") {
+      const plan =
+        vehiclePlan?.length > 0
+          ? vehiclePlan?.filter((plan) => plan._id === planId)
+          : null;
+
+      if (plan !== null) {
+        setSelectedPlan(plan[0]);
+      }
+    }
   }, []);
 
   // sending to ride summary
@@ -143,16 +160,26 @@ const Card = ({
               />
             </div>
             <p>
-              <span className="font-semibold">{freeKms}</span> KM Limit
+              <span className="font-semibold">
+                {freeKms *
+                  (selectedPlan !== null ? selectedPlan?.planDuration : 1)}
+              </span>{" "}
+              KM Limit
             </p>
           </div>
           <p className="text-xs mb-5 text-left">
-            (After Limit {extraKmsCharges}/KM + GST)
+            (After Limit {formatPrice(extraKmsCharges)}/KM + GST)
           </p>
           <div className="flex items-center justify-between flex-wrap gap-2 lg:gap-0 mb-2">
             <p>
               <span className="mr-1">₹</span>
-              {formatPrice(perDayCost)}/<span className="text-sm">day</span>
+              {selectedPlan === null ? (
+                <>
+                  {formatPrice(perDayCost)}/<span className="text-sm">day</span>
+                </>
+              ) : (
+                formatPrice(selectedPlan?.planPrice)
+              )}
             </p>
             <button className="w-full md:w-3/5 lg:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
               Rent Now

@@ -28,40 +28,48 @@ const LoginModal = () => {
   const handleLoginUser = async (event) => {
     event.preventDefault();
     setLoading(true);
-    const response = new FormData(event.target);
-    let result = Object.fromEntries(response.entries());
-    const isValidContact = isValidPhoneNumber(Number(result?.contact));
-    if (!isValidContact) {
-      setLoading(false);
-      return handleAsyncError(dispatch, "invalid phone number");
-    }
-    if (result) {
-      try {
-        const response = await handleUser("/otpGenerat", result);
-        if (response.status !== 200) {
-          dispatch(addTempContact(result?.contact));
-          handleRegisterModal();
-        } else if (response?.type === "error") {
-          handleAsyncError(dispatch, response?.message);
-        } else if (response.status === 500) {
-          handleAsyncError(dispatch, "unable to send otp! try again");
-        } else if (response.status === 200) {
-          setInputNumber(result?.contact);
-          setIsOtpSend(true);
-          setIsInputEmpty(null);
-          handleAsyncError(dispatch, response?.message, "success");
-        }
-      } catch (error) {
-        return handleAsyncError(dispatch, "unable to send otp! try again.");
-      } finally {
-        setLoading(false);
+
+    try {
+      const response = new FormData(event.target);
+      let result = Object.fromEntries(response.entries());
+      const isValidContact = isValidPhoneNumber(Number(result?.contact));
+
+      if (!isValidContact) {
+        handleAsyncError(dispatch, "Invalid phone number");
+        return;
       }
-    } else {
-      return handleAsyncError(dispatch, "Unable to login! try again.");
+
+      if (result) {
+        try {
+          const response = await handleUser("/otpGenerat", result);
+
+          if (response.status !== 200) {
+            dispatch(addTempContact(result?.contact));
+            handleRegisterModal();
+          } else if (response?.type === "error") {
+            handleAsyncError(dispatch, response?.message);
+          } else if (response.status === 500) {
+            handleAsyncError(dispatch, "Unable to send OTP! Try again");
+          } else if (response.status === 200) {
+            setInputNumber(result?.contact);
+            setIsOtpSend(true);
+            setIsInputEmpty(null);
+            handleAsyncError(dispatch, response?.message, "success");
+          }
+        } catch (error) {
+          handleAsyncError(dispatch, "Unable to send OTP! Try again.");
+        }
+      } else {
+        handleAsyncError(dispatch, "Unable to login! Try again.");
+      }
+    } catch (error) {
+      handleAsyncError(dispatch, "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  //this function is to change from login to signup
+  // this function is to change from login to signup
   const handleRegisterModal = () => {
     dispatch(toggleLoginModal(false));
     dispatch(toggleRegisterModal(true));
