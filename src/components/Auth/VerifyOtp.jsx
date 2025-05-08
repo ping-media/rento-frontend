@@ -12,10 +12,6 @@ const VerifyOtp = ({
   setInputValue,
   modalChange,
   email = "",
-  // seconds,
-  // setSecondChanger,
-  // isTimerActive,
-  // setTimerActive,
   setRestValue,
 }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
@@ -33,17 +29,13 @@ const VerifyOtp = ({
     const value = e.target.value;
     if (isNaN(value)) return;
     const newOtp = [...otpInput];
-    // allow only one input
     newOtp[index] = value.substring(value.length - 1);
     setOtpInput(newOtp);
-    //submit trigger
     const combinedOtp = newOtp.join("");
-    // after all field are filled auto submit
     if (combinedOtp.length == 6) {
       setOnOtpSubmit(combinedOtp);
       handleLogin(null, combinedOtp);
     }
-    // move to next input if current field is filled
     if (value && index < 6 - 1 && inputRef.current[index + 1]) {
       inputRef.current[index + 1].focus();
     }
@@ -75,7 +67,6 @@ const VerifyOtp = ({
       index > 0 &&
       inputRef.current[index - 1]
     ) {
-      // Move focus to the previous input field on backspace
       inputRef.current[index - 1].focus();
     }
   };
@@ -87,18 +78,6 @@ const VerifyOtp = ({
     }
   }, []);
 
-  //setting interval between another otp request
-  // useEffect(() => {
-  //   let interval = null;
-  //   if (isTimerActive && seconds > 0) {
-  //     interval = setInterval(() => {
-  //       setSecondChanger((prevSeconds) => prevSeconds - 1);
-  //     }, 1000);
-  //   } else if (seconds === 0) {
-  //     setTimerActive(false);
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [isTimerActive, seconds]);
   // Timer for Resending OTP
   useEffect(() => {
     try {
@@ -120,63 +99,72 @@ const VerifyOtp = ({
 
   // handle login
   const handleLogin = async (e, otp) => {
-    if (e && e !== null) {
+    if (e) {
       e.preventDefault();
     }
+
     setLoading(true);
     let response;
-    if (phone != 0) {
-      response = await handleUser("/verifyOtp", {
-        otp: otp,
-        contact: phone,
-      });
-    } else if (email != "") {
-      response = await handleUser("/emailverify", {
-        otp: otp,
-        email: email,
-      });
-    }
-    if (response?.status == 200) {
-      handleAsyncError(dispatch, response?.message, "success");
+    try {
       if (phone != 0) {
-        dispatch(handleSignIn(response?.data));
+        response = await handleUser("/verifyOtp", {
+          otp: otp,
+          contact: phone,
+        });
+      } else if (email != "") {
+        response = await handleUser("/emailverify", {
+          otp: otp,
+          email: email,
+        });
       }
-      setOtpValue && setOtpValue(false);
-      setInputValue && setInputValue("");
-      dispatch(modalChange());
-    } else {
-      handleAsyncError(dispatch, response?.message);
+
+      if (response?.status == 200) {
+        handleAsyncError(dispatch, response?.message, "success");
+        if (phone != 0) {
+          dispatch(handleSignIn(response?.data));
+        }
+        setOtpValue && setOtpValue(false);
+        setInputValue && setInputValue("");
+        dispatch(modalChange());
+      } else {
+        handleAsyncError(dispatch, response?.message);
+      }
+    } catch (error) {
+      handleAsyncError(dispatch, "Error verifying OTP");
+    } finally {
+      setLoading(false);
     }
-    return setLoading(false);
   };
 
   // resending otp
   const handleSendOtpAgain = async () => {
-    let response;
-    if (phone != 0) {
-      response = await handleUser("/otpGenerat", { contact: phone });
-    } else if (email != "") {
-      response = await handleUser("/emailOtp", { email: email });
-    }
-    if (response?.status == 200) {
-      // setSecondChanger(30);
-      // setTimerActive(true);
-      setOtpState((prev) => ({ ...prev, seconds: 30 }));
-      setOtpState((prev) => ({ ...prev, isTimerActive: true }));
-      handleAsyncError(dispatch, "Otp resend successfully.", "success");
-    } else {
-      handleAsyncError(dispatch, "unable to send otp! try again");
+    try {
+      let response;
+      if (phone != 0) {
+        response = await handleUser("/otpGenerat", { contact: phone });
+      } else if (email != "") {
+        response = await handleUser("/emailOtp", { email: email });
+      }
+
+      if (response?.status == 200) {
+        setOtpState({ seconds: 30, isTimerActive: true });
+        handleAsyncError(dispatch, "OTP resent successfully.", "success");
+      } else {
+        handleAsyncError(dispatch, "Unable to send OTP! Try again");
+      }
+    } catch (error) {
+      handleAsyncError(dispatch, "Error sending OTP");
     }
   };
 
-  // resting the input so that can revert back to input
-  const handleRestOtpScreen = async () => {
+  // resetting the input so that can revert back to input
+  const handleRestOtpScreen = () => {
     setOtpValue(false);
     setRestValue && setRestValue("");
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={(e) => handleLogin(e, onOtpSubmit)}>
       <div className="flex items-center justify-center gap-1 mb-4">
         <p className="text-gray-400 lg:text-gray-600 text-center">
           Code sent to {email != "" ? email : `+91-(${phone})`}
@@ -188,7 +176,7 @@ const VerifyOtp = ({
             type="button"
             onClick={handleRestOtpScreen}
           >
-            Change Contact
+            Edit
           </button>
         )}
       </div>

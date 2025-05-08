@@ -148,6 +148,7 @@ const RegisterModal = () => {
                   By signing up, I accept the{" "}
                   <button
                     onClick={handleChangeLink}
+                    type="button"
                     className="text-theme cursor-pointer hover:text-theme-dark hover:underline transition duration-300 ease-in-out"
                   >
                     Terms and Conditions
