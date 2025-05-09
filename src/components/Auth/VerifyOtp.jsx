@@ -188,6 +188,8 @@ const VerifyOtp = ({
           <input
             key={index}
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={value}
             ref={(input) => (inputRef.current[index] = input)}
             onChange={(e) => handleChange(index, e)}

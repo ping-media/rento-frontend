@@ -7,6 +7,7 @@ import {
   handleRestCouponWithPrice,
 } from "../../Redux/CouponSlice/CouponSlice";
 import PreLoader from "../skeleton/PreLoader";
+import { toggleCouponModal } from "../../Redux/ModalSlice/ModalSlice";
 
 const PromoCard = () => {
   const [CouponCode, setCouponCode] = useState("");
@@ -46,8 +47,6 @@ const PromoCard = () => {
         isExtraAddonChecked
       );
       if (response?.status == 200) {
-        !isCouponApplied &&
-          handleAsyncError(dispatch, "Coupon Applied.", "success");
         setIsCouponApplied(true);
         dispatch(
           addTempCouponDetails({
@@ -59,6 +58,7 @@ const PromoCard = () => {
             isExtra: response?.data?.isExtra,
           })
         );
+        !isCouponApplied && dispatch(toggleCouponModal());
       } else {
         handleAsyncError(dispatch, response?.message);
       }
@@ -93,12 +93,12 @@ const PromoCard = () => {
             type="text"
             readOnly={tempCouponId != ""}
           />
-          <div className="w-10 absolute block right-8 fill-theme">
+          <div className="w-10 absolute block right-10 fill-theme">
             {tempCouponId === "" ? (
               CouponCode.length > 0 && (
                 // apply coupon button
                 <button
-                  className={`text-sm text-theme disabled:text-gray-500`}
+                  className="text-sm text-theme disabled:text-gray-500 uppercase"
                   type="button"
                   disabled={tempCouponId != "" || CouponCode.length < 5}
                   onClick={handleApplyCoupon}
@@ -109,7 +109,7 @@ const PromoCard = () => {
             ) : (
               // remove coupon button
               <button
-                className={`text-sm text-theme`}
+                className="text-sm text-theme uppercase"
                 type="button"
                 onClick={handleReomveCoupon}
               >

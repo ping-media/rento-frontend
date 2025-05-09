@@ -15,6 +15,7 @@ const initialState = {
   isBookingDone: false,
   isBookingTermActive: false,
   isBookingExtendModalActive: false,
+  isCouponModalActive: false,
 };
 
 const ModalSlice = createSlice({
@@ -68,6 +69,9 @@ const ModalSlice = createSlice({
     toggleBookingExtendModal: (state) => {
       state.isBookingExtendModalActive = !state.isBookingExtendModalActive;
     },
+    toggleCouponModal: (state) => {
+      state.isCouponModalActive = !state.isCouponModalActive;
+    },
     handleRestAll: () => initialState,
   },
 });
@@ -88,6 +92,7 @@ export const {
   toggleBookingTermModal,
   closeSideBarModal,
   toggleBookingExtendModal,
+  toggleCouponModal,
   handleRestAll,
 } = ModalSlice.actions;
 

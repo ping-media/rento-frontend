@@ -156,10 +156,9 @@ const PriceCard = ({
       dispatch(handleSelectedAddOn(updated));
       dispatch(handleChangeExtraChecked(true));
     } else {
-      setIsExtraChecked(isExtraChecked?.filter((i) => i?._id !== item?._id));
-      dispatch(
-        handleSelectedAddOn(isExtraChecked?.filter((i) => i?._id !== item?._id))
-      );
+      const addOn = isExtraChecked?.filter((i) => i?._id !== item?._id);
+      setIsExtraChecked(addOn);
+      dispatch(handleSelectedAddOn(addOn));
       dispatch(handleChangeExtraChecked(false));
     }
   };

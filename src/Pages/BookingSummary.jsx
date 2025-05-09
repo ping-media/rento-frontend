@@ -30,6 +30,7 @@ import { handleAsyncError } from "../utils/handleAsyncError";
 import { handlePreviousPage, validateBookingDates } from "../utils";
 import { handleSelectedAddOn } from "../Redux/AddOnSlice/AddOnSlice";
 const BookingError = lazy(() => import("../components/Error/BookingError"));
+const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
 
 const BookingSummary = () => {
   const termsRef = useRef(null);
@@ -63,10 +64,14 @@ const BookingSummary = () => {
     } else if (isAllFieldChecked) {
       setIsAllFieldChecked(!isAllFieldChecked);
     }
+  }, [isTermsChecked]);
+
+  // for clearing addon when user leave the page
+  useEffect(() => {
     return () => {
       dispatch(handleSelectedAddOn([]));
     };
-  }, [isTermsChecked]);
+  }, []);
 
   //fetching the vehicle info based on vehicleId from url and if vehicle plan id present than search that too
   useEffect(() => {
@@ -214,6 +219,7 @@ const BookingSummary = () => {
       <>
         {/* terms Modal  */}
         <BookingTermModal />
+        <CouponModal />
         <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
           <form onSubmit={handleCreateBookingSubmit}>
             <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
