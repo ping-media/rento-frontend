@@ -365,8 +365,7 @@ const nextDayFromCurrent = (date, noOfDay = 1) => {
 };
 
 const isValidPhoneNumber = (phone) => {
-  const indiaPhoneRegex = /^(?:\+91[-\s]?)?[789]\d{9}$/;
-  // Test the phone number against the regex
+  const indiaPhoneRegex = /^(?:\+91[-\s]?)?[6-9]\d{9}$/;
   return indiaPhoneRegex.test(phone);
 };
 
