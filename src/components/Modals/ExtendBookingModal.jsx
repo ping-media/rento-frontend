@@ -34,11 +34,15 @@ const ExtendBookingModal = () => {
     event.preventDefault();
     if (!newDate) return;
 
-    const finalAmount = calculatePriceForExtendBooking(
-      rides[0]?.vehicleTableId?.perDayCost,
-      extensionDays,
-      Number(rides[0]?.bookingPrice?.extraAddonPrice)
-    );
+    // const finalAmount = calculatePriceForExtendBooking(
+    //   rides[0]?.vehicleTableId?.perDayCost,
+    //   extensionDays,
+    //   Number(rides[0]?.bookingPrice?.extraAddonPrice)
+    // );
+
+    if (extendPrice === 0) {
+      return handleAsyncError(dispatch, "Unable to get Price! try again");
+    }
 
     let data = {
       _id: rides[0]?._id,
@@ -56,7 +60,7 @@ const ExtendBookingModal = () => {
       extendAmount: {
         id: rides[0]?.bookingPrice?.extendAmount?.length + 1,
         title: "extended",
-        amount: finalAmount,
+        amount: extendPrice,
         paymentMethod: "",
         status: "unpaid",
       },
@@ -77,10 +81,10 @@ const ExtendBookingModal = () => {
     try {
       setFormLoading(true);
 
-      const orderId = await createOrderId(data, Number(finalAmount));
+      const orderId = await createOrderId(data, Number(extendPrice));
       if (orderId?.status === "created") {
         const response = await openRazorpayPayment({
-          finalAmount,
+          finalAmount: extendPrice,
           orderId: orderId?.id,
           bookingData: rides[0],
           dispatch,
@@ -130,7 +134,7 @@ const ExtendBookingModal = () => {
             {
               title: "Payment Received",
               date: Date.now(),
-              paymentAmount: finalAmount,
+              paymentAmount: extendPrice,
               id: data?.extendAmount?.id,
             },
           ],

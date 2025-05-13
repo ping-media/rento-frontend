@@ -52,7 +52,11 @@ export const openRazorpayPayment = ({
         modal: {
           escape: false,
           ondismiss: () => {
-            if (navigate) navigate("/");
+            if (
+              navigate &&
+              !location.pathname.includes("/account/my-rides/summary/")
+            )
+              navigate("/");
             reject({ success: false, message: "Payment cancelled" });
           },
         },

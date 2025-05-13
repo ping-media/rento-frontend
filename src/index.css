@@ -85,6 +85,10 @@ body {
   fill: black !important;
 }
 
+.clip-path-blob {
+  clip-path: polygon(50% 0%, 100% 25%, 75% 100%, 25% 100%, 0% 25%);
+}
+
 @media (max-width: 640px) {
   .rdp-day,
   .rdp-day_button {

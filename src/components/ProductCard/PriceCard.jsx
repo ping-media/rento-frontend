@@ -14,6 +14,8 @@ import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 
 const PriceCard = ({
   perDayCost,
+  totalRentalCost,
+  daysBreakDown,
   vehiclePlan,
   vehiclePlanData,
   queryParmsData,
@@ -27,6 +29,10 @@ const PriceCard = ({
   const bookingEndDateTime =
     queryParmsData?.BookingEndDateAndTime &&
     formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
+  const [isWeekend, setIsWeekend] = useState({
+    weekDays: [],
+    weekend: [],
+  });
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState([]);
@@ -52,9 +58,23 @@ const PriceCard = ({
   const taxPercentage =
     general?.status === "active" ? Number(general?.percentage) : 0;
 
-  if (general?.status === "active" && taxPercentage === 0) {
+  if (
+    general?.status === "active" &&
+    taxPercentage === 0 &&
+    daysBreakDown?.length === 0
+  ) {
     return <PreLoader />;
   }
+
+  useEffect(() => {
+    const weekendDays = daysBreakDown?.filter(
+      (days) => days.isWeekend === true
+    );
+    const weekDays = daysBreakDown?.filter((days) => days.isWeekend === false);
+    if (weekendDays || weekDays) {
+      setIsWeekend({ weekDays: weekDays || [], weekend: weekendDays || [] });
+    }
+  }, [daysBreakDown]);
 
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
@@ -79,16 +99,8 @@ const PriceCard = ({
           : 0;
       setExtraAddOnCost(AddOnAmount);
     } else {
-      if (perDayCost) {
-        setVehicleRentCost(
-          Number(perDayCost) *
-            Number(
-              getDurationInDays(
-                bookingStartDateTime?.date,
-                bookingEndDateTime?.date
-              )
-            )
-        );
+      if (totalRentalCost) {
+        setVehicleRentCost(Number(totalRentalCost));
       }
       const AddOnAmount =
         isExtraChecked?.length > 0
@@ -179,11 +191,20 @@ const PriceCard = ({
               <p className="text-gray-500 ">Vehicle Rental Cost</p>
               <p className="text-xs text-gray-400">
                 (
+                {isWeekend?.weekend?.length > 0 && (
+                  <span className="font-semibold mr-1">Weekend:</span>
+                )}
                 {appliedVehiclePlan
                   ? `${duration} Package Applied`
-                  : ` ₹${perDayCost} x ${
+                  : `₹${
+                      isWeekend?.weekend?.length > 0
+                        ? isWeekend?.weekend[0]?.dailyRate
+                        : perDayCost
+                    } x ${
                       vehiclePlanData != null
                         ? vehiclePlanData?.planDuration
+                        : isWeekend?.weekend?.length > 0
+                        ? isWeekend?.weekend?.length
                         : getDurationInDays(
                             queryParmsData?.BookingStartDateAndTime,
                             queryParmsData?.BookingEndDateAndTime
@@ -191,6 +212,26 @@ const PriceCard = ({
                     } day`}
                 )
               </p>
+              {isWeekend?.weekend?.length > 0 && !appliedVehiclePlan && (
+                <p className="text-xs text-gray-400">
+                  (<span className="font-semibold mr-1">Week Days:</span>
+                  {`₹${
+                    isWeekend?.weekDays?.length > 0
+                      ? isWeekend?.weekDays[0]?.dailyRate
+                      : 0
+                  } x ${
+                    vehiclePlanData != null
+                      ? vehiclePlanData?.planDuration
+                      : isWeekend?.length > 0
+                      ? isWeekend?.length
+                      : getDurationInDays(
+                          queryParmsData?.BookingStartDateAndTime,
+                          queryParmsData?.BookingEndDateAndTime
+                        )
+                  } day`}
+                  )
+                </p>
+              )}
             </div>
             <span className="font-semibold">
               ₹{formatPrice(vehicleRentCost)}
@@ -276,7 +317,7 @@ const PriceCard = ({
         </div>
       </div>
       {/* extra accessories  */}
-      <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 pt-1 rounded-b-lg w-full">
+      <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 pt-1 rounded-b-lg w-full h-full">
         {addon?.length > 0 &&
           addon
             ?.filter((f) => f.status !== "inactive")

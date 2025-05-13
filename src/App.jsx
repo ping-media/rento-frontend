@@ -3,6 +3,7 @@ import "./App.css";
 import { lazy, Suspense } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
+import Maintenance from "./Pages/Maintenance";
 const Payment = lazy(() => import("./Pages/Payment"));
 const Home = lazy(() => import("./Pages/Home"));
 const Kyc = lazy(() => import("./Pages/Kyc"));
@@ -53,6 +54,7 @@ const App = () => {
             <Route path="/payment/:id" element={<Payment />} />
           </Route>
           <Route path="*" element={<ErrorPageNotFound />} />
+          <Route path="/maintenance" element={<Maintenance />} />
         </Routes>
       </Suspense>
     </Router>

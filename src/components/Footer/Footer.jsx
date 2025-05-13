@@ -5,13 +5,14 @@ import {
   contactUsFooterLink,
 } from "../../Data/dummyData";
 import logoImg from "../../assets/logo/rento-logo.png";
+import playStore from "../../assets/playStore.png";
 import { memo } from "react";
 
 const Footer = () => {
   return (
     <footer className="bg-theme-black crusor-default">
       <div className="w-[95%] lg:w-[80%] mx-auto pt-6 pb-3.5">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
           <div className="">
             <div className="w-20 h-20 lg:w-24 lg:h-24 p-1.5 rounded-full bg-white mb-3">
               <Link to={"/"} className="w-full">
@@ -83,6 +84,21 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div>
+            <p className="text-gray-100 text-base">
+              Download the app by clicking the link below:
+            </p>
+            <a href="#" target="_blank">
+              <div className="w-36 my-5">
+                <img
+                  src={playStore}
+                  className="w-full h-full object-cover"
+                  alt="RENTO_PLAYSTORE"
+                />
+              </div>
+            </a>
           </div>
         </div>
         <div className="flex items-center justify-center lg:pt-0 mt-5 lg:mt-0 border-t border-gray-500 text-white">

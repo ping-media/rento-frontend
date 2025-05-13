@@ -173,9 +173,8 @@ const formatDateToSlash = (dateStr) => {
   }
 
   // Extract day, month, and year
-  const day = String(date.getDate()).padStart(2, "0"); // Ensure 2 digits for day
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() is zero-based
-  const year = date.getFullYear();
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
 
   // Return formatted date in "DD/MM/YYYY" format
   return `${day}/${month}/${year}`;
@@ -204,7 +203,7 @@ const calculateTax = (amount, taxPercentage) => {
   const taxAmount = (taxPercentage / 100) * amount;
 
   // Round the result to 2 decimal places and return it
-  return parseInt(taxAmount);
+  return Math.round(taxAmount);
 };
 
 const convertToISOString = (dropoffDate, dropoffTime) => {
@@ -427,6 +426,10 @@ const formatPrice = (price) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(price);
+};
+
+const formatNumber = (number) => {
+  return new Intl.NumberFormat("en-IN").format(number);
 };
 
 const updateStationId = (location, newId) => {
@@ -841,7 +844,7 @@ export {
   searchFormatDateOnly,
   searchFormatTimeOnly,
   isMinimumDurationHours,
-  // formatDateMobile,
+  formatNumber,
   isSecondTimeSmaller,
   validateBookingDates,
   getEarliestDate,

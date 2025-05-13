@@ -13,6 +13,7 @@ import RideReducer from "./RidesSlice/RideSlice.js";
 import BookingReducer from "./BookingSlice/BookingSlice.js";
 import CouponReducer from "./CouponSlice/CouponSlice.js";
 import AddOnReducer from "./AddOnSlice/AddOnSlice.js";
+import GeneralReducer from "./SettingSlice/SettingSlice.js";
 
 const userPersistConfig = {
   key: "user",
@@ -113,6 +114,7 @@ const store = configureStore({
     rides: RideReducer,
     addon: addonCouponReducer,
     coupon: persistedCouponReducer,
+    general: GeneralReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

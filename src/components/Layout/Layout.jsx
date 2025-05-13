@@ -1,4 +1,4 @@
-import { Outlet, useLocation, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { lazy, useEffect, useState } from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
@@ -17,16 +17,26 @@ import CallToActionButton from "../CallToAction/CallToActionButton";
 import whatsapp from "../../assets/icons/whatsapp.png";
 import { addAddOn, startLoading } from "../../Redux/AddOnSlice/AddOnSlice";
 import { fetchingData } from "../../Data";
+import { fetchingPlansFilters } from "../../Data/Functions";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
+  const { maintenance } = useSelector((state) => state.general);
   const [hasMounted, setHasMounted] = useState(false);
   const { user } = useSelector((state) => state.user);
   const { addon } = useSelector((state) => state.addon);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
+  const { filter } = useSelector((state) => state.filter);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (maintenance) {
+      navigate("/maintenance");
+    }
+  }, []);
 
   useEffect(() => {
     // setting decrypt user data
@@ -54,6 +64,12 @@ const Layout = () => {
     // this will user to top of the screen whenever user change the page
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!filter || filter.length === 0) {
+      fetchingPlansFilters(dispatch);
+    }
+  }, []);
 
   useEffect(() => {
     if (addon?.length > 0) return;

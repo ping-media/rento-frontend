@@ -34,10 +34,11 @@ const Filters = () => {
     setInputBrand(newQueryParamsData.brand?.toLowerCase() || "");
     setInputPlanId(newQueryParamsData.vehiclePlan || "");
 
-    if (!filter || filter.length === 0) {
-      fetchPlans();
-    }
-  }, [queryParms, fetchPlans, filter]);
+    // if (!filter || filter.length === 0) {
+    //   fetchPlans();
+    // }
+    // }, [queryParms, fetchPlans, filter]);
+  }, [queryParms]);
 
   // Function to update filters
   const handleSubmitFilters = (

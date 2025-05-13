@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import scooterImg from "../../assets/images/scooter-image.png";
 import bikeImg from "../../assets/images/bike-image.png";
 import {
-  addDaysToDate,
+  // addDaysToDate,
   formatDateTimeForUser,
   formatPrice,
   getDurationInDays,
@@ -53,9 +53,9 @@ const InfoCard = ({
   }, []);
 
   return (
-    <div className="flex justify-between flex-wrap mt-6 mb-4 cursor-default">
+    <div className="flex justify-between flex-wrap md:gap-5 lg:gap-10 mt-6 mb-4 cursor-default">
       {vehicleImage ? (
-        <div className="w-52 lg:w-62 h-40 mx-auto lg:mx-0">
+        <div className="w-60 lg:w-62 h-40 mx-auto lg:mx-0">
           <img
             src={vehicleImage}
             className="w-full h-full object-contain rounded-lg"
@@ -66,7 +66,7 @@ const InfoCard = ({
           />
         </div>
       ) : (
-        <div className="w-52 h-40 mx-auto lg:mx-0 bg-opacity-50 rounded-lg">
+        <div className="w-60 h-40 mx-auto lg:mx-0 bg-opacity-50 rounded-lg">
           <img
             src={vehicleType == "gear" ? bikeImg : scooterImg}
             className="w-full h-full object-cover"
@@ -75,7 +75,7 @@ const InfoCard = ({
           />
         </div>
       )}
-      <div className="px-4">
+      <div className="px-4 flex-1">
         {vehicleBrand && vehicleName && vehicleNumber ? (
           <div className="mb-1.5">
             <h2 className="font-bold uppercase text-lg lg:text-xl">
@@ -228,7 +228,7 @@ const InfoCard = ({
           </div>
         )}
       </div>
-      <div className="mt-2 lg:mt-0">
+      {/* <div className="mt-2 lg:mt-0">
         <h2 className="font-semibold flex items-center px-4 gap-2 lg:px-2">
           <span className="lg:hidden">
             <svg
@@ -265,7 +265,7 @@ const InfoCard = ({
             </p>
           </div>
         </h2>
-      </div>
+      </div> */}
     </div>
   );
 };

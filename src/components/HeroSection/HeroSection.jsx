@@ -1,5 +1,5 @@
 import star from "../../assets/icons/star.png";
-import halfStar from "../../assets/icons/rating.png";
+// import halfStar from "../../assets/icons/rating.png";
 
 const HeroSection = ({ imageUrl, secondImgeUrl }) => {
   return (
