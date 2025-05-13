@@ -35,6 +35,8 @@ const Layout = () => {
   useEffect(() => {
     if (maintenance) {
       navigate("/maintenance");
+    } else {
+      navigate("/");
     }
   }, []);
 

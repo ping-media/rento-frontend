@@ -90,15 +90,15 @@ const Footer = () => {
             <p className="text-gray-100 text-base">
               Download the app by clicking the link below:
             </p>
-            <a href="#" target="_blank">
-              <div className="w-36 my-5">
-                <img
-                  src={playStore}
-                  className="w-full h-full object-cover"
-                  alt="RENTO_PLAYSTORE"
-                />
-              </div>
-            </a>
+            {/* <a href="#" target="_blank"> */}
+            <div className="w-36 my-5">
+              <img
+                src={playStore}
+                className="w-full h-full object-cover"
+                alt="RENTO_PLAYSTORE"
+              />
+            </div>
+            {/* </a> */}
           </div>
         </div>
         <div className="flex items-center justify-center lg:pt-0 mt-5 lg:mt-0 border-t border-gray-500 text-white">
