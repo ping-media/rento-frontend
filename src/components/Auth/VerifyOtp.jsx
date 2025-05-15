@@ -223,7 +223,7 @@ const VerifyOtp = ({
         </div>
       </div>
       <button
-        className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-gray-500"
+        className="w-full px-4 py-2 text-lg font-medium text-white bg-theme rounded-md hover:bg-theme-dark transition duration-200 ease-in-out outline-none disabled:bg-theme/70"
         type="submit"
         disabled={loading || onOtpSubmit.length != 6}
       >

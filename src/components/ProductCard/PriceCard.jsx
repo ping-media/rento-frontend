@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   calculateTax,
   calculateTotalAddOnPrice,
-  formatDateTimeForUser,
+  // formatDateTimeForUser,
   formatPrice,
   getDurationInDays,
 } from "../../utils";
@@ -19,16 +19,18 @@ const PriceCard = ({
   vehiclePlan,
   vehiclePlanData,
   queryParmsData,
+  bookingStartDateTime,
+  bookingEndDateTime,
 }) => {
   const { addon, general, selectedAddOn, loading } = useSelector(
     (state) => state.addon
   );
-  const bookingStartDateTime =
-    queryParmsData?.BookingStartDateAndTime &&
-    formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
-  const bookingEndDateTime =
-    queryParmsData?.BookingEndDateAndTime &&
-    formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
+  // const bookingStartDateTime =
+  //   queryParmsData?.BookingStartDateAndTime &&
+  //   formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
+  // const bookingEndDateTime =
+  //   queryParmsData?.BookingEndDateAndTime &&
+  //   formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
   const [isWeekend, setIsWeekend] = useState({
     weekDays: [],
     weekend: [],
@@ -109,11 +111,9 @@ const PriceCard = ({
         isExtraChecked?.length > 0
           ? calculateTotalAddOnPrice(
               isExtraChecked,
-              Number(
-                getDurationInDays(
-                  bookingStartDateTime?.date,
-                  bookingEndDateTime?.date
-                )
+              getDurationInDays(
+                bookingStartDateTime?.date,
+                bookingEndDateTime?.date
               )
             )
           : 0;
@@ -127,55 +127,53 @@ const PriceCard = ({
     }
   }, []);
 
+  // adding this for coupon discount
+  useEffect(() => {
+    if (vehicleRentCost > 0) {
+      dispatch(addTempTotalPrice(vehicleRentCost));
+    }
+  }, [vehicleRentCost]);
+
   // for calculating total price based on addons
   useEffect(() => {
-    let subTotal = Number(vehicleRentCost) + Number(extraAddOnCost);
+    let subTotal = 0;
     let gst = 0;
     let totalPrice = 0;
 
-    if (tempCouponName === "") {
-      if (general?.status === "active") {
-        gst = calculateTax(subTotal, taxPercentage);
-        totalPrice = Number(subTotal) + Number(gst);
-        setGSTCost(isNaN(gst) ? 0 : Math.round(gst));
-      } else {
-        totalPrice = Number(subTotal);
-        setGSTCost(0);
-      }
-
-      setSubTotal(subTotal);
-      setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
-      dispatch(addTempTotalPrice(Math.round(subTotal)));
+    subTotal = Number(vehicleRentCost) + Number(extraAddOnCost);
+    if (general?.status === "active") {
+      gst = calculateTax(subTotal, taxPercentage);
+      totalPrice = Number(subTotal) + Number(gst);
+      setGSTCost(isNaN(gst) ? 0 : Math.round(gst));
     } else {
+      totalPrice = Number(subTotal);
+      setGSTCost(0);
+    }
+
+    if (tempCouponName !== "") {
+      subTotal = Number(tempCouponDiscountTotal) + Number(extraAddOnCost);
       if (isDiscountZero) {
-        setDiscountedTotal(Number(tempCouponDiscountTotal));
+        setDiscountedTotal(Number(subTotal));
         return;
       }
       if (Number(tempCouponDiscountTotal) > 0) {
-        const disountPrice = Number(tempCouponDiscountTotal);
+        let disountPrice = Number(tempCouponDiscountTotal);
 
         if (general?.status === "active") {
           gst = calculateTax(disountPrice, taxPercentage);
           setGSTCost(isNaN(gst) ? 0 : Math.round(gst));
-          setDiscountedTotal(disountPrice + gst);
-          // totalPrice = Number(disountPrice) + Number(gst);
+          setDiscountedTotal(disountPrice + Number(extraAddOnCost) + gst);
         } else {
-          setDiscountedTotal(disountPrice);
-          // totalPrice = Number(disountPrice);
+          setDiscountedTotal(subTotal);
           setGSTCost(0);
         }
-
-        setSubTotal(disountPrice);
-        setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
-        dispatch(addTempTotalPrice(Math.round(disountPrice)));
       }
     }
-    // setSubTotal(subTotal);
-    // setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
-    // dispatch(addTempTotalPrice(Math.round(subTotal)));
-  }, [isExtraChecked, vehicleRentCost, extraAddOnCost]);
-
+    setSubTotal(subTotal);
+    setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
+  }, [isExtraChecked, vehicleRentCost, extraAddOnCost, tempCouponName]);
   // adding addon in booking
+
   const handleChangeExtraAddonPrice = (item) => {
     const exists =
       isExtraChecked?.length > 0

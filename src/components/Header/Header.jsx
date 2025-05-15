@@ -90,7 +90,11 @@ const Header = memo(() => {
                 to={`${item?.link}`}
                 key={index}
                 className={({ isActive }) =>
-                  `capitalize text-white transition duration-200 ease-in-out text-white hover:text-theme`
+                  `capitalize text-white transition-all duration-200 ease-in-out text-white ${
+                    isActive
+                      ? "bg-theme px-2 py-1.5 rounded-md hover:text-gray-100"
+                      : "hover:text-theme"
+                  }`
                 }
               >
                 <li className="w-full">{item?.title}</li>

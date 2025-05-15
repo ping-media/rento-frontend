@@ -13,7 +13,7 @@ const Faq = () => {
             key={indx}
             className="bg-white p-4 rounded-xl mb-5 group shadow"
           >
-            <summary className="cursor-pointer w-full list-none flex items-center justify-between">
+            <summary className="cursor-pointer w-full list-none flex items-center justify-between font-semibold">
               {item.question}
               <div className="size-4 transition-transform duration-300 ease-in-out group-open:rotate-180">
                 <img

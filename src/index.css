@@ -25,24 +25,37 @@ input[type="number"] {
   -moz-appearance: textfield; /* Removes the spinner */
 }
 
-/* width */
+/* width
 ::-webkit-scrollbar {
   width: 0.4rem;
 }
 
 /* Track */
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
   @apply bg-white;
-}
+} */
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   @apply bg-theme-dark;
-}
+} */
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+/* ::-webkit-scrollbar-thumb:hover {
   @apply bg-theme;
+}  */
+
+@tailwind base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  html {
+    @apply overflow-x-hidden;
+  }
+  body {
+    @apply bg-background text-foreground min-h-svh w-full;
+  }
 }
 
 .rdp-root {
@@ -58,7 +71,7 @@ details > summary::-webkit-details-marker {
 
 body {
   font-family: "Mulish", sans-serif !important;
-  font-size: 0.9rem !important;
+  font-size: 0.89rem !important;
   font-weight: 400 !important;
   cursor: default;
   user-select: none;

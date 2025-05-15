@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import {
   camelCaseToSpaceSeparated,
   formatPrice,
@@ -5,6 +6,7 @@ import {
 } from "../../utils";
 
 const RideFareDetails = ({ rides }) => {
+  const { general } = useSelector((state) => state.addon);
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
     rides?.bookingPrice?.AmountLeftAfterUserPaid?.status !== "paid"
@@ -136,6 +138,9 @@ const RideFareDetails = ({ rides }) => {
                     ))
                   );
                 } else {
+                  if (general?.status === "inactive" && key == "tax") {
+                    return null;
+                  }
                   return (
                     <li
                       key={key}

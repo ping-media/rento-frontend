@@ -1,21 +1,25 @@
 import { useDispatch } from "react-redux";
 import { clearError } from "../../Redux/ErrorSlice/ErrorSlice.js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Alert = ({ error, errorType = "error" }) => {
   const dispatch = useDispatch();
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      dispatch(clearError());
+    const timer = setTimeout(() => {
+      setTimeout(() => dispatch(clearError()), 300);
     }, 3000);
-  }, []);
+
+    return () => clearTimeout(timer);
+  }, [dispatch]);
 
   return (
-    <div className="fixed right-2 z-50 top-16 min-w-72">
+    <div className="fixed right-2 z-50 top-16 min-w-80 transition-transform duration-300">
       <div
-        id={`toast-${errorType}`}
-        className="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow"
+        className={`transform transition-all duration-300 ease-in-out ${
+          show ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+        } flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded shadow`}
         role="alert"
       >
         <div
@@ -52,9 +56,11 @@ const Alert = ({ error, errorType = "error" }) => {
         <button
           type="button"
           className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8"
-          data-dismiss-target={`#toast-${errorType}`}
           aria-label="Close"
-          onClick={() => dispatch(clearError())}
+          onClick={() => {
+            setShow(false);
+            setTimeout(() => dispatch(clearError()), 300);
+          }}
         >
           <span className="sr-only">Close</span>
           <svg

@@ -6,7 +6,7 @@ import {
   sendEmailForBookingDetails,
   updateCouponCount,
 } from ".";
-import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
+// import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 import { handleUpdateBooking } from "./Functions";
 
 export const razorPayment = async (
@@ -55,8 +55,8 @@ export const razorPayment = async (
       );
 
       // deleting temp booking
-      localStorage.removeItem("tempBooking");
-      dispatch(removeTempBookingData());
+      // localStorage.removeItem("tempBooking");
+      // dispatch(removeTempBookingData());
 
       if (bookingResponse?.status === 200) {
         const timeLineData = {
@@ -116,6 +116,8 @@ export const razorPayment = async (
     data?.bookingPrice?.totalPrice ||
     100;
 
+  console.log(payableAmount);
+
   // Razorpay options configuration
   const options = {
     key: import.meta.env.VITE_RAZOR_KEY_ID,
@@ -138,6 +140,13 @@ export const razorPayment = async (
     },
     theme: {
       color: "#e23844", // Payment widget color
+    },
+    modal: {
+      escape: false,
+      ondismiss: () => {
+        navigate(`/account/my-rides/summary/${data?._id}`);
+        reject({ success: false, message: "Payment cancelled" });
+      },
     },
   };
 

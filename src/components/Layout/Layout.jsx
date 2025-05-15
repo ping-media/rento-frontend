@@ -62,9 +62,9 @@ const Layout = () => {
       dispatch(handleRestCoupon());
     }
 
-    if (localStorage.getItem("tempBooking")) {
-      localStorage.removeItem("tempBooking");
-    }
+    // if (localStorage.getItem("tempBooking")) {
+    //   localStorage.removeItem("tempBooking");
+    // }
     // this will user to top of the screen whenever user change the page
     window.scrollTo(0, 0);
   }, [location.pathname]);

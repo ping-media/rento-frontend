@@ -27,7 +27,11 @@ import BookingTermModal from "../components/Modals/BookingTermModal";
 import { createOrderId, razorPayment } from "../Data/Payment";
 import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
 import { handleAsyncError } from "../utils/handleAsyncError";
-import { handlePreviousPage, validateBookingDates } from "../utils";
+import {
+  formatDateTimeForUser,
+  handlePreviousPage,
+  validateBookingDates,
+} from "../utils";
 import { handleSelectedAddOn } from "../Redux/AddOnSlice/AddOnSlice";
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
@@ -56,6 +60,13 @@ const BookingSummary = () => {
   const [vehiclePlanData, setVehiclePlanData] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+
+  const bookingStartDateTime =
+    queryParmsData?.BookingStartDateAndTime &&
+    formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime);
+  const bookingEndDateTime =
+    queryParmsData?.BookingEndDateAndTime &&
+    formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime);
 
   // if extra addon is selected than this will run
   useEffect(() => {
@@ -200,7 +211,7 @@ const BookingSummary = () => {
       dispatch,
       tempCouponName,
       tempCouponId,
-      tempBookingData,
+      // tempBookingData,
       handleCreateBooking,
       handleUpdateBooking,
       createOrderId,
@@ -283,6 +294,8 @@ const BookingSummary = () => {
                       vehiclePlanData ? vehiclePlanData[0] : null
                     }
                     queryParmsData={queryParmsData}
+                    bookingStartDateTime={bookingStartDateTime}
+                    bookingEndDateTime={bookingEndDateTime}
                   />
                 </div>
                 {/* coupon section  */}
@@ -297,6 +310,8 @@ const BookingSummary = () => {
                     </div>
                     <BookingPaymentCard
                       isDiscountZeroApplied={isDiscountZero}
+                      bookingStartDateTime={bookingStartDateTime}
+                      bookingEndDateTime={bookingEndDateTime}
                     />
                   </div>
                 )}

@@ -621,7 +621,7 @@ const handleBookingProcess = async (
   dispatch,
   tempCouponName,
   tempCouponId,
-  tempBookingData,
+  // tempBookingData,
   handleCreateBooking,
   handleUpdateBooking,
   createOrderId,
@@ -659,72 +659,80 @@ const handleBookingProcess = async (
   const startRideOtp = Math.floor(1000 + Math.random() * 9000);
 
   if (!vehicles || vehicles.length === 0) return;
-  let data;
-  if (tempBookingData === null) {
-    data = {
-      vehicleTableId: vehicles[0]?._id,
-      userId: currentUser?._id,
-      vehicleMasterId: vehicles[0]?.vehicleMasterId,
-      BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
-        ".000Z",
-        "Z"
-      ),
-      BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime.replace(
-        ".000Z",
-        "Z"
-      ),
-      bookingPrice: {
-        bookingPrice: Number(result?.bookingPrice),
-        vehiclePrice: Number(result?.bookingPrice),
-        extraAddonDetails: selectedAddOn,
-        extraAddonPrice: result?.extraAddonPrice
-          ? Number(result?.extraAddonPrice)
-          : 0,
-        tax: Number(result?.tax),
-        totalPrice: Math.round(Number(result?.totalPrice)),
-        discountPrice: Math.round(Number(result?.discountPrice || 0)),
-        discountTotalPrice: Math.round(Number(result?.discounttotalPrice || 0)),
-        isDiscountZero: isDiscountZero,
-        rentAmount: vehicles[0]?.perDayCost,
-        isPackageApplied: !!vehiclePlanData,
-        extendAmount: [],
-      },
-      vehicleBasic: {
-        refundableDeposit: vehicles[0]?.refundableDeposit,
-        speedLimit: vehicles[0]?.speedLimit,
-        vehicleNumber: vehicles[0]?.vehicleNumber,
-        freeLimit: vehicles[0]?.freeKms,
-        lateFee: vehicles[0]?.lateFee,
-        extraKmCharge: vehicles[0]?.extraKmsCharges,
-        startRide: startRideOtp,
-        endRide: 0,
-      },
-      discountCuopon: { couponName: tempCouponName, couponId: tempCouponId },
-      extendBooking: { oldBooking: [], transactionIds: [] },
-      vehicleName: vehicles[0]?.vehicleName,
-      vehicleBrand: vehicles[0]?.vehicleBrand,
-      vehicleImage: vehicles[0]?.vehicleImage,
-      stationId: vehicles[0]?.stationId,
-      stationName: vehicles[0]?.stationName,
-      bookingStatus: "pending",
-      paymentStatus: "pending",
-      rideStatus: "pending",
-      paymentMethod: "NA",
-      payInitFrom: "NA",
-      paySuccessId: "NA",
-    };
+  // let data;
+  // if (tempBookingData === null) {
+  let data = {
+    vehicleTableId: vehicles[0]?._id,
+    userId: currentUser?._id,
+    vehicleMasterId: vehicles[0]?.vehicleMasterId,
+    BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
+      ".000Z",
+      "Z"
+    ),
+    BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime.replace(
+      ".000Z",
+      "Z"
+    ),
+    bookingPrice: {
+      bookingPrice: Number(result?.bookingPrice),
+      vehiclePrice: Number(result?.bookingPrice),
+      extraAddonDetails: selectedAddOn,
+      extraAddonPrice: result?.extraAddonPrice
+        ? Number(result?.extraAddonPrice)
+        : 0,
+      tax: isNaN(Number(result?.tax)) ? 0 : Number(result?.tax),
+      totalPrice: Math.round(Number(result?.totalPrice)),
+      discountPrice: Math.round(Number(result?.discountPrice || 0)),
+      discountTotalPrice: isDiscountZero
+        ? Math.round(
+            Number(result?.discounttotalPrice || 0) +
+              (Number(result?.extraAddonPrice) > 0
+                ? Number(result?.extraAddonPrice)
+                : 0)
+          )
+        : Number(result?.discounttotalPrice || 0) === 0
+        ? 0
+        : Number(result?.discounttotalPrice),
+      isDiscountZero: isDiscountZero,
+      rentAmount: vehicles[0]?.perDayCost,
+      isPackageApplied: !!vehiclePlanData,
+      extendAmount: [],
+    },
+    vehicleBasic: {
+      refundableDeposit: vehicles[0]?.refundableDeposit,
+      speedLimit: vehicles[0]?.speedLimit,
+      vehicleNumber: vehicles[0]?.vehicleNumber,
+      freeLimit: vehicles[0]?.freeKms,
+      lateFee: vehicles[0]?.lateFee,
+      extraKmCharge: vehicles[0]?.extraKmsCharges,
+      startRide: startRideOtp,
+      endRide: 0,
+    },
+    discountCuopon: { couponName: tempCouponName, couponId: tempCouponId },
+    extendBooking: { oldBooking: [], transactionIds: [] },
+    vehicleName: vehicles[0]?.vehicleName,
+    vehicleBrand: vehicles[0]?.vehicleBrand,
+    vehicleImage: vehicles[0]?.vehicleImage,
+    stationId: vehicles[0]?.stationId,
+    stationName: vehicles[0]?.stationName,
+    bookingStatus: "pending",
+    paymentStatus: "pending",
+    rideStatus: "pending",
+    paymentMethod: "NA",
+    payInitFrom: "NA",
+    paySuccessId: "NA",
+  };
 
-    if (result?.paymentMethod !== "cash") {
-      dispatch(addTempBookingData(data));
-    }
+  if (result?.paymentMethod !== "cash") {
+    dispatch(addTempBookingData(data));
   }
-  // console.log(data);
-  // return;
+  // }
+
   try {
-    let storedBooking = localStorage.getItem("tempBooking");
-    if (storedBooking) {
-      data = tempBookingData || JSON.parse(storedBooking);
-    }
+    // let storedBooking = localStorage.getItem("tempBooking");
+    // if (storedBooking) {
+    //   data = tempBookingData || JSON.parse(storedBooking);
+    // }
 
     if (data?.bookingPrice?.isDiscountZero) {
       data = {
@@ -808,30 +816,36 @@ const handleBookingProcess = async (
 
     data = { ...data, paymentMethod: result?.paymentMethod };
 
-    if (["online", "partiallyPay"].includes(result?.paymentMethod)) {
-      let bookingResponse;
-      if (!storedBooking) {
-        bookingResponse = await handleCreateBooking(
-          data,
-          handlebooking,
-          removeTempDate,
-          handleAsyncError,
-          dispatch
-        );
-      } else {
-        bookingResponse = await handleUpdateBooking(
-          { ...data, paymentMethod: result?.paymentMethod },
-          handlebooking,
-          handleAsyncError,
-          dispatch
-        );
-      }
+    // console.log(data);
+    // return;
 
-      if (bookingResponse?.status === 200 || storedBooking) {
+    if (["online", "partiallyPay"].includes(result?.paymentMethod)) {
+      // let bookingResponse;
+      // if (!storedBooking) {
+      let bookingResponse = await handleCreateBooking(
+        data,
+        handlebooking,
+        removeTempDate,
+        handleAsyncError,
+        dispatch
+      );
+      // } else {
+      //   bookingResponse = await handleUpdateBooking(
+      //     { ...data, paymentMethod: result?.paymentMethod },
+      //     handlebooking,
+      //     handleAsyncError,
+      //     dispatch
+      //   );
+      // }
+
+      // if (bookingResponse?.status === 200 || storedBooking) {
+      if (bookingResponse?.status === 200) {
         data = { ...data, ...bookingResponse.data };
         const orderId = await createOrderId(data);
+        // console.log(bookingResponse.data, orderId);
+        // return;
         if (orderId?.status === "created") {
-          localStorage.setItem("tempBooking", JSON.stringify(data));
+          // localStorage.setItem("tempBooking", JSON.stringify(data));
           const response = await handleUpdateBooking(
             {
               ...data,
@@ -861,6 +875,8 @@ const handleBookingProcess = async (
             return;
           }
         }
+        console.log(data);
+        // return;
         return await razorPayment(
           currentUser,
           data,

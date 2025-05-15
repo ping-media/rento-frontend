@@ -135,14 +135,12 @@ const UserDocument = ({ pageTitle = "upload documents" }) => {
                     : file?.fileName?.includes("selfie") && "Selfie"}{" "}
                   Image
                 </p>
-                <div>
-                  <div className="w-60 h-40">
-                    <img
-                      src={file?.imageUrl}
-                      className="w-full h-full object-cover"
-                      alt={file?.fileName}
-                    />
-                  </div>
+                <div className="w-60 h-40">
+                  <img
+                    src={file?.imageUrl}
+                    className="w-full h-full object-cover"
+                    alt={file?.fileName}
+                  />
                 </div>
               </div>
             ))}

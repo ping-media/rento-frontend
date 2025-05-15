@@ -160,7 +160,7 @@ const getDurationInDays = (date1Str, date2Str) => {
   // Convert milliseconds to days
   const days = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
 
-  return days;
+  return Number(days);
 };
 
 const formatDateToSlash = (dateStr) => {

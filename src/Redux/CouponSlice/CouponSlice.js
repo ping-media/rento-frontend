@@ -37,6 +37,9 @@ const CouponSlice = createSlice({
       state.tempCouponId = id;
       state.tempCouponExtra = isExtra;
     },
+    updateDiscountTotal: (state, action) => {
+      state.tempCouponDiscountTotal = action.payload;
+    },
     removeTempTotalPrice: (state) => {
       state.tempTotalPrice = "";
     },
@@ -59,6 +62,7 @@ export const {
   handleStartLoading,
   addTempTotalPrice,
   addTempCouponDetails,
+  updateDiscountTotal,
   handleRestCouponWithPrice,
   removeTempTotalPrice,
   handleEndLoading,

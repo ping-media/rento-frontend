@@ -1,29 +1,51 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { formatPrice } from "../../utils";
+import { formatPrice, getDurationInDays } from "../../utils";
 
-const BookingPaymentCard = ({ isDiscountZeroApplied }) => {
+const BookingPaymentCard = ({
+  isDiscountZeroApplied,
+  bookingStartDateTime,
+  bookingEndDateTime,
+}) => {
   const { tempTotalPrice, tempCouponDiscountTotal } = useSelector(
     (state) => state.coupon
   );
+  const { selectedAddOn } = useSelector((state) => state.addon);
   const [finalPrice, setFinalPrice] = useState(0);
+  const duration = getDurationInDays(
+    bookingStartDateTime?.date,
+    bookingEndDateTime?.date
+  );
 
   useEffect(() => {
+    const extraAddonPrice =
+      selectedAddOn?.length > 0
+        ? selectedAddOn.reduce((total, addon) => {
+            const addonTotal =
+              addon?.maxAmount !== 0
+                ? addon.amount * duration < addon.maxAmount
+                  ? addon.amount
+                  : addon.maxAmount
+                : addon.amount;
+            return total + addonTotal;
+          }, 0)
+        : 0;
+
     const priceToUse =
       Number(tempCouponDiscountTotal) !== 0
         ? Number(tempCouponDiscountTotal)
         : Number(tempTotalPrice);
 
     if (priceToUse !== 0) {
-      setFinalPrice(Math.round(priceToUse * 0.2));
+      setFinalPrice(Math.round((priceToUse + extraAddonPrice) * 0.2));
     }
-  }, [tempTotalPrice, tempCouponDiscountTotal]);
+  }, [tempTotalPrice, tempCouponDiscountTotal, selectedAddOn]);
 
   return (
     <>
       {isDiscountZeroApplied === true && (
         <p className="text-xs text-left italic text-gray-400 my-2">
-          (No Need to select Payment Method because amount is ₹0.00)
+          (No Need to select Payment Method because amount is ₹0)
         </p>
       )}
       <div className="w-full my-2">
