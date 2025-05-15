@@ -36,7 +36,9 @@ const PriceCard = ({
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState([]);
-  const [vehicleRentCost, setVehicleRentCost] = useState(0);
+  const [vehicleRentCost, setVehicleRentCost] = useState(
+    Number(totalRentalCost)
+  );
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [gSTCost, setGSTCost] = useState(0);
   const [discountedTotal, setDiscountedTotal] = useState(0);
@@ -79,6 +81,7 @@ const PriceCard = ({
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
     let currentPlan = null;
+
     if (vehiclePlan !== null && vehiclePlan?.length > 0) {
       currentPlan = vehiclePlan?.find(
         (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
@@ -99,9 +102,9 @@ const PriceCard = ({
           : 0;
       setExtraAddOnCost(AddOnAmount);
     } else {
-      if (totalRentalCost) {
-        setVehicleRentCost(Number(totalRentalCost));
-      }
+      // if (totalRentalCost) {
+      //   setVehicleRentCost(Number(totalRentalCost));
+      // }
       const AddOnAmount =
         isExtraChecked?.length > 0
           ? calculateTotalAddOnPrice(
@@ -126,35 +129,51 @@ const PriceCard = ({
 
   // for calculating total price based on addons
   useEffect(() => {
-    const subTotal = Number(vehicleRentCost) + Number(extraAddOnCost);
+    let subTotal = Number(vehicleRentCost) + Number(extraAddOnCost);
     let gst = 0;
-    if (general?.status === "active") {
-      gst = calculateTax(subTotal, taxPercentage);
-    }
-    const totalPrice = Number(subTotal) + Number(gst);
-    setGSTCost(isNaN(gst) ? 0 : gst);
-    setSubTotal(subTotal);
-    setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
+    let totalPrice = 0;
 
     if (tempCouponName === "") {
+      if (general?.status === "active") {
+        gst = calculateTax(subTotal, taxPercentage);
+        totalPrice = Number(subTotal) + Number(gst);
+        setGSTCost(isNaN(gst) ? 0 : Math.round(gst));
+      } else {
+        totalPrice = Number(subTotal);
+        setGSTCost(0);
+      }
+
+      setSubTotal(subTotal);
+      setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
       dispatch(addTempTotalPrice(Math.round(subTotal)));
     } else {
       if (isDiscountZero) {
         setDiscountedTotal(Number(tempCouponDiscountTotal));
         return;
       }
-      if (!isNaN(Number(tempCouponDiscountTotal))) {
+      if (Number(tempCouponDiscountTotal) > 0) {
         const disountPrice = Number(tempCouponDiscountTotal);
-        let gst = 0;
+
         if (general?.status === "active") {
           gst = calculateTax(disountPrice, taxPercentage);
+          setGSTCost(isNaN(gst) ? 0 : Math.round(gst));
+          setDiscountedTotal(disountPrice + gst);
+          // totalPrice = Number(disountPrice) + Number(gst);
+        } else {
+          setDiscountedTotal(disountPrice);
+          // totalPrice = Number(disountPrice);
+          setGSTCost(0);
         }
-        setGSTCost(isNaN(gst) ? 0 : gst);
-        setDiscountedTotal(disountPrice + gst);
+
         setSubTotal(disountPrice);
+        setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
+        dispatch(addTempTotalPrice(Math.round(disountPrice)));
       }
     }
-  }, [isExtraChecked, vehicleRentCost, extraAddOnCost, tempCouponName]);
+    // setSubTotal(subTotal);
+    // setTotalPrice(Math.round(isNaN(totalPrice) ? 0 : totalPrice));
+    // dispatch(addTempTotalPrice(Math.round(subTotal)));
+  }, [isExtraChecked, vehicleRentCost, extraAddOnCost]);
 
   // adding addon in booking
   const handleChangeExtraAddonPrice = (item) => {

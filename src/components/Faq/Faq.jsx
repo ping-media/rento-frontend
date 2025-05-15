@@ -1,4 +1,3 @@
-import React from "react";
 import { faqList } from "../../Data/dummyData";
 import ArrowDown from "../../assets/icons/arrow-down.png";
 

@@ -84,7 +84,7 @@ const SuccessModal = () => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-24 lg:w-28 h-24 lg:h-28 text-green-600 mx-auto"
+            className="w-24 lg:w-28 h-24 lg:h-28 -mt-12 text-green-600 mx-auto"
           >
             <path
               strokeLinecap="round"
@@ -97,7 +97,7 @@ const SuccessModal = () => {
             '{tempCouponName}' applied
           </p>
           <h3 className="text-md lg:text-xl font-bold mb-3">
-            ₹{formatPrice(Number(tempCouponDiscount))} savings with this coupon
+            ₹{tempCouponDiscount} savings with this coupon
           </h3>
         </div>
       </div>

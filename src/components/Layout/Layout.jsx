@@ -36,7 +36,9 @@ const Layout = () => {
     if (maintenance) {
       navigate("/maintenance");
     } else {
-      navigate("/");
+      if (location.pathname === "/maintenance") {
+        navigate("/");
+      }
     }
   }, []);
 

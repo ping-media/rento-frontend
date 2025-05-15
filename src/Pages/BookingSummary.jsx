@@ -218,7 +218,7 @@ const BookingSummary = () => {
     vehicles.length > 0 ? (
       <>
         {/* terms Modal  */}
-        <BookingTermModal />
+        <BookingTermModal {...vehicles[0]} />
         <CouponModal />
         <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
           <form onSubmit={handleCreateBookingSubmit}>
@@ -309,11 +309,10 @@ const BookingSummary = () => {
                 </div>
                 <div className="mt-1 order-5 w-full">
                   <button
-                    className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-gray-400"
+                    className="bg-theme px-4 py-4 w-full text-gray-100 rounded-lg disabled:bg-theme/60"
                     disabled={
                       !isAllFieldChecked ? true : false || bookingLoading
                     }
-                    type="submit"
                   >
                     {!bookingLoading ? (
                       currentUser === null ? (

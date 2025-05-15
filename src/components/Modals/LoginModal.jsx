@@ -4,7 +4,7 @@ import {
   toggleRegisterModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import InputWithIcon from "../Input/InputwithIcon";
-import React, { useState } from "react";
+import { useState } from "react";
 import VerifyOtp from "../Auth/VerifyOtp";
 import Spinner from "../Spinner/Spinner";
 import { handleUser } from "../../Data";
@@ -83,8 +83,8 @@ const LoginModal = () => {
         } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
       >
         <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-md">
-          <div className="flex items-center justify-between px-4 py-2">
-            <h2 className="font-bold text-2xl uppercase">
+          <div className="flex items-center justify-between border-b border-gray-300 px-4 py-2">
+            <h2 className="font-extrabold text-2xl uppercase">
               Sign <span className="text-theme">In</span>
             </h2>
             <button
@@ -118,7 +118,7 @@ const LoginModal = () => {
                     isEmpty={handleChangeInputChange}
                   />
                   <button
-                    className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-gray-400 uppercase"
+                    className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-theme/70 uppercase"
                     disabled={loading || isInputEmpty?.length != 10}
                     type="submit"
                   >

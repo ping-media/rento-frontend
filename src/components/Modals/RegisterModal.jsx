@@ -71,6 +71,31 @@ const RegisterModal = () => {
     }
   }, [isRegisterModalActive]);
 
+  // this make sure that all field are filled before form submit
+  useEffect(() => {
+    const form = document.getElementById("signup-form");
+    const button = document.getElementById("signup-button");
+
+    const handleInput = () => {
+      const inputs = form.querySelectorAll("input");
+      const allFilled = Array.from(inputs).every(
+        (input) => input.value.trim() !== ""
+      );
+      button.disabled = !allFilled;
+    };
+
+    const inputs = form.querySelectorAll("input");
+    inputs.forEach((input) => input.addEventListener("input", handleInput));
+
+    handleInput();
+
+    return () => {
+      inputs.forEach((input) =>
+        input.removeEventListener("input", handleInput)
+      );
+    };
+  }, []);
+
   // sending the user to term & condition page and close modal
   const handleChangeLink = () => {
     dispatch(toggleRegisterModal(false));
@@ -84,8 +109,8 @@ const RegisterModal = () => {
       } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
     >
       <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-md">
-        <div className="flex items-center justify-between px-4 py-2">
-          <h2 className="font-bold text-2xl uppercase">
+        <div className="flex items-center justify-between border-b border-gray-300 px-4 py-2">
+          <h2 className="font-extrabold text-2xl uppercase">
             Sign <span className="text-theme">Up</span>
           </h2>
           <button
@@ -110,7 +135,11 @@ const RegisterModal = () => {
         <div className="p-6 text-center">
           {!isverfiyOtpActive ? (
             <>
-              <form onSubmit={handleRegisterUser} className="mb-8">
+              <form
+                id="signup-form"
+                onSubmit={handleRegisterUser}
+                className="mb-8"
+              >
                 <div className="flex justify-between gap-2 mb-5">
                   <div className="flex-1">
                     <Input
@@ -139,8 +168,9 @@ const RegisterModal = () => {
                   <InputWithIcon name={"contact"} />
                 </div>
                 <button
-                  className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-gray-400 uppercase"
+                  className="px-6 py-3.5 bg-theme w-full text-gray-100 font-semibold mt-6 rounded-lg disabled:bg-theme/70 uppercase"
                   disabled={loadings}
+                  id="signup-button"
                 >
                   {loadings ? <Spinner message={"Signing Up"} /> : " Sign up"}
                 </button>
