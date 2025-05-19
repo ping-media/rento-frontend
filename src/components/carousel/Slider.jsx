@@ -4,24 +4,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import BannerImg from "../../assets/images/hero-banner.jpg";
 import { useRef } from "react";
 
-const Slider = () => {
-  const images = [
-    {
-      image: BannerImg,
-      text: "Explore the Beauty of Nature",
-    },
-    {
-      image: BannerImg,
-      text: "Adventure Awaits in the Wild",
-    },
-    {
-      image: BannerImg,
-      text: "Find Peace in the Outdoors",
-    },
-  ];
+const Slider = ({ slides }) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   return (
@@ -80,11 +65,11 @@ const Slider = () => {
         }}
         className="h-full lg:h-[72vh]"
       >
-        {images.map((slide, index) => (
-          <SwiperSlide key={index}>
+        {slides.map((slide, index) => (
+          <SwiperSlide key={slide._id}>
             <div className="relative w-full h-full brightness-90">
               <img
-                src={slide.image}
+                src={slide.link}
                 className="w-full h-full object-cover"
                 alt={`BANNER_${index + 1}`}
               />

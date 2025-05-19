@@ -7,8 +7,17 @@ import {
 import logoImg from "../../assets/logo/rento-logo.png";
 import playStore from "../../assets/playStore.png";
 import { memo } from "react";
+import { useSelector } from "react-redux";
 
 const Footer = () => {
+  const { info, loading } = useSelector((state) => state.general);
+
+  const contact = (!loading && info.contact) || "8884488891";
+  const email = (!loading && info.email) || "support@rentobikes.com";
+  const address = (!loading && info.address) || "HSR Layout, Bangalore, 560016";
+
+  const footerQuickLink = contactUsFooterLink({ contact, email, address });
+
   return (
     <footer className="bg-theme-black crusor-default">
       <div className="w-[95%] lg:w-[80%] mx-auto pt-6 pb-3.5">
@@ -31,20 +40,25 @@ const Footer = () => {
             </p>
             {/* social icons  */}
             <div className="flex items-center gap-4">
-              {socialIcons.map((item, index) => (
-                <a
-                  href={item.link}
-                  target="_blank"
-                  key={index}
-                  className="size-5 group"
-                >
-                  <img
-                    src={item.icon}
-                    className="w-full h-full object-cover invert group-hover:scale-110 transition-all duration-300 ease-in-out"
-                    alt={item.label}
-                  />
-                </a>
-              ))}
+              {Object.entries(info.socialmedia).map(([key, value], index) => {
+                if (value === "#") {
+                  return null;
+                }
+                return (
+                  <a
+                    href={value}
+                    target="_blank"
+                    key={index}
+                    className="size-5 group"
+                  >
+                    <img
+                      src={socialIcons[key]}
+                      className="w-full h-full object-cover invert group-hover:scale-110 transition-all duration-300 ease-in-out"
+                      alt={key}
+                    />
+                  </a>
+                );
+              })}
             </div>
           </div>
           {/* quick links  */}
@@ -65,7 +79,7 @@ const Footer = () => {
           <div>
             <h2 className="text-xl text-white font-bold mb-3">Contact Us</h2>
             <ul className="leading-10">
-              {contactUsFooterLink?.map((item, index) => (
+              {footerQuickLink?.map((item, index) => (
                 <li
                   key={index}
                   className="text-white hover:text-gray-300 transition-all ease-in-out duration-300"
@@ -76,7 +90,9 @@ const Footer = () => {
                       {item?.value}
                     </a>
                   ) : (
-                    <span className="flex items-center gap-2 cursor-pointer">
+                    <span
+                      className={`flex items-center gap-2 cursor-pointer capitalize`}
+                    >
                       <div className="text-theme">{item.icon}</div>
                       {item?.value}
                     </span>
@@ -90,15 +106,15 @@ const Footer = () => {
             <p className="text-gray-100 text-base">
               Download the app by clicking the link below:
             </p>
-            {/* <a href="#" target="_blank"> */}
-            <div className="w-36 my-5">
-              <img
-                src={playStore}
-                className="w-full h-full object-cover"
-                alt="RENTO_PLAYSTORE"
-              />
-            </div>
-            {/* </a> */}
+            <Link to={info.appLink.Android} target="_blank">
+              <div className="w-36 my-5">
+                <img
+                  src={playStore}
+                  className="w-full h-full object-cover"
+                  alt="RENTO_PLAYSTORE"
+                />
+              </div>
+            </Link>
           </div>
         </div>
         <div className="flex items-center justify-center lg:pt-0 mt-5 lg:mt-0 border-t border-gray-500 text-white">

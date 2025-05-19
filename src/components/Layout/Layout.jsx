@@ -18,10 +18,15 @@ import whatsapp from "../../assets/icons/whatsapp.png";
 import { addAddOn, startLoading } from "../../Redux/AddOnSlice/AddOnSlice";
 import { fetchingData } from "../../Data";
 import { fetchingPlansFilters } from "../../Data/Functions";
+import PreLoader from "../skeleton/PreLoader";
+import {
+  addGeneralSettings,
+  stopSettingLoading,
+} from "../../Redux/SettingSlice/SettingSlice";
 
 const Layout = () => {
   const { message, type } = useSelector((state) => state.error);
-  const { maintenance } = useSelector((state) => state.general);
+  const { maintenance, info, loading } = useSelector((state) => state.general);
   const [hasMounted, setHasMounted] = useState(false);
   const { user } = useSelector((state) => state.user);
   const { addon } = useSelector((state) => state.addon);
@@ -32,15 +37,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    if (maintenance) {
-      navigate("/maintenance");
-    } else {
-      if (location.pathname === "/maintenance") {
-        navigate("/");
-      }
-    }
-  }, []);
+  const waContact = (!loading && info.waContact) || "8884488891";
 
   useEffect(() => {
     // setting decrypt user data
@@ -52,6 +49,33 @@ const Layout = () => {
       dispatch(toggleLocationModal(true));
     }
   }, [user, selectedLocation]);
+
+  useEffect(() => {
+    if (addon?.length > 0) return;
+
+    (async () => {
+      try {
+        dispatch(startLoading());
+        const response = await fetchingData("/addOn?page=1&limit=50");
+        if (response?.status === 200) {
+          dispatch(addAddOn(response));
+          dispatch(addGeneralSettings(response));
+        }
+      } finally {
+        dispatch(stopSettingLoading());
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (maintenance) {
+      navigate("/maintenance");
+    } else {
+      if (location.pathname === "/maintenance") {
+        navigate("/");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!hasMounted) {
@@ -75,17 +99,9 @@ const Layout = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (addon?.length > 0) return;
-
-    (async () => {
-      dispatch(startLoading());
-      const response = await fetchingData("/addOn?page=1&limit=50");
-      if (response?.status === 200) {
-        dispatch(addAddOn(response));
-      }
-    })();
-  }, []);
+  if (loading) {
+    return <PreLoader />;
+  }
 
   return (
     <>
@@ -100,8 +116,8 @@ const Layout = () => {
       {/* main section  */}
       <header className="sticky top-0 z-20">
         <TopHeader
-          email={"support@rentobikes.com"}
-          phoneNumber={"+91 8884488891"}
+          email={info?.email || "support@rentobikes.com"}
+          phoneNumber={`+91 ${info.contact}` || "+91 8884488891"}
         />
         <Header />
       </header>
@@ -109,7 +125,7 @@ const Layout = () => {
         <Outlet />
         <CallToActionButton
           image={whatsapp}
-          link={"https://wa.me/+918884488891"}
+          link={`https://wa.me/+91${waContact}`}
         />
       </main>
       <Footer />

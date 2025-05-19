@@ -5,8 +5,11 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useSelector } from "react-redux";
 
 const Testimonials = () => {
+  const { testimonial } = useSelector((state) => state.general);
+
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   return (
@@ -74,8 +77,8 @@ const Testimonials = () => {
             }}
             className="w-full h-full"
           >
-            {testimonials.map((item) => (
-              <SwiperSlide key={item.id} className="mb-4 h-full">
+            {testimonial.map((item) => (
+              <SwiperSlide key={item._id} className="mb-4 h-full">
                 <div className="bg-white shadow-md px-4 py-3 rounded-md h-full flex flex-col justify-between min-h-[240px]">
                   <div className="w-10 h-10 mx-auto mb-3">
                     <svg
@@ -93,7 +96,7 @@ const Testimonials = () => {
                     </svg>
                   </div>
                   <div className="flex items-center gap-1 justify-center mb-2">
-                    {new Array(5).fill("").map((_, index) => (
+                    {new Array(item?.rating).fill("").map((_, index) => (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -113,7 +116,7 @@ const Testimonials = () => {
                   <h3 className="text-lg font-semibold text-center">
                     {item?.name}
                   </h3>
-                  <p className="text-justify text-sm">{item?.text}</p>
+                  <p className="text-justify text-sm">{item?.message}</p>
                 </div>
               </SwiperSlide>
             ))}

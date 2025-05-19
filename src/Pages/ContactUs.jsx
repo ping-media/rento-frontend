@@ -1,8 +1,16 @@
 import { Link } from "react-router-dom";
 import ContactImg from "../assets/logo/contact.svg";
 import { contactUsLink } from "../Data/dummyData";
+import { useSelector } from "react-redux";
 
 const ContactUs = () => {
+  const { info, loading } = useSelector((state) => state.general);
+
+  const contact = (!loading && info.contact) || "8884488891";
+  const email = (!loading && info.email) || "support@rentobikes.com";
+  const address = (!loading && info.address) || "HSR Layout, Bangalore, 560016";
+
+  const contactQuickLink = contactUsLink({ contact, email, address });
   return (
     <div className="w-[95%] lg:w-[90%] mx-auto py-2.5">
       <div className="lg:flex flex-wrap my-3.5">
@@ -28,7 +36,7 @@ const ContactUs = () => {
 
           <div className="bg-white px-6 lg:px-4 py-3.5 rounded-lg shadow-md">
             <ul className="leading-7 lg:leading-10">
-              {contactUsLink?.map((item, index) => (
+              {contactQuickLink?.map((item, index) => (
                 <li className="mb-4 cursor-pointer" key={index}>
                   <div className="flex items-center gap-2 text-theme text-medium lg:text-lg">
                     <div>{item?.icon}</div>
@@ -39,7 +47,7 @@ const ContactUs = () => {
                     item?.name.includes("Email") ? (
                       <Link
                         to={`${
-                          item?.name.includes("Contact") ? "tel:+91" : "mailto:"
+                          item?.name.includes("Contact") ? "tel:" : "mailto:"
                         }${item.value}`}
                         className="hover:underline underline-offset-4"
                       >

@@ -2,6 +2,7 @@ import scooterImage from "../assets/logo/scooter.png";
 import bikeImage from "../assets/logo/bike.png";
 import facebook from "../assets/icons/facebook.png";
 import instagram from "../assets/icons/instagram.png";
+import twitter from "../assets/icons/twitter.png";
 
 export const isHomeLink = ["/", "/monthly-rental"];
 
@@ -12,11 +13,6 @@ export const menuList = [
     link: `/monthly-rental`,
     isPhone: false,
   },
-  // {
-  //   title: "explore",
-  //   link: `/explore?BookingStartDateAndTime=${dateAndTime}&BookingEndDateAndTime=${nextDayAndTime}`,
-  //   isPhone: false,
-  // },
   { title: "Profile", link: "/account/profile", isPhone: true },
   { title: "My Rides", link: "/account/my-rides", isPhone: true },
   { title: "Logout", link: "", isPhone: true },
@@ -44,10 +40,11 @@ export const brands = [
 ];
 export const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
-export const socialIcons = [
-  { icon: facebook, link: "https://www.facebook.com/", label: "facebook" },
-  { icon: instagram, link: "https://www.instagram.com/", label: "instagram" },
-];
+export const socialIcons = {
+  facebook: facebook,
+  instagram: instagram,
+  twitter: twitter,
+};
 
 export const quickLink = [
   { name: "Terms & Conditions", link: "/terms-and-conditions" },
@@ -56,7 +53,7 @@ export const quickLink = [
   { name: "Contact Us", link: "/contact-us" },
 ];
 
-export const contactUsFooterLink = [
+export const contactUsFooterLink = ({ contact, email, address }) => [
   {
     icon: (
       <svg
@@ -73,8 +70,8 @@ export const contactUsFooterLink = [
       </svg>
     ),
     name: "Contact Number",
-    value: "+91 8884488891",
-    link: "tel:+918884488891",
+    value: `+91 ${contact}`,
+    link: `tel:+91${contact}`,
   },
   {
     icon: (
@@ -94,8 +91,8 @@ export const contactUsFooterLink = [
       </svg>
     ),
     name: "Support Email",
-    value: "support@rentobikes.com",
-    link: "mailto:support@rentobikes.com",
+    value: email,
+    link: `mailto:${email}`,
   },
   {
     icon: (
@@ -120,11 +117,11 @@ export const contactUsFooterLink = [
       </svg>
     ),
     name: "Registered Address",
-    value: "HSR Layout, Bangalore, 560016",
+    value: address,
   },
 ];
 
-export const contactUsLink = [
+export const contactUsLink = ({ contact, email, address }) => [
   {
     icon: (
       <svg
@@ -168,7 +165,7 @@ export const contactUsLink = [
       </svg>
     ),
     name: "Registered Address",
-    value: "HSR Layout, Bangalore, 560016",
+    value: address,
   },
   {
     icon: (
@@ -186,7 +183,7 @@ export const contactUsLink = [
       </svg>
     ),
     name: "Contact Number",
-    value: "+918884488891",
+    value: `+91${contact}`,
   },
   {
     icon: (
@@ -206,7 +203,7 @@ export const contactUsLink = [
       </svg>
     ),
     name: "Support Email",
-    value: "support@rentobikes.com",
+    value: email,
   },
 ];
 
