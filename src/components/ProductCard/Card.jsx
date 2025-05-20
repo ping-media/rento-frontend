@@ -112,9 +112,8 @@ const Card = ({
         )}
         {/* vehicle left */}
         {!isSold && (
-          <div className="top-4 left-0 absolute z-[1]">
+          <div className="top-1 lg:top-4 left-0 absolute z-[1]">
             <p
-              // className="bg-theme-black text-gray-100 px-2 py-1 rounded-r-lg mb-1"
               className="background-[rgba( 255, 255, 255, 0.25 )] shadow-md backdrop-blur-sm px-2 py-1 rounded-r-lg mb-1"
               title="Vehicle_Count"
             >
@@ -122,10 +121,9 @@ const Card = ({
             </p>
           </div>
         )}
-        {/*vehicle modal*/}
-        <div className="top-4 right-0 absolute z-[1]">
+        {/* vehicle modal */}
+        <div className="top-1 lg:top-4 right-0 absolute z-[1]">
           <p
-            // className="bg-theme-black text-gray-100 px-2 py-1 rounded-l-lg mb-1"
             className="background-[rgba( 255, 255, 255, 0.25 )] shadow-md backdrop-blur-sm px-2 py-1 rounded-l-lg mb-1"
             title="Vehicle_Modal"
           >

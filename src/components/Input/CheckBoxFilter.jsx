@@ -25,7 +25,7 @@ const CheckboxFilter = ({ setPlanIdChanger, isSearch = false }) => {
     filter.length > 0 ? (
       <div className="grid grid-cols-2 gap-3">
         {filter?.map((item, index) => {
-          if (isSearch && index + 1 === 5) {
+          if (isSearch && index + 1 > 4) {
             return null;
           }
           return (
