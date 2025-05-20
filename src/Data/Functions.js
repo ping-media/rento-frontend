@@ -773,16 +773,18 @@ const handleBookingProcess = async (
       );
 
       if (response?.status === 200) {
+        const paymentAmount =
+          data?.bookingPrice?.discountTotalPrice > 0
+            ? data?.bookingPrice?.discountTotalPrice
+            : data?.bookingPrice?.totalPrice;
+
         const timeLineData = {
-          currentBooking_id: response?.data?._id,
+          currentBooking_id: data?._id,
           timeLine: [
             {
               title: "Pay Later",
               date: Date.now(),
-              paymentAmount:
-                response?.bookingPrice?.discountTotalPrice > 0
-                  ? response?.bookingPrice?.discountTotalPrice
-                  : response?.bookingPrice?.totalPrice,
+              paymentAmount: paymentAmount || 0,
             },
           ],
         };
