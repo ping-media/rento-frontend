@@ -723,9 +723,9 @@ const handleBookingProcess = async (
     paySuccessId: "NA",
   };
 
-  if (result?.paymentMethod !== "cash") {
-    dispatch(addTempBookingData(data));
-  }
+  // if (result?.paymentMethod !== "cash") {
+  //   dispatch(addTempBookingData(data));
+  // }
   // }
 
   try {
