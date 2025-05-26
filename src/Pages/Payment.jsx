@@ -24,6 +24,16 @@ const Payment = () => {
     if (id) {
       const decodedData = jwtDecode(id);
       setDecodedParams(decodedData);
+      sessionStorage.setItem("paymentParams", JSON.stringify(decodedData));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (!decodedParams) {
+      const storedParams = sessionStorage.getItem("paymentParams");
+      if (storedParams) {
+        setDecodedParams(JSON.parse(storedParams));
+      }
     }
   }, []);
 
@@ -172,6 +182,10 @@ const Payment = () => {
   // After fetching data, initialize payment
   useEffect(() => {
     if (!bookingFetched || paymentInProgress.current) return;
+
+    const alreadyPaid = sessionStorage.getItem("paymentStarted");
+    if (alreadyPaid) return;
+
     paymentInProgress.current = true;
 
     const initializePayment = async () => {
@@ -187,6 +201,7 @@ const Payment = () => {
           description: "Payment for your booking",
           image: favicon,
           handler: (response) => {
+            sessionStorage.removeItem("paymentStarted");
             if (response) {
               setPaymentDone(true);
               return handleBookVehicle(response);
@@ -207,6 +222,8 @@ const Payment = () => {
             },
           },
         };
+
+        sessionStorage.setItem("paymentStarted", "true");
 
         const razorpay = new window.Razorpay(options);
         razorpay.open();

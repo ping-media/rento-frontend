@@ -711,15 +711,21 @@ const addOneMinute = (dateTimeString) => {
 };
 
 const calculatePriceForExtendBooking = (
-  perDayCost,
-  extensionDays,
-  extraAddonPrice = 0
+  totalRentalCost,
+  // extensionDays,
+  extraAddonPrice = 0,
+  isGSTActive = false,
+  GSTPercentage = 18
 ) => {
-  const bookingPrice = Number(perDayCost) * Number(extensionDays);
+  // const bookingPrice = Number(perDayCost) * Number(extensionDays);
+  const bookingPrice = Number(totalRentalCost);
   const AddonPrice = Number(extraAddonPrice);
   const newAddOnPrice = AddonPrice;
   const newBookingPrice = bookingPrice + newAddOnPrice;
-  const tax = calculateTax(newBookingPrice, 18);
+  let tax = 0;
+  if (isGSTActive) {
+    tax = calculateTax(newBookingPrice, GSTPercentage);
+  }
   const extendAmount = Number(newBookingPrice) + Number(tax);
   return extendAmount;
 };

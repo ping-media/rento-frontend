@@ -79,15 +79,16 @@ const RideCard = ({ item, id }) => {
                 </>
               )}
             </div>
-            <p className="mb-2 text-xs lg:text-sm text-gray-400">
-              <span>Booking ID: #{item?.bookingId}</span>
+            <p className="mb-2 text-xs lg:text-sm text-gray-700">
+              <span className="font-semibold">Booking ID:</span> #
+              {item?.bookingId}
               <span className="mx-1 hidden lg:inline">|</span>
-              <span className="block lg:inline">
+              <span className="block lg:inline font-semibold">
                 Booked On: {""}
-                {createdOn}
               </span>
+              {createdOn}
             </p>
-            <p className="mb-2 text-xs lg:text-sm text-gray-400">
+            <p className="mb-2 text-xs lg:text-sm text-gray-700">
               <span className="block mb-2">
                 Booking Start Date{" "}
                 <span className="hidden lg:inline">And Time</span>:{" "}
@@ -101,11 +102,11 @@ const RideCard = ({ item, id }) => {
               ${bookingEnd?.time}`}
               </span>
             </p>
-            <p className="text-xs lg:text-sm text-gray-400 mb-2 capitalize">
+            <p className="text-xs lg:text-sm text-gray-700 mb-2 capitalize">
               Station Details: {item?.stationName}
             </p>
             <div className="flex items-center flex-wrap gap-1 lg:gap-2 mb-2">
-              <p className="text-xs lg:text-sm text-gray-400">
+              <p className="text-xs lg:text-sm text-gray-700">
                 {item?.bookingPrice &&
                   `Booking Amount: ₹${formatPrice(
                     item?.bookingPrice?.bookingPrice
@@ -114,7 +115,7 @@ const RideCard = ({ item, id }) => {
               <span className="mx-1 text-sm text-gray-400 hidden lg:inline">
                 |
               </span>
-              <p className="text-xs lg:text-sm text-gray-400">
+              <p className="text-xs lg:text-sm text-gray-700">
                 {item?.bookingPrice &&
                   `Refundable Deposit Amount: ₹${formatPrice(
                     item?.vehicleBasic?.refundableDeposit
@@ -122,7 +123,7 @@ const RideCard = ({ item, id }) => {
               </p>
             </div>
             {id && (
-              <p className="text-xs lg:text-sm text-gray-400 italic">
+              <p className="text-xs lg:text-sm text-gray-500 italic">
                 (Deposit Amount to be paid at the time of pickup and will be
                 refunded after the drop)
               </p>

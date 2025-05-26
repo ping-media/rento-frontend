@@ -54,11 +54,50 @@ const RideFareDetails = ({ rides }) => {
             </div>
           )}
           <ul className="w-full leading-8">
+            <li className="flex items-center justify-between border-b-2">
+              <div className="my-1">
+                <p className="text-sm font-semibold uppercase">Booking Price</p>
+                <p className="text-xs text-gray-500 mb-1">
+                  (
+                  {`₹${rides?.bookingPrice?.rentAmount} x ${getDurationInDays(
+                    rides?.BookingStartDateAndTime,
+                    rides?.BookingEndDateAndTime
+                  )} ${
+                    getDurationInDays(
+                      rides?.BookingStartDateAndTime,
+                      rides?.BookingEndDateAndTime
+                    ) == 1
+                      ? "day"
+                      : "days"
+                  }`}
+                  )
+                </p>
+              </div>
+              <p>{`₹${formatPrice(rides?.bookingPrice?.bookingPrice)}`}</p>
+            </li>
+
+            {/* discount price  */}
+            {rides?.bookingPrice?.discountPrice > 0 && (
+              <li
+                className={`flex items-center justify-between my-1 text-sm border-b-2`}
+              >
+                <p className="text-sm font-semibold uppercase text-left">
+                  Discount Price
+                  <small className="text-sm font-semibold text-xs mx-1 block text-gray-400 italic">
+                    Coupon: ({rides?.discountCuopon?.couponName})
+                  </small>
+                </p>
+                <p className="font-semibold text-right">
+                  {`- ₹${formatPrice(rides?.bookingPrice?.discountPrice)}`}
+                </p>
+              </li>
+            )}
             {Object.entries(rides?.bookingPrice)
               .filter(
                 ([key]) =>
                   key !== "totalPrice" &&
                   key !== "vehiclePrice" &&
+                  key !== "bookingPrice" &&
                   key !== "rentAmount" &&
                   key !== "isPackageApplied" &&
                   key !== "userPaid" &&
@@ -194,58 +233,44 @@ const RideFareDetails = ({ rides }) => {
               })}
 
             {/* totalPrice */}
-            {rides?.bookingPrice?.totalPrice && (
-              <li className="flex items-center justify-between mt-1 my-1 text-sm">
-                <p className="text-sm font-bold uppercase text-left">
-                  {rides?.bookingPrice?.discountPrice &&
-                  rides?.bookingPrice?.discountPrice != 0
-                    ? "Subtotal"
-                    : "Total Price"}
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+            {rides?.bookingPrice?.discountTotalPrice === 0 &&
+              rides?.bookingPrice?.isDiscountZero !== true &&
+              rides?.bookingPrice?.totalPrice && (
+                <li className="flex items-center justify-between mt-1 my-1 text-sm">
+                  <p className="text-sm font-bold uppercase text-left">
                     {rides?.bookingPrice?.discountPrice &&
                     rides?.bookingPrice?.discountPrice != 0
-                      ? ""
-                      : rides?.paymentMethod == "online" &&
-                        rides?.paySuccessId != "NA"
-                      ? "(Full Paid)"
-                      : rides?.paymentMethod == "partiallyPay"
-                      ? ""
-                      : rides?.bookingPrice?.payOnPickupMethod
-                      ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
-                      : "(need to pay at pickup)"}
-                  </small>
-                </p>
-                <p className="text-sm font-bold text-right">
-                  {`₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
-                </p>
-              </li>
-            )}
-
-            {/* discount price  */}
-            {rides?.bookingPrice?.discountPrice > 0 && (
-              <li
-                className={`flex items-center justify-between mt-1 my-1 text-sm ${
-                  rides?.bookingPrice?.discountPrice ? "border-t-2" : ""
-                }`}
-              >
-                <p className="text-sm font-semibold uppercase text-left">
-                  Discount Price
-                  <small className="text-sm font-semibold text-xs mx-1 block text-gray-400 italic">
-                    Coupon: ({rides?.discountCuopon?.couponName})
-                  </small>
-                </p>
-                <p className="font-semibold text-right">
-                  {`- ₹${formatPrice(rides?.bookingPrice?.discountPrice)}`}
-                </p>
-              </li>
-            )}
+                      ? "Subtotal"
+                      : "Total Price"}
+                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                      {rides?.bookingPrice?.discountPrice &&
+                      rides?.bookingPrice?.discountPrice != 0
+                        ? ""
+                        : rides?.paymentMethod == "online" &&
+                          rides?.paySuccessId != "NA"
+                        ? "(Full Paid)"
+                        : rides?.paymentMethod == "partiallyPay"
+                        ? ""
+                        : rides?.bookingPrice?.payOnPickupMethod
+                        ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
+                        : "(need to pay at pickup)"}
+                    </small>
+                  </p>
+                  <p className="text-sm font-bold text-right">
+                    {`₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
+                  </p>
+                </li>
+              )}
 
             {/* total price  */}
             {(rides?.bookingPrice?.discountTotalPrice > 0 ||
               rides?.bookingPrice?.isDiscountZero === true) && (
               <li
                 className={`flex items-center justify-between mt-1 my-1 text-sm ${
-                  rides?.bookingPrice?.userPaid ? "border-b-2" : ""
+                  rides?.bookingPrice?.userPaid &&
+                  rides?.paymentStatus !== "pending"
+                    ? "border-b-2"
+                    : ""
                 }`}
               >
                 <p className="text-sm font-bold uppercase text-left">
@@ -267,7 +292,8 @@ const RideFareDetails = ({ rides }) => {
                   {`₹${formatPrice(
                     rides?.bookingPrice?.isDiscountZero === true
                       ? 0
-                      : rides?.bookingPrice?.discountTotalPrice
+                      : rides?.bookingPrice?.discountTotalPrice +
+                          rides?.bookingPrice?.extraAddonPrice
                   )}`}
                 </p>
               </li>

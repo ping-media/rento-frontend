@@ -279,12 +279,13 @@ const BookingSummary = () => {
               </div>
 
               <div className="flex flex-wrap col-span-3">
-                <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-1 w-full relative overflow-hidden">
-                  <div className="px-4 py-3 border-b-2 border-gray-300">
-                    <h2 className="font-semibold">Total Price</h2>
+                <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full relative overflow-hidden">
+                  <div className="px-4 py-1 border-b-2 border-gray-300">
+                    <h2 className="font-bold text-base">Price Details</h2>
                   </div>
                   <PriceCard
                     perDayCost={vehicles[0]?.perDayCost}
+                    refundableDeposit={vehicles[0]?.refundableDeposit}
                     totalRentalCost={vehicles[0]?.totalRentalCost}
                     daysBreakDown={vehicles[0]?._daysBreakdown}
                     vehiclePlan={
@@ -299,7 +300,7 @@ const BookingSummary = () => {
                   />
                 </div>
                 {/* coupon section  */}
-                <div className="w-full order-2 mb-3">
+                <div className="w-full order-1 mb-3">
                   <PromoCard />
                 </div>
                 {/* payment option section  */}

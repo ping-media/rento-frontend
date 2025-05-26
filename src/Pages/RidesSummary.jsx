@@ -145,7 +145,7 @@ const RidesSummary = () => {
             <div className="flex items-center gap-2">
               {rides[0]?.bookingStatus == "pending" && (
                 <button
-                  className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 border shadow-md outline-none rounded-md capitalize border disabled:bg-opacity-50"
+                  className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 bg-theme/90 shadow-md text-white outline-none rounded-md capitalize disabled:bg-opacity-50"
                   type="button"
                   onClick={handleMakePayment}
                   disabled={paymentLoading}

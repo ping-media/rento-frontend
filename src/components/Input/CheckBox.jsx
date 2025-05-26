@@ -1,8 +1,9 @@
 import { forwardRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleBookingTermModal } from "../../Redux/ModalSlice/ModalSlice";
 
 const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
+  const { isBookingTermActive } = useSelector((state) => state.modals);
   const dispatch = useDispatch();
   return (
     <div>
@@ -14,7 +15,12 @@ const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
           id={labelId}
           type="checkbox"
           className="peer hidden"
-          onChange={() => setValue(ref.current?.checked)}
+          onChange={() => {
+            setValue(ref.current?.checked);
+            isBookingTermActive === false &&
+              ref.current?.checked &&
+              dispatch(toggleBookingTermModal());
+          }}
           ref={ref}
         />
         <div

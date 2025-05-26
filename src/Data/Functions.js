@@ -877,7 +877,7 @@ const handleBookingProcess = async (
             return;
           }
         }
-        console.log(data);
+        // console.log(data);
         // return;
         return await razorPayment(
           currentUser,

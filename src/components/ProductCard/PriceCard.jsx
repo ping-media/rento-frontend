@@ -14,6 +14,7 @@ import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 
 const PriceCard = ({
   perDayCost,
+  refundableDeposit,
   totalRentalCost,
   daysBreakDown,
   vehiclePlan,
@@ -293,7 +294,7 @@ const PriceCard = ({
               </li>
             ))}
 
-          <li className="flex items-center justify-between border-t-2 border-gray-300 mt-2">
+          <li className="flex items-center justify-between border-t-2 border-gray-300 mt-1">
             <div>
               <span className="text-gray-500">Sub Total</span>
             </div>
@@ -314,7 +315,7 @@ const PriceCard = ({
           )}
         </ul>
         {/* total price & discount Price */}
-        <div className={`${isExtraChecked ? "pt-2 pb-6" : "pt-2 pb-6"}`}>
+        <div className="pt-2 pb-2">
           <div className="flex items-center justify-between">
             <input type="hidden" name="totalPrice" value={totalPrice} />
             <input
@@ -322,7 +323,7 @@ const PriceCard = ({
               name="discounttotalPrice"
               value={Math.round(tempCouponDiscountTotal)}
             />
-            <span className="text-gray-500">Payable Amount</span>
+            <span className="text-gray-500">Booking Amount</span>
             <span className="font-semibold">
               ₹
               {tempCouponDiscountTotal != null &&
@@ -331,6 +332,21 @@ const PriceCard = ({
                 : formatPrice(totalPrice)}
             </span>
           </div>
+        </div>
+        {/* refundableDeposit  */}
+        <div className="flex items-center border-t-2 border-gray-300 justify-between pb-2">
+          <div>
+            <span className="text-gray-500 mr-1">Refundable Deposit:</span>
+            <span className="font-semibold">
+              ₹{formatPrice(Math.round(refundableDeposit))}
+            </span>
+            <p className="text-xs text-gray-400 text-theme font-bold">
+              (An additional security deposit is payable at pickup)
+            </p>
+          </div>
+          {/* <span className="font-semibold">
+              ₹{formatPrice(Math.round(refundableDeposit))}
+            </span> */}
         </div>
       </div>
       {/* extra accessories  */}

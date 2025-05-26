@@ -78,8 +78,8 @@ const IdentityModal = () => {
               onSubmit={handleUploadIdentity}
             >
               <div className="w-full lg:flex-1 order-1 lg:order-2">
-                <div className="flex items-center gap-2">
-                  <div className="mb-5 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="mb-5 w-full lg:flex-1">
                     <InputFile
                       name={"images"}
                       labelDesc={"Aadhaar Image"}
@@ -88,7 +88,7 @@ const IdentityModal = () => {
                       setImage={setFrontImage}
                     />
                   </div>
-                  <div className="mb-5 flex-1">
+                  <div className="mb-5 w-full lg:flex-1">
                     <InputFile
                       name={"images"}
                       labelDesc={"Back Aadhaar Image"}

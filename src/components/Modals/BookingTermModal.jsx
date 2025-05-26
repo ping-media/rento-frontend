@@ -1,9 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleBookingTermModal } from "../../Redux/ModalSlice/ModalSlice";
+import { useState } from "react";
+import TermsAndCondition from "../../Pages/TermsAndCondition";
 
 const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
   const dispatch = useDispatch();
   const { isBookingTermActive } = useSelector((state) => state.modals);
+  const [isTermsVisible, setTermVisible] = useState(false);
 
   if (!isBookingTermActive) return;
 
@@ -17,7 +20,17 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
     "Rental package does not include Fuel, Toll, State Permits or Taxes.",
     "km’s included in the booking if exceeded are chargeable at a per km rate.",
     "Some vehicle bookings have a refundable security deposit. Refund of the same, usually takes 3-7 working days, from the date of invoice, to reflect in the source account.",
-    "Overspeeding fine is applicable after every 3 counts of overspeeding. This is exclusive of taxes and any other fines applied by the governing authority.",
+    <>
+      Overspeeding fine is applicable after 3 counts of overspeeding. This is
+      exclusive of taxes and any other fines applied by the governing authority.{" "}
+      <button
+        type="button"
+        onClick={() => setTermVisible(!isTermsVisible)}
+        className="hover:text-theme hover:underline"
+      >
+        Read more
+      </button>
+    </>,
   ];
 
   return (
@@ -52,7 +65,7 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
             </button>
           </div>
 
-          <div className="p-6 pt-2 text-center">
+          <div className="p-6 pt-2 text-center overflow-y-scroll max-h-96">
             <ul className="leading-8 list-disc mb-2">
               {bookingTermsList.map((term, index) => (
                 <li key={index} className="text-justify text-sm mb-1">
@@ -60,6 +73,9 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
                 </li>
               ))}
             </ul>
+            <div className={`${isTermsVisible ? "" : "hidden"}`}>
+              <TermsAndCondition isModal={true} />
+            </div>
           </div>
         </div>
       </div>

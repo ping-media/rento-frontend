@@ -1,7 +1,19 @@
-const TermsAndCondition = () => {
+const TermsAndCondition = ({ isModal = false }) => {
   return (
-    <div className="flex items-center justify-between w-[95%] lg:w-[90%] mx-auto py-2.5">
-      <div className="max-w-4xl lg:max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div
+      className={`${
+        isModal
+          ? ""
+          : "flex items-center justify-between w-[95%] lg:w-[90%] mx-auto py-2.5"
+      }`}
+    >
+      <div
+        className={`${
+          isModal
+            ? ""
+            : "max-w-4xl lg:max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-md"
+        }`}
+      >
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">
           Rento Bikes Terms of Use: A General Guide for Use
         </h1>

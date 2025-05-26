@@ -20,7 +20,7 @@ const Search = () => {
   );
   const [currentPage, setCurrentPage] = useState(pagination?.page);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
-  const [isPackageModal, setPackageModal] = useState(false);
+  // const [isPackageModal, setPackageModal] = useState(false);
   const { selectedStation } = useSelector((state) => state.station);
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
