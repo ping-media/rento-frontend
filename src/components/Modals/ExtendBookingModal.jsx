@@ -69,6 +69,8 @@ const ExtendBookingModal = () => {
       return handleAsyncError(dispatch, "Unable to get Price! try again");
     }
 
+    const extendAmountList = rides[0]?.bookingPrice?.extendAmount || [];
+
     let data = {
       _id: rides[0]?._id,
       vehicleTableId: rides[0]?.vehicleTableId?._id,
@@ -83,7 +85,7 @@ const ExtendBookingModal = () => {
         BookingEndDateAndTime: rides[0]?.BookingEndDateAndTime,
       },
       extendAmount: {
-        id: rides[0]?.bookingPrice?.extendAmount?.length + 1,
+        id: extendAmountList?.length + 1,
         title: "extended",
         extendDuration: extensionDays,
         amount: extendPrice,
