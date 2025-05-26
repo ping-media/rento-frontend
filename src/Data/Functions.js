@@ -696,6 +696,7 @@ const handleBookingProcess = async (
       isDiscountZero: isDiscountZero,
       rentAmount: vehicles[0]?.perDayCost,
       isPackageApplied: !!vehiclePlanData,
+      daysBreakdown: vehicles[0]?._daysBreakdown || [],
       extendAmount: [],
     },
     vehicleBasic: {
