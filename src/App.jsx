@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
 import Maintenance from "./Pages/Maintenance";
+import NetworkError from "./components/Error/NetworkError";
 const Payment = lazy(() => import("./Pages/Payment"));
 const Home = lazy(() => import("./Pages/Home"));
 const Kyc = lazy(() => import("./Pages/Kyc"));
@@ -23,6 +24,25 @@ const ErrorPageNotFound = lazy(() =>
 );
 
 const App = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  if (!isOnline) {
+    return <NetworkError />;
+  }
+
   return (
     <Router>
       <Suspense fallback={<PreLoader />}>
