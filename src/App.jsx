@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
 import Maintenance from "./Pages/Maintenance";
