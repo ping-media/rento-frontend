@@ -11,13 +11,14 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
   if (!isBookingTermActive) return;
 
   const bookingTermsList = [
-    "A Ride cannot commence unless the required documents are uploaded and verified. If the documents are not provided, the booking will be cancelled.",
+    // "A Ride cannot commence unless the required documents are uploaded and verified. If the documents are not provided, the booking will be cancelled.",
+    "Some bookings require an original Driving License. Rides won't start without document verification and may be cancelled if not provided.",
     `Speed Limit for ${
       vehicleBrand.charAt(0).toUpperCase() + vehicleBrand.slice(1).toLowerCase()
     } ${
       vehicleName.charAt(0).toUpperCase() + vehicleName.slice(1).toLowerCase()
     } is ${speedLimit} kmph or speed limit specified by the governing authority, whichever is lesser.`,
-    "Rental package does not include Fuel, Toll, State Permits or Taxes.",
+    "Rental package does not include Fuel, Toll, State Permits or Taxes. Unused Fuel left-out at the time of vehicle drop will not be refunded.",
     "km’s included in the booking if exceeded are chargeable at a per km rate.",
     "Some vehicle bookings have a refundable security deposit. Refund of the same, usually takes 3-7 working days, from the date of invoice, to reflect in the source account.",
     <>
