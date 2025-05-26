@@ -233,11 +233,9 @@ const ExtendBookingModal = () => {
           : 0;
       const price =
         planPrice > 0
-          ? planPrice
+          ? planPrice + extraAddonPrice
           : calculatePriceForExtendBooking(
-              // rides[0]?.vehicleTableId?.perDayCost,
               freeVehicle?.totalRentalCost,
-              // extensionDays,
               extraAddonPrice,
               general?.status === "inactive" ? false : true || false,
               general?.percentage || 18
