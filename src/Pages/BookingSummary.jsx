@@ -136,14 +136,15 @@ const BookingSummary = () => {
   ) => {
     const stripZ = (t) => t.replace("Z", "");
 
-    const startTime = stripZ(enteredStartTime);
-    const endTime = stripZ(enteredEndTime);
+    const startTime = stripZ(enteredStartTime.split("T")[1]);
+    const endTime = stripZ(enteredEndTime.split("T")[1]);
     const open = stripZ(openTime);
     const close = stripZ(closeTime);
     const now = stripZ(currentTime);
 
     // Check if start and end time are within open-close range
     const isWithinStationHours = startTime >= open && endTime <= close;
+    const isStationOpen = now >= open && now <= close;
 
     if (!isWithinStationHours) {
       return {
@@ -152,7 +153,7 @@ const BookingSummary = () => {
       };
     }
     // Check if start time is before current time (not allowed)
-    if (startTime < now) {
+    if (isStationOpen && startTime < now) {
       return {
         valid: false,
         message: "Booking start time cannot be in the past.",
@@ -178,8 +179,8 @@ const BookingSummary = () => {
     const currentTime = getCurrentLocalTime();
     // checking time and station time
     const timeValidation = validateTimes(
-      queryParmsDataUpdated.BookingStartDateAndTime.split("T")[1],
-      queryParmsDataUpdated.BookingEndDateAndTime.split("T")[1],
+      queryParmsDataUpdated.BookingStartDateAndTime,
+      queryParmsDataUpdated.BookingEndDateAndTime,
       openTime,
       endTime,
       currentTime

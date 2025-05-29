@@ -308,7 +308,7 @@ const PriceCard = ({
             <li className={`flex items-center justify-between`}>
               <input type="hidden" name="tax" value={gSTCost} />
               <div>
-                <p className="text-gray-500 ">GST(18% Applied)</p>
+                <p className="text-gray-500 ">GST({taxPercentage}% Applied)</p>
               </div>
               <span className="font-semibold">₹{formatPrice(gSTCost)}</span>
             </li>
@@ -344,9 +344,6 @@ const PriceCard = ({
               (An additional security deposit is payable at pickup)
             </p>
           </div>
-          {/* <span className="font-semibold">
-              ₹{formatPrice(Math.round(refundableDeposit))}
-            </span> */}
         </div>
       </div>
       {/* extra accessories  */}
