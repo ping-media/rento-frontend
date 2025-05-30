@@ -227,6 +227,7 @@ const RidesSummary = () => {
                 stationName={rides[0]?.stationName}
                 stationId={rides[0]?.stationId}
                 stationMasterUserId={rides[0]?.stationMasterUserId}
+                stationData={rides[0]?.stationData}
                 setStationLoading={setStationLoading}
                 stationLoading={stationLoading}
               />

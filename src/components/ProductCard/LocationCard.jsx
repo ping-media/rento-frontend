@@ -8,6 +8,7 @@ const LocationCard = ({
   stationName,
   stationId,
   stationMasterUserId,
+  stationData,
   setStationLoading,
   stationLoading,
 }) => {
@@ -30,16 +31,24 @@ const LocationCard = ({
   }, [stationMasterUserId]);
 
   return !stationLoading ? (
-    <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
+    <div className="px-4 py-2 rounded-lg border-2 flex flex-wrap w-full mx-auto gap-4 mb-3">
       <Link
-        to={`https://www.google.com/maps/search/?api=1&query=${stationUser?.stationData?.latitude},${stationUser?.stationData?.longitude}`}
+        to={
+          stationData?.mapLink
+            ? stationData?.mapLink
+            : `https://www.google.com/maps/place/${stationData?.latitude},${stationData?.longitude}`
+        }
         target="_blank"
       >
         <div className="w-full lg:w-48 h-48">
           <img
             src={`https://maps.googleapis.com/maps/api/staticmap?center=${
-              stationUser?.stationData?.city
-            }&zoom=10&size=600x400&markers=color:red|label:A|40.7128,-74.0060&key=${
+              stationData?.address
+                ? stationData?.address
+                : stationUser?.stationData?.city
+            }&zoom=10&size=600x400&markers=color:red|label:A|${
+              stationData?.latitude || ""
+            },${stationData?.longitude || ""}&key=${
               import.meta.env.VITE_MAP_KEY
             }`}
             className="rounded-lg w-full h-full object-cover"
@@ -48,15 +57,21 @@ const LocationCard = ({
           />
         </div>
       </Link>
-      <div className="px-2 py-2 w-full lg:w-auto text-sm">
+      <div className="px-2 py-2 w-full lg:flex-1 text-sm">
         <ul className="leading-8">
-          <li className="capitalize">
+          <li className="capitalize w-full break-words">
             <span className="font-bold mr-2">Pickup Location:</span>
-            {stationName || selectedLocation?.locationName || ""}
+            {stationData?.address ||
+              stationName ||
+              selectedLocation?.locationName ||
+              ""}
           </li>
           <li className="capitalize">
             <span className="font-bold mr-2">LandMark:</span>
-            {stationName || selectedLocation?.locationName || ""}
+            {stationData?.stationName ||
+              stationName ||
+              selectedLocation?.locationName ||
+              ""}
           </li>
           <li className="capitalize">
             <span className="font-bold mr-2">Full Name:</span>
@@ -69,20 +84,18 @@ const LocationCard = ({
             <div className="flex items-center gap-1">
               <Link
                 className="text-blue-400 hover:underline"
-                to={`tel:${stationMasterUserId?.contact || "xxxxxxxxxx"}`}
+                to={`tel:${stationMasterUserId?.contact || "--"}`}
               >
-                {stationMasterUserId?.contact || "xxxxxxxxxx"}
+                {stationMasterUserId?.contact || "--"}
               </Link>
               {stationMasterUserId?.altContact && (
                 <>
                   <span>,</span>
                   <Link
                     className="text-blue-400 hover:underline"
-                    to={`tel:${
-                      stationMasterUserId?.altContact || "xxxxxxxxxx"
-                    }`}
+                    to={`tel:${stationMasterUserId?.altContact || "--"}`}
                   >
-                    {stationMasterUserId?.altContact || "xxxxxxxxxx"}
+                    {stationMasterUserId?.altContact || "--"}
                   </Link>
                 </>
               )}
