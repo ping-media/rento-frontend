@@ -37,8 +37,6 @@ const Payment = () => {
     }
   }, []);
 
-  // return;
-
   const handleBookVehicle = async (response) => {
     try {
       let updatedData = {

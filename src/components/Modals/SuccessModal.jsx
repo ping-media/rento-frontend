@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleCouponModal } from "../../Redux/ModalSlice/ModalSlice.js";
-import { formatPrice } from "../../utils/index.js";
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 

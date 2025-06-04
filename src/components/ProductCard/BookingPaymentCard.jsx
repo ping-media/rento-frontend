@@ -128,7 +128,7 @@ const BookingPaymentCard = ({
                 />
               </svg>
             </div>
-            <h2 className="text-md">Pay Later</h2>
+            <h2 className="text-md">Pay at Pickup</h2>
           </div>
           <input
             type="radio"
