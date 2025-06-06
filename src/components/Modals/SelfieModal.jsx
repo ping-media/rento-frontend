@@ -1,33 +1,73 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSelfieModal } from "../../Redux/ModalSlice/ModalSlice";
-import InputFile from "../Input/InputFile";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import { handleuploadDocument } from "../../Data";
 import { useState } from "react";
 import Spinner from "../Spinner/Spinner";
+import ImageUploadAndPreview from "../ImageViwer/ImageUploadAndPreview";
 
 const SelfieModal = () => {
   const dispatch = useDispatch();
   const { isSelfieModalActive } = useSelector((state) => state.modals);
   const { currentUser } = useSelector((state) => state.user);
   const [formLoading, setFormLoading] = useState(false);
-  const [frontImage, setFrontImage] = useState(null);
+  const [imagesUrl, setImageUrl] = useState({
+    SelfieImage: "",
+  });
+  const [image, setImage] = useState({
+    SelfieImage: null,
+  });
+
+  const docImages = [{ title: "SelfieImage" }];
 
   const handleUploadSelfie = async (e) => {
     setFormLoading(true);
     e.preventDefault();
-    let formData = new FormData(e.target);
-    let result = Object.fromEntries(formData.entries());
-    if (!result) return handleAsyncError(dispatch, "choose vaild image first!");
+    const isAnyImageMissing = Object.values(imagesUrl).some(
+      (value) => value === ""
+    );
+    if (isAnyImageMissing) {
+      return handleAsyncError(dispatch, "All Images Required!.");
+    }
+
+    const rawFormData = new FormData(e.target);
+    const finalFormData = new FormData();
+
+    for (let [key, value] of rawFormData.entries()) {
+      if (!(value instanceof File)) {
+        finalFormData.append(key, value);
+      }
+    }
+
+    let hasFiles = false;
+
+    for (const file of Object.values(image)) {
+      if (file instanceof File || file instanceof Blob) {
+        hasFiles = true;
+        finalFormData.append("images", file);
+      }
+    }
+
+    if (!hasFiles) {
+      return handleAsyncError(
+        dispatch,
+        "Unable to upload! No images provided."
+      );
+    }
     // appending other details before sending it
-    formData.append("userId", currentUser?._id);
-    formData.append("docType", "Selfie");
+    finalFormData.append("userId", currentUser?._id);
+    finalFormData.append("docType", "Selfie");
 
     try {
-      const response = await handleuploadDocument(formData);
+      const response = await handleuploadDocument(finalFormData);
       if (response?.status === 200) {
         handleAsyncError(dispatch, response?.message, "success");
-        setFrontImage(null);
+        setImage({
+          SelfieImage: null,
+        });
+        setImageUrl({
+          SelfieImage: "",
+        });
         dispatch(toggleSelfieModal());
       } else {
         handleAsyncError(dispatch, response?.message);
@@ -76,18 +116,24 @@ const SelfieModal = () => {
               onSubmit={handleUploadSelfie}
             >
               <div className="w-full lg:flex-1 order-1 lg:order-2">
-                <div className="mb-5">
-                  <InputFile
-                    name={"images"}
-                    labelDesc={"Selfie"}
-                    labelId={"SelfieImage"}
-                    image={frontImage}
-                    setImage={setFrontImage}
-                  />
-                </div>
+                {docImages.map((item, index) => (
+                  <div className="mb-5" key={index}>
+                    <ImageUploadAndPreview
+                      title={item?.title}
+                      image={image[item?.title]}
+                      setImageMultiChanger={setImage}
+                      imagesUrl={imagesUrl[item?.title]}
+                      setImageUrlMultiChanger={setImageUrl}
+                      name="images"
+                    />
+                  </div>
+                ))}
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
-                  disabled={formLoading || (frontImage != null ? false : true)}
+                  disabled={
+                    formLoading ||
+                    Object.values(imagesUrl).some((value) => value === "")
+                  }
                 >
                   {formLoading ? (
                     <Spinner message={"loading..."} />

@@ -1,35 +1,84 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleIdentityModal } from "../../Redux/ModalSlice/ModalSlice";
-import InputFile from "../Input/InputFile";
 import { handleuploadDocument } from "../../Data";
 import { useState } from "react";
 import Spinner from "../Spinner/Spinner";
 import { handleAsyncError } from "../../utils/handleAsyncError";
+import ImageUploadAndPreview from "../ImageViwer/ImageUploadAndPreview";
 
 const IdentityModal = () => {
   const dispatch = useDispatch();
   const { isIdentityModalActive } = useSelector((state) => state.modals);
   const { currentUser } = useSelector((state) => state.user);
   const [formLoading, setFormLoading] = useState(false);
-  const [frontImage, setFrontImage] = useState(null);
-  const [backImage, setBackImage] = useState(null);
+  const [imagesUrl, setImageUrl] = useState({
+    aadhaarFrontImage: "",
+    aadhaarBackImage: "",
+  });
+  const [image, setImage] = useState({
+    aadhaarFrontImage: null,
+    aadhaarBackImage: null,
+  });
+
+  const docImages = [
+    { title: "aadhaarFrontImage" },
+    { title: "aadhaarBackImage" },
+  ];
 
   const handleUploadIdentity = async (e) => {
     setFormLoading(true);
     e.preventDefault();
-    let formData = new FormData(e.target);
-    let result = Object.fromEntries(formData.entries());
-    if (!result) return handleAsyncError(dispatch, "choose vaild image first!");
+    const isAnyImageMissing = Object.values(imagesUrl).some(
+      (value) => value === ""
+    );
+    if (isAnyImageMissing) {
+      return handleAsyncError(dispatch, "All Images Required!.");
+    }
+
+    const rawFormData = new FormData(e.target);
+    const finalFormData = new FormData();
+
+    for (let [key, value] of rawFormData.entries()) {
+      if (!(value instanceof File)) {
+        finalFormData.append(key, value);
+      }
+    }
+
+    let hasFiles = false;
+
+    for (const file of Object.values(image)) {
+      if (file instanceof File || file instanceof Blob) {
+        hasFiles = true;
+        finalFormData.append("images", file);
+      }
+    }
+
+    if (!hasFiles) {
+      return handleAsyncError(
+        dispatch,
+        "Unable to upload! No images provided."
+      );
+    }
     // appending other details before sending it s
-    formData.append("userId", currentUser?._id);
-    formData.append("docType", "aadhar");
+    finalFormData.append("userId", currentUser?._id);
+    finalFormData.append("docType", "aadhar");
 
     try {
-      const response = await handleuploadDocument(formData);
+      const response = await handleuploadDocument(finalFormData);
       if (response?.status == 200) {
         handleAsyncError(dispatch, response?.message, "success");
-        setFrontImage(null);
-        setBackImage(null);
+        setImage({
+          vehicleFront: null,
+          vehicleLeft: null,
+          vehicleRight: null,
+          vehicleBack: null,
+          odoMeterReading: null,
+          others: null,
+        });
+        setImageUrl({
+          aadhaarFrontImage: "",
+          aadhaarBackImage: "",
+        });
         dispatch(toggleIdentityModal());
       } else {
         handleAsyncError(dispatch, response?.message);
@@ -79,30 +128,24 @@ const IdentityModal = () => {
             >
               <div className="w-full lg:flex-1 order-1 lg:order-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="mb-5 w-full lg:flex-1">
-                    <InputFile
-                      name={"images"}
-                      labelDesc={"Aadhaar Image"}
-                      labelId={"Front aadhaarFrontImage"}
-                      image={frontImage}
-                      setImage={setFrontImage}
-                    />
-                  </div>
-                  <div className="mb-5 w-full lg:flex-1">
-                    <InputFile
-                      name={"images"}
-                      labelDesc={"Back Aadhaar Image"}
-                      labelId={"aadhaarBackImage"}
-                      image={backImage}
-                      setImage={setBackImage}
-                    />
-                  </div>
+                  {docImages.map((item, index) => (
+                    <div className="mb-5 w-full lg:flex-1" key={index}>
+                      <ImageUploadAndPreview
+                        title={item?.title}
+                        image={image[item?.title]}
+                        setImageMultiChanger={setImage}
+                        imagesUrl={imagesUrl[item?.title]}
+                        setImageUrlMultiChanger={setImageUrl}
+                        name="images"
+                      />
+                    </div>
+                  ))}
                 </div>
                 <button
                   className="bg-theme-black px-4 py-2 rounded-md text-gray-100 disabled:bg-gray-400"
                   disabled={
                     formLoading ||
-                    (frontImage && backImage != null ? false : true)
+                    Object.values(imagesUrl).some((value) => value === "")
                   }
                 >
                   {formLoading ? (

@@ -724,17 +724,7 @@ const handleBookingProcess = async (
     paySuccessId: "NA",
   };
 
-  // if (result?.paymentMethod !== "cash") {
-  //   dispatch(addTempBookingData(data));
-  // }
-  // }
-
   try {
-    // let storedBooking = localStorage.getItem("tempBooking");
-    // if (storedBooking) {
-    //   data = tempBookingData || JSON.parse(storedBooking);
-    // }
-
     if (data?.bookingPrice?.isDiscountZero) {
       data = {
         ...data,
@@ -780,7 +770,7 @@ const handleBookingProcess = async (
             : data?.bookingPrice?.totalPrice;
 
         const timeLineData = {
-          currentBooking_id: data?._id,
+          currentBooking_id: response?.data?._id,
           timeLine: [
             {
               title: "Pay Later",
@@ -819,12 +809,7 @@ const handleBookingProcess = async (
 
     data = { ...data, paymentMethod: result?.paymentMethod };
 
-    // console.log(data);
-    // return;
-
     if (["online", "partiallyPay"].includes(result?.paymentMethod)) {
-      // let bookingResponse;
-      // if (!storedBooking) {
       let bookingResponse = await handleCreateBooking(
         data,
         handlebooking,
@@ -832,23 +817,13 @@ const handleBookingProcess = async (
         handleAsyncError,
         dispatch
       );
-      // } else {
-      //   bookingResponse = await handleUpdateBooking(
-      //     { ...data, paymentMethod: result?.paymentMethod },
-      //     handlebooking,
-      //     handleAsyncError,
-      //     dispatch
-      //   );
-      // }
 
-      // if (bookingResponse?.status === 200 || storedBooking) {
       if (bookingResponse?.status === 200) {
         data = { ...data, ...bookingResponse.data };
         const orderId = await createOrderId(data);
         // console.log(bookingResponse.data, orderId);
         // return;
         if (orderId?.status === "created") {
-          // localStorage.setItem("tempBooking", JSON.stringify(data));
           const response = await handleUpdateBooking(
             {
               ...data,
@@ -878,8 +853,7 @@ const handleBookingProcess = async (
             return;
           }
         }
-        // console.log(data);
-        // return;
+
         return await razorPayment(
           currentUser,
           data,
