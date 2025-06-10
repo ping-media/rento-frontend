@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
 import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
 import {
+  handleBooking,
   handleBookingProcess,
   handleCreateBooking,
   // handleFetchBookingData,
@@ -48,13 +49,10 @@ const BookingSummary = () => {
   const { tempCouponName, tempCouponId, isDiscountZero } = useSelector(
     (state) => state.coupon
   );
-  const { tempBookingData } = useSelector((state) => state.booking);
   const [bookingLoading, setBookingLoading] = useState(false);
   // for getting queryparms value
   const [queryParms] = useSearchParams();
-  const [queryParmsData, setQueryParmsData] = useState(
-    Object.fromEntries(queryParms.entries())
-  );
+  const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   // for vehicle Data
   const [vehicleLoading, setVehicleLoading] = useState(false);
   const [vehiclePlanData, setVehiclePlanData] = useState(null);
@@ -86,28 +84,17 @@ const BookingSummary = () => {
 
   //fetching the vehicle info based on vehicleId from url and if vehicle plan id present than search that too
   useEffect(() => {
-    setQueryParmsData(Object.fromEntries(queryParms.entries()));
-
     (async () => {
       dispatch(fetchingVehicles());
       const result = await fetchingData(
         `/getAllVehiclesAvailable?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
       );
-      // console.log(result);
       dispatch(addVehiclesData(result?.data));
+      // only when vehiclePlan id present
+      if (queryParmsData?.vehiclePlan) {
+        setVehiclePlanData(result?.data?.vehiclePlan);
+      }
     })();
-
-    // only when vehiclePlan id present
-    if (queryParmsData?.vehiclePlan) {
-      (async () => {
-        setVehicleLoading(true);
-        const result = await fetchingData(
-          `/getPlanData?_id=${queryParmsData?.vehiclePlan}`
-        );
-        setVehiclePlanData(result?.data);
-        return setVehicleLoading(false);
-      })();
-    }
   }, []);
 
   const convertHourTo24HourTime = (hour) => {
@@ -199,29 +186,46 @@ const BookingSummary = () => {
       return;
     }
 
-    return handleBookingProcess(
+    // return handleBookingProcess(
+    //   e,
+    //   vehicles,
+    //   queryParmsDataUpdated,
+    //   currentUser,
+    //   toggleLoginModal,
+    //   addTempBookingData,
+    //   setBookingLoading,
+    //   vehiclePlanData,
+    //   isDiscountZero,
+    //   dispatch,
+    //   tempCouponName,
+    //   tempCouponId,
+    //   // tempBookingData,
+    //   handleCreateBooking,
+    //   handleUpdateBooking,
+    //   createOrderId,
+    //   razorPayment,
+    //   handleRestCoupon,
+    //   handleAsyncError,
+    //   navigate,
+    //   removeTempDate,
+    //   handlebooking,
+    //   selectedAddOn
+    // );
+
+    return handleBooking(
       e,
       vehicles,
       queryParmsDataUpdated,
       currentUser,
       toggleLoginModal,
-      addTempBookingData,
       setBookingLoading,
       vehiclePlanData,
       isDiscountZero,
       dispatch,
       tempCouponName,
       tempCouponId,
-      // tempBookingData,
-      handleCreateBooking,
-      handleUpdateBooking,
-      createOrderId,
-      razorPayment,
-      handleRestCoupon,
       handleAsyncError,
       navigate,
-      removeTempDate,
-      handlebooking,
       selectedAddOn
     );
   };
@@ -232,6 +236,7 @@ const BookingSummary = () => {
         {/* terms Modal  */}
         <BookingTermModal {...vehicles[0]} />
         <CouponModal />
+
         <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
           <form onSubmit={handleCreateBookingSubmit}>
             <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">

@@ -2,16 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
   calculateTax,
   calculateTotalAddOnPrice,
-  // formatDateTimeForUser,
   formatPrice,
   getDurationInDays,
 } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
 import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice";
-import PreLoader from "../skeleton/PreLoader";
 import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 import Tooltip from "../Tooltip/Tooltip";
+import PreLoader from "../skeleton/PreLoader";
 
 const PriceCard = ({
   perDayCost,
@@ -63,7 +62,7 @@ const PriceCard = ({
     taxPercentage === 0 &&
     daysBreakDown?.length === 0
   ) {
-    return <PreLoader />;
+    return null;
   }
 
   useEffect(() => {
@@ -100,9 +99,6 @@ const PriceCard = ({
           : 0;
       setExtraAddOnCost(AddOnAmount);
     } else {
-      // if (totalRentalCost) {
-      //   setVehicleRentCost(Number(totalRentalCost));
-      // }
       const AddOnAmount =
         isExtraChecked?.length > 0
           ? calculateTotalAddOnPrice(
@@ -255,48 +251,7 @@ const PriceCard = ({
                     </ul>
                   }
                 />
-                {/* ( */}
-                {/* {!appliedVehiclePlan && isWeekend?.weekend?.length > 0 && (
-                  <span className="font-semibold mr-1">Weekend:</span>
-                )}
-                {appliedVehiclePlan
-                  ? `${duration} Package Applied`
-                  : `₹${
-                      isWeekend?.weekend?.length > 0
-                        ? isWeekend?.weekend[0]?.dailyRate
-                        : perDayCost
-                    } x ${
-                      vehiclePlanData != null
-                        ? vehiclePlanData?.planDuration
-                        : isWeekend?.weekend?.length > 0
-                        ? isWeekend?.weekend?.length
-                        : getDurationInDays(
-                            queryParmsData?.BookingStartDateAndTime,
-                            queryParmsData?.BookingEndDateAndTime
-                          )
-                    } day`} */}
-                {/* ) */}
               </div>
-              {/* {isWeekend?.weekend?.length > 0 && !appliedVehiclePlan && (
-                <p className="text-xs text-gray-400">
-                  (<span className="font-semibold mr-1">Week Days:</span>
-                  {`₹${
-                    isWeekend?.weekDays?.length > 0
-                      ? isWeekend?.weekDays[0]?.dailyRate
-                      : 0
-                  } x ${
-                    vehiclePlanData !== null
-                      ? vehiclePlanData?.planDuration
-                      : isWeekend?.weekDays?.length > 0
-                      ? isWeekend?.weekDays?.length
-                      : getDurationInDays(
-                          queryParmsData?.BookingStartDateAndTime,
-                          queryParmsData?.BookingEndDateAndTime
-                        )
-                  } day`}
-                  )
-                </p>
-              )} */}
             </div>
             <span className="font-semibold">
               ₹{formatPrice(vehicleRentCost)}

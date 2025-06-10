@@ -9,6 +9,7 @@ import {
   addVehiclesData,
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
+import { openRazorpayPayment } from "../utils/razorpay";
 
 const handleSearchVehicleData = async (
   dispatch,
@@ -878,6 +879,180 @@ const handleBookingProcess = async (
   }
 };
 
+const handleBooking = async (
+  e,
+  vehicles,
+  queryParmsData,
+  currentUser,
+  toggleLoginModal,
+  setBookingLoading,
+  vehiclePlanData,
+  isDiscountZero,
+  dispatch,
+  tempCouponName,
+  tempCouponId,
+  handleAsyncError,
+  navigate,
+  selectedAddOn
+) => {
+  e.preventDefault();
+  setBookingLoading(true);
+
+  if (!currentUser) {
+    setBookingLoading(false);
+    return dispatch(toggleLoginModal());
+  }
+
+  if (!currentUser?._id) {
+    return handleAsyncError(dispatch, "user not found! try again");
+  }
+
+  if (!queryParmsData)
+    return handleAsyncError(dispatch, "unable to book ride now! try again");
+
+  const formData = new FormData(e.target);
+  const result = Object.fromEntries(formData.entries());
+
+  if (!result?.paymentMethod) {
+    setBookingLoading(false);
+    return handleAsyncError(dispatch, "Select payment method first!");
+  }
+
+  const startRideOtp = Math.floor(1000 + Math.random() * 9000);
+
+  if (!vehicles || vehicles.length === 0) return;
+
+  let data = {
+    vehicleTableId: vehicles[0]?._id,
+    userId: currentUser?._id,
+    vehicleMasterId: vehicles[0]?.vehicleMasterId,
+    BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
+      ".000Z",
+      "Z"
+    ),
+    BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime.replace(
+      ".000Z",
+      "Z"
+    ),
+    bookingPrice: {
+      bookingPrice: Number(result?.bookingPrice),
+      vehiclePrice: Number(result?.bookingPrice),
+      extraAddonDetails: selectedAddOn,
+      extraAddonPrice: result?.extraAddonPrice
+        ? Number(result?.extraAddonPrice)
+        : 0,
+      tax: isNaN(Number(result?.tax)) ? 0 : Number(result?.tax),
+      totalPrice: Math.round(Number(result?.totalPrice)),
+      discountPrice: Math.round(Number(result?.discountPrice || 0)),
+      discountTotalPrice: isDiscountZero
+        ? Math.round(
+            Number(result?.discounttotalPrice || 0) +
+              (Number(result?.extraAddonPrice) > 0
+                ? Number(result?.extraAddonPrice)
+                : 0)
+          )
+        : Number(result?.discounttotalPrice || 0) === 0
+        ? 0
+        : Number(result?.discounttotalPrice),
+      isDiscountZero: isDiscountZero,
+      rentAmount: vehicles[0]?.perDayCost,
+      isPackageApplied: !!vehiclePlanData,
+      daysBreakdown: vehicles[0]?._daysBreakdown || [],
+      extendAmount: [],
+    },
+    vehicleBasic: {
+      refundableDeposit: vehicles[0]?.refundableDeposit,
+      speedLimit: vehicles[0]?.speedLimit,
+      vehicleNumber: vehicles[0]?.vehicleNumber,
+      freeLimit: vehicles[0]?.freeKms,
+      lateFee: vehicles[0]?.lateFee,
+      extraKmCharge: vehicles[0]?.extraKmsCharges,
+      startRide: startRideOtp,
+      endRide: 0,
+    },
+    discountCuopon: { couponName: tempCouponName, couponId: tempCouponId },
+    extendBooking: { oldBooking: [], transactionIds: [] },
+    vehicleName: vehicles[0]?.vehicleName,
+    vehicleBrand: vehicles[0]?.vehicleBrand,
+    vehicleImage: vehicles[0]?.vehicleImage,
+    stationId: vehicles[0]?.stationId,
+    stationName: vehicles[0]?.stationName,
+    bookingStatus: "pending",
+    paymentStatus: "pending",
+    rideStatus: "pending",
+    paymentMethod: "NA",
+    payInitFrom: "NA",
+    paySuccessId: "NA",
+  };
+
+  try {
+    const response = await handlePostData("/initiate-booking", {
+      bookingData: data,
+      paymentMethod: result?.paymentMethod,
+    });
+
+    const { orderId, booking_id, payableAmount } = response.data;
+
+    if (orderId && orderId !== "") {
+      const paymentSuccess = await openRazorpayPayment(
+        payableAmount,
+        orderId,
+        data,
+        dispatch,
+        navigate
+      );
+
+      if (paymentSuccess) {
+        const confirmed = await pollBookingStatus(booking_id);
+
+        if (confirmed) {
+          setBookingLoading(false);
+          navigate(`/account/my-rides/summary/${booking_id}`);
+        } else {
+          handleAsyncError(
+            dispatch,
+            "Payment confirmed, but booking status not updated. Please check later."
+          );
+          setBookingLoading(false);
+        }
+      }
+    }
+  } catch (error) {
+    handleAsyncError(
+      dispatch,
+      "Something went wrong while booking ride",
+      error?.message
+    );
+    setBookingLoading(false);
+  }
+};
+
+const pollBookingStatus = async (
+  bookingId,
+  maxAttempts = 10,
+  interval = 2000
+) => {
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    try {
+      const res = await fetchingData(`check-booking-status/${bookingId}`);
+      const data = await res.json();
+
+      if (data?.paymentStatus === "paid") {
+        return true;
+      }
+    } catch (e) {
+      console.error("Polling error:", e);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, interval));
+    attempts++;
+  }
+
+  return false;
+};
+
 export {
   handleSearchVehicleData,
   fetchingPlansFilters,
@@ -889,4 +1064,6 @@ export {
   handleUpdateBooking,
   handleCreateBookingSubmit,
   handleBookingProcess,
+  handleBooking,
+  pollBookingStatus,
 };
