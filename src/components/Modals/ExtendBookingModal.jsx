@@ -17,6 +17,7 @@ import { openRazorpayPayment } from "../../utils/razorpay";
 import { useNavigate } from "react-router-dom";
 import { updateRidesData } from "../../Redux/RidesSlice/RideSlice";
 import { debounce } from "lodash";
+import { pollBookingStatus } from "../../Data/Functions";
 
 const ExtendBookingModal = () => {
   const { isBookingExtendModalActive } = useSelector((state) => state.modals);
@@ -105,72 +106,114 @@ const ExtendBookingModal = () => {
 
     try {
       setFormLoading(true);
-
-      const orderId = await createOrderId(data, Number(extendPrice));
+      // const orderId = await createOrderId(data, Number(extendPrice));
+      data = {
+        ...data,
+        contact: rides[0]?.userId?.contact,
+        firstName: rides[0]?.userId?.firstName,
+        managerContact: rides[0]?.stationMasterUserId?.contact,
+      };
+      const orderId = await handlePostData("/initiate-extend-booking ", {
+        _id: rides[0]?._id,
+        bookingId: rides[0]?.bookingId,
+        amount: Number(extendPrice) + Number(addOnPrice),
+        data,
+      });
       if (orderId?.status === "created") {
-        const response = await openRazorpayPayment({
-          finalAmount: extendPrice,
+        const paymentSuccess = await openRazorpayPayment({
+          finalAmount: extendPrice + Number(addOnPrice),
           orderId: orderId?.id,
           bookingData: rides[0],
           dispatch,
           navigate,
         });
 
-        if (response?.success === false) {
+        if (paymentSuccess) {
+          const confirmed = await pollBookingStatus(rides[0]?._id);
+
+          if (confirmed) {
+            data = {
+              ...data,
+              extendAmount: {
+                ...data?.extendAmount,
+                paymentMethod: "online",
+                status: "paid",
+              },
+              extendBooking: {
+                oldBooking: rides[0]?.extendBooking?.oldBooking,
+                transactionIds: [
+                  ...(rides[0]?.extendBooking?.transactionIds || []),
+                  orderId?.id,
+                  response?.response?.razorpay_payment_id,
+                ],
+              },
+            };
+          }
+          const { contact, firstName, managerContact, ...restData } = data;
+          dispatch(updateRidesData(restData));
+          handleAsyncError(dispatch, "Ride extended successfully", "success");
+          handleCloseModal();
+          return;
+        } else {
           return;
         }
-
-        data = {
-          ...data,
-          extendAmount: {
-            ...data?.extendAmount,
-            paymentMethod: "online",
-            status: "paid",
-          },
-          extendBooking: {
-            oldBooking: rides[0]?.extendBooking?.oldBooking,
-            transactionIds: [
-              ...(rides[0]?.extendBooking?.transactionIds || []),
-              orderId?.id,
-              response?.response?.razorpay_payment_id,
-            ],
-          },
-        };
       }
 
-      const response = await handlePostData(
-        `/extendBooking?BookingStartDateAndTime=${addOneMinute(
-          rides[0]?.BookingEndDateAndTime
-        )}&BookingEndDateAndTime=${newDate}&stationId=${rides[0]?.stationId}`,
-        {
-          ...data,
-          contact: rides[0]?.userId?.contact,
-          firstName: rides[0]?.userId?.firstName,
-          managerContact: rides[0]?.stationMasterUserId?.contact,
-        }
-      );
-      if (response?.status === 200) {
-        const { contact, firstName, managerContact, ...restData } = data;
-        dispatch(updateRidesData(restData));
-        // updating the timeline for booking
-        const timeLineData = {
-          currentBooking_id: data?._id,
-          timeLine: [
-            {
-              title: "Payment Received",
-              date: Date.now(),
-              paymentAmount: extendPrice,
-              id: data?.extendAmount?.id,
-            },
-          ],
-        };
-        await handlePostData("/createTimeline", timeLineData);
-        handleAsyncError(dispatch, "Booking extend successfully");
-        handleCloseModal();
-        return handleAsyncError(dispatch, response?.message, "success");
-      } else {
-        return handleAsyncError(dispatch, response?.message);
-      }
+      //   if (response?.success === false) {
+      //     return;
+      //   }
+
+      //   data = {
+      //     ...data,
+      //     extendAmount: {
+      //       ...data?.extendAmount,
+      //       paymentMethod: "online",
+      //       status: "paid",
+      //     },
+      //     extendBooking: {
+      //       oldBooking: rides[0]?.extendBooking?.oldBooking,
+      //       transactionIds: [
+      //         ...(rides[0]?.extendBooking?.transactionIds || []),
+      //         orderId?.id,
+      //         response?.response?.razorpay_payment_id,
+      //       ],
+      //     },
+      //   };
+      // }
+
+      // const response = await handlePostData(
+      //   `/extendBooking?BookingStartDateAndTime=${addOneMinute(
+      //     rides[0]?.BookingEndDateAndTime
+      //   )}&BookingEndDateAndTime=${newDate}&stationId=${rides[0]?.stationId}`,
+      //   {
+      //     ...data,
+      //     contact: rides[0]?.userId?.contact,
+      //     firstName: rides[0]?.userId?.firstName,
+      //     managerContact: rides[0]?.stationMasterUserId?.contact,
+      //   }
+      // );
+      // if (response?.status === 200) {
+      //   const { contact, firstName, managerContact, ...restData } = data;
+      //   dispatch(updateRidesData(restData));
+      //   // updating the timeline for booking
+      //   const timeLineData = {
+      //     currentBooking_id: data?._id,
+      //     timeLine: [
+      //       {
+      //         title: "Payment Received",
+      //         date: Date.now(),
+      //         paymentAmount: extendPrice,
+      //         id: data?.extendAmount?.id,
+      //       },
+      //     ],
+      //   };
+      //   await handlePostData("/createTimeline", timeLineData);
+      //   handleAsyncError(dispatch, "Booking extend successfully");
+      //   handleCloseModal();
+      //   return handleAsyncError(dispatch, response?.message, "success");
+      // } else {
+      //   return handleAsyncError(dispatch, response?.message);
+      // }
     } catch (error) {
       return handleAsyncError(dispatch, error?.message);
     } finally {
