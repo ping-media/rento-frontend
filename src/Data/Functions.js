@@ -1045,7 +1045,7 @@ const pollBookingStatus = async (
 
   while (attempts < maxAttempts) {
     try {
-      const res = await fetchingData(`check-booking-status/${bookingId}`);
+      const res = await fetchingData(`/check-booking-status/${bookingId}`);
       const data = await res.json();
 
       if (data?.paymentStatus === "paid") {
