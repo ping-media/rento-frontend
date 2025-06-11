@@ -11,7 +11,6 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
   if (!isBookingTermActive) return;
 
   const bookingTermsList = [
-    // "A Ride cannot commence unless the required documents are uploaded and verified. If the documents are not provided, the booking will be cancelled.",
     "Some bookings require an original Driving License. Rides won't start without document verification and may be cancelled if not provided.",
     `Speed Limit for ${
       vehicleBrand.charAt(0).toUpperCase() + vehicleBrand.slice(1).toLowerCase()
@@ -27,7 +26,7 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
       <button
         type="button"
         onClick={() => setTermVisible(!isTermsVisible)}
-        className="hover:text-theme hover:underline"
+        className="hover:text-theme underline hover:no-underline"
       >
         Read more
       </button>
@@ -40,8 +39,12 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
         className={`fixed ${
           !isBookingTermActive && "hidden"
         } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
+        onClick={() => dispatch(toggleBookingTermModal())}
       >
-        <div className="relative top-10 mx-auto shadow-xl rounded bg-white max-w-xl">
+        <div
+          className="relative top-10 mx-auto shadow-xl rounded bg-white max-w-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex items-center justify-between px-4 py-2 bg-theme rounded-t text-white">
             <h2 className="font-bold text-xl uppercase">
               Terms And Conditions
@@ -66,7 +69,11 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
             </button>
           </div>
 
-          <div className="p-6 pt-2 text-center overflow-y-scroll max-h-96">
+          <div
+            className={`p-6 pt-2 text-center overflow-y-scroll max-h-96 ${
+              !isTermsVisible ? "no-scrollbar" : ""
+            }`}
+          >
             <ul className="leading-8 list-disc mb-2">
               {bookingTermsList.map((term, index) => (
                 <li key={index} className="text-justify text-sm mb-1">

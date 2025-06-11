@@ -991,38 +991,47 @@ const handleBooking = async (
       paymentMethod: result?.paymentMethod,
     });
 
-    const { orderId, booking_id, payableAmount } = response.data;
+    if (result?.paymentMethod === "cash") {
+      if (response?.status === 200) {
+        handleAsyncError(dispatch, "Ride booked successfully", "success");
+        navigate(`/account/my-rides/summary/${response?.data?._id}`);
+        return;
+      } else {
+        handleAsyncError(handleAsyncError(dispatch, response?.message));
+      }
+      setBookingLoading(false);
+    } else if (["online", "partiallyPay"].includes(result?.paymentMethod)) {
+      const { orderId, booking_id, payableAmount } = response.data;
 
-    if (orderId && orderId !== "") {
-      const paymentSuccess = await openRazorpayPayment(
-        payableAmount,
-        orderId,
-        data,
-        dispatch,
-        navigate
-      );
+      if (orderId && orderId !== "") {
+        const paymentSuccess = await openRazorpayPayment({
+          finalAmount: payableAmount,
+          orderId,
+          bookingData: data,
+          dispatch,
+          navigate,
+        });
 
-      if (paymentSuccess) {
-        const confirmed = await pollBookingStatus(booking_id);
+        if (paymentSuccess) {
+          const confirmed = await pollBookingStatus(booking_id);
 
-        if (confirmed) {
-          setBookingLoading(false);
-          navigate(`/account/my-rides/summary/${booking_id}`);
-        } else {
-          handleAsyncError(
-            dispatch,
-            "Payment confirmed, but booking status not updated. Please check later."
-          );
-          setBookingLoading(false);
+          if (confirmed) {
+            setBookingLoading(false);
+            handleAsyncError(dispatch, "Ride booked successfully", "success");
+            navigate(`/account/my-rides/summary/${booking_id}`);
+            return;
+          } else {
+            handleAsyncError(
+              dispatch,
+              "Payment confirmed, but booking status not updated. Please check later."
+            );
+            setBookingLoading(false);
+          }
         }
       }
     }
   } catch (error) {
-    handleAsyncError(
-      dispatch,
-      "Something went wrong while booking ride",
-      error?.message
-    );
+    handleAsyncError(dispatch, "Something went wrong while booking ride");
     setBookingLoading(false);
   }
 };
