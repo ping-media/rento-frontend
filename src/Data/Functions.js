@@ -1007,7 +1007,7 @@ const handleBooking = async (
         const paymentSuccess = await openRazorpayPayment({
           finalAmount: payableAmount,
           orderId,
-          bookingData: data,
+          bookingData: currentUser,
           dispatch,
           navigate,
         });

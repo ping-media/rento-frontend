@@ -44,9 +44,11 @@ export const openRazorpayPayment = ({
           }
         },
         prefill: {
-          name: `${bookingData?.userId?.firstName} ${bookingData?.userId?.lastName}`,
-          email: bookingData?.userId?.email,
-          contact: bookingData?.userId?.contact,
+          name: `${bookingData?.firstName || bookingData?.userId?.firstName} ${
+            bookingData?.lastName || bookingData?.userId?.lastName
+          }`,
+          email: bookingData?.email || bookingData?.userId?.email,
+          contact: bookingData?.contact || bookingData?.userId?.contact,
         },
         theme: { color: "#e23844" },
         modal: {
