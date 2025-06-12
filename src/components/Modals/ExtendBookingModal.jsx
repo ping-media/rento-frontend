@@ -26,6 +26,8 @@ const ExtendBookingModal = () => {
   const [extensionDays, setExtensionDays] = useState(0);
   const [freeVehicle, setFreeVehicle] = useState(null);
   const [extendPrice, setExtendPrice] = useState(0);
+  const [daysBreakdown, setDaysBreakdown] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState([]);
   const [addOnPrice, setAddOnPrice] = useState(0);
   const [newDate, setNewDate] = useState("");
   const [formLoading, setFormLoading] = useState(false);
@@ -95,14 +97,16 @@ const ExtendBookingModal = () => {
           rides[0]?.BookingEndDateAndTime
         ).replace(".000Z", "Z"),
         bookingEndDateAndTime: newDate,
+        daysBreakdown: daysBreakdown || [],
+        package: selectedPlan || [],
+        orderId: "",
+        transactionId: "",
         paymentMethod: "",
         status: "unpaid",
       },
       bookingStatus: "extended",
     };
     if (!data) return;
-
-    // return console.log(isVehicleFree);
 
     try {
       setFormLoading(true);
@@ -129,7 +133,7 @@ const ExtendBookingModal = () => {
         });
 
         if (paymentSuccess) {
-          const confirmed = await pollBookingStatus(rides[0]?._id);
+          const confirmed = await pollBookingStatus(rides[0]?._id, "extend");
 
           if (confirmed) {
             data = {
@@ -287,6 +291,8 @@ const ExtendBookingModal = () => {
       if (Number(price) > 0) {
         setExtendPrice(price);
         setAddOnPrice(extraAddonPrice);
+        setDaysBreakdown(freeVehicle?._daysBreakdown);
+        setSelectedPlan(hasPlan);
       }
     } else {
       setExtendPrice(0);

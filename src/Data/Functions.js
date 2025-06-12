@@ -1038,6 +1038,7 @@ const handleBooking = async (
 
 const pollBookingStatus = async (
   bookingId,
+  action,
   maxAttempts = 10,
   interval = 2000
 ) => {
@@ -1045,7 +1046,13 @@ const pollBookingStatus = async (
 
   while (attempts < maxAttempts) {
     try {
-      const res = await fetchingData(`/check-booking-status/${bookingId}`);
+      let endpoint = `/check-booking-status/${bookingId}`;
+
+      if (action) {
+        endpoint = `/check-booking-status/${bookingId}/${action}`;
+      }
+
+      const res = await fetchingData(endpoint);
       if (res?.bookingStatus === "done") {
         return true;
       }
