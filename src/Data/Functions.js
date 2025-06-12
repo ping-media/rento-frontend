@@ -1053,7 +1053,9 @@ const pollBookingStatus = async (
       }
 
       const res = await fetchingData(endpoint);
-      if (res?.bookingStatus === "done") {
+      if (!action && res?.bookingStatus === "done") {
+        return true;
+      } else if (action === "extend" && res?.status === "paid") {
         return true;
       }
     } catch (e) {
