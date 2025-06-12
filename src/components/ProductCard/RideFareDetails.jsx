@@ -4,9 +4,15 @@ import {
   formatPrice,
   getDurationInDays,
 } from "../../utils";
+import Tooltip from "../Tooltip/Tooltip";
+import {
+  renderTooltipContent,
+  renderTooltipExtendContent,
+} from "../../utils/helper.jsx";
 
 const RideFareDetails = ({ rides }) => {
   const { general } = useSelector((state) => state.addon);
+
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
     rides?.bookingPrice?.AmountLeftAfterUserPaid?.status !== "paid"
@@ -55,23 +61,15 @@ const RideFareDetails = ({ rides }) => {
           )}
           <ul className="w-full leading-8">
             <li className="flex items-center justify-between border-b-2">
-              <div className="my-1">
+              <div className="flex items-center gap-1">
                 <p className="text-sm font-semibold uppercase">Booking Price</p>
-                <p className="text-xs text-gray-500 mb-1">
-                  (
-                  {`₹${rides?.bookingPrice?.rentAmount} x ${getDurationInDays(
-                    rides?.BookingStartDateAndTime,
-                    rides?.BookingEndDateAndTime
-                  )} ${
-                    getDurationInDays(
-                      rides?.BookingStartDateAndTime,
-                      rides?.BookingEndDateAndTime
-                    ) == 1
-                      ? "day"
-                      : "days"
-                  }`}
-                  )
-                </p>
+                <div className="text-xs text-gray-400">
+                  <Tooltip
+                    buttonMessage={"(?)"}
+                    className="font-bold text-gray-500"
+                    tooltipData={renderTooltipContent(rides)}
+                  />
+                </div>
               </div>
               <p>{`₹${formatPrice(rides?.bookingPrice?.bookingPrice)}`}</p>
             </li>
@@ -192,40 +190,6 @@ const RideFareDetails = ({ rides }) => {
                             ? `${camelCaseToSpaceSeparated(key)} (18% GST)`
                             : camelCaseToSpaceSeparated(key)}
                         </p>
-                        {key != "tax" &&
-                          key != "userPaid" &&
-                          value != 0 &&
-                          !rides?.bookingPrice.isPackageApplied && (
-                            <p className="text-xs text-gray-500 mb-1">
-                              (
-                              {key == "extraAddonPrice"
-                                ? `₹${50} x ${getDurationInDays(
-                                    rides?.BookingStartDateAndTime,
-                                    rides?.BookingEndDateAndTime
-                                  )} ${
-                                    getDurationInDays(
-                                      rides?.BookingStartDateAndTime,
-                                      rides?.BookingEndDateAndTime
-                                    ) == 1
-                                      ? "day"
-                                      : "days"
-                                  } (Extra Helmet)`
-                                : `₹${
-                                    rides?.bookingPrice?.rentAmount
-                                  } x ${getDurationInDays(
-                                    rides?.BookingStartDateAndTime,
-                                    rides?.BookingEndDateAndTime
-                                  )} ${
-                                    getDurationInDays(
-                                      rides?.BookingStartDateAndTime,
-                                      rides?.BookingEndDateAndTime
-                                    ) == 1
-                                      ? "day"
-                                      : "days"
-                                  }`}
-                              )
-                            </p>
-                          )}
                       </div>
                       <p>{`₹${formatPrice(value)}`}</p>
                     </li>
@@ -343,8 +307,23 @@ const RideFareDetails = ({ rides }) => {
             {/* extend amount  */}
             {rides?.bookingPrice?.extendAmount?.length > 0 && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
-                <p className="text-sm font-semibold uppercase text-left">
-                  Extend Amount
+                <div>
+                  <div className="flex items-center gap-1">
+                    <p className="text-sm font-semibold uppercase text-left">
+                      Extend Amount
+                    </p>
+                    <div className="text-xs text-gray-400">
+                      <Tooltip
+                        buttonMessage={"(?)"}
+                        className="font-bold text-gray-500"
+                        tooltipData={renderTooltipExtendContent(
+                          rides?.bookingPrice?.extendAmount[
+                            rides?.bookingPrice?.extendAmount?.length - 1
+                          ]
+                        )}
+                      />
+                    </div>
+                  </div>
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     {rides?.bookingPrice?.extendAmount[
                       rides?.bookingPrice?.extendAmount?.length - 1
@@ -352,7 +331,7 @@ const RideFareDetails = ({ rides }) => {
                       ? "(Paid)"
                       : "(New Price For Extend booking)"}
                   </small>
-                </p>
+                </div>
                 <p className="text-sm font-bold text-right text-theme">
                   {`₹${formatPrice(
                     Number(

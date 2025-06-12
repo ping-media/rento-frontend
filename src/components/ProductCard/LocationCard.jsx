@@ -76,8 +76,10 @@ const LocationCard = ({
           <li className="capitalize">
             <span className="font-bold mr-2">Full Name:</span>
             {stationUser
-              ? `${stationMasterUserId?.firstName} ${stationMasterUserId?.lastName}`
-              : "Test User"}
+              ? `${stationMasterUserId?.firstName || "--"} ${
+                  stationMasterUserId?.lastName || "--"
+                }`
+              : "--"}
           </li>
           <li className="flex items-center gap-1">
             <span className="font-bold mr-2">Contact:</span>

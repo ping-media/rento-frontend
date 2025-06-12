@@ -8,7 +8,7 @@ import {
   fetchingRides,
   removeRidesData,
 } from "../Redux/RidesSlice/RideSlice";
-import { fetchingData, handlePostData } from "../Data";
+import { fetchingData } from "../Data";
 import { useDispatch, useSelector } from "react-redux";
 import PreLoader from "../components/skeleton/PreLoader";
 import RideFareDetails from "../components/ProductCard/RideFareDetails";
@@ -18,6 +18,8 @@ import PickupImages from "../components/Account/PickupImages";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import Spinner from "../components/Spinner/Spinner";
 import ExtendBookingButton from "../components/Account/ExtendBookingButton";
+import { openRazorpayPayment } from "../utils/razorpay";
+import { pollBookingStatus } from "../Data/Functions";
 const ExtendBookingModal = lazy(() =>
   import("../components/Modals/ExtendBookingModal")
 );
@@ -65,7 +67,7 @@ const RidesSummary = () => {
 
   // for making payment
   const handleMakePayment = async () => {
-    const { _id, bookingPrice } = rides[0];
+    const { _id, paymentgatewayOrderId, bookingPrice } = rides[0];
     // checking whether user applied Discount or not
     const subAmount =
       bookingPrice?.discountTotalPrice && bookingPrice?.discountTotalPrice > 0
@@ -77,24 +79,34 @@ const RidesSummary = () => {
         ? bookingPrice?.userPaid
         : subAmount;
     // setting paymentStatus
-    const paymentStatus =
-      bookingPrice?.userPaid && bookingPrice?.userPaid > 0
-        ? "partiallyPay"
-        : "paid";
+    // const paymentStatus =
+    //   bookingPrice?.userPaid && bookingPrice?.userPaid > 0
+    //     ? "partiallyPay"
+    //     : "paid";
 
     try {
       setPaymentLoading(true);
-      // encoding before making URL
-      const payload = {
-        id: _id,
-        paymentStatus: paymentStatus,
+      let orderId = paymentgatewayOrderId;
+      const paymentSuccess = await openRazorpayPayment({
         finalAmount: finalAmount,
-      };
-      // requesting jwt token here from backend
-      const encodePayload = await handlePostData("/GeneratePaymentToken", {
-        payload: payload,
+        orderId: orderId,
+        bookingData: rides[0],
+        dispatch,
+        navigate,
       });
-      return navigate(`/payment/${encodePayload?.token}`);
+
+      if (paymentSuccess) {
+        const confirmed = await pollBookingStatus(_id);
+        if (confirmed) {
+          setBookingLoading(false);
+          handleAsyncError(
+            dispatch,
+            "Ride payment updated successfully",
+            "success"
+          );
+          return;
+        }
+      }
     } catch (error) {
       return handleAsyncError(dispatch, "Unable to make payment! try again.");
     } finally {

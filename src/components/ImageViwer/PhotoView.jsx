@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
 
@@ -9,6 +9,8 @@ const PhotoView = ({
   uniqueId,
   errMessage = "N0 Iamges Found.",
 }) => {
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+
   useEffect(() => {
     if (item) {
       const lightbox = new PhotoSwipeLightbox({
@@ -21,6 +23,16 @@ const PhotoView = ({
     }
   }, [item]);
 
+  useEffect(() => {
+    if (item?.imageUrl || item?.link) {
+      const img = new Image();
+      img.src = item.imageUrl || item.link;
+      img.onload = () => {
+        setImageSize({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+    }
+  }, [item]);
+
   return (
     <div>
       {!hookLoading && item ? (
@@ -28,10 +40,16 @@ const PhotoView = ({
           <div className={`relative ${className}`} key={item?._id}>
             <a
               href={item.imageUrl}
-              data-pswp-width="1920"
-              data-pswp-height="1080"
+              data-pswp-width={imageSize.width}
+              data-pswp-height={imageSize.height}
               target="_blank"
               rel="noreferrer"
+              style={{
+                aspectRatio:
+                  imageSize.width && imageSize.height
+                    ? `${imageSize.width} / ${imageSize.height}`
+                    : "auto",
+              }}
             >
               <img
                 src={item.imageUrl}
