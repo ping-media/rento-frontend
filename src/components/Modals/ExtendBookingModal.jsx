@@ -123,7 +123,7 @@ const ExtendBookingModal = () => {
         amount: Number(extendPrice) + Number(addOnPrice),
         data,
       });
-      if (orderId?.status === "created") {
+      if (orderId?.status === "created" && orderId?.bookingUpdate === true) {
         const paymentSuccess = await openRazorpayPayment({
           finalAmount: extendPrice + Number(addOnPrice),
           orderId: orderId?.id,
@@ -161,6 +161,9 @@ const ExtendBookingModal = () => {
         } else {
           return;
         }
+      } else {
+        handleAsyncError(dispatch, orderId?.message);
+        return;
       }
 
       //   if (response?.success === false) {
