@@ -50,7 +50,7 @@ export const openRazorpayPayment = ({
           email: bookingData?.email || bookingData?.userId?.email,
           contact: bookingData?.contact || bookingData?.userId?.contact,
         },
-        theme: { color: "#e23844" },
+        theme: { color: "#DE2A1B" },
         modal: {
           escape: false,
           ondismiss: () => {

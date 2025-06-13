@@ -3,8 +3,9 @@ import "./App.css";
 import { lazy, Suspense, useEffect, useState } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
-import Maintenance from "./Pages/Maintenance";
-import NetworkError from "./components/Error/NetworkError";
+const NetworkError = lazy(() => import("./components/Error/NetworkError"));
+const Maintenance = lazy(() => import("./Pages/Maintenance"));
+const PaymentSuccess = lazy(() => import("./Pages/PaymentSuccess"));
 const Payment = lazy(() => import("./Pages/Payment"));
 const Home = lazy(() => import("./Pages/Home"));
 const Kyc = lazy(() => import("./Pages/Kyc"));
@@ -72,6 +73,7 @@ const App = () => {
             />
             <Route path="refund-return" element={<RefundAndReturn />} />
             <Route path="/payment/:id" element={<Payment />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
           </Route>
           <Route path="*" element={<ErrorPageNotFound />} />
           <Route path="/maintenance" element={<Maintenance />} />

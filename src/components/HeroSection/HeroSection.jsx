@@ -1,13 +1,16 @@
 import star from "../../assets/icons/star.png";
-// import halfStar from "../../assets/icons/rating.png";
-
 const HeroSection = ({ imageUrl, secondImgeUrl }) => {
   return (
     <div className="relative w-full h-full lg:h-[72vh]">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${imageUrl})` }}
+      <img
+        src={imageUrl}
+        alt="Hero background"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
       />
+
       <div className="absolute inset-0 bg-black/75" />
 
       {/* Content goes here */}
@@ -32,7 +35,7 @@ const HeroSection = ({ imageUrl, secondImgeUrl }) => {
         </div>
         <div className="relative flex-1 -mt-10">
           <div className="relative w-72 lg:w-[28rem] mt-3 mx-auto bg-theme p-1 lg:p-2 rounded-full">
-            {/* static rating  */}
+            {/* static rating */}
             <div className="absolute w-28 lg:w-40 bg-white/20 top-3 lg:top-9 right-0 backdrop-blur-md border border-gray-100 rounded-md p-1 lg:p-2">
               <p className="italic font-semibold mb-1.5">Rating</p>
               <div className="flex items-center gap-1">
@@ -42,6 +45,7 @@ const HeroSection = ({ imageUrl, secondImgeUrl }) => {
                     className="size-4 object-cover"
                     alt={`star_${index + 1}`}
                     key={index}
+                    loading="lazy"
                   />
                 ))}
               </div>
