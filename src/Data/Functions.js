@@ -997,7 +997,7 @@ const handleBooking = async (
         navigate(`/account/my-rides/summary/${response?.data?._id}`);
         return;
       } else {
-        handleAsyncError(handleAsyncError(dispatch, response?.message));
+        handleAsyncError(dispatch, response?.message);
       }
       setBookingLoading(false);
     } else if (["online", "partiallyPay"].includes(result?.paymentMethod)) {
