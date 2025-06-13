@@ -36,6 +36,7 @@ const Card = ({
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const { filter } = useSelector((state) => state.filter);
+  const { testMode } = useSelector((state) => state.general);
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   // for getting BookingEndDateAndTime when there is vehiclePlan id is present
@@ -86,7 +87,6 @@ const Card = ({
 
   // sending to ride summary
   const sendToRideSummary = () => {
-    // if it is sold than don't navigate
     if (isSold === true) return;
     navigate(bookingUrl);
   };
@@ -103,7 +103,8 @@ const Card = ({
   return (
     <div onClick={sendToRideSummary} className="relative">
       <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
-        {((isSold && earliestBookingEndDate !== null) ||
+        {((isSold && testMode) ||
+          (isSold && earliestBookingEndDate !== null) ||
           (isSold && earliestMaintenanceEndDate !== null)) && (
           <SoldOutCard
             BookingEndDate={earliestBookingEndDate}
