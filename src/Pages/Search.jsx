@@ -20,7 +20,7 @@ const Search = () => {
   );
   const [currentPage, setCurrentPage] = useState(pagination?.page);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
-  // const [isPackageModal, setPackageModal] = useState(false);
+  const { testMode } = useSelector((state) => state.general);
   const { selectedStation } = useSelector((state) => state.station);
   const { isFilterActive } = useSelector((state) => state.modals);
   const { id } = useParams();
@@ -104,7 +104,7 @@ const Search = () => {
                 Object.entries(vehicles)?.length > 0 ? (
                   <>
                     {vehicles?.availableVehicles?.map((item, index) => (
-                      <Card {...item} key={index} />
+                      <Card {...item} isSold={testMode} key={index} />
                     ))}
                     {vehicles?.excludedVehicles?.map((item, index) => (
                       <Card {...item} isSold={true} key={index} />
