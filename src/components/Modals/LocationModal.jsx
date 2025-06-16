@@ -100,6 +100,7 @@ const LocationModal = () => {
                       <img
                         src={item?.locationImage}
                         className="w-full h-full object-cover rounded-lg"
+                        loading="lazy"
                         alt="SEARCH_LOCATION"
                       />
                       <h2 className="text-gray-600 font-semibold capitalize mt-2">
