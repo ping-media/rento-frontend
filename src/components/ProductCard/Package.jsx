@@ -132,6 +132,7 @@ const Package = () => {
                         <div className="w-20 h-20">
                           <img
                             src={images[index % images.length]}
+                            loading="lazy"
                             alt="Vehicle"
                             className="h-full w-full object-cover"
                           />
