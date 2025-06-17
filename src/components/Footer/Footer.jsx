@@ -20,7 +20,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-theme-black crusor-default">
-      <div className="w-[95%] lg:w-[80%] mx-auto pt-6 pb-3.5">
+      <div className="w-[95%] lg:w-[90%] mx-auto pt-6 pb-3.5">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
           <div className="">
             <div className="w-20 h-20 lg:w-24 lg:h-24 p-1.5 rounded-full bg-white mb-3">

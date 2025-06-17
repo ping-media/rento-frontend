@@ -11,9 +11,11 @@ import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice
 import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 import Tooltip from "../Tooltip/Tooltip";
 import PreLoader from "../skeleton/PreLoader";
+import { renderTooltipBreakdown } from "../../utils/helper";
 
 const PriceCard = ({
   perDayCost,
+  appliedPlans,
   refundableDeposit,
   totalRentalCost,
   daysBreakDown,
@@ -26,10 +28,6 @@ const PriceCard = ({
   const { addon, general, selectedAddOn, loading } = useSelector(
     (state) => state.addon
   );
-  const [isWeekend, setIsWeekend] = useState({
-    weekDays: [],
-    weekend: [],
-  });
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState([]);
@@ -40,7 +38,6 @@ const PriceCard = ({
   const [gSTCost, setGSTCost] = useState(0);
   const [discountedTotal, setDiscountedTotal] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
-  const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
   const {
     tempCouponDiscount,
     tempCouponDiscountTotal,
@@ -65,26 +62,16 @@ const PriceCard = ({
     return null;
   }
 
-  useEffect(() => {
-    const weekendDays = daysBreakDown?.filter(
-      (days) => days.isWeekend === true
-    );
-    const weekDays = daysBreakDown?.filter((days) => days.isWeekend === false);
-    if (weekendDays || weekDays) {
-      setIsWeekend({ weekDays: weekDays || [], weekend: weekendDays || [] });
-    }
-  }, [daysBreakDown]);
-
   // setting vehicleRentCost, extraAddOnCost & GstCost based on vehiclePlan is present or not
   useEffect(() => {
     let currentPlan = null;
 
-    if (vehiclePlan !== null && vehiclePlan?.length > 0) {
-      currentPlan = vehiclePlan?.find(
-        (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
-      );
-      setAppliedVehiclePlan(currentPlan);
-    }
+    // if (vehiclePlan !== null && vehiclePlan?.length > 0) {
+    //   currentPlan = vehiclePlan?.find(
+    //     (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
+    //   );
+    //   setAppliedVehiclePlan(currentPlan);
+    // }
     if (currentPlan !== null && currentPlan?.planPrice) {
       setVehicleRentCost(Number(currentPlan?.planPrice));
       const AddOnAmount =
@@ -202,54 +189,10 @@ const PriceCard = ({
                 <Tooltip
                   buttonMessage={"(?)"}
                   className="font-bold text-gray-500"
-                  tooltipData={
-                    <ul>
-                      <li>
-                        {!appliedVehiclePlan &&
-                          isWeekend?.weekend?.length > 0 && (
-                            <span className="font-semibold mr-1">Weekend:</span>
-                          )}
-                        {appliedVehiclePlan
-                          ? `${duration} Package Applied`
-                          : `₹${
-                              isWeekend?.weekend?.length > 0
-                                ? isWeekend?.weekend[0]?.dailyRate
-                                : perDayCost
-                            } x ${
-                              vehiclePlanData != null
-                                ? vehiclePlanData?.planDuration
-                                : isWeekend?.weekend?.length > 0
-                                ? isWeekend?.weekend?.length
-                                : getDurationInDays(
-                                    queryParmsData?.BookingStartDateAndTime,
-                                    queryParmsData?.BookingEndDateAndTime
-                                  )
-                            } day`}
-                      </li>
-                      {isWeekend?.weekend?.length > 0 &&
-                        !appliedVehiclePlan && (
-                          <li>
-                            <span className="font-semibold mr-1">
-                              Week Days:
-                            </span>
-                            {`₹${
-                              isWeekend?.weekDays?.length > 0
-                                ? isWeekend?.weekDays[0]?.dailyRate
-                                : 0
-                            } x ${
-                              vehiclePlanData !== null
-                                ? vehiclePlanData?.planDuration
-                                : isWeekend?.weekDays?.length > 0
-                                ? isWeekend?.weekDays?.length
-                                : getDurationInDays(
-                                    queryParmsData?.BookingStartDateAndTime,
-                                    queryParmsData?.BookingEndDateAndTime
-                                  )
-                            } day`}
-                          </li>
-                        )}
-                    </ul>
-                  }
+                  tooltipData={renderTooltipBreakdown(
+                    appliedPlans,
+                    daysBreakDown
+                  )}
                 />
               </div>
             </div>
@@ -349,7 +292,7 @@ const PriceCard = ({
         </div>
       </div>
       {/* extra accessories  */}
-      <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 pt-1 rounded-b-lg w-full h-full">
+      <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 pt-1 rounded-b-lg w-full h-fit">
         {addon?.length > 0 &&
           addon
             ?.filter((f) => f.status !== "inactive")

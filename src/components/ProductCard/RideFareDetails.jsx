@@ -6,7 +6,7 @@ import {
 } from "../../utils";
 import Tooltip from "../Tooltip/Tooltip";
 import {
-  renderTooltipContent,
+  renderTooltipBreakdown,
   renderTooltipExtendContent,
 } from "../../utils/helper.jsx";
 
@@ -67,7 +67,10 @@ const RideFareDetails = ({ rides }) => {
                   <Tooltip
                     buttonMessage={"(?)"}
                     className="font-bold text-gray-500"
-                    tooltipData={renderTooltipContent(rides)}
+                    tooltipData={renderTooltipBreakdown(
+                      rides?.bookingPrice?.appliedPlans,
+                      rides?.bookingPrice?.daysBreakdown
+                    )}
                   />
                 </div>
               </div>
@@ -187,7 +190,9 @@ const RideFareDetails = ({ rides }) => {
                       <div className="my-1">
                         <p className="text-sm font-semibold uppercase">
                           {key == "tax"
-                            ? `${camelCaseToSpaceSeparated(key)} (18% GST)`
+                            ? `${camelCaseToSpaceSeparated(key)} (${
+                                general.GST.percentage
+                              }% GST)`
                             : camelCaseToSpaceSeparated(key)}
                         </p>
                       </div>
@@ -316,10 +321,18 @@ const RideFareDetails = ({ rides }) => {
                       <Tooltip
                         buttonMessage={"(?)"}
                         className="font-bold text-gray-500"
-                        tooltipData={renderTooltipExtendContent(
+                        // tooltipData={renderTooltipExtendContent(
+                        //   rides?.bookingPrice?.extendAmount[
+                        //     rides?.bookingPrice?.extendAmount?.length - 1
+                        //   ]
+                        // )}
+                        tooltipData={renderTooltipBreakdown(
                           rides?.bookingPrice?.extendAmount[
                             rides?.bookingPrice?.extendAmount?.length - 1
-                          ]
+                          ]?.appliedPlans,
+                          rides?.bookingPrice?.extendAmount[
+                            rides?.bookingPrice?.extendAmount?.length - 1
+                          ]?.daysBreakdown
                         )}
                       />
                     </div>

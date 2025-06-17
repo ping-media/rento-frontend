@@ -64,7 +64,6 @@ export const renderTooltipExtendContent = (rides) => {
       rides?.BookingEndDateAndTime
     );
 
-    // If booking is longer than 7 days, show summary using daysBreakdown
     if (totalDays > 7 && rides?.daysBreakdown?.length > 0) {
       const totalFromBreakdown = rides.daysBreakdown.reduce(
         (sum, day) => sum + day.dailyRate,
@@ -89,7 +88,6 @@ export const renderTooltipExtendContent = (rides) => {
       );
     }
 
-    // For short bookings (7 days or less), show daily breakdown
     if (rides?.daysBreakdown?.length > 0) {
       return (
         <ul>
@@ -100,7 +98,6 @@ export const renderTooltipExtendContent = (rides) => {
       );
     }
 
-    // Fallback for no breakdown data
     return (
       <ul>
         <li>
@@ -109,4 +106,41 @@ export const renderTooltipExtendContent = (rides) => {
       </ul>
     );
   }
+};
+
+export const renderTooltipBreakdown = (appliedPlans, daysBreakDown) => {
+  const weekend =
+    daysBreakDown?.length > 0
+      ? daysBreakDown.filter((day) => day.isWeekend === true)
+      : [];
+  const weekDays =
+    daysBreakDown?.length > 0
+      ? daysBreakDown.filter((day) => day.isWeekend === false)
+      : [];
+
+  return (
+    <ul>
+      {appliedPlans?.length > 0 && (
+        <li>
+          <span className="font-semibold mr-1">
+            {appliedPlans[0]?.days} Days Package:
+          </span>
+          ₹{appliedPlans[0]?.planPrice}{" "}
+          {appliedPlans[0]?.count > 1 && `x ${appliedPlans[0]?.count}`}
+        </li>
+      )}
+      {weekend?.length > 0 && (
+        <li>
+          <span className="font-semibold mr-1">Weekend:</span>₹
+          {weekend[0]?.dailyRate} x {weekend?.length}
+        </li>
+      )}
+      {weekDays?.length > 0 && (
+        <li>
+          <span className="font-semibold mr-1">Week:</span>₹
+          {weekDays[0]?.dailyRate} x {weekDays?.length}
+        </li>
+      )}
+    </ul>
+  );
 };

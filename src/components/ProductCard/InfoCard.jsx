@@ -4,7 +4,7 @@ import bikeImg from "../../assets/images/bike-image.png";
 import {
   // addDaysToDate,
   formatDateTimeForUser,
-  formatPrice,
+  // formatPrice,
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
@@ -18,6 +18,7 @@ const InfoCard = ({
   vehicleBrand,
   stationName,
   vehiclePlan,
+  vehicleDetails,
   perDayCost,
   freeKms,
   queryParmsData,
@@ -76,7 +77,11 @@ const InfoCard = ({
         </div>
       )}
       <div className="px-4 flex-1">
-        {vehicleBrand && vehicleName && vehicleNumber ? (
+        {(vehicleBrand && vehicleName && vehicleNumber) ||
+        (vehicleBrand &&
+          vehicleName &&
+          vehicleDetails &&
+          vehicleDetails[0]?.vehicleNumber) ? (
           <div className="mb-1.5">
             <h2 className="font-bold uppercase text-lg lg:text-xl">
               {vehicleBrand} {vehicleName}

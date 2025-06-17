@@ -957,13 +957,17 @@ const handleBooking = async (
       isDiscountZero: isDiscountZero,
       rentAmount: vehicles[0]?.perDayCost,
       isPackageApplied: !!vehiclePlanData,
-      daysBreakdown: vehicles[0]?._daysBreakdown || [],
+      appliedPlan: vehicles[0]?.appliedPlans || [],
+      daysBreakdown:
+        vehicles[0]?._daysBreakdown || vehicles[0]?.daysBreakdown || [],
       extendAmount: [],
     },
     vehicleBasic: {
       refundableDeposit: vehicles[0]?.refundableDeposit,
       speedLimit: vehicles[0]?.speedLimit,
-      vehicleNumber: vehicles[0]?.vehicleNumber,
+      vehicleNumber:
+        vehicles[0]?.vehicleNumber ||
+        vehicles[0]?.vehicleDetails[0]?.vehicleNumber,
       freeLimit: vehicles[0]?.freeKms,
       lateFee: vehicles[0]?.lateFee,
       extraKmCharge: vehicles[0]?.extraKmsCharges,

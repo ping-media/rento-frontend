@@ -25,6 +25,7 @@ const Card = ({
   BookingEndDate,
   MaintenanceEndDate,
   vehicleDetails,
+  totalRentalCost,
   _id,
   isSold = false,
 }) => {
@@ -170,15 +171,11 @@ const Card = ({
             (After Limit {formatPrice(extraKmsCharges)}/KM + GST)
           </p>
           <div className="flex items-center justify-between flex-wrap gap-2 lg:gap-0 mb-2">
-            <p>
+            <p className="font-semibold text-base">
               <span className="mr-1">₹</span>
-              {selectedPlan === null ? (
-                <>
-                  {formatPrice(perDayCost)}/<span className="text-sm">day</span>
-                </>
-              ) : (
-                formatPrice(selectedPlan?.planPrice)
-              )}
+              {selectedPlan === null
+                ? formatPrice(totalRentalCost)
+                : formatPrice(selectedPlan?.planPrice)}
             </p>
             <button className="w-full md:w-3/5 lg:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
               Rent Now

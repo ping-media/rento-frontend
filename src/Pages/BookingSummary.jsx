@@ -5,28 +5,13 @@ import InfoCard from "../components/ProductCard/InfoCard";
 import PriceCard from "../components/ProductCard/PriceCard";
 import PromoCard from "../components/ProductCard/PromoCard";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { fetchingData, handlebooking } from "../Data";
-import {
-  addVehiclesData,
-  fetchingVehicles,
-  removeTempDate,
-} from "../Redux/ProductSlice/ProductsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
 import { toggleLoginModal } from "../Redux/ModalSlice/ModalSlice";
-import {
-  handleBooking,
-  handleBookingProcess,
-  handleCreateBooking,
-  // handleFetchBookingData,
-  handleUpdateBooking,
-} from "../Data/Functions";
+import { handleBooking } from "../Data/Functions";
 import Spinner from "../components/Spinner/Spinner";
-import { addTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 import BookingPaymentCard from "../components/ProductCard/BookingPaymentCard";
 import BookingTermModal from "../components/Modals/BookingTermModal";
-import { createOrderId, razorPayment } from "../Data/Payment";
-import { handleRestCoupon } from "../Redux/CouponSlice/CouponSlice";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import {
   formatDateTimeForUser,
@@ -34,6 +19,7 @@ import {
   validateBookingDates,
 } from "../utils";
 import { handleSelectedAddOn } from "../Redux/AddOnSlice/AddOnSlice";
+import { useVehicleData } from "../hooks/useBookingSummary";
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
 
@@ -54,8 +40,7 @@ const BookingSummary = () => {
   const [queryParms] = useSearchParams();
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   // for vehicle Data
-  const [vehicleLoading, setVehicleLoading] = useState(false);
-  const [vehiclePlanData, setVehiclePlanData] = useState(null);
+  const { vehiclePlanData } = useVehicleData(id, queryParmsData);
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
@@ -80,21 +65,6 @@ const BookingSummary = () => {
     return () => {
       dispatch(handleSelectedAddOn([]));
     };
-  }, []);
-
-  //fetching the vehicle info based on vehicleId from url and if vehicle plan id present than search that too
-  useEffect(() => {
-    (async () => {
-      dispatch(fetchingVehicles());
-      const result = await fetchingData(
-        `/getAllVehiclesAvailable?_id=${id}&BookingStartDateAndTime=${queryParmsData?.BookingStartDateAndTime}&BookingEndDateAndTime=${queryParmsData?.BookingEndDateAndTime}`
-      );
-      dispatch(addVehiclesData(result?.data));
-      // only when vehiclePlan id present
-      if (queryParmsData?.vehiclePlan) {
-        setVehiclePlanData(result?.data?.vehiclePlan);
-      }
-    })();
   }, []);
 
   const convertHourTo24HourTime = (hour) => {
@@ -186,32 +156,6 @@ const BookingSummary = () => {
       return;
     }
 
-    // return handleBookingProcess(
-    //   e,
-    //   vehicles,
-    //   queryParmsDataUpdated,
-    //   currentUser,
-    //   toggleLoginModal,
-    //   addTempBookingData,
-    //   setBookingLoading,
-    //   vehiclePlanData,
-    //   isDiscountZero,
-    //   dispatch,
-    //   tempCouponName,
-    //   tempCouponId,
-    //   // tempBookingData,
-    //   handleCreateBooking,
-    //   handleUpdateBooking,
-    //   createOrderId,
-    //   razorPayment,
-    //   handleRestCoupon,
-    //   handleAsyncError,
-    //   navigate,
-    //   removeTempDate,
-    //   handlebooking,
-    //   selectedAddOn
-    // );
-
     return handleBooking(
       e,
       vehicles,
@@ -230,7 +174,7 @@ const BookingSummary = () => {
     );
   };
 
-  return !loading && !vehicleLoading ? (
+  return !loading ? (
     vehicles.length > 0 ? (
       <>
         {/* terms Modal  */}
@@ -285,15 +229,18 @@ const BookingSummary = () => {
               </div>
 
               <div className="flex flex-wrap col-span-3">
-                <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full relative overflow-hidden">
+                <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full relative">
                   <div className="px-4 py-1 border-b-2 border-gray-300">
                     <h2 className="font-bold text-base">Price Details</h2>
                   </div>
                   <PriceCard
                     perDayCost={vehicles[0]?.perDayCost}
+                    appliedPlans={vehicles[0]?.appliedPlans}
                     refundableDeposit={vehicles[0]?.refundableDeposit}
                     totalRentalCost={vehicles[0]?.totalRentalCost}
-                    daysBreakDown={vehicles[0]?._daysBreakdown}
+                    daysBreakDown={
+                      vehicles[0]?._daysBreakdown || vehicles[0]?.daysBreakdown
+                    }
                     vehiclePlan={
                       vehicles[0]?.vehiclePlan ? vehicles[0]?.vehiclePlan : null
                     }
