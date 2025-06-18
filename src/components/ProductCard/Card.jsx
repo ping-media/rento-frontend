@@ -171,15 +171,19 @@ const Card = ({
             (After Limit {formatPrice(extraKmsCharges)}/KM + GST)
           </p>
           <div className="flex items-center justify-between flex-wrap gap-2 lg:gap-0 mb-2">
-            <p className="font-semibold text-base">
-              <span className="mr-1">₹</span>
-              {selectedPlan === null
-                ? formatPrice(totalRentalCost)
-                : formatPrice(selectedPlan?.planPrice)}
-            </p>
-            <button className="w-full md:w-3/5 lg:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
-              Rent Now
-            </button>
+            {!isSold && (
+              <>
+                <p className="font-semibold text-base">
+                  <span className="mr-1">₹</span>
+                  {selectedPlan === null
+                    ? formatPrice(totalRentalCost)
+                    : formatPrice(selectedPlan?.planPrice)}
+                </p>
+                <button className="w-full md:w-3/5 lg:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
+                  Rent Now
+                </button>
+              </>
+            )}
           </div>
           <p className="text-gray-600 text-left">
             Pickup at{" "}
