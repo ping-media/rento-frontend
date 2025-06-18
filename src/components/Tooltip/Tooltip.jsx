@@ -10,6 +10,7 @@ const Tooltip = ({
         className={`${
           underLine ? "underline underline-offset-4" : ""
         } ${className}`}
+        type="button"
       >
         {buttonMessage}
       </button>
