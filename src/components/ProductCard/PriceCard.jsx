@@ -14,12 +14,10 @@ import PreLoader from "../skeleton/PreLoader";
 import { renderTooltipBreakdown } from "../../utils/helper";
 
 const PriceCard = ({
-  perDayCost,
   appliedPlans,
   refundableDeposit,
   totalRentalCost,
   daysBreakDown,
-  vehiclePlan,
   vehiclePlanData,
   queryParmsData,
   bookingStartDateTime,
@@ -66,12 +64,6 @@ const PriceCard = ({
   useEffect(() => {
     let currentPlan = null;
 
-    // if (vehiclePlan !== null && vehiclePlan?.length > 0) {
-    //   currentPlan = vehiclePlan?.find(
-    //     (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
-    //   );
-    //   setAppliedVehiclePlan(currentPlan);
-    // }
     if (currentPlan !== null && currentPlan?.planPrice) {
       setVehicleRentCost(Number(currentPlan?.planPrice));
       const AddOnAmount =
