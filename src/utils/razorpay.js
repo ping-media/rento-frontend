@@ -8,6 +8,8 @@ export const openRazorpayPayment = ({
   bookingData,
   dispatch,
   navigate,
+  type = "",
+  typeId = "",
 }) => {
   return new Promise(async (resolve, reject) => {
     if (!finalAmount || !orderId || !bookingData) {
@@ -32,10 +34,10 @@ export const openRazorpayPayment = ({
           userId: bookingData.userId?._id || bookingData.userId,
         };
 
-        // if (bookingData.type === "extend") {
-        //   payload.type = "extend";
-        //   payload.typeId = bookingData.typeId || 0;
-        // }
+        if (type === "extend" && typeId !== "") {
+          payload.type = "extend";
+          payload.typeId = typeId || 0;
+        }
 
         await handlePostData("/delete-booking", payload);
         console.log("Booking deleted due to payment cancel");

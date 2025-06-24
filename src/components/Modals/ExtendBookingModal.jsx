@@ -93,6 +93,10 @@ const ExtendBookingModal = () => {
         extendDuration: extensionDays,
         amount: extendPrice,
         addOnAmount: addOnPrice,
+        originalBookingEndDateAndTime: rides[0]?.BookingEndDateAndTime.replace(
+          ".000Z",
+          "Z"
+        ),
         BookingStartDateAndTime: addOneMinute(
           rides[0]?.BookingEndDateAndTime
         ).replace(".000Z", "Z"),
@@ -131,6 +135,8 @@ const ExtendBookingModal = () => {
           bookingData: rides[0],
           dispatch,
           navigate,
+          type: "extend",
+          typeId: data.extendAmount.id || "",
         });
 
         if (paymentSuccess) {
