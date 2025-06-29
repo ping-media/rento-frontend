@@ -95,7 +95,11 @@ const searchData = async (
         `/getStationData?locationId=${selectedLocation?.locationId}`
       );
       if (result) {
-        return dispatch(addStationData(result?.data));
+        const data =
+          result?.data && result?.data?.length > 0 ? result?.data : [];
+        const newData =
+          data?.length > 0 ? data?.filter((f) => f.status === "active") : [];
+        return dispatch(addStationData(newData));
       }
     }
   } catch (error) {
