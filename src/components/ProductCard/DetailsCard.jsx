@@ -14,7 +14,7 @@ const DetailsCard = ({
     `₹${
       refundableDeposit ? formatPrice(Number(refundableDeposit)) : "--"
     } Deposit Amount`,
-    "1 complimentary Helmet",
+    "1 Complimentary Helmet",
     `₹${lateFee ? formatPrice(Number(lateFee)) : "--"}/hr Late Amount`,
     `${speedLimit ? speedLimit : "--"}km/hr Speed Limit`,
   ];

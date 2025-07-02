@@ -3,7 +3,7 @@ import { toggleBookingTermModal } from "../../Redux/ModalSlice/ModalSlice";
 import { useState } from "react";
 import TermsAndCondition from "../../Pages/TermsAndCondition";
 
-const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
+const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit, btnFn }) => {
   const dispatch = useDispatch();
   const { isBookingTermActive } = useSelector((state) => state.modals);
   const [isTermsVisible, setTermVisible] = useState(false);
@@ -46,33 +46,35 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between px-4 py-2 bg-theme rounded-t text-white">
-            <h2 className="font-bold text-xl uppercase">
+            <h2 className="font-bold text-base lg:text-xl uppercase">
               Terms And Conditions
             </h2>
-            <button
-              onClick={() => dispatch(toggleBookingTermModal())}
-              type="button"
-              className="text-gray-100 bg-transparent hover:bg-white hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
+            {!btnFn && (
+              <button
+                onClick={() => dispatch(toggleBookingTermModal())}
+                type="button"
+                className="text-gray-100 bg-transparent hover:bg-white hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              </button>
+            )}
           </div>
 
           <div
-            className={`p-6 pt-2 text-center overflow-y-scroll max-h-96 ${
+            className={`p-6 pt-2 text-center max-h-96 ${
               !isTermsVisible ? "no-scrollbar" : ""
-            }`}
+            } ${btnFn ? "overflow-y-auto pb-14" : ""}`}
           >
             <ul className="leading-8 list-disc mb-2">
               {bookingTermsList.map((term, index) => (
@@ -85,6 +87,16 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit }) => {
               <TermsAndCondition isModal={true} />
             </div>
           </div>
+          {btnFn && (
+            <div className="bg-white absolute bottom-0 left-0 w-full py-3 flex items-center justify-end px-4 border-t rounded-b">
+              <button
+                className="bg-black text-white px-3 py-1.5 rounded-md"
+                onClick={btnFn}
+              >
+                Proceed
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

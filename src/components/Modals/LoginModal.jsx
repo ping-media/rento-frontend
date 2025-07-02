@@ -19,6 +19,7 @@ const LoginModal = () => {
   const [isOtpSend, setIsOtpSend] = useState(false);
   const [inputNumber, setInputNumber] = useState("");
   const [isInputEmpty, setIsInputEmpty] = useState(null);
+  const [showVerifyOtp, setShowVerifyOtp] = useState(false);
 
   const handleChangeInputChange = (value) => {
     setIsInputEmpty(value);
@@ -53,6 +54,9 @@ const LoginModal = () => {
           } else if (response.status === 200) {
             setInputNumber(result?.contact);
             setIsOtpSend(true);
+            setTimeout(() => {
+              setShowVerifyOtp(true);
+            }, 100); // Wait for DOM paint
             setIsInputEmpty(null);
             handleAsyncError(dispatch, response?.message, "success");
           }
@@ -108,7 +112,7 @@ const LoginModal = () => {
           </div>
 
           <div className="p-6 pt-2 fade-transition text-center">
-            {!isOtpSend ? (
+            {!isOtpSend && !showVerifyOtp ? (
               <>
                 <form onSubmit={handleLoginUser} className="mb-6">
                   <InputWithIcon

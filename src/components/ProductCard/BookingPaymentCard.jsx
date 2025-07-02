@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { formatPrice, getDurationInDays } from "../../utils";
 
@@ -11,13 +11,13 @@ const BookingPaymentCard = ({
     (state) => state.coupon
   );
   const { selectedAddOn } = useSelector((state) => state.addon);
-  const [finalPrice, setFinalPrice] = useState(0);
-  const duration = getDurationInDays(
-    bookingStartDateTime?.date,
-    bookingEndDateTime?.date
+  const duration = useMemo(
+    () =>
+      getDurationInDays(bookingStartDateTime?.date, bookingEndDateTime?.date),
+    [bookingStartDateTime?.date, bookingEndDateTime?.date]
   );
 
-  useEffect(() => {
+  const finalPrice = useMemo(() => {
     const extraAddonPrice =
       selectedAddOn?.length > 0
         ? selectedAddOn.reduce((total, addon) => {
@@ -37,9 +37,10 @@ const BookingPaymentCard = ({
         : Number(tempTotalPrice);
 
     if (priceToUse !== 0) {
-      setFinalPrice(Math.round((priceToUse + extraAddonPrice) * 0.2));
+      return Math.round((priceToUse + extraAddonPrice) * 0.2);
     }
-  }, [tempTotalPrice, tempCouponDiscountTotal, selectedAddOn]);
+    return 0;
+  }, [tempTotalPrice, tempCouponDiscountTotal, selectedAddOn, duration]);
 
   return (
     <>
@@ -128,7 +129,7 @@ const BookingPaymentCard = ({
                 />
               </svg>
             </div>
-            <h2 className="text-md">Pay at Pickup</h2>
+            <h2 className="text-md">Pay Later (At the time of pickup)</h2>
           </div>
           <input
             type="radio"
@@ -143,4 +144,4 @@ const BookingPaymentCard = ({
   );
 };
 
-export default BookingPaymentCard;
+export default React.memo(BookingPaymentCard);

@@ -171,7 +171,6 @@ const SearchRide = () => {
 
   useEffect(() => {
     // this will set time and date for the first time on homepage
-    // if (location.pathname === "/" || location.pathname === "/monthly-rental") {
     if (location.pathname === "/") {
       const currentTime = new Date().toLocaleTimeString("en-US", {
         hour: "numeric",
@@ -189,7 +188,6 @@ const SearchRide = () => {
         setQueryDropoffTime(queryPickupTime);
       }
     }
-    // }, [location.pathname]);
   }, []);
 
   // changing date & time if time is passed openning hour

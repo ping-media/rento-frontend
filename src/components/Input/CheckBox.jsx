@@ -46,15 +46,9 @@ const Checkbox = forwardRef(({ Message, labelId, setValue }, ref) => {
         ) : (
           <p>
             By clicking, you agree to the
-            <button
-              type="button"
-              className="ml-1 text-theme hover:underline hover:cursor-pointer"
-              onClick={() => {
-                dispatch(toggleBookingTermModal());
-              }}
-            >
+            <span className="ml-1 text-theme hover:cursor-pointer">
               Terms & Conditions.
-            </button>
+            </span>
           </p>
         )}
       </label>

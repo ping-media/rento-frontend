@@ -37,10 +37,10 @@ const DatePicker = ({
     const now = new Date();
 
     for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 60) {
+      // for (let minute = 0; minute < 60; minute += 60) {
+      for (let minute = 0; minute < 60; minute += 30) {
         const period = hour < 12 ? "AM" : "PM";
         const adjustedHour = hour % 12 === 0 ? 12 : hour % 12;
-        // const hourString = adjustedHour < 10 ? `0${adjustedHour}` : adjustedHour;
         const hourString = adjustedHour;
         const minuteString = minute < 10 ? `0${minute}` : minute;
         const timeString = `${hourString}:${minuteString} ${period}`;

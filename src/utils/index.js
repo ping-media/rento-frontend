@@ -49,18 +49,6 @@ const decryptData = (encryptedData) => {
   return JSON.parse(decryptedData);
 };
 
-// const formatDate = (dateStr) => {
-//   const date = new Date(dateStr);
-
-//   const formattedDate = new Intl.DateTimeFormat("en-GB", {
-//     day: "2-digit",
-//     month: "short",
-//     year: "numeric",
-//   }).format(date);
-
-//   return formattedDate.replace(/ /g, " ").replace(",", "");
-// };
-
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
 
@@ -74,10 +62,36 @@ const formatDate = (dateStr) => {
   return formattedDate.replace(/^(\w{3}) (\d{2} \w{3} \d{4})$/, "$1, $2");
 };
 
+// const formatTimeWithoutSeconds = (timeStr) => {
+//   const [time, period] = timeStr.split(" ");
+//   let [hours, minutes] = time.split(":").map(Number);
+//   const seconds = new Date().getSeconds();
+
+//   // Convert to 24-hour format
+//   if (period === "PM" && hours !== 12) {
+//     hours += 12;
+//   } else if (period === "AM" && hours === 12) {
+//     hours = 0;
+//   }
+//   // if (minutes >= 50) {
+//   //   hours = (hours + 2) % 24;
+//   // }
+//   // Round up to next hour if minutes or seconds > 0
+//   if (minutes > 0 && seconds > 0) {
+//     hours = (hours + 1) % 24;
+//   }
+
+//   // Convert back to 12-hour format
+//   let formattedHour = hours % 12;
+//   formattedHour = formattedHour === 0 ? 12 : formattedHour;
+//   const formattedPeriod = hours >= 12 ? "PM" : "AM";
+
+//   return `${formattedHour}:00 ${formattedPeriod}`;
+// };
+
 const formatTimeWithoutSeconds = (timeStr) => {
   const [time, period] = timeStr.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
-  const seconds = new Date().getSeconds();
 
   // Convert to 24-hour format
   if (period === "PM" && hours !== 12) {
@@ -85,20 +99,22 @@ const formatTimeWithoutSeconds = (timeStr) => {
   } else if (period === "AM" && hours === 12) {
     hours = 0;
   }
-  // if (minutes >= 50) {
-  //   hours = (hours + 2) % 24;
-  // }
-  // Round up to next hour if minutes or seconds > 0
-  if (minutes > 0 && seconds > 0) {
+
+  // Round up to next 30-minute slot
+  if (minutes > 0 && minutes <= 30) {
+    minutes = 30;
+  } else if (minutes > 30) {
     hours = (hours + 1) % 24;
+    minutes = 0;
   }
 
   // Convert back to 12-hour format
   let formattedHour = hours % 12;
   formattedHour = formattedHour === 0 ? 12 : formattedHour;
+  const formattedMinutes = minutes === 0 ? "00" : "30";
   const formattedPeriod = hours >= 12 ? "PM" : "AM";
 
-  return `${formattedHour}:00 ${formattedPeriod}`;
+  return `${formattedHour}:${formattedMinutes} ${formattedPeriod}`;
 };
 
 const formatDateWithDayName = (inputDate) => {
@@ -521,23 +537,55 @@ const format24HourFormatTime = (hour) => {
   return `${formattedHour.toString().padStart(2, "0")}:00 ${period}`;
 };
 
+// const formatTimeForProductCard = (isoString) => {
+//   let date = new Date(isoString);
+
+//   date.setUTCHours(date.getUTCHours() + 1);
+
+//   const day = date.getUTCDate().toString().padStart(2, "0");
+//   const month = date.toLocaleString("en-US", { month: "short" });
+//   const year = date.getUTCFullYear();
+
+//   let hours = date.getUTCHours();
+//   const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+//   const amPm = hours >= 12 ? "PM" : "AM";
+
+//   hours = hours % 12 || 12;
+
+//   // return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
+//   return `${day} ${month}, ${year}, ${hours}:00 ${amPm}`;
+// };
+
 const formatTimeForProductCard = (isoString) => {
   let date = new Date(isoString);
 
+  // Adjusting timezone if needed (e.g., +1 hour)
   date.setUTCHours(date.getUTCHours() + 1);
+
+  const minutes = date.getUTCMinutes();
+  if (minutes > 0 && minutes <= 30) {
+    // Round to next half hour
+    date.setUTCMinutes(30);
+  } else if (minutes > 30) {
+    // Round to next full hour
+    date.setUTCHours(date.getUTCHours() + 1);
+    date.setUTCMinutes(0);
+  } else {
+    // minutes === 0
+    date.setUTCMinutes(30);
+  }
 
   const day = date.getUTCDate().toString().padStart(2, "0");
   const month = date.toLocaleString("en-US", { month: "short" });
   const year = date.getUTCFullYear();
 
   let hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+  const displayMinutes = date.getUTCMinutes().toString().padStart(2, "0");
   const amPm = hours >= 12 ? "PM" : "AM";
 
   hours = hours % 12 || 12;
 
-  // return `${day} ${month}, ${year}, ${hours}:${minutes} ${amPm}`;
-  return `${day} ${month}, ${year}, ${hours}:00 ${amPm}`;
+  return `${day} ${month}, ${year}, ${hours}:${displayMinutes} ${amPm}`;
 };
 
 const addDaysToDateForRide = (daysToAdd, dateStr) => {

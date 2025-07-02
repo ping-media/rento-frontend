@@ -16,7 +16,6 @@ const VerifyOtp = ({
 }) => {
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
   const [onOtpSubmit, setOnOtpSubmit] = useState(0);
-  const [firstLoad, setFirstLoad] = useState(true);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef([]);
   const dispatch = useDispatch();
@@ -72,29 +71,26 @@ const VerifyOtp = ({
   };
 
   useEffect(() => {
-    //move focus to the first input
-    if (inputRef.current[0]) {
-      inputRef.current[0].focus();
-    }
+    const timeout = setTimeout(() => {
+      inputRef.current[0]?.focus();
+    }, 50);
+    return () => clearTimeout(timeout);
   }, []);
 
   // Timer for Resending OTP
   useEffect(() => {
-    try {
-      let interval = null;
+    let interval = null;
+    const delay = setTimeout(() => {
       if (otpState.isTimerActive && otpState.seconds > 0) {
         interval = setInterval(() => {
           setOtpState((prev) => ({ ...prev, seconds: prev.seconds - 1 }));
         }, 1000);
-      } else {
-        setOtpState((prev) => ({ ...prev, isTimerActive: false }));
       }
-      return () => {
-        if (interval) clearInterval(interval);
-      };
-    } finally {
-      setFirstLoad(false);
-    }
+    }, 100);
+    return () => {
+      clearTimeout(delay);
+      if (interval) clearInterval(interval);
+    };
   }, [otpState.isTimerActive, otpState.seconds]);
 
   // handle login
@@ -227,7 +223,7 @@ const VerifyOtp = ({
         type="submit"
         disabled={loading || onOtpSubmit.length != 6}
       >
-        {loading ? <Spinner message={"loading.."} /> : "Verify"}
+        {loading ? <Spinner message={"loading.."} /> : "Verify OTP"}
       </button>
     </form>
   );

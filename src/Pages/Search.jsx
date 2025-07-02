@@ -1,7 +1,7 @@
 import SearchRide from "../components/SearchRide/SearchRide";
 import Filters from "../components/Filters/Filters";
 import Card from "../components/ProductCard/Card";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductSkeleton from "../components/skeleton/ProductSkeleton";
 import ErrorNotFound from "../components/Error/ErrorNotFound";
@@ -15,31 +15,37 @@ import Pagination from "../components/SearchRide/Pagination";
 const Search = () => {
   const [queryParms] = useSearchParams();
   const dispatch = useDispatch();
+  const { id } = useParams();
+  const customLocation = useLocation();
+
   const { loading, vehicles, pagination } = useSelector(
     (state) => state.vehicles
   );
-  const [currentPage, setCurrentPage] = useState(pagination?.page);
+  const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { testMode } = useSelector((state) => state.general);
   const { selectedStation } = useSelector((state) => state.station);
   const { isFilterActive } = useSelector((state) => state.modals);
-  const { id } = useParams();
-  const customLocation = useLocation();
+
+  const queryParamsData = useMemo(
+    () => Object.fromEntries(queryParms.entries()),
+    [queryParms]
+  );
 
   useEffect(() => {
     if (!id) return;
-    const newQueryParmsData = Object.fromEntries(queryParms.entries());
+    // const newQueryParmsData = Object.fromEntries(queryParms.entries());
     window.scrollTo({ top: 0 });
     //search data
     handleSearchVehicleData(
       dispatch,
-      newQueryParmsData,
+      queryParamsData,
       location,
       selectedLocation,
       selectedStation?.stationId || id,
       pagination?.page
     );
-  }, [customLocation.search, pagination?.page, selectedStation]);
+  }, [dispatch, customLocation.search, pagination?.page, selectedStation]);
 
   //removing this after we are going to booking
   useEffect(() => {
@@ -51,6 +57,7 @@ const Search = () => {
     <>
       {/* search filters  */}
       <SearchRide />
+
       <div className="mt-5 lg:mt-10 mb-4 w-[95%] lg:w-[90%] mx-auto">
         <div className="grid grid-cols-4 w-full">
           {/* 25% column */}
@@ -116,9 +123,9 @@ const Search = () => {
                   </div>
                 )
               ) : (
-                new Array(3)
-                  .fill(undefined)
-                  .map((_, index) => <ProductSkeleton key={index} />)
+                Array.from({ length: 3 }).map((_, i) => (
+                  <ProductSkeleton key={i} />
+                ))
               )}
             </div>
             {pagination?.totalPages > 1 && (

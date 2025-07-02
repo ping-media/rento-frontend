@@ -17,7 +17,7 @@ const SignOutModal = () => {
         !isSignOutModalActive ? "hidden" : ""
       } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
     >
-      <div className="relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md">
+      <div className="relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-sm">
         <div className="flex justify-end p-2">
           <button
             onClick={() => dispatch(toggleSignOutModal())}
