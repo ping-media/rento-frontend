@@ -4,7 +4,7 @@ import {
   socialIcons,
   contactUsFooterLink,
 } from "../../Data/dummyData";
-import logoImg from "../../assets/logo/rento-logo.png";
+import logoImg from "../../assets/rento-full-light.png";
 import playStore from "../../assets/playStore.png";
 import { memo } from "react";
 import { useSelector } from "react-redux";
@@ -22,9 +22,9 @@ const Footer = () => {
     <footer className="bg-theme-black crusor-default">
       <div className="w-[95%] lg:w-[90%] mx-auto pt-6 pb-3.5">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
-          <div className="">
-            <div className="w-20 h-20 lg:w-24 lg:h-24 p-1.5 rounded-full bg-white mb-3">
-              <Link to={"/"} className="w-full">
+          <div>
+            <div className="w-4/5 mb-2">
+              <Link to={"/"} className="max-h-12 lg:max-h-16">
                 <img
                   src={logoImg}
                   className="w-full h-full object-contain"

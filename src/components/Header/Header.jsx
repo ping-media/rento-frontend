@@ -7,7 +7,7 @@ import {
 } from "../../Redux/ModalSlice/ModalSlice";
 import { menuList } from "../../Data/dummyData";
 import LoggedInUserButton from "../Button/LoggedInUserButton";
-import logoImg from "../../assets/logo/rento-logo.png";
+import newFullLightImg from "../../assets/rento-full-light.png";
 import { memo, useEffect, useMemo } from "react";
 import { handleSignOut } from "../../Redux/UserSlice/UserSlice";
 import { handleUser } from "../../Data";
@@ -71,12 +71,9 @@ const Header = memo(() => {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <Link
-            to={"/"}
-            className="w-12 h-12 lg:w-14 lg:h-14 p-1.5 rounded-full bg-white"
-          >
+          <Link to={"/"} className="h-9 lg:h-12">
             <img
-              src={logoImg}
+              src={newFullLightImg}
               className="w-full h-full object-contain"
               alt="RENTOBIKES"
             />
