@@ -5,10 +5,7 @@ import {
   getDurationInDays,
 } from "../../utils";
 import Tooltip from "../Tooltip/Tooltip";
-import {
-  renderTooltipBreakdown,
-  renderTooltipExtendContent,
-} from "../../utils/helper.jsx";
+import { renderTooltipBreakdown } from "../../utils/helper.jsx";
 
 const RideFareDetails = ({ rides }) => {
   const { general } = useSelector((state) => state.addon);
@@ -287,7 +284,7 @@ const RideFareDetails = ({ rides }) => {
 
             {/* difference amount  */}
             {rides?.bookingPrice?.diffAmount && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
+              <li className="flex items-center justify-between pt-1 mt-1 text-sm">
                 <p className="text-sm font-semibold uppercase text-left">
                   Difference Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
@@ -322,11 +319,6 @@ const RideFareDetails = ({ rides }) => {
                       <Tooltip
                         buttonMessage={"(?)"}
                         className="font-bold text-gray-500"
-                        // tooltipData={renderTooltipExtendContent(
-                        //   rides?.bookingPrice?.extendAmount[
-                        //     rides?.bookingPrice?.extendAmount?.length - 1
-                        //   ]
-                        // )}
                         tooltipData={renderTooltipBreakdown(
                           rides?.bookingPrice?.extendAmount[
                             rides?.bookingPrice?.extendAmount?.length - 1
@@ -338,7 +330,7 @@ const RideFareDetails = ({ rides }) => {
                       />
                     </div>
                   </div>
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                  <small className="font-semibold uppercase text-xs mx-1 block text-gray-400 italic">
                     {rides?.bookingPrice?.extendAmount[
                       rides?.bookingPrice?.extendAmount?.length - 1
                     ]?.status === "paid"
@@ -371,7 +363,7 @@ const RideFareDetails = ({ rides }) => {
               </li>
             )}
             {/* refunded amount */}
-            <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
+            {/* <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
               <p className="text-sm font-semibold uppercase text-left">
                 Refundable Deposit Amount
                 <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
@@ -383,7 +375,7 @@ const RideFareDetails = ({ rides }) => {
                   Number(rides?.vehicleBasic?.refundableDeposit)
                 )}`}
               </p>
-            </li>
+            </li> */}
           </ul>
         </>
       )}

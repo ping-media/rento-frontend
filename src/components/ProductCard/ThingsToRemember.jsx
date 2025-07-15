@@ -11,6 +11,10 @@ const ThingsToRemember = ({ rides }) => {
       limit: rides?.vehicleBasic?.endRide,
       message: "OTP to end ride",
     },
+    refundableDeposit: {
+      limit: rides?.vehicleBasic?.refundableDeposit,
+      message: "need to pay at pickup and will be refunded after drop",
+    },
     distanceLimit: {
       limit: rides?.vehicleBasic?.freeLimit,
       message:
@@ -55,10 +59,16 @@ const ThingsToRemember = ({ rides }) => {
                   <CopyButton textToCopy={value?.limit} />
                 )}
                 {key.includes("Limit")
-                  ? `${value?.limit} Km/hr`
+                  ? key.includes("speed")
+                    ? `${value?.limit} km/hour`
+                    : `${value?.limit} Km/day`
                   : key.includes("Otp")
                   ? value?.limit
-                  : `₹${value?.limit || 0}/hr`}
+                  : key.includes("late")
+                  ? `₹ ${value?.limit || 0}/hour`
+                  : key.includes("refundable")
+                  ? `₹${formatPrice(value?.limit || 0)}`
+                  : `₹ ${value?.limit || 0}/km`}
               </p>
             </li>
           );

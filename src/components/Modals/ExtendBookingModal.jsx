@@ -16,7 +16,6 @@ import { openRazorpayPayment } from "../../utils/razorpay";
 import { useNavigate } from "react-router-dom";
 import { updateRidesData } from "../../Redux/RidesSlice/RideSlice";
 import { debounce } from "lodash";
-import { pollBookingStatus } from "../../Data/Functions";
 
 const ExtendBookingModal = () => {
   const { isBookingExtendModalActive } = useSelector((state) => state.modals);
@@ -63,16 +62,34 @@ const ExtendBookingModal = () => {
     }
   };
 
+  const isDisabled =
+    (!["paid", "partiallyPay", "partially_paid"].includes(
+      rides[0]?.paymentStatus
+    ) &&
+      true) ||
+    (rides[0]?.bookingPrice?.extendAmount &&
+      rides[0]?.bookingPrice?.extendAmount?.length > 0 &&
+      rides[0]?.bookingPrice?.extendAmount[
+        rides[0]?.bookingPrice?.extendAmount?.length - 1
+      ]?.status === "unpaid")
+      ? true
+      : false;
+
   // extend bookng function
   const handleExtendBooking = async (event) => {
     event.preventDefault();
     if (!newDate) return;
+
+    if (isDisabled) {
+      return handleAsyncError(dispatch, "Please clear all previous payments");
+    }
 
     if (extendPrice === 0) {
       return handleAsyncError(dispatch, "Unable to get Price! try again");
     }
 
     const extendAmountList = rides[0]?.bookingPrice?.extendAmount || [];
+    const extensionId = extendAmountList.length + 1 || 1;
 
     let data = {
       _id: rides[0]?._id,
@@ -88,7 +105,7 @@ const ExtendBookingModal = () => {
         BookingEndDateAndTime: rides[0]?.BookingEndDateAndTime,
       },
       extendAmount: {
-        id: extendAmountList?.length + 1,
+        id: extensionId,
         title: "extended",
         extendDuration: extensionDays,
         amount: extendPrice,
@@ -116,53 +133,59 @@ const ExtendBookingModal = () => {
 
     try {
       setFormLoading(true);
-      data = {
-        ...data,
-        contact: rides[0]?.userId?.contact,
-        firstName: rides[0]?.userId?.firstName,
-        managerContact: rides[0]?.stationMasterUserId?.contact,
-      };
-      const orderId = await handlePostData("/initiate-extend-booking ", {
-        _id: rides[0]?._id,
-        bookingId: rides[0]?.bookingId,
-        amount: Number(extendPrice) + Number(addOnPrice),
-        data,
+      const orderId = await handlePostData("/createOrderId", {
+        amount: Number(extendPrice + addOnPrice) || 0,
+        booking_id: rides[0]?.bookingId,
+        type: "ExtensionFromCustomer",
       });
-      if (orderId?.status === "created" && orderId?.bookingUpdate === true) {
+
+      if (orderId?.status === "created") {
         const paymentSuccess = await openRazorpayPayment({
-          finalAmount: extendPrice + Number(addOnPrice),
+          finalAmount: Number(extendPrice || 0) + Number(addOnPrice || 0),
           orderId: orderId?.id,
           bookingData: rides[0],
           dispatch,
           navigate,
-          type: "extend",
-          typeId: data.extendAmount.id || "",
+          type: "ExtensionFromCustomer",
         });
 
         if (paymentSuccess) {
-          const confirmed = await pollBookingStatus(rides[0]?._id, "extend");
+          data = {
+            ...data,
+            extendAmount: {
+              ...data?.extendAmount,
+              orderId: orderId?.id || "",
+              transactionId:
+                paymentSuccess?.response?.razorpay_payment_id || "",
+              paymentMethod: "online",
+              status: "paid",
+            },
+            contact: rides[0]?.userId?.contact,
+            firstName: rides[0]?.userId?.firstName,
+            managerContact: rides[0]?.stationMasterUserId?.contact,
+          };
 
-          if (confirmed) {
-            data = {
-              ...data,
-              extendAmount: {
-                ...data?.extendAmount,
-                paymentMethod: "online",
-                status: "paid",
-              },
-            };
+          const extendResponse = await handlePostData("/extend-booking", {
+            _id: rides[0]?._id,
+            bookingId: rides[0]?.bookingId,
+            amount: Number(extendPrice) + Number(addOnPrice),
+            data,
+          });
+
+          if (extendResponse?.success) {
+            const { contact, firstName, managerContact, ...restData } = data;
+            dispatch(updateRidesData(restData));
+            handleAsyncError(dispatch, "Ride extended successfully", "success");
+            handleCloseModal();
+          } else {
+            handleAsyncError(dispatch, extendResponse?.message);
           }
-          const { contact, firstName, managerContact, ...restData } = data;
-          dispatch(updateRidesData(restData));
-          handleAsyncError(dispatch, "Ride extended successfully", "success");
-          handleCloseModal();
           return;
         } else {
-          return;
+          handleAsyncError(dispatch, "Payment failed or cancelled");
         }
       } else {
-        handleAsyncError(dispatch, orderId?.message);
-        return;
+        return handleAsyncError(dispatch, "Payment Cancelled");
       }
     } catch (error) {
       return handleAsyncError(dispatch, error?.message);
@@ -294,6 +317,12 @@ const ExtendBookingModal = () => {
 
         <div className="p-6 pt-2 text-center">
           <form onSubmit={handleExtendBooking}>
+            {isDisabled && (
+              <p className="text-left text-xs lg:text-sm text-theme italic mb-2">
+                <span className="font-bold mr-1">Note:</span>
+                update the pending payment in order to extend the ride.
+              </p>
+            )}
             <div className="mb-2">
               <p className="text-gray-400 text-left">
                 <span className="font-semibold text-black mr-1">
@@ -352,7 +381,9 @@ const ExtendBookingModal = () => {
             <button
               type="submit"
               className="bg-theme px-4 py-2 text-gray-100 inline-flex gap-2 rounded-md hover:bg-theme-dark transition duration-300 ease-in-out shadow-lg hover:shadow-none disabled:bg-theme/60 w-full flex items-center justify-center"
-              disabled={extendPrice === 0 ? true : false || formLoading}
+              disabled={
+                isDisabled || extendPrice === 0 ? true : false || formLoading
+              }
             >
               {!formLoading ? (
                 "Extend Booking"

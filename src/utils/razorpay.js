@@ -29,6 +29,8 @@ export const openRazorpayPayment = ({
 
     const deleteBooking = async () => {
       try {
+        if (type === "ExtensionFromCustomer") return;
+
         const payload = {
           bookingId: bookingData._id,
           userId: bookingData.userId?._id || bookingData.userId,
