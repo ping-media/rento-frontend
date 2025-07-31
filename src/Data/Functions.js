@@ -926,6 +926,26 @@ const handleBooking = async (
 
   if (!vehicles || vehicles.length === 0) return;
 
+  // calculating the free km limit
+  const isPackage =
+    vehicles[0]?.appliedPlans?.length > 0 ? vehicles[0]?.appliedPlans : null;
+
+  const daysBreakdowns =
+    vehicles[0]?._daysBreakdown || vehicles[0]?.daysBreakdown || null;
+
+  const freeKmLimitForPlan =
+    isPackage !== null
+      ? isPackage.reduce((sum, plan) => {
+          return sum + plan.kmLimit * plan.count;
+        }, 0)
+      : 0;
+  const freeKmLimitForDays =
+    daysBreakdowns !== null
+      ? daysBreakdowns?.length * formData?.stepOneData?.selectedVehicle?.freeKms
+      : 0;
+
+  const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
+
   let data = {
     vehicleTableId: vehicles[0]?._id,
     userId: currentUser?._id,
@@ -968,7 +988,7 @@ const handleBooking = async (
     },
     vehicleBasic: {
       refundableDeposit: vehicles[0]?.refundableDeposit,
-      speedLimit: vehicles[0]?.speedLimit,
+      speedLimit: freeLimit,
       vehicleNumber:
         vehicles[0]?.vehicleNumber ||
         vehicles[0]?.vehicleDetails[0]?.vehicleNumber,

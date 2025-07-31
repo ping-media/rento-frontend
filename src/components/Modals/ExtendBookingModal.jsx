@@ -91,6 +91,25 @@ const ExtendBookingModal = () => {
     const extendAmountList = rides[0]?.bookingPrice?.extendAmount || [];
     const extensionId = extendAmountList.length + 1 || 1;
 
+    // calculating the free km limit
+    const isPackage = appliedPlans?.length > 0 ? appliedPlans : null;
+
+    const daysBreakdowns = daysBreakdown || null;
+
+    const freeKmLimitForPlan =
+      isPackage !== null
+        ? isPackage.reduce((sum, plan) => {
+            return sum + plan.kmLimit * plan.count;
+          }, 0)
+        : 0;
+    const freeKmLimitForDays =
+      daysBreakdowns !== null
+        ? daysBreakdowns?.length *
+          formData?.stepOneData?.selectedVehicle?.freeKms
+        : 0;
+
+    const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
+
     let data = {
       _id: rides[0]?._id,
       vehicleTableId: rides[0]?.vehicleTableId?._id,
@@ -121,6 +140,7 @@ const ExtendBookingModal = () => {
         daysBreakdown: daysBreakdown || [],
         package: selectedPlan || [],
         appliedPlans: appliedPlans || [],
+        freeLimit,
         orderId: "",
         transactionId: "",
         paymentMethod: "",
