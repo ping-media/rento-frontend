@@ -104,8 +104,7 @@ const ExtendBookingModal = () => {
         : 0;
     const freeKmLimitForDays =
       daysBreakdowns !== null
-        ? daysBreakdowns?.length *
-          formData?.stepOneData?.selectedVehicle?.freeKms
+        ? daysBreakdowns?.length * rides[0]?.vehicleBasic?.freeLimit
         : 0;
 
     const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
