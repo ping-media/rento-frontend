@@ -941,7 +941,7 @@ const handleBooking = async (
       : 0;
   const freeKmLimitForDays =
     daysBreakdowns !== null
-      ? daysBreakdowns?.length * vehicles[0]?.vehicleBasic?.freeLimit
+      ? daysBreakdowns?.length * Number(vehicles[0]?.freeKms)
       : 0;
 
   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
@@ -988,11 +988,11 @@ const handleBooking = async (
     },
     vehicleBasic: {
       refundableDeposit: vehicles[0]?.refundableDeposit,
-      speedLimit: freeLimit,
+      speedLimit: vehicles[0]?.speedLimit,
       vehicleNumber:
         vehicles[0]?.vehicleNumber ||
         vehicles[0]?.vehicleDetails[0]?.vehicleNumber,
-      freeLimit: vehicles[0]?.freeKms,
+      freeLimit,
       lateFee: vehicles[0]?.lateFee,
       extraKmCharge: vehicles[0]?.extraKmsCharges,
       startRide: startRideOtp,
