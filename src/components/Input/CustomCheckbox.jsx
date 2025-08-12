@@ -36,7 +36,7 @@ const CustomCheckbox = ({
               checked={selectedItem === item}
               onChange={() => handleCheckboxChange(item)}
             />
-            <div className="h-6 w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition">
+            <div className="w-7 h-7 lg:h-6 lg:w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition">
               {selectedItem === item && (
                 <svg
                   fill="none"

@@ -42,7 +42,7 @@ const CheckboxFilter = ({ setPlanIdChanger, isSearch = false }) => {
                   checked={selectedPlanId === item?._id}
                   onChange={() => handleCheckboxChange(item?._id)}
                 />
-                <div className="h-6 w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition">
+                <div className="w-7 h-7 lg:h-6 lg:w-6 flex rounded-md border-2 border-gray-300 bg-lighter-gray peer-checked:bg-theme peer-checked:border-theme transition">
                   <svg
                     fill="none"
                     viewBox="0 0 24 24"

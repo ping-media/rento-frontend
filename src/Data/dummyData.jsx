@@ -24,20 +24,16 @@ export const Categories = [
 ];
 
 export const brands = [
-  "vespa",
-  "honda",
-  "yamaha",
-  "suzuki",
-  "KTM",
-  "BMW",
+  "Ather",
+  "Honda",
+  "Yamaha",
   "TVS",
-  "bajaj",
-  "hero",
-  "ather",
-  "ola",
-  "royal enfield",
-  "harley davidson",
+  "OLA",
+  "Hyundai",
+  "Hero",
+  "Bajaj",
 ];
+
 export const Modal = ["Choose Modal", "Activa", "Jupiter", "Splender"];
 
 export const socialIcons = {
