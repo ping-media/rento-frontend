@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   formatDate,
   formatTimeWithoutSeconds,
@@ -48,7 +48,8 @@ const DatePicker = ({
 
         const isOutsideAllowedRange =
           hour < selectedStation?.openStartTime ||
-          hour > selectedStation?.openEndTime;
+          hour > selectedStation?.openEndTime ||
+          (hour === selectedStation?.openEndTime && minute > 0);
 
         let isDisabled = false;
 
