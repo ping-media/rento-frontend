@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleFilter } from "../../Redux/ModalSlice/ModalSlice";
-import { brands, Categories } from "../../Data/dummyData";
+import { brands, VehicleType } from "../../Data/dummyData";
 import CustomCheckbox from "../Input/CustomCheckbox";
 import CheckboxFilter from "../Input/CheckBoxFilter";
 
@@ -57,8 +57,8 @@ const Filters = ({ showPackage = false }) => {
               </h2>
             </div>
 
-            <div className="flex items-center lg:justify-between gap-2">
-              {Categories.map((item, index) => (
+            <div className="flex items-center lg:justify-between gap-2 mb-3">
+              {VehicleType.map((item, index) => (
                 <button
                   key={index}
                   type="button"

@@ -1,5 +1,6 @@
 import scooterImage from "../assets/logo/scooter.png";
 import bikeImage from "../assets/logo/bike.png";
+import carImage from "../assets/images/car-image.png";
 import facebook from "../assets/icons/facebook.png";
 import instagram from "../assets/icons/instagram.png";
 import twitter from "../assets/icons/twitter.png";
@@ -21,6 +22,11 @@ export const menuList = [
 export const Categories = [
   { categoryImage: scooterImage, CategoryTitle: "Non-Gear" },
   { categoryImage: bikeImage, CategoryTitle: "Gear" },
+];
+
+export const VehicleType = [
+  { categoryImage: bikeImage, CategoryTitle: "Two-Wheeler" },
+  { categoryImage: carImage, CategoryTitle: "Four-Wheeler" },
 ];
 
 export const brands = [

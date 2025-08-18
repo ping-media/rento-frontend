@@ -41,7 +41,8 @@ const handleSearchVehicleData = async (
       // For non-explore path
       url += `stationId=${id}&${commonParams}`;
 
-      if (category) url += `&vehicleType=${category}`;
+      // if (category) url += `&vehicleType=${category}`;
+      if (category) url += `&vehicleCategory=${category}`;
       if (brand) url += `&vehicleBrand=${brand}`;
       if (vehiclePlan) url += `&vehiclePlan=${vehiclePlan}`;
     } else {

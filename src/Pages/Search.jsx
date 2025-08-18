@@ -34,7 +34,6 @@ const Search = () => {
 
   useEffect(() => {
     if (!id) return;
-    // const newQueryParmsData = Object.fromEntries(queryParms.entries());
     window.scrollTo({ top: 0 });
     //search data
     handleSearchVehicleData(
