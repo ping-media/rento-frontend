@@ -60,6 +60,7 @@ const InfoCard = ({
           return sum + plan.kmLimit * plan.count;
         }, 0)
       : 0;
+
   const freeKmLimitForDays =
     daysBreakdowns !== null ? daysBreakdowns?.length * Number(freeKms) : 0;
 

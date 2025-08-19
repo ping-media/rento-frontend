@@ -169,7 +169,7 @@ const ExtendBookingModal = () => {
           type: "ExtensionFromCustomer",
         });
 
-        if (paymentSuccess) {
+        if (paymentSuccess?.success) {
           data = {
             ...data,
             extendAmount: {
