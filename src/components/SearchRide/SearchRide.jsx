@@ -85,9 +85,14 @@ const SearchRide = () => {
     try {
       const pickupDate = result.pickup.substring(0, 16);
       const pickupTime = result.pickup.substring(17, result.pickup.length);
-      let dropoffDate = result?.dropoff?.substring(0, 16) || "";
-      let dropoffTime =
-        result?.dropoff?.substring(17, result.dropoff.length) || "";
+      // let dropoffDate = result?.dropoff?.substring(0, 16) || "";
+      let dropoffDate = result?.dropoff?.split(/\d{1,2}:\d{2}/)[0].trim();
+      // let dropoffTime =
+      //   result?.dropoff?.substring(17, result.dropoff.length) || "";
+      const dropoffTimeMatch = result?.dropoff?.match(
+        /\d{1,2}:\d{2}\s?(AM|PM)/i
+      );
+      let dropoffTime = dropoffTimeMatch ? dropoffTimeMatch[0] : "";
 
       // changing the drop date when user is coming from monthly page
       if (location.pathname === "/monthly-rental") {

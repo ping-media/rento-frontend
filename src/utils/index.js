@@ -234,7 +234,7 @@ const convertToISOString = (dropoffDate, dropoffTime) => {
     "Jun",
     "Jul",
     "Aug",
-    "Sep",
+    "Sept",
     "Oct",
     "Nov",
     "Dec",

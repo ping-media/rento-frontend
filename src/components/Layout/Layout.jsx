@@ -37,7 +37,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const waContact = (!loading && info.waContact) || "8884488891";
+  const waContact = (!loading && info?.waContact) || "8884488891";
 
   useEffect(() => {
     // setting decrypt user data
@@ -114,7 +114,7 @@ const Layout = () => {
       <header className="sticky top-0 z-20">
         <TopHeader
           email={info?.email || "support@rentobikes.com"}
-          phoneNumber={`+91 ${info.contact}` || "+91 8884488891"}
+          phoneNumber={`+91 ${info?.contact}` || "+91 8884488891"}
         />
         <Header />
       </header>

@@ -75,7 +75,24 @@ const BookingSummary = () => {
 
   const convertHourTo24HourTime = (hour) =>
     `${String(hour).padStart(2, "0")}:00:00Z`;
-  const getCurrentLocalTime = () => new Date().toISOString().split("T")[1];
+  const getCurrentLocalTime = () => new Date().toISOString();
+
+  // const validateTimes = (
+  //   enteredStartTime,
+  //   enteredEndTime,
+  //   openTime,
+  //   closeTime,
+  //   currentTime
+  // ) => {
+  //   const [_, startTime] = enteredStartTime.split("T");
+  //   const [__, endTime] = enteredEndTime.split("T");
+  //   const isWithin = startTime >= openTime && endTime <= closeTime;
+  //   const isPast = startTime < currentTime;
+  //   console.log(startTime, endTime, openTime, closeTime, currentTime, isPast);
+  //   return isWithin && !isPast
+  //     ? { valid: true }
+  //     : { valid: false, message: "Invalid booking time." };
+  // };
 
   const validateTimes = (
     enteredStartTime,
@@ -84,15 +101,23 @@ const BookingSummary = () => {
     closeTime,
     currentTime
   ) => {
+    // Extract date portions for comparison
+    const [startDate] = enteredStartTime.split("T");
+    const [currentDate] = currentTime.split("T");
+    // If booking is for a future date, only check business hours
+    if (startDate > currentDate) {
+      return { valid: true };
+    }
     const [_, startTime] = enteredStartTime.split("T");
     const [__, endTime] = enteredEndTime.split("T");
     const isWithin = startTime >= openTime && endTime <= closeTime;
-    const isPast = startTime < currentTime;
+    const isPast = startTime < new Date().toISOString().split("T")[1];
     return isWithin && !isPast
       ? { valid: true }
       : { valid: false, message: "Invalid booking time." };
   };
 
+  // for creating new booking
   const handleCreateBookingSubmit = (e) => {
     e.preventDefault();
     const openTime = convertHourTo24HourTime(
@@ -184,7 +209,6 @@ const BookingSummary = () => {
                 </div>
                 <InfoCard
                   {...memoizedVehicle}
-                  vehiclePlanData={vehiclePlan}
                   queryParmsData={queryParmsData}
                 />
                 <DetailsCard

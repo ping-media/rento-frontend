@@ -1,57 +1,69 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import scooterImg from "../../assets/images/scooter-image.png";
 import bikeImg from "../../assets/images/bike-image.png";
 import {
-  // addDaysToDate,
   formatDateTimeForUser,
-  // formatPrice,
   getDurationInDays,
   handleErrorImage,
 } from "../../utils";
 
 const InfoCard = ({
-  vehiclePlanData,
   vehicleNumber,
   vehicleImage,
   vehicleName,
   vehicleType,
   vehicleBrand,
   stationName,
-  vehiclePlan,
   vehicleDetails,
-  perDayCost,
   freeKms,
   queryParmsData,
+  appliedPlans,
+  daysBreakdown,
 }) => {
   const vehicleImageRef = useRef(null);
-  const [bookingStartDateTime, setBookingStartDateTime] = useState(null);
-  const [bookingEndDateTime, setBookingEndDateTime] = useState(null);
-  const [appliedVehiclePlan, setAppliedVehiclePlan] = useState(null);
 
   //converting time into readable format
-  useEffect(() => {
-    if (
-      queryParmsData?.BookingStartDateAndTime &&
-      queryParmsData?.BookingEndDateAndTime
-    ) {
-      setBookingStartDateTime(
-        formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime)
-      );
-      setBookingEndDateTime(
-        formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime)
-      );
-    }
-  }, []);
+  const bookingStartDateTime = useMemo(() => {
+    return queryParmsData?.BookingStartDateAndTime
+      ? formatDateTimeForUser(queryParmsData.BookingStartDateAndTime)
+      : "";
+  }, [queryParmsData?.BookingStartDateAndTime]);
 
-  // if user comes to this page using plan
-  useEffect(() => {
-    if (vehiclePlan && vehiclePlan?.length > 0) {
-      const plan = vehiclePlan?.find(
-        (subItem) => subItem?._id === queryParmsData?.vehiclePlan || null
-      );
-      setAppliedVehiclePlan(plan);
-    }
-  }, []);
+  const bookingEndDateTime = useMemo(() => {
+    return queryParmsData?.BookingEndDateAndTime
+      ? formatDateTimeForUser(queryParmsData.BookingEndDateAndTime)
+      : "";
+  }, [queryParmsData?.BookingEndDateAndTime]);
+
+  // useEffect(() => {
+  //   if (
+  //     queryParmsData?.BookingStartDateAndTime &&
+  //     queryParmsData?.BookingEndDateAndTime
+  //   ) {
+  //     setBookingStartDateTime(
+  //       formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime)
+  //     );
+  //     setBookingEndDateTime(
+  //       formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime)
+  //     );
+  //   }
+  // }, []);
+
+  // free limit logic
+  const isPackage = appliedPlans?.length > 0 ? appliedPlans : null;
+
+  const daysBreakdowns = daysBreakdown || null;
+
+  const freeKmLimitForPlan =
+    isPackage !== null
+      ? isPackage.reduce((sum, plan) => {
+          return sum + plan.kmLimit * plan.count;
+        }, 0)
+      : 0;
+  const freeKmLimitForDays =
+    daysBreakdowns !== null ? daysBreakdowns?.length * Number(freeKms) : 0;
+
+  const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
 
   return (
     <div className="flex justify-between flex-wrap md:gap-5 lg:gap-10 mt-6 mb-4 cursor-default">
@@ -176,12 +188,15 @@ const InfoCard = ({
           </span>
           Booking For:
           <span className="font-semibold">
-            {vehiclePlanData != null
-              ? vehiclePlanData?.planDuration
-              : getDurationInDays(
-                  bookingStartDateTime?.date,
-                  bookingEndDateTime?.date
-                )}{" "}
+            {
+              // vehiclePlanData != null
+              //   ? vehiclePlanData?.planDuration
+              //   :
+              getDurationInDays(
+                bookingStartDateTime?.date,
+                bookingEndDateTime?.date
+              )
+            }{" "}
             Day
           </span>
         </div>
@@ -203,28 +218,7 @@ const InfoCard = ({
               </svg>
             </span>
             Free Limit:
-            <span className="font-semibold">
-              {freeKms *
-                (vehiclePlanData != null
-                  ? vehiclePlanData?.planDuration
-                  : getDurationInDays(
-                      queryParmsData?.BookingStartDateAndTime,
-                      queryParmsData?.BookingEndDateAndTime
-                    ))}
-              KM
-            </span>
-            <span className="text-xs me-1 text-gray-500">
-              (
-              {`${freeKms} x ${
-                vehiclePlanData != null
-                  ? vehiclePlanData?.planDuration
-                  : getDurationInDays(
-                      queryParmsData?.BookingStartDateAndTime,
-                      queryParmsData?.BookingEndDateAndTime
-                    )
-              } days`}
-              )
-            </span>
+            <span className="font-semibold">{freeLimit || "--"} KM</span>
           </div>
         ) : (
           <div>
@@ -233,44 +227,6 @@ const InfoCard = ({
           </div>
         )}
       </div>
-      {/* <div className="mt-2 lg:mt-0">
-        <h2 className="font-semibold flex items-center px-4 gap-2 lg:px-2">
-          <span className="lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 8.25H9m6 3H9m3 6-3-3h1.5a3 3 0 1 0 0-6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-          </span>
-          <div>
-            {vehiclePlanData != null && (
-              <p className="text-lg">
-                ₹
-                {appliedVehiclePlan !== null && appliedVehiclePlan?.planPrice
-                  ? formatPrice(Number(appliedVehiclePlan?.planPrice))
-                  : formatPrice(Number(vehiclePlanData?.planPrice))}
-              </p>
-            )}
-            <p
-              className={`${
-                vehiclePlanData != null ? "text-sm line-through" : "text-lg"
-              }`}
-            >
-              ₹{formatPrice(Number(perDayCost))}/
-              <span className="text-sm">day</span>
-            </p>
-          </div>
-        </h2>
-      </div> */}
     </div>
   );
 };

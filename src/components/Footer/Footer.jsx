@@ -12,9 +12,10 @@ import { useSelector } from "react-redux";
 const Footer = () => {
   const { info, loading } = useSelector((state) => state.general);
 
-  const contact = (!loading && info.contact) || "8884488891";
-  const email = (!loading && info.email) || "support@rentobikes.com";
-  const address = (!loading && info.address) || "HSR Layout, Bangalore, 560016";
+  const contact = (!loading && info?.contact) || "8884488891";
+  const email = (!loading && info?.email) || "support@rentobikes.com";
+  const address =
+    (!loading && info?.address) || "HSR Layout, Bangalore, 560016";
 
   const footerQuickLink = contactUsFooterLink({ contact, email, address });
 
@@ -40,7 +41,7 @@ const Footer = () => {
             </p>
             {/* social icons  */}
             <div className="flex items-center gap-4">
-              {Object.entries(info.socialmedia).map(([key, value], index) => {
+              {Object.entries(info?.socialmedia).map(([key, value], index) => {
                 if (value === "#") {
                   return null;
                 }
@@ -106,7 +107,7 @@ const Footer = () => {
             <p className="text-gray-100 text-base">
               Download the app by clicking the link below:
             </p>
-            <Link to={info.appLink.Android} target="_blank">
+            <Link to={info?.appLink?.Android} target="_blank">
               <div className="w-36 my-5">
                 <img
                   src={playStore}
