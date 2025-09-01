@@ -182,54 +182,116 @@ const calculateTax = (amount, taxPercentage) => {
   return Math.round(taxAmount);
 };
 
+// const convertToISOString = (dropoffDate, dropoffTime) => {
+//   const dateParts = dropoffDate.split(",")[1].trim().split(" ");
+//   const monthNames = [
+//     "Jan",
+//     "Feb",
+//     "Mar",
+//     "Apr",
+//     "May",
+//     "Jun",
+//     "Jul",
+//     "Aug",
+//     "Sept",
+//     "Oct",
+//     "Nov",
+//     "Dec",
+//   ];
+
+//   const day = parseInt(dateParts[0], 10);
+//   const month = monthNames.findIndex(
+//     (m) => m.toLowerCase() === dateParts[1].toLowerCase()
+//   );
+//   const year = parseInt(dateParts[2], 10);
+
+//   if (month === -1) {
+//     console.error("Invalid month:", dateParts[1]);
+//     return null;
+//   }
+
+//   // Create the initial date object in UTC time
+//   const date = new Date(Date.UTC(year, month, day));
+
+//   // Step 2: Parse the time string ("6:00 PM") into 24-hour format
+//   const [time, modifier] = dropoffTime.trim().split(/\s+/);
+//   let [hour, minute] = time.split(":").map(Number);
+//   let hours = parseInt(hour, 10);
+//   const ampm = modifier;
+
+//   // Convert 12-hour time to 24-hour time
+//   if (ampm === "PM" && hours !== 12) {
+//     hours += 12;
+//   } else if (ampm === "AM" && hours === 12) {
+//     hours = 0;
+//   }
+
+//   // Step 3: Set the time (hours and minutes) in the Date object in UTC
+//   date.setUTCHours(hours, parseInt(minute, 10), 0, 0);
+
+//   // Step 4: Convert the Date object to an ISO string and remove milliseconds
+//   const isoString = date?.toISOString().slice(0, 19) + "Z";
+
+//   return isoString;
+// };
+
 const convertToISOString = (dropoffDate, dropoffTime) => {
-  const dateParts = dropoffDate.split(",")[1].trim().split(" ");
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  try {
+    const dateString = dropoffDate.includes(",")
+      ? dropoffDate.split(",")[1].trim()
+      : dropoffDate.trim();
 
-  const day = parseInt(dateParts[0], 10);
-  const month = monthNames.findIndex(
-    (m) => m.toLowerCase() === dateParts[1].toLowerCase()
-  );
-  const year = parseInt(dateParts[2], 10);
+    const dateParts = dateString.split(" ");
 
-  if (month === -1) throw new Error("Invalid month: " + dateParts[1]);
+    // Handle cases like "01 Sep 2025" or "1 Sept 2025"
+    const day = parseInt(dateParts[0], 10);
+    const monthToken = dateParts[1].toLowerCase();
+    const year = parseInt(dateParts[2], 10);
 
-  // Create the initial date object in UTC time
-  const date = new Date(Date.UTC(year, month, day));
+    const monthMap = {
+      jan: 0,
+      feb: 1,
+      mar: 2,
+      apr: 3,
+      may: 4,
+      jun: 5,
+      jul: 6,
+      aug: 7,
+      sep: 8,
+      sept: 8,
+      oct: 9,
+      nov: 10,
+      dec: 11,
+    };
 
-  // Step 2: Parse the time string ("6:00 PM") into 24-hour format
-  const [time, modifier] = dropoffTime.trim().split(/\s+/);
-  let [hour, minute] = time.split(":").map(Number);
-  let hours = parseInt(hour, 10);
-  const ampm = modifier;
+    const month = monthMap[monthToken];
+    if (month === undefined) {
+      console.error("Invalid month:", monthToken);
+      return null;
+    }
 
-  // Convert 12-hour time to 24-hour time
-  if (ampm === "PM" && hours !== 12) {
-    hours += 12;
-  } else if (ampm === "AM" && hours === 12) {
-    hours = 0;
+    // Create the initial date object in UTC
+    const date = new Date(Date.UTC(year, month, day));
+
+    // Parse time string like "6:00 PM"
+    const [time, modifier] = dropoffTime.trim().split(/\s+/);
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier === "PM" && hours !== 12) {
+      hours += 12;
+    } else if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+
+    // Set UTC hours/minutes
+    date.setUTCHours(hours, minutes || 0, 0, 0);
+
+    // Return clean ISO string (without ms)
+    return date.toISOString().slice(0, 19) + "Z";
+  } catch (err) {
+    console.error("Failed to parse date/time:", err);
+    return null;
   }
-
-  // Step 3: Set the time (hours and minutes) in the Date object in UTC
-  date.setUTCHours(hours, parseInt(minute, 10), 0, 0);
-
-  // Step 4: Convert the Date object to an ISO string and remove milliseconds
-  const isoString = date?.toISOString().slice(0, 19) + "Z";
-
-  return isoString;
 };
 
 const removeAfterSecondSlash = (pathname) => {
