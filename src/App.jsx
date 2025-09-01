@@ -3,6 +3,7 @@ import "./App.css";
 import { lazy, Suspense, useEffect, useState } from "react";
 import PreLoader from "./components/skeleton/PreLoader";
 import Layout from "./components/Layout/Layout";
+import GlobalErrorBoundary from "./context/GlobalErrorBoundary";
 const NetworkError = lazy(() => import("./components/Error/NetworkError"));
 const Maintenance = lazy(() => import("./Pages/Maintenance"));
 const PaymentSuccess = lazy(() => import("./Pages/PaymentSuccess"));
@@ -46,39 +47,44 @@ const App = () => {
 
   return (
     <Router>
-      <Suspense fallback={<PreLoader />}>
-        <Routes>
-          {/* layout wrapper  */}
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/monthly-rental" element={<Home />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/search/:id" element={<Search />} />
-            <Route path="/explore" element={<Search />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/booking/summary/:id" element={<BookingSummary />} />
-            <Route path="booking/payment/:id" element={<BookingAndPayment />} />
-            <Route path="/kyc" element={<Kyc />} />
-            {/* protected routes start here  */}
-            <Route path="/account/" element={<LoggedInLayout />}>
-              <Route path="profile" element={<Profile />} />
-              <Route path="my-rides" element={<MyRides />} />
-              <Route path="my-rides/summary/:id" element={<RidesSummary />} />
+      <GlobalErrorBoundary>
+        <Suspense fallback={<PreLoader />}>
+          <Routes>
+            {/* layout wrapper  */}
+            <Route path="/" element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/monthly-rental" element={<Home />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/search/:id" element={<Search />} />
+              <Route path="/explore" element={<Search />} />
+              <Route path="/contact-us" element={<ContactUs />} />
+              <Route path="/booking/summary/:id" element={<BookingSummary />} />
+              <Route
+                path="booking/payment/:id"
+                element={<BookingAndPayment />}
+              />
+              <Route path="/kyc" element={<Kyc />} />
+              {/* protected routes start here  */}
+              <Route path="/account/" element={<LoggedInLayout />}>
+                <Route path="profile" element={<Profile />} />
+                <Route path="my-rides" element={<MyRides />} />
+                <Route path="my-rides/summary/:id" element={<RidesSummary />} />
+              </Route>
+              {/* protected routes end here  */}
+              <Route path="privacy-policy" element={<PrivacyPolicy />} />
+              <Route
+                path="terms-and-conditions"
+                element={<TermsAndCondition />}
+              />
+              <Route path="refund-return" element={<RefundAndReturn />} />
+              <Route path="/payment/:id" element={<Payment />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
             </Route>
-            {/* protected routes end here  */}
-            <Route path="privacy-policy" element={<PrivacyPolicy />} />
-            <Route
-              path="terms-and-conditions"
-              element={<TermsAndCondition />}
-            />
-            <Route path="refund-return" element={<RefundAndReturn />} />
-            <Route path="/payment/:id" element={<Payment />} />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
-          </Route>
-          <Route path="*" element={<ErrorPageNotFound />} />
-          <Route path="/maintenance" element={<Maintenance />} />
-        </Routes>
-      </Suspense>
+            <Route path="*" element={<ErrorPageNotFound />} />
+            <Route path="/maintenance" element={<Maintenance />} />
+          </Routes>
+        </Suspense>
+      </GlobalErrorBoundary>
     </Router>
   );
 };
