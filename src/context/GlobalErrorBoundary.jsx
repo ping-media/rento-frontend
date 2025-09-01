@@ -27,9 +27,9 @@ class GlobalErrorBoundary extends React.Component {
           <div className="flex gap-4">
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+              className="px-4 py-2 rounded-lg bg-theme text-white hover:bg-theme/60 transition"
             >
-              Refresh Page
+              Refresh
             </button>
           </div>
         </div>
