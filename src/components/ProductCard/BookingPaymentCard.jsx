@@ -6,11 +6,13 @@ const BookingPaymentCard = ({
   isDiscountZeroApplied,
   bookingStartDateTime,
   bookingEndDateTime,
+  taxAmount,
 }) => {
   const { tempTotalPrice, tempCouponDiscountTotal } = useSelector(
     (state) => state.coupon
   );
   const { selectedAddOn } = useSelector((state) => state.addon);
+
   const duration = useMemo(
     () =>
       getDurationInDays(bookingStartDateTime?.date, bookingEndDateTime?.date),
@@ -37,10 +39,20 @@ const BookingPaymentCard = ({
         : Number(tempTotalPrice);
 
     if (priceToUse !== 0) {
-      return Math.round((priceToUse + extraAddonPrice) * 0.2);
+      const amount = Math.round(
+        (priceToUse + taxAmount + extraAddonPrice) * 0.2
+      );
+      return amount;
     }
+
     return 0;
-  }, [tempTotalPrice, tempCouponDiscountTotal, selectedAddOn, duration]);
+  }, [
+    tempTotalPrice,
+    tempCouponDiscountTotal,
+    selectedAddOn,
+    taxAmount,
+    duration,
+  ]);
 
   return (
     <>

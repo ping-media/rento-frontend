@@ -1,4 +1,4 @@
-import { getDurationInDays } from ".";
+import { formatPrice, getDurationInDays } from ".";
 
 export const renderTooltipContent = (rides) => {
   if (rides) {
@@ -108,7 +108,13 @@ export const renderTooltipExtendContent = (rides) => {
   }
 };
 
-export const renderTooltipBreakdown = (appliedPlans, daysBreakDown) => {
+export const renderTooltipBreakdown = (
+  appliedPlans,
+  daysBreakDown,
+  tax,
+  addonTax,
+  addonAmount
+) => {
   const weekend =
     daysBreakDown?.length > 0
       ? daysBreakDown.filter((day) => day.isWeekend === true)
@@ -131,14 +137,36 @@ export const renderTooltipBreakdown = (appliedPlans, daysBreakDown) => {
       )}
       {weekend?.length > 0 && (
         <li>
-          <span className="font-semibold mr-1">Weekend:</span>₹
-          {weekend[0]?.dailyRate} x {weekend?.length}
+          <span className="font-semibold mr-1">Weekend Price:</span>₹
+          {formatPrice(Number(weekend[0]?.dailyRate))} x {weekend?.length}
         </li>
       )}
       {weekDays?.length > 0 && (
         <li>
-          <span className="font-semibold mr-1">Week:</span>₹
-          {weekDays[0]?.dailyRate} x {weekDays?.length}
+          <span className="font-semibold mr-1">Week Price:</span>₹
+          {formatPrice(Number(weekDays[0]?.dailyRate))} x {weekDays?.length}
+        </li>
+      )}
+      {tax && (
+        <li>
+          <span className="font-semibold mr-1">
+            GST({tax?.percentage || "--"}%):
+          </span>
+          ₹{formatPrice(Number(tax?.amount || 0))}
+        </li>
+      )}
+      {addonAmount && addonAmount > 0 && (
+        <li>
+          <span className="font-semibold mr-1">Extra Addon Amount:</span>₹
+          {formatPrice(Number(addonAmount || 0))}
+        </li>
+      )}
+      {addonTax && (
+        <li>
+          <span className="font-semibold mr-1">
+            Addon GST({addonTax?.percentage || "--"}%):
+          </span>
+          ₹{formatPrice(Number(addonTax?.amount || 0))}
         </li>
       )}
     </ul>

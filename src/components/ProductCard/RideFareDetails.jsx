@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import {
   camelCaseToSpaceSeparated,
   formatPrice,
@@ -8,24 +7,33 @@ import Tooltip from "../Tooltip/Tooltip";
 import { renderTooltipBreakdown } from "../../utils/helper.jsx";
 
 const RideFareDetails = ({ rides }) => {
-  const { general } = useSelector((state) => state.addon);
-
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
     rides?.bookingPrice?.AmountLeftAfterUserPaid?.status !== "paid"
       ? Number(rides?.bookingPrice?.AmountLeftAfterUserPaid?.amount)
       : 0) || 0;
+
   const extendAmountLeft =
     (rides.bookingPrice?.extendAmount?.length > 0 &&
       rides.bookingPrice?.extendAmount.reduce((sum, transaction) => {
-        return transaction.status === "unpaid" ? sum + transaction.amount : sum;
+        return transaction.status === "unpaid"
+          ? sum +
+              transaction.amount +
+              (transaction?.tax || 0) +
+              (transaction?.addonTax || 0)
+          : sum;
       }, 0)) ||
     0;
   const diffAmountLeft =
     (rides.bookingPrice?.diffAmount &&
       rides.bookingPrice?.diffAmount?.length > 0 &&
       rides.bookingPrice?.diffAmount.reduce((sum, transaction) => {
-        return transaction.status === "unpaid" ? sum + transaction.amount : sum;
+        return transaction.status === "unpaid"
+          ? sum +
+              transaction.amount +
+              (transaction?.tax || 0) +
+              (transaction?.addonTax || 0)
+          : sum;
       }, 0)) ||
     0;
 
@@ -177,7 +185,11 @@ const RideFareDetails = ({ rides }) => {
                     ))
                   );
                 } else {
-                  if (general?.status === "inactive" && key == "tax") {
+                  if (
+                    (rides?.stationData?.isGstActive === "inactive" &&
+                      key == "tax") ||
+                    (key === "addonTax" && value === 0)
+                  ) {
                     return null;
                   }
                   return (
@@ -188,9 +200,9 @@ const RideFareDetails = ({ rides }) => {
                       <div className="my-1">
                         <p className="text-sm font-semibold uppercase">
                           {key == "tax"
-                            ? `${camelCaseToSpaceSeparated(key)} (${
-                                general.GST.percentage
-                              }% GST)`
+                            ? `GST(${
+                                rides?.vehicleMasterId?.gstPercentage || "--"
+                              }%)`
                             : camelCaseToSpaceSeparated(key)}
                         </p>
                       </div>
@@ -300,7 +312,13 @@ const RideFareDetails = ({ rides }) => {
                     Number(
                       rides?.bookingPrice?.diffAmount?.[
                         rides?.bookingPrice?.diffAmount?.length - 1
-                      ]?.amount
+                      ]?.amount +
+                        (rides?.bookingPrice?.diffAmount[
+                          rides?.bookingPrice?.diffAmount?.length - 1
+                        ]?.tax || 0) +
+                        (rides?.bookingPrice?.diffAmount[
+                          rides?.bookingPrice?.diffAmount?.length - 1
+                        ]?.addonTax || 0)
                     )
                   )}`}
                 </p>
@@ -325,7 +343,26 @@ const RideFareDetails = ({ rides }) => {
                           ]?.appliedPlans,
                           rides?.bookingPrice?.extendAmount[
                             rides?.bookingPrice?.extendAmount?.length - 1
-                          ]?.daysBreakdown
+                          ]?.daysBreakdown,
+                          {
+                            percentage: rides?.vehicleMasterId?.gstPercentage,
+                            amount:
+                              rides?.bookingPrice?.extendAmount[
+                                rides?.bookingPrice?.extendAmount?.length - 1
+                              ]?.tax,
+                          },
+                          {
+                            percentage:
+                              rides?.stationData?.extraAddOn?.[0]
+                                ?.gstPercentage,
+                            amount:
+                              rides?.bookingPrice?.extendAmount[
+                                rides?.bookingPrice?.extendAmount?.length - 1
+                              ]?.addonTax,
+                          },
+                          rides?.bookingPrice?.extendAmount[
+                            rides?.bookingPrice?.extendAmount?.length - 1
+                          ]?.addOnAmount
                         )}
                       />
                     </div>
@@ -343,7 +380,13 @@ const RideFareDetails = ({ rides }) => {
                     Number(
                       rides?.bookingPrice?.extendAmount[
                         rides?.bookingPrice?.extendAmount?.length - 1
-                      ]?.amount
+                      ]?.amount +
+                        (rides?.bookingPrice?.extendAmount[
+                          rides?.bookingPrice?.extendAmount?.length - 1
+                        ]?.tax || 0) +
+                        (rides?.bookingPrice?.extendAmount[
+                          rides?.bookingPrice?.extendAmount?.length - 1
+                        ]?.addonTax || 0)
                     )
                   )}`}
                 </p>
@@ -362,20 +405,6 @@ const RideFareDetails = ({ rides }) => {
                 </p>
               </li>
             )}
-            {/* refunded amount */}
-            {/* <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
-              <p className="text-sm font-semibold uppercase text-left">
-                Refundable Deposit Amount
-                <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                  (need to pay at pickup and will be refunded after drop)
-                </small>
-              </p>
-              <p className="text-sm font-bold text-right">
-                {`₹${formatPrice(
-                  Number(rides?.vehicleBasic?.refundableDeposit)
-                )}`}
-              </p>
-            </li> */}
           </ul>
         </>
       )}

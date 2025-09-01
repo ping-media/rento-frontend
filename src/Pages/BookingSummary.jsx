@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Checkbox from "../components/Input/CheckBox";
 import DetailsCard from "../components/ProductCard/DetailsCard";
 import InfoCard from "../components/ProductCard/InfoCard";
-import PriceCard from "../components/ProductCard/PriceCard";
 import PromoCard from "../components/ProductCard/PromoCard";
 import Spinner from "../components/Spinner/Spinner";
 import BookingPaymentCard from "../components/ProductCard/BookingPaymentCard";
@@ -16,13 +15,17 @@ import {
 import { handleBooking } from "../Data/Functions";
 import { handleSelectedAddOn } from "../Redux/AddOnSlice/AddOnSlice";
 import {
+  convertHourTo24HourTime,
   formatDateTimeForUser,
+  getCurrentLocalTime,
   handlePreviousPage,
   validateBookingDates,
+  validateTimes,
 } from "../utils";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import { useVehicleData } from "../hooks/useBookingSummary";
 import SummarySkeleton from "../components/skeleton/SummarySkeleton";
+import NewPriceCard from "../components/ProductCard/NewPriceCard";
 
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
@@ -58,6 +61,8 @@ const BookingSummary = () => {
   const { currentUser } = useSelector((state) => state.user);
   const { selectedStation } = useSelector((state) => state.station);
   const { loading, vehicles } = useSelector((state) => state.vehicles);
+  const [gSTCost, setGSTCost] = useState(0);
+  const [gSTAddonCost, setGSTAddonCost] = useState(0);
 
   const memoizedVehicle = useMemo(() => vehicles?.[0], [vehicles]);
 
@@ -72,50 +77,6 @@ const BookingSummary = () => {
       dispatch(handleSelectedAddOn([]));
     };
   }, [dispatch]);
-
-  const convertHourTo24HourTime = (hour) =>
-    `${String(hour).padStart(2, "0")}:00:00Z`;
-  const getCurrentLocalTime = () => new Date().toISOString();
-
-  // const validateTimes = (
-  //   enteredStartTime,
-  //   enteredEndTime,
-  //   openTime,
-  //   closeTime,
-  //   currentTime
-  // ) => {
-  //   const [_, startTime] = enteredStartTime.split("T");
-  //   const [__, endTime] = enteredEndTime.split("T");
-  //   const isWithin = startTime >= openTime && endTime <= closeTime;
-  //   const isPast = startTime < currentTime;
-  //   console.log(startTime, endTime, openTime, closeTime, currentTime, isPast);
-  //   return isWithin && !isPast
-  //     ? { valid: true }
-  //     : { valid: false, message: "Invalid booking time." };
-  // };
-
-  const validateTimes = (
-    enteredStartTime,
-    enteredEndTime,
-    openTime,
-    closeTime,
-    currentTime
-  ) => {
-    // Extract date portions for comparison
-    const [startDate] = enteredStartTime.split("T");
-    const [currentDate] = currentTime.split("T");
-    // If booking is for a future date, only check business hours
-    if (startDate > currentDate) {
-      return { valid: true };
-    }
-    const [_, startTime] = enteredStartTime.split("T");
-    const [__, endTime] = enteredEndTime.split("T");
-    const isWithin = startTime >= openTime && endTime <= closeTime;
-    const isPast = startTime < new Date().toISOString().split("T")[1];
-    return isWithin && !isPast
-      ? { valid: true }
-      : { valid: false, message: "Invalid booking time." };
-  };
 
   // for creating new booking
   const handleCreateBookingSubmit = (e) => {
@@ -172,14 +133,14 @@ const BookingSummary = () => {
         {...memoizedVehicle}
         btnFn={() => dispatch(toggleBookingTermModal())}
       />
-      <Suspense fallback={<Spinner message="Loading..." />}>
-        <CouponModal />
-      </Suspense>
+
+      {/* coupon applied modal  */}
+      <CouponModal />
 
       <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
         <form onSubmit={handleCreateBookingSubmit}>
           <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
-            <div className="col-span-7 mb-3 w-full lg:mb-0">
+            <div className="col-span-7 mb-3 w-full lg:mb-0 flex-1">
               <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 h-full">
                 <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
                   <div className="flex items-center">
@@ -201,11 +162,10 @@ const BookingSummary = () => {
                         <path d="M19 12H6M12 5l-7 7 7 7" />
                       </svg>
                     </button>
-                    <h2 className="font-semibold text-base mx-1">
+                    <h2 className="font-bold md:text-lg mx-1">
                       Booking Summary
                     </h2>
                   </div>
-                  {/* <h2 className="font-semibold hidden lg:block">Price</h2> */}
                 </div>
                 <InfoCard
                   {...memoizedVehicle}
@@ -220,12 +180,13 @@ const BookingSummary = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap col-span-3">
-              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full relative">
+            <div className="flex flex-wrap col-span-3 flex-1">
+              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full h-fit relative">
                 <div className="px-4 py-1 border-b-2 border-gray-300">
-                  <h2 className="font-bold text-base">Price Details</h2>
+                  <h2 className="font-bold md:text-lg">Price Details</h2>
                 </div>
-                <PriceCard
+                <NewPriceCard
+                  data={memoizedVehicle}
                   perDayCost={memoizedVehicle?.perDayCost}
                   appliedPlans={memoizedVehicle?.appliedPlans}
                   refundableDeposit={memoizedVehicle?.refundableDeposit}
@@ -239,6 +200,10 @@ const BookingSummary = () => {
                       ? memoizedVehicle?.vehiclePlan
                       : null
                   }
+                  gSTAddonCost={gSTAddonCost}
+                  setGSTAddonCost={setGSTAddonCost}
+                  gSTCost={gSTCost}
+                  setGSTCost={setGSTCost}
                   vehiclePlanData={vehiclePlan}
                   queryParmsData={queryParmsData}
                   bookingStartDateTime={bookingStartDateTime}
@@ -253,12 +218,14 @@ const BookingSummary = () => {
               {currentUser !== null && (
                 <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-center justify-center w-full">
                   <div className="py-2 border-b-2 border-gray-300 w-full">
-                    <h2 className="font-semibold">Payment Method</h2>
+                    <h2 className="font-semibold md:text-lg">Payment Method</h2>
                   </div>
+
                   <BookingPaymentCard
                     isDiscountZeroApplied={isDiscountZero}
                     bookingStartDateTime={bookingStartDateTime}
                     bookingEndDateTime={bookingEndDateTime}
+                    taxAmount={Number(gSTAddonCost) + Number(gSTCost)}
                   />
                 </div>
               )}

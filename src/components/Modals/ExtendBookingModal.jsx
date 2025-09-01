@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   addDaysToDateForExtend,
   addOneMinute,
-  calculatePriceForExtendBooking,
+  calculateTax,
   calculateTotalAddOnPrice,
   formatFullDateAndTime,
   formatPrice,
@@ -19,11 +19,11 @@ import { debounce } from "lodash";
 
 const ExtendBookingModal = () => {
   const { isBookingExtendModalActive } = useSelector((state) => state.modals);
-  const { general } = useSelector((state) => state.addon);
   const { rides, loading } = useSelector((state) => state.rides);
   const [extensionDays, setExtensionDays] = useState(0);
   const [freeVehicle, setFreeVehicle] = useState(null);
   const [extendPrice, setExtendPrice] = useState(0);
+  const [totalExtendPrice, setTotalExtendPrice] = useState(0);
   const [daysBreakdown, setDaysBreakdown] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState([]);
   const [appliedPlans, setAppliedPlans] = useState([]);
@@ -37,6 +37,12 @@ const ExtendBookingModal = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const taxStatus =
+    (rides && rides[0]?.stationData?.isGstActive === "inactive"
+      ? false
+      : true) || false;
+
+  // for checking free vehicle
   const checkFreeVehicle = async () => {
     try {
       setPriceLoading(true);
@@ -110,6 +116,10 @@ const ExtendBookingModal = () => {
 
     const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
 
+    const addonGstPercentage =
+      freeVehicle?.stationData?.extraAddOn[0]?.gstPercentage;
+    const addonTax = calculateTax(addOnPrice, addonGstPercentage) || 0;
+
     let data = {
       _id: rides[0]?._id,
       vehicleTableId: rides[0]?.vehicleTableId?._id,
@@ -129,6 +139,8 @@ const ExtendBookingModal = () => {
         extendDuration: extensionDays,
         amount: extendPrice,
         addOnAmount: addOnPrice,
+        tax: freeVehicle?.tax || 0,
+        addonTax,
         originalBookingEndDateAndTime: rides[0]?.BookingEndDateAndTime.replace(
           ".000Z",
           "Z"
@@ -149,19 +161,17 @@ const ExtendBookingModal = () => {
       bookingStatus: "extended",
     };
 
-    if (!data) return;
-
     try {
       setFormLoading(true);
       const orderId = await handlePostData("/createOrderId", {
-        amount: Number(extendPrice + addOnPrice) || 0,
+        amount: Number(totalExtendPrice) || 0,
         booking_id: rides[0]?.bookingId,
         type: "ExtensionFromCustomer",
       });
 
       if (orderId?.status === "created") {
         const paymentSuccess = await openRazorpayPayment({
-          finalAmount: Number(extendPrice || 0) + Number(addOnPrice || 0),
+          finalAmount: Number(totalExtendPrice || 0),
           orderId: orderId?.id,
           bookingData: rides[0],
           dispatch,
@@ -188,7 +198,7 @@ const ExtendBookingModal = () => {
           const extendResponse = await handlePostData("/extend-booking", {
             _id: rides[0]?._id,
             bookingId: rides[0]?.bookingId,
-            amount: Number(extendPrice) + Number(addOnPrice),
+            amount: Number(totalExtendPrice),
             data,
           });
 
@@ -223,6 +233,7 @@ const ExtendBookingModal = () => {
     }
   }, [rides]);
 
+  // debounce logic
   useEffect(() => {
     if (rides?.length === 0 || !newDate) return;
 
@@ -258,35 +269,41 @@ const ExtendBookingModal = () => {
               (plan) => Number(plan?.planDuration) === Number(extensionDays)
             )
           : [];
+
       const planPrice = hasPlan?.length > 0 ? Number(hasPlan[0]?.planPrice) : 0;
+
       const extraAddonPrice =
-        rides[0]?.bookingPrice?.extraAddonDetails &&
-        rides[0]?.bookingPrice?.extraAddonDetails?.length > 0
+        freeVehicle?.stationData?.extraAddOn &&
+        freeVehicle?.stationData?.extraAddOn?.length > 0
           ? calculateTotalAddOnPrice(
-              rides[0]?.bookingPrice?.extraAddonDetails,
+              freeVehicle?.stationData?.extraAddOn,
               extensionDays
             )
           : 0;
+
       const price =
         planPrice > 0
           ? planPrice + extraAddonPrice
-          : calculatePriceForExtendBooking(
-              freeVehicle?.totalRentalCost,
-              extraAddonPrice,
-              general?.status === "inactive" ? false : true || false,
-              general?.percentage || 18
-            );
+          : Number(freeVehicle?.totalRentalCost) + Number(extraAddonPrice);
 
       if (Number(price) > 0) {
+        const addonGstPercentage =
+          freeVehicle?.stationData?.extraAddOn[0]?.gstPercentage;
+        const addonTax = calculateTax(extraAddonPrice, addonGstPercentage) || 0;
+        const total = price + Number(freeVehicle?.tax || 0) + Number(addonTax);
+
         setExtendPrice(price);
         setAddOnPrice(extraAddonPrice);
         setDaysBreakdown(freeVehicle?._daysBreakdown);
         setAppliedPlans(freeVehicle?.appliedPlans);
         setNewFreeLimit(freeVehicle?.freeKms);
         setSelectedPlan(hasPlan);
+
+        setTotalExtendPrice(total);
       }
     } else {
       setExtendPrice(0);
+      setTotalExtendPrice(0);
     }
   }, [extensionDays, freeVehicle]);
 
@@ -389,11 +406,17 @@ const ExtendBookingModal = () => {
               </div>
               <div className={`mb-2`}>
                 <div className="flex items-center text-theme text-left">
-                  <p className="font-semibold text-black mr-1">New Amount:</p>
+                  <p className="font-semibold text-black mr-1">
+                    Payable Amount:
+                  </p>
                   {priceLoading ? (
                     <p className="w-20 h-5 bg-gray-300/80 rounded-md animate-pulse"></p>
                   ) : (
-                    `₹${formatPrice(Number(extendPrice))}`
+                    `₹${formatPrice(Number(totalExtendPrice))} ${
+                      taxStatus && Number(totalExtendPrice) > 0
+                        ? "(incl. Tax)"
+                        : ""
+                    }`
                   )}
                 </div>
               </div>

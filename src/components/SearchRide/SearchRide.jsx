@@ -82,75 +82,75 @@ const SearchRide = () => {
       return handleAsyncError(dispatch, "Unable to get Station Data!");
     }
 
-    try {
-      const pickupDate = result.pickup.substring(0, 16);
-      const pickupTime = result.pickup.substring(17, result.pickup.length);
-      // let dropoffDate = result?.dropoff?.substring(0, 16) || "";
-      let dropoffDate = result?.dropoff?.split(/\d{1,2}:\d{2}/)[0].trim();
-      // let dropoffTime =
-      //   result?.dropoff?.substring(17, result.dropoff.length) || "";
-      const dropoffTimeMatch = result?.dropoff?.match(
-        /\d{1,2}:\d{2}\s?(AM|PM)/i
-      );
-      let dropoffTime = dropoffTimeMatch ? dropoffTimeMatch[0] : "";
+    // try {
+    // const pickupDate = result.pickup.substring(0, 16);
+    const pickupDate = result.pickup.split(/\d{1,2}:\d{2}/)[0].trim();
+    const pickupTime = result.pickup.substring(17, result.pickup.length);
+    // let dropoffDate = result?.dropoff?.substring(0, 16) || "";
+    let dropoffDate = result?.dropoff?.split(/\d{1,2}:\d{2}/)[0].trim();
+    // let dropoffTime =
+    //   result?.dropoff?.substring(17, result.dropoff.length) || "";
+    const dropoffTimeMatch = result?.dropoff?.match(/\d{1,2}:\d{2}\s?(AM|PM)/i);
+    let dropoffTime = dropoffTimeMatch ? dropoffTimeMatch[0] : "";
 
-      // changing the drop date when user is coming from monthly page
-      if (location.pathname === "/monthly-rental") {
-        dropoffDate = addDaysToDateForRide(30, pickupDate);
-        dropoffTime = pickupTime;
-      }
-      const covertedTime = parseInt(
-        convertTo24HourFormat(pickupTime).replace(":00", "")
-      );
-
-      if (new Date(result.pickup) > new Date(result.dropoff)) {
-        handleAsyncError(
-          dispatch,
-          "Drop Date and time should be ahead of pickup date and time."
-        );
-        return;
-      }
-
-      // checking whether the minimum duration should be 24 hour or more
-      const isMinDuration = isMinimumDurationHours(
-        result.pickup,
-        result.dropoff,
-        MinimumDurationHours
-      );
-
-      if (location.pathname !== "/monthly-rental" && !isMinDuration)
-        return handleAsyncError(
-          dispatch,
-          `Minimum Interval between dates should be ${MinimumDurationHours} hours`
-        );
-      // checking whether the time is in opening hour
-      if (
-        !isWithinOperatingHours(
-          covertedTime,
-          selectedStation?.openStartTime,
-          selectedStation?.openEndTime
-        )
-      ) {
-        return handleAsyncError(
-          dispatch,
-          `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
-        );
-      }
-
-      return navigate(
-        `/search/${
-          result?.pickupLocationId
-        }?BookingStartDateAndTime=${convertToISOString(
-          pickupDate,
-          pickupTime
-        )}&BookingEndDateAndTime=${convertToISOString(
-          dropoffDate,
-          dropoffTime
-        )}`
-      );
-    } catch (error) {
-      navigate(`/error-${error?.message}`);
+    // changing the drop date when user is coming from monthly page
+    if (location.pathname === "/monthly-rental") {
+      dropoffDate = addDaysToDateForRide(30, pickupDate);
+      dropoffTime = pickupTime;
     }
+    const covertedTime = parseInt(
+      convertTo24HourFormat(pickupTime).replace(":00", "")
+    );
+
+    if (new Date(result.pickup) > new Date(result.dropoff)) {
+      handleAsyncError(
+        dispatch,
+        "Drop Date and time should be ahead of pickup date and time."
+      );
+      return;
+    }
+
+    // checking whether the minimum duration should be 24 hour or more
+    const isMinDuration = isMinimumDurationHours(
+      result.pickup,
+      result.dropoff,
+      MinimumDurationHours
+    );
+
+    if (location.pathname !== "/monthly-rental" && !isMinDuration)
+      return handleAsyncError(
+        dispatch,
+        `Minimum Interval between dates should be ${MinimumDurationHours} hours`
+      );
+
+    const pickupDateTime = new Date(result.pickup);
+    const now = new Date();
+    if (
+      pickupDateTime > now &&
+      !isWithinOperatingHours(
+        covertedTime,
+        selectedStation?.openStartTime,
+        selectedStation?.openEndTime
+      )
+    ) {
+      return handleAsyncError(
+        dispatch,
+        `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
+      );
+    }
+
+    return navigate(
+      `/search/${
+        result?.pickupLocationId
+      }?BookingStartDateAndTime=${convertToISOString(
+        pickupDate,
+        pickupTime
+      )}&BookingEndDateAndTime=${convertToISOString(dropoffDate, dropoffTime)}`
+    );
+    // }
+    // catch (error) {
+    //   navigate(`/error-${error?.message}`);
+    // }
   };
 
   // this function is fetching station based on location id

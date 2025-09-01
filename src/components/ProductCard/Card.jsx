@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import bikeImage from "../../assets/logo/bike.png";
 import scooterImage from "../../assets/logo/scooter.png";
+import CarImage from "../../assets/images/car-image.png";
 import { useEffect, useRef, useState } from "react";
 import {
   formatPrice,
@@ -12,7 +13,6 @@ import SoldOutCard from "./SoldOutCard";
 import { useSelector } from "react-redux";
 
 const Card = ({
-  perDayCost,
   vehicleImage,
   vehicleName,
   vehicleType,
@@ -26,6 +26,7 @@ const Card = ({
   MaintenanceEndDate,
   vehicleDetails,
   totalRentalCost,
+  vehicleMasterData,
   _id,
   isSold = false,
 }) => {
@@ -154,7 +155,13 @@ const Card = ({
           <div className="flex items-center mb-1">
             <div className="w-6 lg:w-8 h-6 lg:h-8 mr-1">
               <img
-                src={vehicleType === "gear" ? bikeImage : scooterImage}
+                src={
+                  vehicleMasterData?.vehicleCategory === "four-wheeler"
+                    ? CarImage
+                    : vehicleType === "gear"
+                    ? bikeImage
+                    : scooterImage
+                }
                 loading="lazy"
                 alt={vehicleType}
               />

@@ -967,6 +967,7 @@ const handleBooking = async (
         ? Number(result?.extraAddonPrice)
         : 0,
       tax: isNaN(Number(result?.tax)) ? 0 : Number(result?.tax),
+      addonTax: isNaN(Number(result?.addonTax)) ? 0 : Number(result?.addonTax),
       totalPrice: Math.round(Number(result?.totalPrice)),
       discountPrice: Math.round(Number(result?.discountPrice || 0)),
       discountTotalPrice: isDiscountZero
@@ -1013,6 +1014,8 @@ const handleBooking = async (
     payInitFrom: "NA",
     paySuccessId: "NA",
   };
+
+  // return console.log(data);
 
   try {
     const response = await handlePostData("/initiate-booking", {
