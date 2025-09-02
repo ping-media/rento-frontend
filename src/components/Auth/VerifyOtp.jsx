@@ -83,7 +83,13 @@ const VerifyOtp = ({
     const delay = setTimeout(() => {
       if (otpState.isTimerActive && otpState.seconds > 0) {
         interval = setInterval(() => {
-          setOtpState((prev) => ({ ...prev, seconds: prev.seconds - 1 }));
+          setOtpState((prev) => {
+            if (prev.seconds <= 1) {
+              clearInterval(interval);
+              return { ...prev, seconds: 0, isTimerActive: false };
+            }
+            return { ...prev, seconds: prev.seconds - 1 };
+          });
         }, 1000);
       }
     }, 100);
