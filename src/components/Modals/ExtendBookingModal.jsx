@@ -273,10 +273,10 @@ const ExtendBookingModal = () => {
       const planPrice = hasPlan?.length > 0 ? Number(hasPlan[0]?.planPrice) : 0;
 
       const extraAddonPrice =
-        freeVehicle?.stationData?.extraAddOn &&
-        freeVehicle?.stationData?.extraAddOn?.length > 0
+        rides[0]?.bookingPrice?.extraAddonDetails &&
+        rides[0]?.bookingPrice?.extraAddonDetails?.length > 0
           ? calculateTotalAddOnPrice(
-              freeVehicle?.stationData?.extraAddOn,
+              rides[0]?.bookingPrice?.extraAddonDetails,
               extensionDays
             )
           : 0;
