@@ -1,21 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleBookingExtendModal } from "../../Redux/ModalSlice/ModalSlice";
+import { useMemo } from "react";
 
 const ExtendBookingButton = () => {
   const { rides } = useSelector((state) => state.rides);
   const dispatch = useDispatch();
 
-  const isDisabled =
-    (rides?.length > 0 &&
-      ["refunded", "completed", "canceled"].includes(
-        rides[0]?.paymentStatus
-      )) ||
-    false;
+  const isDisabled = useMemo(
+    () =>
+      rides?.length > 0 &&
+      ["completed", "canceled"].includes(rides[0]?.bookingStatus),
+    [rides]
+  );
 
   return (
     <button
       type="button"
-      className="w-full px-4 py-2 bg-theme/90 text-white rounded-md shadow-md hover:bg-theme-dark transition-all duration-300 ease-in-out uppercase font-semibold tracking-wider disabled:bg-gray-600/50"
+      className="w-full px-4 py-2 bg-theme/90 text-white rounded-md shadow-md hover:bg-theme-dark transition-all duration-300 ease-in-out uppercase font-semibold tracking-wider disabled:bg-theme/60"
       onClick={() => dispatch(toggleBookingExtendModal())}
       disabled={isDisabled}
     >
