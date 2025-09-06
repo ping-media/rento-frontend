@@ -137,9 +137,9 @@ const BookingSummary = () => {
       {/* coupon applied modal  */}
       <CouponModal />
 
-      <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my:3 xl:my-4">
+      <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my-3 xl:my-4">
         <form onSubmit={handleCreateBookingSubmit}>
-          <div className="flex flex-wrap lg:grid lg:grid-cols-10 lg:gap-4">
+          <div className="flex flex-col lg:grid lg:grid-cols-10 lg:gap-4">
             <div className="col-span-7 mb-3 w-full lg:mb-0 flex-1">
               <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 h-full">
                 <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
