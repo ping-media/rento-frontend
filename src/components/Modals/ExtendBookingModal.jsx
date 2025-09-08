@@ -289,7 +289,11 @@ const ExtendBookingModal = () => {
       if (Number(price) > 0) {
         const addonGstPercentage =
           freeVehicle?.stationData?.extraAddOn[0]?.gstPercentage;
-        const addonTax = calculateTax(extraAddonPrice, addonGstPercentage) || 0;
+        const addonTax =
+          (taxStatus &&
+            addonGstPercentage > 0 &&
+            calculateTax(extraAddonPrice, addonGstPercentage)) ||
+          0;
         const total = price + Number(freeVehicle?.tax || 0) + Number(addonTax);
 
         setExtendPrice(price);
