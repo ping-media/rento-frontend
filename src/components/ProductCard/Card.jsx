@@ -168,8 +168,7 @@ const Card = ({
             </div>
             <p>
               <span className="font-semibold">
-                {freeKms *
-                  (selectedPlan !== null ? selectedPlan?.planDuration : 1)}
+                {selectedPlan !== null ? selectedPlan?.kmLimit : freeKms * 1}
               </span>{" "}
               KM Limit
             </p>

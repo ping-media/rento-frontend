@@ -15,9 +15,8 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
       <p
         className="flex items-center px-1 lg:px-2 py-1 h-[12%] lg:h-[10%] bg-theme-black text-gray-100 text-xs lg:text-sm truncate"
         title={
-          (MaintenanceEndDate &&
-            formatTimeForProductCard(MaintenanceEndDate)) ||
-          (BookingEndDate && formatTimeForProductCard(BookingEndDate))
+          (BookingEndDate && formatTimeForProductCard(BookingEndDate)) ||
+          (MaintenanceEndDate && formatTimeForProductCard(MaintenanceEndDate))
         }
       >
         <svg
@@ -36,9 +35,9 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
         </svg>
         <span className="mx-1 hidden lg:block">Next Availability:</span>
         <span className="ml-1 lg:ml-0">
-          {(MaintenanceEndDate &&
-            formatTimeForProductCard(MaintenanceEndDate)) ||
-            (BookingEndDate && formatTimeForProductCard(BookingEndDate))}
+          {(BookingEndDate && formatTimeForProductCard(BookingEndDate)) ||
+            (MaintenanceEndDate &&
+              formatTimeForProductCard(MaintenanceEndDate))}
         </span>
       </p>
     </div>
