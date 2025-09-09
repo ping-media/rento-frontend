@@ -1,4 +1,4 @@
-import { lazy, useMemo, Suspense, useRef, useState, useEffect } from "react";
+import { lazy, useMemo, useRef, useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Checkbox from "../components/Input/CheckBox";
@@ -24,8 +24,8 @@ import {
 } from "../utils";
 import { handleAsyncError } from "../utils/handleAsyncError";
 import { useVehicleData } from "../hooks/useBookingSummary";
-import SummarySkeleton from "../components/skeleton/SummarySkeleton";
 import NewPriceCard from "../components/ProductCard/NewPriceCard";
+import PreLoader from "../components/skeleton/PreLoader";
 
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
@@ -57,7 +57,9 @@ const BookingSummary = () => {
     (state) => state.coupon
   );
 
-  const { selectedAddOn } = useSelector((state) => state.addon);
+  const { selectedAddOn, loading: addonLoading } = useSelector(
+    (state) => state.addon
+  );
   const { currentUser } = useSelector((state) => state.user);
   const { selectedStation } = useSelector((state) => state.station);
   const { loading, vehicles } = useSelector((state) => state.vehicles);
@@ -124,7 +126,7 @@ const BookingSummary = () => {
     );
   };
 
-  if (loading) return <SummarySkeleton />;
+  if (loading || addonLoading) return <PreLoader />;
   if (!vehicles.length) return <BookingError />;
 
   return (

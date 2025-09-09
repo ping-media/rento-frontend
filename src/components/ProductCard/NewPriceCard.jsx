@@ -10,7 +10,7 @@ import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
 import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice";
 import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 import Tooltip from "../Tooltip/Tooltip";
-import PreLoader from "../skeleton/PreLoader";
+// import PreLoader from "../skeleton/PreLoader";
 import { renderTooltipBreakdown } from "../../utils/helper";
 
 const NewPriceCard = ({
@@ -174,7 +174,8 @@ const NewPriceCard = ({
     }
   };
 
-  return !loading ? (
+  // return !loading ? (
+  return (
     <>
       <div className="px-4 mt-2">
         <ul
@@ -341,9 +342,10 @@ const NewPriceCard = ({
         </div>
       )}
     </>
-  ) : (
-    <PreLoader />
   );
+  // ) : (
+  //   <PreLoader />
+  // );
 };
 
 export default NewPriceCard;

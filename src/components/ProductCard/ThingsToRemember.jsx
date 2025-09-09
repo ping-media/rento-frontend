@@ -61,7 +61,7 @@ const ThingsToRemember = ({ rides }) => {
                 {key.includes("Limit")
                   ? key.includes("speed")
                     ? `${value?.limit} km/hour`
-                    : `${value?.limit} Km/day`
+                    : `${value?.limit} kms`
                   : key.includes("Otp")
                   ? value?.limit
                   : key.includes("late")
