@@ -25,7 +25,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
           <div>
             <div className="w-4/5 mb-2">
-              <Link to={"/"} className="max-h-12 lg:max-h-16">
+              <Link to={"/"} className="max-h-8 md:max-h-10 lg:max-h-16">
                 <img
                   src={logoImg}
                   className="w-full h-full object-contain"

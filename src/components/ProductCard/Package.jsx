@@ -49,14 +49,14 @@ const Package = () => {
   return (
     filter?.length > 0 && (
       <div className="w-full pt-8 pb-5 mt-5">
-        <h2 className="text-xl lg:text-3xl mb-5 text-center font-bold">
+        <h2 className="text-xl lg:text-3xl mb-5 text-center font-extrabold">
           Long Duration Packages
         </h2>
-        <div className="w-[95%] lg:w-[90%] px-4 lg:px-0 lg:mx-auto">
+        <div className="w-[95%] lg:w-[90%] px-2 lg:px-0 mx-auto">
           <div className="relative w-full h-full">
             <button
               ref={prevRef}
-              className="absolute z-10 -left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
+              className="absolute z-10 -left-4 md:-left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@ const Package = () => {
             </button>
             <button
               ref={nextRef}
-              className="absolute z-10 -right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
+              className="absolute z-10 -right-4 md:-right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

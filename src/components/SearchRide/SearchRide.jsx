@@ -299,7 +299,7 @@ const SearchRide = () => {
         className={`w-[95%] ${
           location.pathname === "/monthly-rental" ? "lg:w-[75%]" : "lg:w-[90%]"
         } mx-auto px-4 py-2.5 lg:px-6 lg:py-3 bg-white lg:rounded-lg ${
-          isHomeLink.includes(location.pathname) && "-mt-12 md:-mt-28 lg:-mt-14"
+          isHomeLink.includes(location.pathname) && "-mt-8 md:-mt-28 lg:-mt-14"
         } shadow-lg ${
           !isHomeLink.includes(location.pathname)
             ? isSearchUpdatesActive
