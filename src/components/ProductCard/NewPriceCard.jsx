@@ -10,7 +10,6 @@ import { addTempTotalPrice } from "../../Redux/CouponSlice/CouponSlice";
 import { handleChangeExtraChecked } from "../../Redux/ProductSlice/ProductsSlice";
 import { handleSelectedAddOn } from "../../Redux/AddOnSlice/AddOnSlice";
 import Tooltip from "../Tooltip/Tooltip";
-// import PreLoader from "../skeleton/PreLoader";
 import { renderTooltipBreakdown } from "../../utils/helper";
 
 const NewPriceCard = ({
@@ -28,7 +27,7 @@ const NewPriceCard = ({
   gSTCost,
   setGSTCost,
 }) => {
-  const { selectedAddOn, loading } = useSelector((state) => state.addon);
+  const { selectedAddOn } = useSelector((state) => state.addon);
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState([]);
@@ -50,7 +49,9 @@ const NewPriceCard = ({
     queryParmsData?.BookingEndDateAndTime
   );
 
-  const addon = data?.stationData?.extraAddOn || [];
+  const addon =
+    data?.stationData?.extraAddOn?.filter((f) => f.status !== "inactive") || [];
+
   const taxPercentage =
     data?.stationData?.isGstActive === "active"
       ? Number(data?.vehicleMasterData?.gstPercentage)
@@ -174,7 +175,6 @@ const NewPriceCard = ({
     }
   };
 
-  // return !loading ? (
   return (
     <>
       <div className="px-4 mt-2">
@@ -310,7 +310,7 @@ const NewPriceCard = ({
         <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 md:text-base pt-1 rounded-b-lg w-full h-fit">
           {addon?.length > 0 &&
             addon
-              ?.filter((f) => f.status !== "inactive")
+              // ?.filter((f) => f.status !== "inactive")
               ?.map((item, index) => (
                 <React.Fragment key={index}>
                   <div>
@@ -343,9 +343,6 @@ const NewPriceCard = ({
       )}
     </>
   );
-  // ) : (
-  //   <PreLoader />
-  // );
 };
 
 export default NewPriceCard;

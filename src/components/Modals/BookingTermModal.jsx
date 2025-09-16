@@ -18,6 +18,7 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit, btnFn }) => {
       vehicleName.charAt(0).toUpperCase() + vehicleName.slice(1).toLowerCase()
     } is ${speedLimit} kmph or speed limit specified by the governing authority, whichever is lesser.`,
     "Rental package does not include Fuel, Toll, State Permits or Taxes. Unused Fuel left-out at the time of vehicle drop will not be refunded.",
+    "Original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of drop. (For Monthly Bookings Digi Locker will be accepted along with local address proof).",
     "km’s included in the booking if exceeded are chargeable at a per km rate.",
     "Some vehicle bookings have a refundable security deposit. Refund of the same, usually takes 3-7 working days, from the date of invoice, to reflect in the source account.",
     <>
