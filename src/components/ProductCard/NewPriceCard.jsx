@@ -49,6 +49,7 @@ const NewPriceCard = ({
     queryParmsData?.BookingEndDateAndTime
   );
 
+  const vehicleCategory = data?.vehicleMasterData?.vehicleCategory;
   const addon =
     data?.stationData?.extraAddOn?.filter((f) => f.status !== "inactive") || [];
 
@@ -306,39 +307,35 @@ const NewPriceCard = ({
         </div>
       </div>
       {/* extra accessories  */}
-      {addon?.length > 0 && (
+      {vehicleCategory !== "four-wheeler" && addon?.length > 0 && (
         <div className="bg-gradient-to-t from-yellow-200 to-yellow-300 px-4 md:text-base pt-1 rounded-b-lg w-full h-fit">
           {addon?.length > 0 &&
-            addon
-              // ?.filter((f) => f.status !== "inactive")
-              ?.map((item, index) => (
-                <React.Fragment key={index}>
-                  <div>
-                    <label
-                      htmlFor={item?.name}
-                      className="flex flex-row items-center gap-2.5 font-semibold capitalize"
-                    >
-                      <input
-                        id={item?.name}
-                        type="checkbox"
-                        className="h-5 w-5 accent-red-600 outline-none"
-                        checked={isExtraChecked?.some(
-                          (i) => i._id === item._id
-                        )}
-                        onChange={() => handleChangeExtraAddonPrice(item)}
-                      />
-                      Need {item?.name}
-                    </label>
-                  </div>
-                  <small className="text-gray-700">
-                    An extra cost of{" "}
-                    <span className="font-bold">
-                      ₹{formatPrice(item?.amount)}/day
-                    </span>{" "}
-                    will be charged.
-                  </small>
-                </React.Fragment>
-              ))}
+            addon?.map((item, index) => (
+              <React.Fragment key={index}>
+                <div>
+                  <label
+                    htmlFor={item?.name}
+                    className="flex flex-row items-center gap-2.5 font-semibold capitalize"
+                  >
+                    <input
+                      id={item?.name}
+                      type="checkbox"
+                      className="h-5 w-5 accent-red-600 outline-none"
+                      checked={isExtraChecked?.some((i) => i._id === item._id)}
+                      onChange={() => handleChangeExtraAddonPrice(item)}
+                    />
+                    Need {item?.name}
+                  </label>
+                </div>
+                <small className="text-gray-700">
+                  An extra cost of{" "}
+                  <span className="font-bold">
+                    ₹{formatPrice(item?.amount)}/day
+                  </span>{" "}
+                  will be charged.
+                </small>
+              </React.Fragment>
+            ))}
         </div>
       )}
     </>

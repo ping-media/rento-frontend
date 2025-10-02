@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-import { testimonials } from "../../Data/dummyData";
+import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -12,6 +11,10 @@ const Testimonials = () => {
 
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  // for fetching google reviews
+  // `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,reviews&key=${apiKey}`
+
   return (
     <div className="w-full pt-8 pb-5 mt-5">
       <h2 className="text-xl lg:text-3xl mb-5 text-center font-bold">

@@ -213,7 +213,7 @@ const BookingSummary = () => {
                 />
               </div>
               {/* coupon section  */}
-              <div className="w-full order-1 mb-3">
+              <div className="w-full order-1">
                 <PromoCard />
               </div>
               {/* payment option section  */}
