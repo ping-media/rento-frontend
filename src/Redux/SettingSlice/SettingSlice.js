@@ -9,19 +9,21 @@ const SettingSlice = createSlice({
     slides: [],
     testimonial: [],
     loading: true,
+    payments: null,
   },
   reducers: {
     toggleMaintenance: (state) => {
       state.maintenance = !state.maintenance;
     },
     addGeneralSettings: (state, action) => {
-      const { info, slides, testimonial, maintenance, testMode } =
+      const { info, slides, testimonial, maintenance, testMode, payments } =
         action.payload;
       state.info = info;
       state.slides = slides;
       state.testimonial = testimonial;
       state.maintenance = maintenance;
       state.testMode = testMode;
+      state.payments = payments;
     },
     stopSettingLoading: (state) => {
       state.loading = false;

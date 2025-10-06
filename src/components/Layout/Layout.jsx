@@ -56,7 +56,7 @@ const Layout = () => {
     (async () => {
       try {
         dispatch(startLoading());
-        const response = await fetchingData("/addOn?page=1&limit=50");
+        const response = await fetchingData("/addOn");
         if (response?.status === 200) {
           dispatch(addAddOn(response));
           dispatch(addGeneralSettings(response));

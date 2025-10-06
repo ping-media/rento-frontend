@@ -92,7 +92,7 @@ export const openRazorpayPayment = ({
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      await deleteBooking();
+      // await deleteBooking();
       handleAsyncError(dispatch, error.message || "Unable to load Razorpay.");
       if (navigate) navigate("/");
       reject(error);
