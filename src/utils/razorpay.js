@@ -56,7 +56,7 @@ export const openRazorpayPayment = ({
         amount: Number(finalAmount) * 100,
         currency: "INR",
         order_id: orderId,
-        name: "Rento",
+        name: "Rento Bikes - Bikes & Car Rentals",
         description: "Payment for your booking",
         image: favicon,
         handler: (response) => {
@@ -78,7 +78,7 @@ export const openRazorpayPayment = ({
         modal: {
           escape: false,
           ondismiss: async () => {
-            await deleteBooking();
+            // await deleteBooking();
             if (
               navigate &&
               !location.pathname.includes("/account/my-rides/summary/")

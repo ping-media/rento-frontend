@@ -141,7 +141,10 @@ const Package = () => {
                         <div className="flex-1 p-3 flex flex-col justify-between">
                           <div>
                             <h2 className="text-lg font-extrabold uppercase text-gray-700">
-                              {pkg.planName} Package
+                              {pkg.planName}{" "}
+                              {pkg.planName?.toLowerCase()?.includes("package")
+                                ? ""
+                                : "Package"}
                             </h2>
                             <p className="text-sm mt-3">
                               From{" "}
