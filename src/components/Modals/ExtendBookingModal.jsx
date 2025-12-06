@@ -195,12 +195,46 @@ const ExtendBookingModal = () => {
             managerContact: rides[0]?.stationMasterUserId?.contact,
           };
 
-          const extendResponse = await handlePostData("/extend-booking", {
-            _id: rides[0]?._id,
-            bookingId: rides[0]?.bookingId,
-            amount: Number(totalExtendPrice),
-            data,
-          });
+          let extendResponse = null;
+          let retryCount = 0;
+          const maxRetries = 5;
+
+          while (retryCount < maxRetries) {
+            try {
+              extendResponse = await handlePostData("/extend-booking", {
+                _id: rides[0]?._id,
+                bookingId: rides[0]?.bookingId,
+                amount: Number(totalExtendPrice),
+                data,
+              });
+
+              if (extendResponse?.success) {
+                break; // Success, exit retry loop
+              }
+
+              retryCount++;
+              if (retryCount < maxRetries) {
+                await new Promise((resolve) =>
+                  setTimeout(resolve, 1000 * retryCount)
+                );
+              }
+            } catch (retryError) {
+              retryCount++;
+              if (retryCount >= maxRetries) {
+                throw retryError;
+              }
+              await new Promise((resolve) =>
+                setTimeout(resolve, 1000 * retryCount)
+              );
+            }
+          }
+
+          // const extendResponse = await handlePostData("/extend-booking", {
+          //   _id: rides[0]?._id,
+          //   bookingId: rides[0]?.bookingId,
+          //   amount: Number(totalExtendPrice),
+          //   data,
+          // });
 
           if (extendResponse?.success) {
             const { contact, firstName, managerContact, ...restData } = data;
@@ -428,7 +462,7 @@ const ExtendBookingModal = () => {
 
             <button
               type="submit"
-              className="bg-theme px-4 py-2 text-gray-100 inline-flex gap-2 rounded-md hover:bg-theme-dark transition duration-300 ease-in-out shadow-lg hover:shadow-none disabled:bg-theme/60 w-full flex items-center justify-center"
+              className="bg-theme px-4 py-2 text-gray-100 gap-2 rounded-md hover:bg-theme-dark transition duration-300 ease-in-out shadow-lg hover:shadow-none disabled:bg-theme/60 w-full flex items-center justify-center"
               disabled={
                 isDisabled || totalExtendPrice === 0
                   ? true
