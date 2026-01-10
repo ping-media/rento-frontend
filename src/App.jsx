@@ -49,7 +49,6 @@ const App = () => {
         const now = Date.now();
         const inactiveTime = now - lastActiveTime;
         const fiveMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
-
         // Only reload if inactive for more than 10 minutes
         if (inactiveTime > fiveMinutes) {
           window.location.reload();
