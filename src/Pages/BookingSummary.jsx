@@ -80,6 +80,8 @@ const BookingSummary = () => {
     };
   }, [dispatch]);
 
+  console.log(vehicles);
+
   // for creating new booking
   const handleCreateBookingSubmit = (e) => {
     e.preventDefault();
@@ -183,7 +185,7 @@ const BookingSummary = () => {
             </div>
 
             <div className="flex flex-wrap col-span-3 flex-1">
-              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full h-fit relative">
+              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg pt-2 relative order-2 w-full h-fit">
                 <div className="px-4 py-1 border-b-2 border-gray-300">
                   <h2 className="font-bold md:text-lg">Price Details</h2>
                 </div>

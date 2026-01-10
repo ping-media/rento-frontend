@@ -41,6 +41,34 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let lastActiveTime = Date.now();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const now = Date.now();
+        const inactiveTime = now - lastActiveTime;
+        const fiveMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+        // Only reload if inactive for more than 10 minutes
+        if (inactiveTime > fiveMinutes) {
+          window.location.reload();
+        }
+
+        lastActiveTime = now;
+      } else {
+        // Update last active time when leaving tab
+        lastActiveTime = Date.now();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   if (!isOnline) {
     return <NetworkError />;
   }

@@ -156,6 +156,7 @@ const ExtendBookingModal = () => {
         orderId: "",
         transactionId: "",
         paymentMethod: "",
+        bookedFrom: "web",
         status: "unpaid",
       },
       bookingStatus: "extended",
@@ -187,6 +188,8 @@ const ExtendBookingModal = () => {
               orderId: orderId?.id || "",
               transactionId:
                 paymentSuccess?.response?.razorpay_payment_id || "",
+              paymentInitiatedDate: orderId?.created_at || "",
+              paymentSuccessDate: Date.now(),
               paymentMethod: "online",
               status: "paid",
             },
@@ -202,10 +205,12 @@ const ExtendBookingModal = () => {
           while (retryCount < maxRetries) {
             try {
               extendResponse = await handlePostData("/extend-booking", {
-                _id: rides[0]?._id,
-                bookingId: rides[0]?.bookingId,
+                _id: rides?.[0]?._id,
+                bookingId: rides?.[0]?.bookingId,
                 amount: Number(totalExtendPrice),
                 data,
+                razorpay_signature:
+                  paymentSuccess?.response?.razorpay_signature,
               });
 
               if (extendResponse?.success) {
@@ -229,20 +234,18 @@ const ExtendBookingModal = () => {
             }
           }
 
-          // const extendResponse = await handlePostData("/extend-booking", {
-          //   _id: rides[0]?._id,
-          //   bookingId: rides[0]?.bookingId,
-          //   amount: Number(totalExtendPrice),
-          //   data,
-          // });
-
           if (extendResponse?.success) {
             const { contact, firstName, managerContact, ...restData } = data;
             dispatch(updateRidesData(restData));
             handleAsyncError(dispatch, "Ride extended successfully", "success");
             handleCloseModal();
           } else {
-            handleAsyncError(dispatch, extendResponse?.message);
+            handleAsyncError(
+              dispatch,
+              extendResponse?.message ||
+                "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
+                  (paymentSuccess?.response?.razorpay_payment_id || "")
+            );
           }
           return;
         } else {

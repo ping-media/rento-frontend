@@ -925,14 +925,16 @@ const handleBooking = async (
 
   const startRideOtp = Math.floor(1000 + Math.random() * 9000);
 
-  if (!vehicles || vehicles.length === 0) return;
+  const vehicle = vehicles?.[0] || [];
+
+  if (!vehicle || vehicle.length === 0) return;
 
   // calculating the free km limit
   const isPackage =
-    vehicles[0]?.appliedPlans?.length > 0 ? vehicles[0]?.appliedPlans : null;
+    vehicle?.appliedPlans?.length > 0 ? vehicle?.appliedPlans : null;
 
   const daysBreakdowns =
-    vehicles[0]?._daysBreakdown || vehicles[0]?.daysBreakdown || null;
+    vehicle?._daysBreakdown || vehicle?.daysBreakdown || null;
 
   const freeKmLimitForPlan =
     isPackage !== null
@@ -942,15 +944,15 @@ const handleBooking = async (
       : 0;
   const freeKmLimitForDays =
     daysBreakdowns !== null
-      ? daysBreakdowns?.length * Number(vehicles[0]?.freeKms)
+      ? daysBreakdowns?.length * Number(vehicle?.freeKms)
       : 0;
 
   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
 
   let data = {
-    vehicleTableId: vehicles[0]?._id,
+    vehicleTableId: vehicle?._id,
     userId: currentUser?._id,
-    vehicleMasterId: vehicles[0]?.vehicleMasterId,
+    vehicleMasterId: vehicle?.vehicleMasterId,
     BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
       ".000Z",
       "Z"
@@ -981,32 +983,30 @@ const handleBooking = async (
         ? 0
         : Number(result?.discounttotalPrice),
       isDiscountZero: isDiscountZero,
-      rentAmount: vehicles[0]?.perDayCost,
+      rentAmount: vehicle?.perDayCost,
       isPackageApplied: !!vehiclePlanData,
-      appliedPlan: vehicles[0]?.appliedPlans || [],
-      daysBreakdown:
-        vehicles[0]?._daysBreakdown || vehicles[0]?.daysBreakdown || [],
+      appliedPlan: vehicle?.appliedPlans || [],
+      daysBreakdown: vehicle?._daysBreakdown || vehicle?.daysBreakdown || [],
       extendAmount: [],
     },
     vehicleBasic: {
-      refundableDeposit: vehicles[0]?.refundableDeposit,
-      speedLimit: vehicles[0]?.speedLimit,
+      refundableDeposit: vehicle?.refundableDeposit,
+      speedLimit: vehicle?.speedLimit,
       vehicleNumber:
-        vehicles[0]?.vehicleNumber ||
-        vehicles[0]?.vehicleDetails[0]?.vehicleNumber,
+        vehicle?.vehicleNumber || vehicle?.vehicleDetails[0]?.vehicleNumber,
       freeLimit,
-      lateFee: vehicles[0]?.lateFee,
-      extraKmCharge: vehicles[0]?.extraKmsCharges,
+      lateFee: vehicle?.lateFee,
+      extraKmCharge: vehicle?.extraKmsCharges,
       startRide: startRideOtp,
       endRide: 0,
     },
     discountCuopon: { couponName: tempCouponName, couponId: tempCouponId },
     extendBooking: { oldBooking: [], transactionIds: [] },
-    vehicleName: vehicles[0]?.vehicleName,
-    vehicleBrand: vehicles[0]?.vehicleBrand,
-    vehicleImage: vehicles[0]?.vehicleImage,
-    stationId: vehicles[0]?.stationId,
-    stationName: vehicles[0]?.stationName,
+    vehicleName: vehicle?.vehicleName,
+    vehicleBrand: vehicle?.vehicleBrand,
+    vehicleImage: vehicle?.vehicleImage,
+    stationId: vehicle?.stationId,
+    stationName: vehicle?.stationName,
     bookingStatus: "pending",
     paymentStatus: "pending",
     rideStatus: "pending",
