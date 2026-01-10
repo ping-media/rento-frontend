@@ -54,7 +54,6 @@ const App = () => {
         if (inactiveTime > fiveMinutes) {
           window.location.reload();
         }
-
         lastActiveTime = now;
       } else {
         // Update last active time when leaving tab
