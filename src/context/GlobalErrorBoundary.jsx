@@ -26,11 +26,17 @@ class GlobalErrorBoundary extends React.Component {
           </p>
           <div className="flex gap-4">
             <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 rounded-lg bg-theme text-white hover:bg-theme/60 transition"
+            >
+              Go To Home
+            </button>
+            {/* <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 rounded-lg bg-theme text-white hover:bg-theme/60 transition"
             >
               Refresh
-            </button>
+            </button> */}
           </div>
         </div>
       );

@@ -21,8 +21,8 @@ const PrivacyPolicy = lazy(() => import("./Pages/PrivacyPolicy"));
 const TermsAndCondition = lazy(() => import("./Pages/TermsAndCondition"));
 const RefundAndReturn = lazy(() => import("./Pages/RefundAndReturn"));
 const ContactUs = lazy(() => import("./Pages/ContactUs"));
-const ErrorPageNotFound = lazy(() =>
-  import("./components/Error/ErrorPageNotFound")
+const ErrorPageNotFound = lazy(
+  () => import("./components/Error/ErrorPageNotFound"),
 );
 
 const App = () => {
@@ -48,10 +48,11 @@ const App = () => {
       if (document.visibilityState === "visible") {
         const now = Date.now();
         const inactiveTime = now - lastActiveTime;
-        const fiveMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+        const tenMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
         // Only reload if inactive for more than 10 minutes
-        if (inactiveTime > fiveMinutes) {
-          window.location.reload();
+        if (inactiveTime > tenMinutes) {
+          window.location.href = "/";
+          // window.location.reload();
         }
         lastActiveTime = now;
       } else {
