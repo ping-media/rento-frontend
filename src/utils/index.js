@@ -36,14 +36,14 @@ const showGreeting = () => {
 const encryptData = (data) => {
   return CryptoJS.AES.encrypt(
     JSON.stringify(data),
-    import.meta.env.VITE_SECRET_KEY
+    import.meta.env.VITE_SECRET_KEY,
   ).toString();
 };
 
 const decryptData = (encryptedData) => {
   const bytes = CryptoJS.AES.decrypt(
     encryptedData,
-    import.meta.env.VITE_SECRET_KEY
+    import.meta.env.VITE_SECRET_KEY,
   );
   const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
   return JSON.parse(decryptedData);
@@ -342,7 +342,7 @@ const formatDateTimeForUser = (input) => {
   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
   const formattedDate = new Date(Date.UTC(year, month, day)).toLocaleDateString(
     "en-GB",
-    dateOptions
+    dateOptions,
   );
 
   const hours = date.getUTCHours();
@@ -350,7 +350,7 @@ const formatDateTimeForUser = (input) => {
   const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
 
   const formattedTime = new Date(
-    Date.UTC(year, month, day, hours, minutes)
+    Date.UTC(year, month, day, hours, minutes),
   ).toLocaleTimeString("en-GB", {
     ...timeOptions,
     timeZone: "UTC", // Explicitly use UTC
@@ -376,7 +376,7 @@ const formatDateTimeISTForUser = (input) => {
   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
   const formattedDate = new Date(Date.UTC(year, month, day)).toLocaleDateString(
     "en-GB",
-    dateOptions
+    dateOptions,
   );
 
   const hours = istDate.getUTCHours();
@@ -385,7 +385,7 @@ const formatDateTimeISTForUser = (input) => {
 
   // Format the time as per IST
   const formattedTime = new Date(
-    Date.UTC(year, month, day, hours, minutes)
+    Date.UTC(year, month, day, hours, minutes),
   ).toLocaleTimeString("en-GB", {
     ...timeOptions,
     timeZone: "UTC", // Explicitly use IST offset calculated
@@ -425,7 +425,7 @@ const getRoundedDateTime = (value) => {
   currentDate.setMinutes(roundedMinutes);
   currentDate.setSeconds(0); // Reset seconds to 0
   const utcDate = new Date(
-    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
+    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000,
   );
   const isoString = utcDate.toISOString();
   return isoString.split(".")[0] + "Z";
@@ -446,7 +446,7 @@ const RoundedDateTimeAndToNextHour = (value) => {
   currentDate.setSeconds(0); // Reset seconds to 0
 
   const utcDate = new Date(
-    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
+    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000,
   );
 
   return utcDate.toISOString().split(".")[0] + "Z";
@@ -546,7 +546,7 @@ const convertTo24HourFormat = (time12h) => {
 
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
     2,
-    "0"
+    "0",
   )}`;
 };
 
@@ -659,7 +659,7 @@ const searchFormatTimeOnly = (dateStr) => {
 const isMinimumDurationHours = (date1, date2, duration = 12) => {
   const msInHour = 60 * 60 * 1000;
   const diffInMs = Math.abs(
-    new Date(date1).getTime() - new Date(date2).getTime()
+    new Date(date1).getTime() - new Date(date2).getTime(),
   );
 
   return diffInMs >= duration * msInHour;
@@ -769,7 +769,7 @@ const calculatePriceForExtendBooking = (
   // extensionDays,
   extraAddonPrice = 0,
   isGSTActive = false,
-  GSTPercentage = 18
+  GSTPercentage = 18,
 ) => {
   // const bookingPrice = Number(perDayCost) * Number(extensionDays);
   const bookingPrice = Number(totalRentalCost);
@@ -803,7 +803,7 @@ const addDaysToDateForExtend = (dateString, days) => {
   const date = new Date(dateString);
   if (isNaN(date)) {
     throw new Error(
-      "Invalid date format. Please use a valid ISO 8601 date string."
+      "Invalid date format. Please use a valid ISO 8601 date string.",
     );
   }
   // Add the specified number of days to the date's timestamp
@@ -886,7 +886,7 @@ const calculateTotalAddOnPriceAndTax = (addOns, days) => {
 
       return acc;
     },
-    { total: 0, tax: 0 }
+    { total: 0, tax: 0 },
   );
 };
 
@@ -900,7 +900,7 @@ const validateTimes = (
   enteredEndTime,
   openTime,
   closeTime,
-  currentTime
+  currentTime,
 ) => {
   // Extract date portions for comparison
   const [startDate] = enteredStartTime.split("T");
@@ -918,6 +918,16 @@ const validateTimes = (
     : { valid: false, message: "Invalid booking time." };
 };
 
+const addDaysToIsoDate = (isoDate, days) => {
+  const date = new Date(isoDate);
+
+  // Add days in UTC
+  date.setUTCDate(date.getUTCDate() + days);
+
+  // Return without milliseconds
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+};
+
 export {
   handleErrorImage,
   handlePreviousPage,
@@ -928,6 +938,7 @@ export {
   formatTimeWithoutSeconds,
   formatDateWithDayName,
   parseTime,
+  addDaysToIsoDate,
   handleCheckValidation,
   getDurationInDays,
   formatDateToSlash,

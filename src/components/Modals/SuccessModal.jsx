@@ -7,7 +7,7 @@ const SuccessModal = () => {
   const dispatch = useDispatch();
   const { isCouponModalActive } = useSelector((state) => state.modals);
   const { tempCouponName, tempCouponDiscount } = useSelector(
-    (state) => state.coupon
+    (state) => state.coupon,
   );
   const hasFiredConfetti = useRef(false);
   const modalRef = useRef(null);
@@ -50,9 +50,15 @@ const SuccessModal = () => {
       className={`fixed ${
         !isCouponModalActive ? "hidden" : ""
       } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
+      onMouseDown={(e) => {
+        if (modalRef.current && !modalRef.current.contains(e.target)) {
+          dispatch(toggleCouponModal());
+        }
+      }}
     >
       <div
         ref={modalRef}
+        onMouseDown={(e) => e.stopPropagation()}
         className="relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-sm"
       >
         <div className="flex justify-end p-2">

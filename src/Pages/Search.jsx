@@ -19,8 +19,9 @@ const Search = () => {
   const customLocation = useLocation();
 
   const { loading, vehicles, pagination } = useSelector(
-    (state) => state.vehicles
+    (state) => state.vehicles,
   );
+  const { filter } = useSelector((state) => state.filter);
   const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const { testMode } = useSelector((state) => state.general);
@@ -29,7 +30,7 @@ const Search = () => {
 
   const queryParamsData = useMemo(
     () => Object.fromEntries(queryParms.entries()),
-    [queryParms]
+    [queryParms],
   );
 
   useEffect(() => {
@@ -37,12 +38,13 @@ const Search = () => {
     window.scrollTo({ top: 0 });
     //search data
     handleSearchVehicleData(
+      filter,
       dispatch,
       queryParamsData,
       location,
       selectedLocation,
       selectedStation?.stationId || id,
-      pagination?.page
+      pagination?.page,
     );
   }, [dispatch, customLocation.search, pagination?.page, selectedStation]);
 

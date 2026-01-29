@@ -9,15 +9,17 @@ import {
   addVehiclesData,
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
+import { addDaysToIsoDate } from "../utils";
 import { openRazorpayPayment } from "../utils/razorpay";
 
 const handleSearchVehicleData = async (
+  filter,
   dispatch,
   queryParmsData,
   location,
   selectedLocation,
   id,
-  page
+  page,
 ) => {
   // Dispatch loading action
   dispatch(fetchingVehicles());
@@ -33,8 +35,10 @@ const handleSearchVehicleData = async (
   try {
     let result;
     let url = "/getVehicleTblData?";
+    let finalEndDateAndTime = BookingEndDateAndTime;
 
     // Common parameters
+    // const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&page=${page}&bypassLimit=true`;
     const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}&page=${page}&bypassLimit=true`;
 
     if (location.pathname !== "/explore") {
@@ -44,7 +48,25 @@ const handleSearchVehicleData = async (
       // if (category) url += `&vehicleType=${category}`;
       if (category) url += `&vehicleCategory=${category}`;
       if (brand) url += `&vehicleBrand=${brand}`;
-      if (vehiclePlan) url += `&vehiclePlan=${vehiclePlan}`;
+      if (vehiclePlan) {
+        // fetching filter using filter id so that can check data based on dates
+        // const currentFilter = filter.find((f) => f._id === vehiclePlan);
+
+        // if (currentFilter) {
+        //   const newEndDateAndTime = addDaysToIsoDate(
+        //     BookingEndDateAndTime,
+        //     currentFilter.planDuration,
+        //   );
+        //   if (
+        //     new Date(newEndDateAndTime).getTime() >
+        //     new Date(BookingEndDateAndTime).getTime()
+        //   ) {
+        //     finalEndDateAndTime = newEndDateAndTime;
+        //   }
+        // }
+        // adding vehicle plan id
+        url += `&vehiclePlan=${vehiclePlan}`;
+      }
     } else {
       // For explore path
       const locationId = selectedLocation?.locationId;
@@ -53,6 +75,8 @@ const handleSearchVehicleData = async (
       if (brand) url += `&vehicleBrand=${brand}`;
       if (vehiclePlan) url += `&vehiclePlan=${vehiclePlan}`;
     }
+
+    // url += `&BookingEndDateAndTime=${finalEndDateAndTime}`;
 
     // Fetch the data from API
     result = await fetchingData(url);
@@ -87,13 +111,13 @@ const searchData = async (
   selectedLocation,
   fetchingStation,
   addStationData,
-  loading
+  loading,
 ) => {
   try {
     if (!loading && Object.entries(selectedLocation).length > 0) {
       dispatch(fetchingStation());
       const result = await fetchingData(
-        `/getStationData?locationId=${selectedLocation?.locationId}`
+        `/getStationData?locationId=${selectedLocation?.locationId}`,
       );
       if (result) {
         const data =
@@ -114,12 +138,12 @@ const getUserDocuments = async (
   handleAddUserDocument,
   restLoading,
   dispatch,
-  handleAsyncError
+  handleAsyncError,
 ) => {
   dispatch(handleLoadingUserData());
   try {
     const response = await fetchingData(
-      `/getDocument?userId=${currentUser && currentUser?._id}`
+      `/getDocument?userId=${currentUser && currentUser?._id}`,
     );
     if (response?.status !== 200) {
       // console.log(response);
@@ -140,15 +164,15 @@ const changeAccordingToPlan = (
   tempDate,
   addDaysToDate,
   queryParms,
-  setQueryParms
+  setQueryParms,
 ) => {
   if (vehiclePlanData != null) {
     const updatedBookingEndDateAndTime = addDaysToDate(
       BookingEndDateAndTime,
-      Number(vehiclePlanData?.planDuration)
+      Number(vehiclePlanData?.planDuration),
     );
     setUpdatedBookingEndDateAndTime(
-      tempDate == "" ? updatedBookingEndDateAndTime : tempDate
+      tempDate == "" ? updatedBookingEndDateAndTime : tempDate,
     );
     if (updatedBookingEndDateAndTime) {
       if (tempDate == "") {
@@ -157,7 +181,7 @@ const changeAccordingToPlan = (
       // const params = new URLSearchParams(window.location.search);
       queryParms.set(
         "BookingEndDateAndTime",
-        tempDate == "" ? updatedBookingEndDateAndTime : tempDate
+        tempDate == "" ? updatedBookingEndDateAndTime : tempDate,
       );
       setQueryParms(queryParms);
     }
@@ -179,7 +203,7 @@ const handleFetchBookingData = (
   updateQueryParams,
   tempCouponName,
   tempCouponId,
-  navigate
+  navigate,
 ) => {
   setBookingLoading(true);
   e.preventDefault();
@@ -202,7 +226,7 @@ const handleFetchBookingData = (
         (queryParmsData?.BookingStartDateAndTime).replace(".000Z", "Z"),
       BookingEndDateAndTime: (queryParmsData?.BookingEndDateAndTime).replace(
         ".000Z",
-        "Z"
+        "Z",
       ),
       bookingPrice: {
         bookingPrice: Number(result?.bookingPrice),
@@ -259,7 +283,7 @@ const handleCreateBooking = async (
   handlebooking,
   removeTempDate,
   handleAsyncError,
-  dispatch
+  dispatch,
 ) => {
   //removing this after we are going to booking
   dispatch(removeTempDate());
@@ -294,13 +318,13 @@ const handleUpdateBooking = async (
   data,
   handlebooking,
   handleAsyncError,
-  dispatch
+  dispatch,
 ) => {
   try {
     if (!data && data._id)
       return handleAsyncError(
         dispatch,
-        "something went wrong while booking Ride"
+        "something went wrong while booking Ride",
       );
     const response = await handlebooking(data, data?._id);
     if (response?.status == 200) {
@@ -328,7 +352,7 @@ const handleCreateBookingSubmit = async (
   removeTempDate,
   handlebooking,
   dispatch,
-  setBookingLoading
+  setBookingLoading,
 ) => {
   try {
     setBookingLoading(true);
@@ -354,7 +378,7 @@ const handleCreateBookingSubmit = async (
         handlebooking,
         removeTempDate,
         handleAsyncError,
-        dispatch
+        dispatch,
       );
       if (response?.status === 200) {
         const timeLineData = {
@@ -382,7 +406,7 @@ const handleCreateBookingSubmit = async (
       const userPaid = parseInt(
         data?.bookingPrice?.discountTotalPrice
           ? (data?.bookingPrice?.discountTotalPrice * 20) / 100
-          : (data?.bookingPrice?.totalPrice * 20) / 100
+          : (data?.bookingPrice?.totalPrice * 20) / 100,
       );
       // amount to be paid at pickup
       const AmountLeftAfterUserPaid =
@@ -415,7 +439,7 @@ const handleCreateBookingSubmit = async (
           handlebooking,
           removeTempDate,
           handleAsyncError,
-          dispatch
+          dispatch,
         );
         // update booking if present
       } else if (
@@ -432,7 +456,7 @@ const handleCreateBookingSubmit = async (
           newData,
           handlebooking,
           handleAsyncError,
-          dispatch
+          dispatch,
         );
       }
 
@@ -460,7 +484,7 @@ const handleCreateBookingSubmit = async (
             const userPaid = parseInt(
               oldData?.bookingPrice?.discountTotalPrice
                 ? (oldData?.bookingPrice?.discountTotalPrice * 20) / 100
-                : (oldData?.bookingPrice?.totalPrice * 20) / 100
+                : (oldData?.bookingPrice?.totalPrice * 20) / 100,
             );
             // amount to be paid at pickup
             const AmountLeftAfterUserPaid =
@@ -502,7 +526,7 @@ const handleCreateBookingSubmit = async (
               updatedData,
               handlebooking,
               handleAsyncError,
-              dispatch
+              dispatch,
             );
 
             if (response?.status === 200) {
@@ -539,7 +563,7 @@ const handleCreateBookingSubmit = async (
           handlebooking,
           dispatch,
           handleRestCoupon,
-          setBookingLoading
+          setBookingLoading,
         );
       }
     } else if (result?.paymentMethod == "cash") {
@@ -565,7 +589,7 @@ const handleCreateBookingSubmit = async (
           newData,
           handlebooking,
           handleAsyncError,
-          dispatch
+          dispatch,
         );
       } else {
         data = {
@@ -583,7 +607,7 @@ const handleCreateBookingSubmit = async (
           handlebooking,
           removeTempDate,
           handleAsyncError,
-          dispatch
+          dispatch,
         );
       }
 
@@ -595,7 +619,7 @@ const handleCreateBookingSubmit = async (
         navigate(
           `/account/my-rides/summary/${
             bookingResponse?.data?.bookingId || newData?.bookingId
-          }`
+          }`,
         );
       } else {
         handleAsyncError(dispatch, "unable to make booking! try again");
@@ -607,7 +631,7 @@ const handleCreateBookingSubmit = async (
     console.log(error?.message);
     return handleAsyncError(
       dispatch,
-      "something went wrong while booking ride"
+      "something went wrong while booking ride",
     );
   } finally {
     setBookingLoading(false);
@@ -637,7 +661,7 @@ const handleBookingProcess = async (
   navigate,
   removeTempDate,
   handlebooking,
-  selectedAddOn
+  selectedAddOn,
 ) => {
   e.preventDefault();
   setBookingLoading(true);
@@ -673,11 +697,11 @@ const handleBookingProcess = async (
     vehicleMasterId: vehicles[0]?.vehicleMasterId,
     BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
       ".000Z",
-      "Z"
+      "Z",
     ),
     BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime.replace(
       ".000Z",
-      "Z"
+      "Z",
     ),
     bookingPrice: {
       bookingPrice: Number(result?.bookingPrice),
@@ -694,11 +718,11 @@ const handleBookingProcess = async (
             Number(result?.discounttotalPrice || 0) +
               (Number(result?.extraAddonPrice) > 0
                 ? Number(result?.extraAddonPrice)
-                : 0)
+                : 0),
           )
         : Number(result?.discounttotalPrice || 0) === 0
-        ? 0
-        : Number(result?.discounttotalPrice),
+          ? 0
+          : Number(result?.discounttotalPrice),
       isDiscountZero: isDiscountZero,
       rentAmount: vehicles[0]?.perDayCost,
       isPackageApplied: !!vehiclePlanData,
@@ -743,7 +767,7 @@ const handleBookingProcess = async (
         handlebooking,
         removeTempDate,
         handleAsyncError,
-        dispatch
+        dispatch,
       );
 
       if (response?.status === 200) {
@@ -766,7 +790,7 @@ const handleBookingProcess = async (
         handlebooking,
         removeTempDate,
         handleAsyncError,
-        dispatch
+        dispatch,
       );
 
       if (response?.status === 200) {
@@ -795,7 +819,7 @@ const handleBookingProcess = async (
     if (result?.paymentMethod === "partiallyPay") {
       const userPaid = Math.round(
         (data?.bookingPrice?.discountTotalPrice ||
-          data?.bookingPrice?.totalPrice) * 0.2
+          data?.bookingPrice?.totalPrice) * 0.2,
       );
       const AmountLeftAfterUserPaid =
         (data?.bookingPrice?.discountTotalPrice ||
@@ -821,7 +845,7 @@ const handleBookingProcess = async (
         handlebooking,
         removeTempDate,
         handleAsyncError,
-        dispatch
+        dispatch,
       );
 
       if (bookingResponse?.status === 200) {
@@ -840,7 +864,7 @@ const handleBookingProcess = async (
             },
             handlebooking,
             handleAsyncError,
-            dispatch
+            dispatch,
           );
           if (response?.status === 200) {
             data = response?.data;
@@ -869,7 +893,7 @@ const handleBookingProcess = async (
           navigate,
           dispatch,
           handleRestCoupon,
-          setBookingLoading
+          setBookingLoading,
         );
       }
     }
@@ -877,7 +901,7 @@ const handleBookingProcess = async (
     handleAsyncError(
       dispatch,
       "Something went wrong while booking ride",
-      error?.message
+      error?.message,
     );
   } finally {
     setBookingLoading(false);
@@ -898,7 +922,7 @@ const handleBooking = async (
   tempCouponId,
   handleAsyncError,
   navigate,
-  selectedAddOn
+  selectedAddOn,
 ) => {
   e.preventDefault();
   setBookingLoading(true);
@@ -955,11 +979,11 @@ const handleBooking = async (
     vehicleMasterId: vehicle?.vehicleMasterId,
     BookingStartDateAndTime: queryParmsData?.BookingStartDateAndTime.replace(
       ".000Z",
-      "Z"
+      "Z",
     ),
     BookingEndDateAndTime: queryParmsData?.BookingEndDateAndTime.replace(
       ".000Z",
-      "Z"
+      "Z",
     ),
     bookingPrice: {
       bookingPrice: Number(result?.bookingPrice),
@@ -977,11 +1001,11 @@ const handleBooking = async (
             Number(result?.discounttotalPrice || 0) +
               (Number(result?.extraAddonPrice) > 0
                 ? Number(result?.extraAddonPrice)
-                : 0)
+                : 0),
           )
         : Number(result?.discounttotalPrice || 0) === 0
-        ? 0
-        : Number(result?.discounttotalPrice),
+          ? 0
+          : Number(result?.discounttotalPrice),
       isDiscountZero: isDiscountZero,
       rentAmount: vehicle?.perDayCost,
       isPackageApplied: !!vehiclePlanData,
@@ -1055,7 +1079,7 @@ const handleBooking = async (
           } else {
             handleAsyncError(
               dispatch,
-              "Payment confirmed, but booking status not updated. Please check later."
+              "Payment confirmed, but booking status not updated. Please check later.",
             );
             setBookingLoading(false);
           }
@@ -1072,7 +1096,7 @@ const pollBookingStatus = async (
   bookingId,
   action,
   maxAttempts = 10,
-  interval = 2000
+  interval = 2000,
 ) => {
   let attempts = 0;
 

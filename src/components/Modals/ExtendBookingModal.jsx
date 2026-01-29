@@ -50,12 +50,12 @@ const ExtendBookingModal = () => {
         `/getAllVehiclesAvailable?_id=${
           rides?.[0]?.vehicleTableId?._id
         }&BookingStartDateAndTime=${addOneMinute(
-          rides[0]?.BookingEndDateAndTime
-        ).replace(".000Z", "Z")}&BookingEndDateAndTime=${newDate}`
+          rides[0]?.BookingEndDateAndTime,
+        ).replace(".000Z", "Z")}&BookingEndDateAndTime=${newDate}`,
       );
       if (isVehicleFree?.status === 200) {
         setFreeVehicle(
-          isVehicleFree?.data?.length > 0 ? isVehicleFree?.data[0] : null
+          isVehicleFree?.data?.length > 0 ? isVehicleFree?.data[0] : null,
         );
         if (isVehicleFree?.data?.length === 0) {
           handleAsyncError(dispatch, isVehicleFree?.message);
@@ -71,7 +71,7 @@ const ExtendBookingModal = () => {
 
   const isDisabled =
     (!["paid", "partiallyPay", "partially_paid"].includes(
-      rides[0]?.paymentStatus
+      rides[0]?.paymentStatus,
     ) &&
       true) ||
     (rides[0]?.bookingPrice?.extendAmount &&
@@ -124,7 +124,7 @@ const ExtendBookingModal = () => {
       _id: rides[0]?._id,
       vehicleTableId: rides[0]?.vehicleTableId?._id,
       BookingStartDateAndTime: addOneMinute(
-        rides[0]?.BookingEndDateAndTime
+        rides[0]?.BookingEndDateAndTime,
       ).replace(".000Z", "Z"),
       BookingEndDateAndTime: newDate,
       bookingPrice: rides[0]?.bookingPrice,
@@ -143,10 +143,10 @@ const ExtendBookingModal = () => {
         addonTax,
         originalBookingEndDateAndTime: rides[0]?.BookingEndDateAndTime.replace(
           ".000Z",
-          "Z"
+          "Z",
         ),
         BookingStartDateAndTime: addOneMinute(
-          rides[0]?.BookingEndDateAndTime
+          rides[0]?.BookingEndDateAndTime,
         ).replace(".000Z", "Z"),
         bookingEndDateAndTime: newDate,
         daysBreakdown: daysBreakdown || [],
@@ -154,6 +154,7 @@ const ExtendBookingModal = () => {
         appliedPlans: appliedPlans || [],
         freeLimit,
         orderId: "",
+        paymentInitiatedDate: "",
         transactionId: "",
         paymentMethod: "",
         bookedFrom: "web",
@@ -169,6 +170,10 @@ const ExtendBookingModal = () => {
         booking_id: rides[0]?.bookingId,
         type: "ExtensionFromCustomer",
       });
+      // const extension = await handlePostData("/initiate-extension", {
+      //   amount: Number(totalExtendPrice) || 0,
+      //   data,
+      // });
 
       if (orderId?.status === "created") {
         const paymentSuccess = await openRazorpayPayment({
@@ -220,7 +225,7 @@ const ExtendBookingModal = () => {
               retryCount++;
               if (retryCount < maxRetries) {
                 await new Promise((resolve) =>
-                  setTimeout(resolve, 1000 * retryCount)
+                  setTimeout(resolve, 1000 * retryCount),
                 );
               }
             } catch (retryError) {
@@ -229,7 +234,7 @@ const ExtendBookingModal = () => {
                 throw retryError;
               }
               await new Promise((resolve) =>
-                setTimeout(resolve, 1000 * retryCount)
+                setTimeout(resolve, 1000 * retryCount),
               );
             }
           }
@@ -244,7 +249,7 @@ const ExtendBookingModal = () => {
               dispatch,
               extendResponse?.message ||
                 "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
-                  (paymentSuccess?.response?.razorpay_payment_id || "")
+                  (paymentSuccess?.response?.razorpay_payment_id || ""),
             );
           }
           return;
@@ -254,6 +259,89 @@ const ExtendBookingModal = () => {
       } else {
         return handleAsyncError(dispatch, "Payment Cancelled");
       }
+
+      // if (orderId?.status === "created") {
+      //   const paymentSuccess = await openRazorpayPayment({
+      //     finalAmount: Number(totalExtendPrice || 0),
+      //     orderId: orderId?.id,
+      //     bookingData: rides[0],
+      //     dispatch,
+      //     navigate,
+      //     type: "ExtensionFromCustomer",
+      //   });
+
+      //   if (paymentSuccess?.success) {
+      //     data = {
+      //       ...data,
+      //       extendAmount: {
+      //         ...data?.extendAmount,
+      //         orderId: orderId?.id || "",
+      //         transactionId:
+      //           paymentSuccess?.response?.razorpay_payment_id || "",
+      //         paymentInitiatedDate: orderId?.created_at || "",
+      //         paymentSuccessDate: Date.now(),
+      //         paymentMethod: "online",
+      //         status: "paid",
+      //       },
+      //       contact: rides[0]?.userId?.contact,
+      //       firstName: rides[0]?.userId?.firstName,
+      //       managerContact: rides[0]?.stationMasterUserId?.contact,
+      //     };
+
+      //     let extendResponse = null;
+      //     let retryCount = 0;
+      //     const maxRetries = 5;
+
+      //     while (retryCount < maxRetries) {
+      //       try {
+      //         extendResponse = await handlePostData("/extend-booking", {
+      //           _id: rides?.[0]?._id,
+      //           bookingId: rides?.[0]?.bookingId,
+      //           amount: Number(totalExtendPrice),
+      //           data,
+      //           razorpay_signature:
+      //             paymentSuccess?.response?.razorpay_signature,
+      //         });
+
+      //         if (extendResponse?.success) {
+      //           break; // Success, exit retry loop
+      //         }
+
+      //         retryCount++;
+      //         if (retryCount < maxRetries) {
+      //           await new Promise((resolve) =>
+      //             setTimeout(resolve, 1000 * retryCount),
+      //           );
+      //         }
+      //       } catch (retryError) {
+      //         retryCount++;
+      //         if (retryCount >= maxRetries) {
+      //           throw retryError;
+      //         }
+      //         await new Promise((resolve) =>
+      //           setTimeout(resolve, 1000 * retryCount),
+      //         );
+      //       }
+      //     }
+
+      //     if (extendResponse?.success) {
+      //       const { contact, firstName, managerContact, ...restData } = data;
+      //       dispatch(updateRidesData(restData));
+      //       handleAsyncError(dispatch, "Ride extended successfully", "success");
+      //       handleCloseModal();
+      //     } else {
+      //       handleAsyncError(
+      //         dispatch,
+      //         extendResponse?.message ||
+      //           "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
+      //             (paymentSuccess?.response?.razorpay_payment_id || ""),
+      //       );
+      //     }
+      //     return;
+      //   } else {
+      //     handleAsyncError(dispatch, "Payment failed or cancelled");
+      //   }
+      // }
     } catch (error) {
       return handleAsyncError(dispatch, error?.message);
     } finally {
@@ -303,7 +391,7 @@ const ExtendBookingModal = () => {
       const hasPlan =
         plan?.data?.length > 0
           ? plan?.data?.filter(
-              (plan) => Number(plan?.planDuration) === Number(extensionDays)
+              (plan) => Number(plan?.planDuration) === Number(extensionDays),
             )
           : [];
 
@@ -314,7 +402,7 @@ const ExtendBookingModal = () => {
         rides[0]?.bookingPrice?.extraAddonDetails?.length > 0
           ? calculateTotalAddOnPrice(
               rides[0]?.bookingPrice?.extraAddonDetails,
-              extensionDays
+              extensionDays,
             )
           : 0;
 
@@ -353,7 +441,7 @@ const ExtendBookingModal = () => {
     setExtensionDays(Number(e.target.value));
     const newDate = addDaysToDateForExtend(
       addOneMinute(rides[0]?.BookingEndDateAndTime),
-      Number(e.target.value)
+      Number(e.target.value),
     );
     setNewDate(newDate);
   };
@@ -408,7 +496,7 @@ const ExtendBookingModal = () => {
                   Current End Date:
                 </span>
                 {formatFullDateAndTime(
-                  addOneMinute(rides[0]?.BookingEndDateAndTime)
+                  addOneMinute(rides[0]?.BookingEndDateAndTime),
                 )}
               </p>
             </div>

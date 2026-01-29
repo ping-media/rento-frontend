@@ -40,10 +40,10 @@ const SearchRide = () => {
   const { id } = useParams();
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
   const { stationLoading, selectedStation } = useSelector(
-    (state) => state.station
+    (state) => state.station,
   );
   const { loading, selectedLocation } = useSelector(
-    (state) => state.selectedLocation
+    (state) => state.selectedLocation,
   );
   const [isPageLoad, setIsPageLoad] = useState(false);
   const [pickupDate, setPickupDate] = useState(null);
@@ -99,13 +99,13 @@ const SearchRide = () => {
       dropoffTime = pickupTime;
     }
     const covertedTime = parseInt(
-      convertTo24HourFormat(pickupTime).replace(":00", "")
+      convertTo24HourFormat(pickupTime).replace(":00", ""),
     );
 
     if (new Date(result.pickup) > new Date(result.dropoff)) {
       handleAsyncError(
         dispatch,
-        "Drop Date and time should be ahead of pickup date and time."
+        "Drop Date and time should be ahead of pickup date and time.",
       );
       return;
     }
@@ -114,13 +114,13 @@ const SearchRide = () => {
     const isMinDuration = isMinimumDurationHours(
       result.pickup,
       result.dropoff,
-      MinimumDurationHours
+      MinimumDurationHours,
     );
 
     if (location.pathname !== "/monthly-rental" && !isMinDuration)
       return handleAsyncError(
         dispatch,
-        `Minimum Interval between dates should be ${MinimumDurationHours} hours`
+        `Minimum Interval between dates should be ${MinimumDurationHours} hours`,
       );
 
     const pickupDateTime = new Date(result.pickup);
@@ -130,12 +130,12 @@ const SearchRide = () => {
       !isWithinOperatingHours(
         covertedTime,
         selectedStation?.openStartTime,
-        selectedStation?.openEndTime
+        selectedStation?.openEndTime,
       )
     ) {
       return handleAsyncError(
         dispatch,
-        `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`
+        `Time should be in opening hour ${selectedStation?.openStartTime}:00 - ${selectedStation?.openEndTime}:00`,
       );
     }
 
@@ -144,8 +144,8 @@ const SearchRide = () => {
         result?.pickupLocationId
       }?BookingStartDateAndTime=${convertToISOString(
         pickupDate,
-        pickupTime
-      )}&BookingEndDateAndTime=${convertToISOString(dropoffDate, dropoffTime)}`
+        pickupTime,
+      )}&BookingEndDateAndTime=${convertToISOString(dropoffDate, dropoffTime)}`,
     );
     // }
     // catch (error) {
@@ -160,7 +160,7 @@ const SearchRide = () => {
       selectedLocation,
       fetchingStation,
       addStationData,
-      loading
+      loading,
     );
   }, [loading, selectedLocation]);
 
@@ -209,18 +209,18 @@ const SearchRide = () => {
         setDropoffDate(nextDayFromCurrent(nextday));
         // changing time
         setQueryPickupTime(
-          format24HourFormatTime(selectedStation?.openStartTime)
+          format24HourFormatTime(selectedStation?.openStartTime),
         );
         setQueryDropoffTime(
-          format24HourFormatTime(selectedStation?.openStartTime)
+          format24HourFormatTime(selectedStation?.openStartTime),
         );
         // change time to openStartTime if current time does not match
       } else if (currentTime < openStartTime) {
         setQueryPickupTime(
-          format24HourFormatTime(selectedStation?.openStartTime)
+          format24HourFormatTime(selectedStation?.openStartTime),
         );
         setQueryDropoffTime(
-          format24HourFormatTime(selectedStation?.openStartTime)
+          format24HourFormatTime(selectedStation?.openStartTime),
         );
       }
     }
@@ -262,15 +262,15 @@ const SearchRide = () => {
             "BookingStartDateAndTime",
             updateTimeInISOString(
               pickUpDateAndTime,
-              formatTimeWithoutSeconds(currentTime)
-            ).replace(".000Z", "Z")
+              formatTimeWithoutSeconds(currentTime),
+            ).replace(".000Z", "Z"),
           );
           queryParms.set(
             "BookingEndDateAndTime",
             updateTimeInISOString(
               dropoffDateAndTime,
-              formatTimeWithoutSeconds(currentTime)
-            ).replace(".000Z", "Z")
+              formatTimeWithoutSeconds(currentTime),
+            ).replace(".000Z", "Z"),
           );
           setQueryParms(queryParms);
         } else {
@@ -290,7 +290,7 @@ const SearchRide = () => {
     } finally {
       setIsPageLoad(false);
     }
-  }, [location.pathname]);
+  }, [location.pathname, queryParms]);
 
   return (
     <>

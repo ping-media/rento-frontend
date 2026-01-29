@@ -41,24 +41,24 @@ const BookingSummary = () => {
 
   const queryParmsData = useMemo(
     () => Object.fromEntries(queryParms.entries()),
-    [queryParms]
+    [queryParms],
   );
 
   const bookingStartDateTime = formatDateTimeForUser(
-    queryParmsData?.BookingStartDateAndTime
+    queryParmsData?.BookingStartDateAndTime,
   );
   const bookingEndDateTime = formatDateTimeForUser(
-    queryParmsData?.BookingEndDateAndTime
+    queryParmsData?.BookingEndDateAndTime,
   );
 
   const { vehiclePlanData } = useVehicleData(id, queryParmsData);
 
   const { tempCouponName, tempCouponId, isDiscountZero } = useSelector(
-    (state) => state.coupon
+    (state) => state.coupon,
   );
 
   const { selectedAddOn, loading: addonLoading } = useSelector(
-    (state) => state.addon
+    (state) => state.addon,
   );
   const { currentUser } = useSelector((state) => state.user);
   const { selectedStation } = useSelector((state) => state.station);
@@ -70,7 +70,7 @@ const BookingSummary = () => {
 
   const vehiclePlan = useMemo(
     () => vehiclePlanData?.[0] || null,
-    [vehiclePlanData]
+    [vehiclePlanData],
   );
   const isAllFieldChecked = isTermsChecked;
 
@@ -80,13 +80,13 @@ const BookingSummary = () => {
     };
   }, [dispatch]);
 
-  console.log(vehicles);
+  // console.log(vehicles);
 
   // for creating new booking
   const handleCreateBookingSubmit = (e) => {
     e.preventDefault();
     const openTime = convertHourTo24HourTime(
-      selectedStation?.openStartTime || 0
+      selectedStation?.openStartTime || 0,
     );
     const endTime = convertHourTo24HourTime(selectedStation?.openEndTime || 0);
     const currentTime = getCurrentLocalTime();
@@ -96,7 +96,7 @@ const BookingSummary = () => {
       queryParmsData.BookingEndDateAndTime,
       openTime,
       endTime,
-      currentTime
+      currentTime,
     );
     if (!timeValidation.valid) {
       return handleAsyncError(dispatch, timeValidation.message);
@@ -104,7 +104,7 @@ const BookingSummary = () => {
 
     const durationValidation = validateBookingDates(
       queryParmsData.BookingStartDateAndTime,
-      queryParmsData.BookingEndDateAndTime
+      queryParmsData.BookingEndDateAndTime,
     );
     if (!durationValidation.valid) {
       return handleAsyncError(dispatch, durationValidation.message);
@@ -124,7 +124,7 @@ const BookingSummary = () => {
       tempCouponId,
       handleAsyncError,
       navigate,
-      selectedAddOn
+      selectedAddOn,
     );
   };
 

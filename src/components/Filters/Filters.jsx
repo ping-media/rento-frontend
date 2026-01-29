@@ -5,8 +5,10 @@ import { toggleFilter } from "../../Redux/ModalSlice/ModalSlice";
 import { brands, VehicleType } from "../../Data/dummyData";
 import CustomCheckbox from "../Input/CustomCheckbox";
 import CheckboxFilter from "../Input/CheckBoxFilter";
+import { addDaysToIsoDate } from "../../utils";
 
 const Filters = ({ showPackage = false }) => {
+  const { filter } = useSelector((state) => state.filter);
   const { isFilterActive } = useSelector((state) => state.modals);
   const dispatch = useDispatch();
   const [queryParms, setQueryParms] = useSearchParams();
@@ -27,8 +29,9 @@ const Filters = ({ showPackage = false }) => {
   const handleSubmitFilters = (
     selectedCategory,
     selectedPlanId,
-    selectedBrand
+    selectedBrand,
   ) => {
+    const newQueryParamsData = Object.fromEntries(queryParms.entries());
     const updatedQueryParams = new URLSearchParams(queryParms);
 
     if (selectedCategory)
@@ -38,8 +41,25 @@ const Filters = ({ showPackage = false }) => {
     if (selectedBrand) updatedQueryParams.set("brand", selectedBrand);
     else updatedQueryParams.delete("brand");
 
-    if (selectedPlanId) updatedQueryParams.set("vehiclePlan", selectedPlanId);
-    else updatedQueryParams.delete("vehiclePlan");
+    if (selectedPlanId) {
+      // console.log(newQueryParamsData);
+      const currentFilter = filter.find((f) => f._id === selectedPlanId);
+      if (currentFilter) {
+        const newEndDateAndTime = addDaysToIsoDate(
+          newQueryParamsData?.BookingStartDateAndTime,
+          currentFilter.planDuration,
+        );
+        updatedQueryParams.set("BookingEndDateAndTime", newEndDateAndTime);
+      }
+      updatedQueryParams.set("vehiclePlan", selectedPlanId);
+    } else {
+      const newEndDateAndTime = addDaysToIsoDate(
+        newQueryParamsData?.BookingStartDateAndTime,
+        1,
+      );
+      updatedQueryParams.set("BookingEndDateAndTime", newEndDateAndTime);
+      updatedQueryParams.delete("vehiclePlan");
+    }
 
     setQueryParms(updatedQueryParams);
 
@@ -119,7 +139,7 @@ const Filters = ({ showPackage = false }) => {
                   handleSubmitFilters(
                     inputCategory,
                     inputPlanId,
-                    selectedBrand
+                    selectedBrand,
                   );
                 }}
                 notFoundMessage="No Brands Found."
