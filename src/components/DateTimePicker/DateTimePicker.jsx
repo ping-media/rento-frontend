@@ -24,7 +24,7 @@ const DatePicker = ({
   const { selectedStation } = useSelector((state) => state.station);
   const [dropdownPosition, setDropdownPosition] = useState("bottom");
   const [minDate, setMinDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
 
   const isExplorePage = location.pathname?.includes("/explore");
@@ -170,7 +170,7 @@ const DatePicker = ({
             className="outline-none w-full cursor-pointer"
             placeholder="Select date & time"
             value={`${formatDate(new Date(value))} ${formatTimeWithoutSeconds(
-              timeValue
+              timeValue,
             )}`}
             name={name}
             readOnly
@@ -194,7 +194,7 @@ const DatePicker = ({
 
       {calendarVisible && (
         <div
-          className={`absolute bg-white shadow-md rounded-md mt-1 z-30 lg:z-10 border border-gray-300 w-full lg:w-96 p-2 flex ${
+          className={`absolute bg-white shadow-md rounded-md mt-1 z-30 lg:z-10 border border-gray-300 w-full lg:w-[28rem] p-2 flex ${
             dropdownPosition === "top" ? "bottom-full mb-2" : "top-full"
           }`}
         >
