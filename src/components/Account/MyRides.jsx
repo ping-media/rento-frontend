@@ -1,88 +1,141 @@
-import { useEffect, useState } from "react";
-import RideCard from "./RideCard";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+// import RideCard from "./RideCard";
 import { fetchingData } from "../../Data";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { addRidesData, fetchingRides } from "../../Redux/RidesSlice/RideSlice";
 import PreLoader from "../skeleton/PreLoader";
 import RideNotFound from "../skeleton/RideNotFound";
+import RideSkeletonList from "../skeleton/RideSkeletonList";
+
+const RideCard = lazy(() => import("./RideCard"));
+
+const TABS = ["Upcoming", "Ongoing", "Completed", "Cancelled", "All Bookings"];
 
 const MyRides = () => {
   // State to track the selected tab
   const [activeTab, setActiveTab] = useState(0);
   const dispatch = useDispatch();
+
   const { currentUser } = useSelector((state) => state.user);
-  const { rides, loading } = useSelector((state) => state.rides);
+  const { rides, loading } = useSelector(
+    (s) => ({
+      rides: s.rides.rides,
+      loading: s.rides.loading,
+    }),
+    shallowEqual,
+  );
+  // const { rides, loading } = useSelector((state) => state.rides);
 
   useEffect(() => {
-    if (currentUser) {
-      (async () => {
-        dispatch(fetchingRides());
-        const result = await fetchingData(
-          `/getBookings?userId=${currentUser && currentUser?._id}`
-        );
-        dispatch(addRidesData(result?.data));
-      })();
+    if (!currentUser) return;
+
+    (async () => {
+      dispatch(fetchingRides());
+      const result = await fetchingData(
+        `/getBookings?userId=${currentUser?._id}`,
+      );
+      dispatch(addRidesData(result?.data));
+    })();
+  }, [currentUser, dispatch]);
+
+  const filteredRides = useMemo(() => {
+    if (!rides?.length) {
+      return {
+        0: [],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+      };
     }
-  }, [currentUser]);
+
+    return {
+      0: rides.filter(
+        (r) =>
+          (["pending", "paid", "partially_paid"].includes(r.paymentStatus) ||
+            ["pending", "completed"].includes(r.bookingStatus)) &&
+          !["ongoing", "completed"].includes(r.rideStatus),
+      ),
+
+      1: rides.filter(
+        (r) => r.rideStatus === "ongoing" && r.paymentStatus !== "refunded",
+      ),
+
+      2: rides.filter(
+        (r) => r.rideStatus === "completed" && r.paymentStatus !== "refunded",
+      ),
+
+      3: rides.filter(
+        (r) =>
+          ["canceled", "failed", "refunded"].includes(r.paymentStatus) ||
+          ["canceled"].includes(r.bookingStatus) ||
+          ["canceled"].includes(r.rideStatus),
+      ),
+
+      4: rides,
+    };
+  }, [rides]);
+
+  const activeRides = filteredRides[activeTab];
 
   if (loading) {
     return <PreLoader />;
   }
 
   // Tab content array
-  const tabs = [
-    {
-      name: "Upcoming",
-      content:
-        rides &&
-        rides.filter(
-          (item) =>
-            (item?.paymentStatus === "pending" ||
-              item?.bookingStatus === "pending" ||
-              item?.paymentStatus === "paid" ||
-              item?.paymentStatus === "partially_paid" ||
-              item?.bookingStatus === "completed") &&
-            item?.rideStatus !== "ongoing" &&
-            item?.rideStatus !== "completed"
-        ),
-    },
-    {
-      name: "Ongoing",
-      content:
-        rides &&
-        rides.filter(
-          (item) =>
-            item?.rideStatus === "ongoing" && item?.paymentStatus !== "refunded"
-        ),
-    },
-    {
-      name: "Completed",
-      content:
-        rides &&
-        rides.filter(
-          (item) =>
-            item?.rideStatus === "completed" &&
-            item?.paymentStatus !== "refunded"
-        ),
-    },
-    {
-      name: "Cancelled",
-      content:
-        rides &&
-        rides.filter(
-          (item) =>
-            item?.paymentStatus === "canceled" ||
-            item?.paymentStatus === "failed" ||
-            item?.bookingStatus === "canceled" ||
-            item?.rideStatus === "canceled" ||
-            item?.paymentStatus === "refunded"
-        ),
-    },
-    {
-      name: "All Bookings",
-      content: rides && rides,
-    },
-  ];
+  // const tabs = [
+  //   {
+  //     name: "Upcoming",
+  //     content:
+  //       rides &&
+  //       rides.filter(
+  //         (item) =>
+  //           (item?.paymentStatus === "pending" ||
+  //             item?.bookingStatus === "pending" ||
+  //             item?.paymentStatus === "paid" ||
+  //             item?.paymentStatus === "partially_paid" ||
+  //             item?.bookingStatus === "completed") &&
+  //           item?.rideStatus !== "ongoing" &&
+  //           item?.rideStatus !== "completed"
+  //       ),
+  //   },
+  //   {
+  //     name: "Ongoing",
+  //     content:
+  //       rides &&
+  //       rides.filter(
+  //         (item) =>
+  //           item?.rideStatus === "ongoing" && item?.paymentStatus !== "refunded"
+  //       ),
+  //   },
+  //   {
+  //     name: "Completed",
+  //     content:
+  //       rides &&
+  //       rides.filter(
+  //         (item) =>
+  //           item?.rideStatus === "completed" &&
+  //           item?.paymentStatus !== "refunded"
+  //       ),
+  //   },
+  //   {
+  //     name: "Cancelled",
+  //     content:
+  //       rides &&
+  //       rides.filter(
+  //         (item) =>
+  //           item?.paymentStatus === "canceled" ||
+  //           item?.paymentStatus === "failed" ||
+  //           item?.bookingStatus === "canceled" ||
+  //           item?.rideStatus === "canceled" ||
+  //           item?.paymentStatus === "refunded"
+  //       ),
+  //   },
+  //   {
+  //     name: "All Bookings",
+  //     content: rides && rides,
+  //   },
+  // ];
 
   return (
     <div className="border-2 rounded-lg px-2 lg:px-4 py-2 shadow-md bg-white mb-3">
@@ -93,9 +146,10 @@ const MyRides = () => {
       </div>
       {/* Tab navigation */}
       <div className="flex space-x-4 border-b-2 pb-2 overflow-x-auto">
-        {tabs.map((tab, index) => (
+        {/* {tabs.map((tab, index) => ( */}
+        {TABS.map((tab, index) => (
           <button
-            key={index}
+            key={tab}
             onClick={() => setActiveTab(index)}
             className={`whitespace-nowrap py-2 px-2 lg:px-4 text-sm lg:text-base font-medium 
               ${
@@ -105,29 +159,37 @@ const MyRides = () => {
               }
               hover:text-theme`}
           >
-            {tab.name}
+            {/* {tab.name} */}
+            {tab}
           </button>
         ))}
       </div>
 
       {/* Tab content */}
-      {!loading ? (
-        <div className="mt-4">
-          <div className="p-4 rounded-lg hover:overflow-y-auto overflow-hidden">
-            <div>
-              {tabs[activeTab].content.length > 0 ? (
+      <div className="mt-4">
+        <div className="p-4 rounded-lg hover:overflow-y-auto overflow-hidden">
+          <div>
+            {loading ? (
+              <RideSkeletonList />
+            ) : activeRides.length ? (
+              <Suspense fallback={<RideSkeletonList count={1} />}>
+                {activeRides.map((ride) => (
+                  <RideCard key={ride._id} item={ride} />
+                ))}
+              </Suspense>
+            ) : (
+              <RideNotFound />
+            )}
+            {/* {tabs[activeTab].content.length > 0 ? (
                 tabs[activeTab].content.map((item, index) => {
                   return <RideCard item={item} key={index} />;
                 })
               ) : (
                 <RideNotFound />
-              )}
-            </div>
+              )} */}
           </div>
         </div>
-      ) : (
-        <PreLoader />
-      )}
+      </div>
     </div>
   );
 };

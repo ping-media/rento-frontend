@@ -1,4 +1,4 @@
-import Mainteance from "../assets/images/maintenance.png";
+import Mainteance from "../assets/images/maintenance.webp";
 
 const Maintenance = () => {
   return (

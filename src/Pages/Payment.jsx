@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchingData } from "../Data";
 import { handleAsyncError } from "../utils/handleAsyncError";
@@ -36,107 +36,12 @@ const Payment = () => {
     }
   }, []);
 
-  // const handleBookVehicle = async (response) => {
-  //   try {
-  //     let updatedData = {
-  //       _id: currentBooking.current?._id,
-  //       bookingStatus: decodedParams?.paymentStatus ? "done" : "extended",
-  //       paymentStatus:
-  //         decodedParams?.paymentStatus ||
-  //         currentBooking?.current?.paymentStatus,
-  //       paymentMethod:
-  //         (decodedParams?.paymentMethod === "partiallyPay"
-  //           ? "partially_paid"
-  //           : decodedParams?.paymentMethod) || "online",
-  //       paymentgatewayOrderId:
-  //         decodedParams?.order ||
-  //         currentBooking?.current?.paymentgatewayOrderId,
-  //       paySuccessId: response?.razorpay_payment_id,
-  //       extendBooking: {
-  //         oldBooking: currentBooking?.current?.oldBooking,
-  //         transactionIds: [
-  //           ...(currentBooking?.current?.extendBooking?.transactionIds || []),
-  //           currentBooking?.current?.paymentgatewayOrderId,
-  //           currentBooking?.current?.paySuccessId,
-  //         ],
-  //       },
-  //     };
-
-  //     // if extend or change is present in url
-  //     if (decodedParams?.for === "extend") {
-  //       const data = currentBooking?.current?.bookingPrice?.extendAmount?.find(
-  //         (item) => Number(item.id) === Number(decodedParams?.paymentId)
-  //       );
-  //       if (data) {
-  //         data.status = "paid";
-  //         data.paymentMethod = "RazorPay";
-  //       }
-  //       // replacing the new old data with new values
-  //       updatedData = {
-  //         ...updatedData,
-  //         bookingPrice: {
-  //           ...currentBooking.current?.bookingPrice,
-  //           extendAmount:
-  //             currentBooking?.current?.bookingPrice?.extendAmount?.map((item) =>
-  //               item.id === decodedParams.paymentId ? data : item
-  //             ) || [data],
-  //         },
-  //       };
-  //     } else if (decodedParams?.for === "change") {
-  //       const data = currentBooking?.current?.bookingPrice?.diffAmount?.find(
-  //         (item) => Number(item.id) === Number(decodedParams?.paymentId)
-  //       );
-  //       if (data) {
-  //         data.status = "paid";
-  //         data.paymentMethod = "RazorPay";
-  //       }
-
-  //       // replacing the new old data with new values
-  //       updatedData = {
-  //         ...updatedData,
-  //         bookingPrice: {
-  //           ...currentBooking.current?.bookingPrice,
-  //           diffAmount: currentBooking?.current?.bookingPrice?.diffAmount?.map(
-  //             (item) => (item.id === decodedParams.paymentId ? data : item)
-  //           ) || [data],
-  //         },
-  //       };
-  //     }
-
-  //     const bookingResponse = await handlePostData(
-  //       `/createBooking?_id=${decodedParams?.id}`,
-  //       updatedData
-  //     );
-
-  //     if (bookingResponse?.status === 200) {
-  //       const timeLineData = {
-  //         currentBooking_id: decodedParams?.id,
-  //         timeLine: [
-  //           {
-  //             title: "Payment Received",
-  //             date: Date.now(),
-  //             paymentAmount: decodedParams?.finalAmount,
-  //             id: decodedParams.paymentId,
-  //           },
-  //         ],
-  //       };
-  //       await handlePostData("/createTimeline", timeLineData);
-  //       setPaymentDone(false);
-  //       navigate("/");
-  //     } else {
-  //       handleAsyncError(dispatch, bookingResponse?.message);
-  //     }
-  //   } catch (error) {
-  //     handleAsyncError(dispatch, error?.message);
-  //   }
-  // };
-
   // Fetch booking data first
   useEffect(() => {
     const fetchBookingData = async () => {
       try {
         const getBookingData = await fetchingData(
-          `/getBookings?_id=${decodedParams?.id}`
+          `/getBookings?_id=${decodedParams?.id}`,
         );
         if (getBookingData?.status === 200) {
           currentBooking.current = getBookingData?.data[0];
@@ -175,52 +80,6 @@ const Payment = () => {
 
       paymentInProgress.current = true;
 
-      // const initializePayment = async () => {
-      //   try {
-      //     await loadRazorpayScript();
-      //     const payableAmount = decodedParams?.finalAmount || 100;
-
-      //     const options = {
-      //       key: import.meta.env.VITE_RAZOR_KEY_ID,
-      //       amount: payableAmount * 100,
-      //       order_id: decodedParams?.order,
-      //       name: "Rento",
-      //       description: "Payment for your booking",
-      //       image: favicon,
-      //       handler: (response) => {
-      //         sessionStorage.removeItem("paymentStarted");
-      //         if (response) {
-      //           setPaymentDone(true);
-      //           return handleBookVehicle(response);
-      //         } else {
-      //           return handleAsyncError(dispatch, "Payment failed!");
-      //         }
-      //       },
-      //       prefill: {
-      //         name: `${currentBooking.current?.userId?.firstName} ${currentBooking.current?.userId?.lastName}`,
-      //         email: currentBooking.current?.userId?.email,
-      //         contact: currentBooking.current?.userId?.contact,
-      //       },
-      //       theme: { color: "#e23844" },
-      //       modal: {
-      //         escape: false,
-      //         ondismiss: function () {
-      //           navigate("/");
-      //         },
-      //       },
-      //     };
-
-      //     sessionStorage.setItem("paymentStarted", "true");
-
-      //     const razorpay = new window.Razorpay(options);
-      //     razorpay.open();
-      //   } catch (error) {
-      //     handleAsyncError(dispatch, "Unable to load payment gateway.");
-      //     navigate("/");
-      //   }
-      // };
-
-      // initializePayment();
       sessionStorage.setItem("paymentStarted", "true");
 
       const paymentSuccess = await openRazorpayPayment({

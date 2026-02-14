@@ -15,7 +15,8 @@ import { toggleBookingExtendModal } from "../../Redux/ModalSlice/ModalSlice";
 import { openRazorpayPayment } from "../../utils/razorpay";
 import { useNavigate } from "react-router-dom";
 import { updateRidesData } from "../../Redux/RidesSlice/RideSlice";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
+import { pollBookingStatus } from "../../Data/Functions";
 
 const ExtendBookingModal = () => {
   const { isBookingExtendModalActive } = useSelector((state) => state.modals);
@@ -30,6 +31,7 @@ const ExtendBookingModal = () => {
   const [newFreeLimit, setNewFreeLimit] = useState(0);
   const [addOnPrice, setAddOnPrice] = useState(0);
   const [newDate, setNewDate] = useState("");
+  const [newEndDateAndTime, setNewEndDateAndTime] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [priceLoading, setPriceLoading] = useState(false);
   const [plan, setPlan] = useState({ data: null, loading: false });
@@ -120,13 +122,18 @@ const ExtendBookingModal = () => {
       freeVehicle?.stationData?.extraAddOn[0]?.gstPercentage;
     const addonTax = calculateTax(addOnPrice, addonGstPercentage) || 0;
 
+    const newBookingStartDateAndTime = rides[0]?.BookingEndDateAndTime;
+    const newBookingEndDateAndTime = newEndDateAndTime;
+
     let data = {
       _id: rides[0]?._id,
       vehicleTableId: rides[0]?.vehicleTableId?._id,
-      BookingStartDateAndTime: addOneMinute(
-        rides[0]?.BookingEndDateAndTime,
-      ).replace(".000Z", "Z"),
-      BookingEndDateAndTime: newDate,
+      BookingStartDateAndTime: newBookingStartDateAndTime,
+      BookingEndDateAndTime: newBookingEndDateAndTime,
+      // BookingStartDateAndTime: addOneMinute(
+      //   rides[0]?.BookingEndDateAndTime,
+      // ).replace(".000Z", "Z"),
+      // BookingEndDateAndTime: newDate,
       bookingPrice: rides[0]?.bookingPrice,
       extendBooking: rides[0]?.extendBooking,
       oldBookings: {
@@ -145,10 +152,12 @@ const ExtendBookingModal = () => {
           ".000Z",
           "Z",
         ),
-        BookingStartDateAndTime: addOneMinute(
-          rides[0]?.BookingEndDateAndTime,
-        ).replace(".000Z", "Z"),
-        bookingEndDateAndTime: newDate,
+        BookingStartDateAndTime: newBookingStartDateAndTime,
+        bookingEndDateAndTime: newBookingEndDateAndTime,
+        // BookingStartDateAndTime: addOneMinute(
+        //   rides[0]?.BookingEndDateAndTime,
+        // ).replace(".000Z", "Z"),
+        // bookingEndDateAndTime: newDate,
         daysBreakdown: daysBreakdown || [],
         package: selectedPlan || [],
         appliedPlans: appliedPlans || [],
@@ -163,191 +172,339 @@ const ExtendBookingModal = () => {
       bookingStatus: "extended",
     };
 
+    // console.log(data);
+    // return;
+
     try {
       setFormLoading(true);
-      const orderId = await handlePostData("/createOrderId", {
+      const extension = await handlePostData("/initiate-extension", {
         amount: Number(totalExtendPrice) || 0,
-        booking_id: rides[0]?.bookingId,
-        type: "ExtensionFromCustomer",
+        extendId: extensionId,
+        data,
       });
-      // const extension = await handlePostData("/initiate-extension", {
-      //   amount: Number(totalExtendPrice) || 0,
-      //   data,
-      // });
 
-      if (orderId?.status === "created") {
-        const paymentSuccess = await openRazorpayPayment({
-          finalAmount: Number(totalExtendPrice || 0),
-          orderId: orderId?.id,
-          bookingData: rides[0],
-          dispatch,
-          navigate,
-          type: "ExtensionFromCustomer",
-        });
+      if (extension?.success) {
+        const { orderId, amount } = extension.data;
 
-        if (paymentSuccess?.success) {
-          data = {
-            ...data,
-            extendAmount: {
-              ...data?.extendAmount,
-              orderId: orderId?.id || "",
-              transactionId:
-                paymentSuccess?.response?.razorpay_payment_id || "",
-              paymentInitiatedDate: orderId?.created_at || "",
-              paymentSuccessDate: Date.now(),
-              paymentMethod: "online",
-              status: "paid",
-            },
-            contact: rides[0]?.userId?.contact,
-            firstName: rides[0]?.userId?.firstName,
-            managerContact: rides[0]?.stationMasterUserId?.contact,
-          };
+        if (orderId && orderId !== "") {
+          const paymentSuccess = await openRazorpayPayment({
+            finalAmount: amount,
+            orderId,
+            bookingData: rides[0],
+            dispatch,
+            navigate,
+          });
 
-          let extendResponse = null;
-          let retryCount = 0;
-          const maxRetries = 5;
+          if (paymentSuccess) {
+            const confirmed = await pollBookingStatus(
+              booking_id,
+              "extend",
+              extensionId,
+            );
 
-          while (retryCount < maxRetries) {
-            try {
-              extendResponse = await handlePostData("/extend-booking", {
-                _id: rides?.[0]?._id,
-                bookingId: rides?.[0]?.bookingId,
-                amount: Number(totalExtendPrice),
-                data,
-                razorpay_signature:
-                  paymentSuccess?.response?.razorpay_signature,
-              });
-
-              if (extendResponse?.success) {
-                break; // Success, exit retry loop
-              }
-
-              retryCount++;
-              if (retryCount < maxRetries) {
-                await new Promise((resolve) =>
-                  setTimeout(resolve, 1000 * retryCount),
-                );
-              }
-            } catch (retryError) {
-              retryCount++;
-              if (retryCount >= maxRetries) {
-                throw retryError;
-              }
-              await new Promise((resolve) =>
-                setTimeout(resolve, 1000 * retryCount),
+            if (confirmed) {
+              data = {
+                ...data,
+                extendAmount: {
+                  ...data?.extendAmount,
+                  orderId: orderId?.id || "",
+                  transactionId:
+                    paymentSuccess?.response?.razorpay_payment_id || "",
+                  paymentInitiatedDate: orderId?.created_at || "",
+                  paymentSuccessDate: Date.now(),
+                  paymentMethod: "online",
+                  status: "paid",
+                },
+              };
+              dispatch(updateRidesData(data));
+              handleAsyncError(
+                dispatch,
+                "Booking extended successfully",
+                "success",
+              );
+              handleCloseModal();
+            } else {
+              handleAsyncError(
+                dispatch,
+                "Payment confirmed, but booking status not updated. Please check later.",
               );
             }
           }
-
-          if (extendResponse?.success) {
-            const { contact, firstName, managerContact, ...restData } = data;
-            dispatch(updateRidesData(restData));
-            handleAsyncError(dispatch, "Ride extended successfully", "success");
-            handleCloseModal();
-          } else {
-            handleAsyncError(
-              dispatch,
-              extendResponse?.message ||
-                "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
-                  (paymentSuccess?.response?.razorpay_payment_id || ""),
-            );
-          }
-          return;
-        } else {
-          handleAsyncError(dispatch, "Payment failed or cancelled");
         }
-      } else {
-        return handleAsyncError(dispatch, "Payment Cancelled");
       }
-
-      // if (orderId?.status === "created") {
-      //   const paymentSuccess = await openRazorpayPayment({
-      //     finalAmount: Number(totalExtendPrice || 0),
-      //     orderId: orderId?.id,
-      //     bookingData: rides[0],
-      //     dispatch,
-      //     navigate,
-      //     type: "ExtensionFromCustomer",
-      //   });
-
-      //   if (paymentSuccess?.success) {
-      //     data = {
-      //       ...data,
-      //       extendAmount: {
-      //         ...data?.extendAmount,
-      //         orderId: orderId?.id || "",
-      //         transactionId:
-      //           paymentSuccess?.response?.razorpay_payment_id || "",
-      //         paymentInitiatedDate: orderId?.created_at || "",
-      //         paymentSuccessDate: Date.now(),
-      //         paymentMethod: "online",
-      //         status: "paid",
-      //       },
-      //       contact: rides[0]?.userId?.contact,
-      //       firstName: rides[0]?.userId?.firstName,
-      //       managerContact: rides[0]?.stationMasterUserId?.contact,
-      //     };
-
-      //     let extendResponse = null;
-      //     let retryCount = 0;
-      //     const maxRetries = 5;
-
-      //     while (retryCount < maxRetries) {
-      //       try {
-      //         extendResponse = await handlePostData("/extend-booking", {
-      //           _id: rides?.[0]?._id,
-      //           bookingId: rides?.[0]?.bookingId,
-      //           amount: Number(totalExtendPrice),
-      //           data,
-      //           razorpay_signature:
-      //             paymentSuccess?.response?.razorpay_signature,
-      //         });
-
-      //         if (extendResponse?.success) {
-      //           break; // Success, exit retry loop
-      //         }
-
-      //         retryCount++;
-      //         if (retryCount < maxRetries) {
-      //           await new Promise((resolve) =>
-      //             setTimeout(resolve, 1000 * retryCount),
-      //           );
-      //         }
-      //       } catch (retryError) {
-      //         retryCount++;
-      //         if (retryCount >= maxRetries) {
-      //           throw retryError;
-      //         }
-      //         await new Promise((resolve) =>
-      //           setTimeout(resolve, 1000 * retryCount),
-      //         );
-      //       }
-      //     }
-
-      //     if (extendResponse?.success) {
-      //       const { contact, firstName, managerContact, ...restData } = data;
-      //       dispatch(updateRidesData(restData));
-      //       handleAsyncError(dispatch, "Ride extended successfully", "success");
-      //       handleCloseModal();
-      //     } else {
-      //       handleAsyncError(
-      //         dispatch,
-      //         extendResponse?.message ||
-      //           "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
-      //             (paymentSuccess?.response?.razorpay_payment_id || ""),
-      //       );
-      //     }
-      //     return;
-      //   } else {
-      //     handleAsyncError(dispatch, "Payment failed or cancelled");
-      //   }
-      // }
     } catch (error) {
       return handleAsyncError(dispatch, error?.message);
     } finally {
       setFormLoading(false);
     }
   };
+
+  // old extension code
+  // const handleExtendBooking = async (event) => {
+  //   event.preventDefault();
+  //   if (!newDate) return;
+
+  //   if (isDisabled) {
+  //     return handleAsyncError(dispatch, "Please clear all previous payments");
+  //   }
+
+  //   if (extendPrice === 0) {
+  //     return handleAsyncError(dispatch, "Unable to get Price! try again");
+  //   }
+
+  //   const extendAmountList = rides[0]?.bookingPrice?.extendAmount || [];
+  //   const extensionId = extendAmountList.length + 1 || 1;
+
+  //   // calculating the free km limit
+  //   const isPackage = appliedPlans?.length > 0 ? appliedPlans : null;
+
+  //   const daysBreakdowns = daysBreakdown || null;
+
+  //   const freeKmLimitForPlan =
+  //     isPackage !== null
+  //       ? isPackage.reduce((sum, plan) => {
+  //           return sum + plan.kmLimit * plan.count;
+  //         }, 0)
+  //       : 0;
+  //   const freeKmLimitForDays =
+  //     daysBreakdowns !== null
+  //       ? daysBreakdowns?.length * Number(newFreeLimit !== 0 ? newFreeLimit : 1)
+  //       : 0;
+
+  //   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
+
+  //   const addonGstPercentage =
+  //     freeVehicle?.stationData?.extraAddOn[0]?.gstPercentage;
+  //   const addonTax = calculateTax(addOnPrice, addonGstPercentage) || 0;
+
+  //   let data = {
+  //     _id: rides[0]?._id,
+  //     vehicleTableId: rides[0]?.vehicleTableId?._id,
+  //     BookingStartDateAndTime: addOneMinute(
+  //       rides[0]?.BookingEndDateAndTime,
+  //     ).replace(".000Z", "Z"),
+  //     BookingEndDateAndTime: newDate,
+  //     bookingPrice: rides[0]?.bookingPrice,
+  //     extendBooking: rides[0]?.extendBooking,
+  //     oldBookings: {
+  //       BookingStartDateAndTime: rides[0]?.BookingStartDateAndTime,
+  //       BookingEndDateAndTime: rides[0]?.BookingEndDateAndTime,
+  //     },
+  //     extendAmount: {
+  //       id: extensionId,
+  //       title: "extended",
+  //       extendDuration: extensionDays,
+  //       amount: extendPrice,
+  //       addOnAmount: addOnPrice,
+  //       tax: freeVehicle?.tax || 0,
+  //       addonTax,
+  //       originalBookingEndDateAndTime: rides[0]?.BookingEndDateAndTime.replace(
+  //         ".000Z",
+  //         "Z",
+  //       ),
+  //       BookingStartDateAndTime: addOneMinute(
+  //         rides[0]?.BookingEndDateAndTime,
+  //       ).replace(".000Z", "Z"),
+  //       bookingEndDateAndTime: newDate,
+  //       daysBreakdown: daysBreakdown || [],
+  //       package: selectedPlan || [],
+  //       appliedPlans: appliedPlans || [],
+  //       freeLimit,
+  //       orderId: "",
+  //       paymentInitiatedDate: "",
+  //       transactionId: "",
+  //       paymentMethod: "",
+  //       bookedFrom: "web",
+  //       status: "unpaid",
+  //     },
+  //     bookingStatus: "extended",
+  //   };
+
+  //   try {
+  //     setFormLoading(true);
+  //     const orderId = await handlePostData("/createOrderId", {
+  //       amount: Number(totalExtendPrice) || 0,
+  //       booking_id: rides[0]?.bookingId,
+  //       type: "ExtensionFromCustomer",
+  //     });
+  //     // const extension = await handlePostData("/initiate-extension", {
+  //     //   amount: Number(totalExtendPrice) || 0,
+  //     //   data,
+  //     // });
+
+  //     if (orderId?.status === "created") {
+  //       const paymentSuccess = await openRazorpayPayment({
+  //         finalAmount: Number(totalExtendPrice || 0),
+  //         orderId: orderId?.id,
+  //         bookingData: rides[0],
+  //         dispatch,
+  //         navigate,
+  //         type: "ExtensionFromCustomer",
+  //       });
+
+  //       if (paymentSuccess?.success) {
+  //         data = {
+  //           ...data,
+  //           extendAmount: {
+  //             ...data?.extendAmount,
+  //             orderId: orderId?.id || "",
+  //             transactionId:
+  //               paymentSuccess?.response?.razorpay_payment_id || "",
+  //             paymentInitiatedDate: orderId?.created_at || "",
+  //             paymentSuccessDate: Date.now(),
+  //             paymentMethod: "online",
+  //             status: "paid",
+  //           },
+  //           contact: rides[0]?.userId?.contact,
+  //           firstName: rides[0]?.userId?.firstName,
+  //           managerContact: rides[0]?.stationMasterUserId?.contact,
+  //         };
+
+  //         let extendResponse = null;
+  //         let retryCount = 0;
+  //         const maxRetries = 5;
+
+  //         while (retryCount < maxRetries) {
+  //           try {
+  //             extendResponse = await handlePostData("/extend-booking", {
+  //               _id: rides?.[0]?._id,
+  //               bookingId: rides?.[0]?.bookingId,
+  //               amount: Number(totalExtendPrice),
+  //               data,
+  //               razorpay_signature:
+  //                 paymentSuccess?.response?.razorpay_signature,
+  //             });
+
+  //             if (extendResponse?.success) {
+  //               break; // Success, exit retry loop
+  //             }
+
+  //             retryCount++;
+  //             if (retryCount < maxRetries) {
+  //               await new Promise((resolve) =>
+  //                 setTimeout(resolve, 1000 * retryCount),
+  //               );
+  //             }
+  //           } catch (retryError) {
+  //             retryCount++;
+  //             if (retryCount >= maxRetries) {
+  //               throw retryError;
+  //             }
+  //             await new Promise((resolve) =>
+  //               setTimeout(resolve, 1000 * retryCount),
+  //             );
+  //           }
+  //         }
+
+  //         if (extendResponse?.success) {
+  //           const { contact, firstName, managerContact, ...restData } = data;
+  //           dispatch(updateRidesData(restData));
+  //           handleAsyncError(dispatch, "Ride extended successfully", "success");
+  //           handleCloseModal();
+  //         } else {
+  //           handleAsyncError(
+  //             dispatch,
+  //             extendResponse?.message ||
+  //               "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
+  //                 (paymentSuccess?.response?.razorpay_payment_id || ""),
+  //           );
+  //         }
+  //         return;
+  //       } else {
+  //         handleAsyncError(dispatch, "Payment failed or cancelled");
+  //       }
+  //     } else {
+  //       return handleAsyncError(dispatch, "Payment Cancelled");
+  //     }
+
+  //     // if (orderId?.status === "created") {
+  //     //   const paymentSuccess = await openRazorpayPayment({
+  //     //     finalAmount: Number(totalExtendPrice || 0),
+  //     //     orderId: orderId?.id,
+  //     //     bookingData: rides[0],
+  //     //     dispatch,
+  //     //     navigate,
+  //     //     type: "ExtensionFromCustomer",
+  //     //   });
+
+  //     //   if (paymentSuccess?.success) {
+  //     //     data = {
+  //     //       ...data,
+  //     //       extendAmount: {
+  //     //         ...data?.extendAmount,
+  //     //         orderId: orderId?.id || "",
+  //     //         transactionId:
+  //     //           paymentSuccess?.response?.razorpay_payment_id || "",
+  //     //         paymentInitiatedDate: orderId?.created_at || "",
+  //     //         paymentSuccessDate: Date.now(),
+  //     //         paymentMethod: "online",
+  //     //         status: "paid",
+  //     //       },
+  //     //       contact: rides[0]?.userId?.contact,
+  //     //       firstName: rides[0]?.userId?.firstName,
+  //     //       managerContact: rides[0]?.stationMasterUserId?.contact,
+  //     //     };
+
+  //     //     let extendResponse = null;
+  //     //     let retryCount = 0;
+  //     //     const maxRetries = 5;
+
+  //     //     while (retryCount < maxRetries) {
+  //     //       try {
+  //     //         extendResponse = await handlePostData("/extend-booking", {
+  //     //           _id: rides?.[0]?._id,
+  //     //           bookingId: rides?.[0]?.bookingId,
+  //     //           amount: Number(totalExtendPrice),
+  //     //           data,
+  //     //           razorpay_signature:
+  //     //             paymentSuccess?.response?.razorpay_signature,
+  //     //         });
+
+  //     //         if (extendResponse?.success) {
+  //     //           break; // Success, exit retry loop
+  //     //         }
+
+  //     //         retryCount++;
+  //     //         if (retryCount < maxRetries) {
+  //     //           await new Promise((resolve) =>
+  //     //             setTimeout(resolve, 1000 * retryCount),
+  //     //           );
+  //     //         }
+  //     //       } catch (retryError) {
+  //     //         retryCount++;
+  //     //         if (retryCount >= maxRetries) {
+  //     //           throw retryError;
+  //     //         }
+  //     //         await new Promise((resolve) =>
+  //     //           setTimeout(resolve, 1000 * retryCount),
+  //     //         );
+  //     //       }
+  //     //     }
+
+  //     //     if (extendResponse?.success) {
+  //     //       const { contact, firstName, managerContact, ...restData } = data;
+  //     //       dispatch(updateRidesData(restData));
+  //     //       handleAsyncError(dispatch, "Ride extended successfully", "success");
+  //     //       handleCloseModal();
+  //     //     } else {
+  //     //       handleAsyncError(
+  //     //         dispatch,
+  //     //         extendResponse?.message ||
+  //     //           "Failed to extend booking after multiple attempts. Please contact support with your payment ID: " +
+  //     //             (paymentSuccess?.response?.razorpay_payment_id || ""),
+  //     //       );
+  //     //     }
+  //     //     return;
+  //     //   } else {
+  //     //     handleAsyncError(dispatch, "Payment failed or cancelled");
+  //     //   }
+  //     // }
+  //   } catch (error) {
+  //     return handleAsyncError(dispatch, error?.message);
+  //   } finally {
+  //     setFormLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (plan?.data === null && rides[0]?.vehicleTableId?.vehiclePlan?.length) {
@@ -376,6 +533,7 @@ const ExtendBookingModal = () => {
   const handleCloseModal = () => {
     setExtensionDays(0);
     setNewDate("");
+    setNewEndDateAndTime("");
     dispatch(toggleBookingExtendModal());
   };
 
@@ -438,12 +596,24 @@ const ExtendBookingModal = () => {
 
   //   change date and days
   const changeValue = (e) => {
-    setExtensionDays(Number(e.target.value));
+    const duration = Number(e.target.value);
+    setExtensionDays(duration);
+
+    const rideData = rides?.[0] ?? null;
+
+    if (!rideData)
+      return handleAsyncError(dispatch, "Please enter number of days again!");
+
     const newDate = addDaysToDateForExtend(
-      addOneMinute(rides[0]?.BookingEndDateAndTime),
-      Number(e.target.value),
+      addOneMinute(rideData.BookingEndDateAndTime),
+      duration,
+    );
+    const newDateAndTime = addDaysToDateForExtend(
+      rideData.BookingEndDateAndTime,
+      duration,
     );
     setNewDate(newDate);
+    setNewEndDateAndTime(newDateAndTime);
   };
 
   if (loading || rides?.length === 0) {
@@ -495,9 +665,10 @@ const ExtendBookingModal = () => {
                 <span className="font-semibold text-black mr-1">
                   Current End Date:
                 </span>
-                {formatFullDateAndTime(
+                {formatFullDateAndTime(rides[0]?.BookingEndDateAndTime)}
+                {/* {formatFullDateAndTime(
                   addOneMinute(rides[0]?.BookingEndDateAndTime),
-                )}
+                )} */}
               </p>
             </div>
             <div className="mb-2">
@@ -529,8 +700,9 @@ const ExtendBookingModal = () => {
                     New End Date:
                   </span>
                   {newDate !== ""
-                    ? formatFullDateAndTime(newDate)
-                    : "(Enter number of days to view the new date)"}
+                    ? formatFullDateAndTime(newEndDateAndTime)
+                    : // ? formatFullDateAndTime(newDate)
+                      "(Enter number of days to view the new date)"}
                 </p>
               </div>
               <div className={`mb-2`}>

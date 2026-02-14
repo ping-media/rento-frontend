@@ -1,5 +1,5 @@
 import { faqList } from "../../Data/dummyData";
-import ArrowDown from "../../assets/icons/arrow-down.png";
+import ArrowDown from "../../assets/icons/arrow-down.webp";
 
 const Faq = () => {
   return (

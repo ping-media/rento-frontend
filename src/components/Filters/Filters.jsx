@@ -135,11 +135,11 @@ const Filters = ({ showPackage = false }) => {
               <CustomCheckbox
                 options={brands}
                 onChange={(selectedBrand) => {
-                  setInputBrand(selectedBrand);
+                  setInputBrand(selectedBrand?.toLowerCase());
                   handleSubmitFilters(
                     inputCategory,
                     inputPlanId,
-                    selectedBrand,
+                    selectedBrand?.toLowerCase(),
                   );
                 }}
                 notFoundMessage="No Brands Found."

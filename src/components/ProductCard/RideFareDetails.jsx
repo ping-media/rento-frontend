@@ -45,7 +45,7 @@ const RideFareDetails = ({ rides }) => {
         Number(
           rides?.bookingPrice?.discountTotalPrice > 0
             ? rides?.bookingPrice?.discountTotalPrice
-            : rides?.bookingPrice?.totalPrice
+            : rides?.bookingPrice?.totalPrice,
         )) ||
       0;
 
@@ -60,7 +60,7 @@ const RideFareDetails = ({ rides }) => {
                 rides?.BookingStartDateAndTime,
                 rides?.extendBooking?.originalEndDate
                   ? rides?.extendBooking?.originalEndDate
-                  : rides?.BookingEndDateAndTime
+                  : rides?.BookingEndDateAndTime,
               )} days Package Applied)`}
             </div>
           )}
@@ -74,7 +74,7 @@ const RideFareDetails = ({ rides }) => {
                     className="font-bold text-gray-500"
                     tooltipData={renderTooltipBreakdown(
                       rides?.bookingPrice?.appliedPlans,
-                      rides?.bookingPrice?.daysBreakdown
+                      rides?.bookingPrice?.daysBreakdown,
                     )}
                   />
                 </div>
@@ -89,7 +89,7 @@ const RideFareDetails = ({ rides }) => {
               >
                 <p className="text-sm font-semibold uppercase text-left">
                   Discount Price
-                  <small className="text-sm font-semibold text-xs mx-1 block text-gray-400 italic">
+                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     Coupon: ({rides?.discountCuopon?.couponName})
                   </small>
                 </p>
@@ -125,7 +125,7 @@ const RideFareDetails = ({ rides }) => {
                   key !== "refundAmount" &&
                   key !== "extraAddonPrice" &&
                   key !== "daysBreakdown" &&
-                  key !== "appliedPlan"
+                  key !== "appliedPlan",
               ) // Exclude totalPrice
               .map(([key, value]) => {
                 if (typeof value === "object") {
@@ -145,12 +145,12 @@ const RideFareDetails = ({ rides }) => {
                             {`₹${item?.amount} x ${getDurationInDays(
                               rides?.BookingStartDateAndTime,
                               rides?.extendBooking?.originalEndDate ||
-                                rides?.BookingEndDateAndTime
+                                rides?.BookingEndDateAndTime,
                             )} ${
                               getDurationInDays(
                                 rides?.BookingStartDateAndTime,
                                 rides?.extendBooking?.originalEndDate ||
-                                  rides?.BookingEndDateAndTime
+                                  rides?.BookingEndDateAndTime,
                               ) == 1
                                 ? "day"
                                 : "days"
@@ -164,7 +164,7 @@ const RideFareDetails = ({ rides }) => {
                                 getDurationInDays(
                                   rides?.BookingStartDateAndTime,
                                   rides?.extendBooking?.originalEndDate ||
-                                    rides?.BookingEndDateAndTime
+                                    rides?.BookingEndDateAndTime,
                                 ) >
                               item?.maxAmount
                               ? item?.maxAmount
@@ -172,14 +172,14 @@ const RideFareDetails = ({ rides }) => {
                                 getDurationInDays(
                                   rides?.BookingStartDateAndTime,
                                   rides?.extendBooking?.originalEndDate ||
-                                    rides?.BookingEndDateAndTime
+                                    rides?.BookingEndDateAndTime,
                                 )
                             : item?.amount *
                                 getDurationInDays(
                                   rides?.BookingStartDateAndTime,
                                   rides?.extendBooking?.originalEndDate ||
-                                    rides?.BookingEndDateAndTime
-                                )
+                                    rides?.BookingEndDateAndTime,
+                                ),
                         )}`}</p>
                       </li>
                     ))
@@ -227,13 +227,13 @@ const RideFareDetails = ({ rides }) => {
                       rides?.bookingPrice?.discountPrice != 0
                         ? ""
                         : rides?.paymentMethod == "online" &&
-                          rides?.paySuccessId != "NA"
-                        ? "(Full Paid)"
-                        : rides?.paymentMethod == "partiallyPay"
-                        ? ""
-                        : rides?.bookingPrice?.payOnPickupMethod
-                        ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
-                        : "(need to pay at pickup)"}
+                            rides?.paySuccessId != "NA"
+                          ? "(Full Paid)"
+                          : rides?.paymentMethod == "partiallyPay"
+                            ? ""
+                            : rides?.bookingPrice?.payOnPickupMethod
+                              ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
+                              : "(need to pay at pickup)"}
                     </small>
                   </p>
                   <p className="text-sm font-bold text-right">
@@ -260,12 +260,12 @@ const RideFareDetails = ({ rides }) => {
                     rides?.paySuccessId !== "NA"
                       ? "(Full Paid)"
                       : rides?.paymentMethod == "partiallyPay"
-                      ? ""
-                      : rides?.bookingPrice?.isDiscountZero === true
-                      ? ""
-                      : rides?.bookingPrice?.payOnPickupMethod
-                      ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
-                      : "(Need to pay at pickup)"}
+                        ? ""
+                        : rides?.bookingPrice?.isDiscountZero === true
+                          ? ""
+                          : rides?.bookingPrice?.payOnPickupMethod
+                            ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
+                            : "(Need to pay at pickup)"}
                   </small>
                 </p>
                 <p className="text-sm font-bold text-right">
@@ -273,7 +273,7 @@ const RideFareDetails = ({ rides }) => {
                     rides?.bookingPrice?.isDiscountZero === true
                       ? 0
                       : rides?.bookingPrice?.discountTotalPrice +
-                          rides?.bookingPrice?.extraAddonPrice
+                          rides?.bookingPrice?.extraAddonPrice,
                   )}`}
                 </p>
               </li>
@@ -318,8 +318,8 @@ const RideFareDetails = ({ rides }) => {
                         ]?.tax || 0) +
                         (rides?.bookingPrice?.diffAmount[
                           rides?.bookingPrice?.diffAmount?.length - 1
-                        ]?.addonTax || 0)
-                    )
+                        ]?.addonTax || 0),
+                    ),
                   )}`}
                 </p>
               </li>
@@ -333,7 +333,7 @@ const RideFareDetails = ({ rides }) => {
                     <p className="text-sm font-semibold uppercase text-left">
                       Extend Amount
                     </p>
-                    <div className="text-xs text-gray-400">
+                    {/* <div className="text-xs text-gray-400">
                       <Tooltip
                         buttonMessage={"(?)"}
                         className="font-bold text-gray-500"
@@ -362,10 +362,10 @@ const RideFareDetails = ({ rides }) => {
                           },
                           rides?.bookingPrice?.extendAmount[
                             rides?.bookingPrice?.extendAmount?.length - 1
-                          ]?.addOnAmount
+                          ]?.addOnAmount,
                         )}
                       />
-                    </div>
+                    </div> */}
                   </div>
                   <small className="font-semibold uppercase text-xs mx-1 block text-gray-400 italic">
                     {rides?.bookingPrice?.extendAmount[
@@ -386,8 +386,8 @@ const RideFareDetails = ({ rides }) => {
                         ]?.tax || 0) +
                         (rides?.bookingPrice?.extendAmount[
                           rides?.bookingPrice?.extendAmount?.length - 1
-                        ]?.addonTax || 0)
-                    )
+                        ]?.addonTax || 0),
+                    ),
                   )}`}
                 </p>
               </li>

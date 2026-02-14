@@ -9,6 +9,7 @@ const VerifyOtp = ({
   phone = 0,
   otp,
   setOtpValue,
+  setShowVerifyOtp,
   setInputValue,
   modalChange,
   email = "",
@@ -128,6 +129,8 @@ const VerifyOtp = ({
         setOtpValue && setOtpValue(false);
         setInputValue && setInputValue("");
         dispatch(modalChange());
+        // reset so that if user
+        handleRestOtpScreen();
       } else {
         handleAsyncError(dispatch, response?.message);
       }
@@ -162,6 +165,7 @@ const VerifyOtp = ({
   // resetting the input so that can revert back to input
   const handleRestOtpScreen = () => {
     setOtpValue(false);
+    setShowVerifyOtp && setShowVerifyOtp(false);
     setRestValue && setRestValue("");
   };
 
@@ -174,7 +178,7 @@ const VerifyOtp = ({
         {/* back to number page  */}
         {setRestValue && (
           <button
-            className="text-sm font-medium text-center rounded text-gray-500 text-theme hover:text-gray-500 disabled:text-gray-400"
+            className="text-sm font-medium text-center rounded text-gray-500 hover:text-gray-500 disabled:text-gray-400"
             type="button"
             onClick={handleRestOtpScreen}
           >

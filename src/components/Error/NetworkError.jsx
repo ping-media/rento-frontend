@@ -1,4 +1,4 @@
-import notFoundImage from "../../assets/logo/no-internet.png";
+import notFoundImage from "../../assets/logo/no-internet.webp";
 
 const NetworkError = () => {
   return (

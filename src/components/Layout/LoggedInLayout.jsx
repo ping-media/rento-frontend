@@ -1,25 +1,29 @@
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../Account/Sidebar";
-import { useSelector } from "react-redux";
-import { Suspense } from "react";
+import { shallowEqual, useSelector } from "react-redux";
+import React, { Suspense } from "react";
 import PreLoader from "../skeleton/PreLoader";
 
 const LoggedInLayout = () => {
-  const { user } = useSelector((state) => state.user);
-  return user != null ? (
+  const { user } = useSelector((state) => state.user, shallowEqual);
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return (
     <div className="grid grid-cols-4 my-5 lg:my-10 w-11/12 mx-auto gap-2">
       <div className="hidden lg:block col-span-1">
         <SideBar />
       </div>
+
       <div className="col-span-4 lg:col-span-3">
         <Suspense fallback={<PreLoader />}>
           <Outlet />
         </Suspense>
       </div>
     </div>
-  ) : (
-    <Navigate to="/" />
   );
 };
 
-export default LoggedInLayout;
+export default React.memo(LoggedInLayout);

@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 import {
   toggleLocationModal,
   toggleLoginModal,
@@ -7,16 +7,25 @@ import {
 } from "../../Redux/ModalSlice/ModalSlice";
 import { menuList } from "../../Data/dummyData";
 import LoggedInUserButton from "../Button/LoggedInUserButton";
-import newFullLightImg from "../../assets/rento-full-light.png";
+import newFullLightImg from "../../assets/rento-full-light.webp";
 import { memo, useEffect, useMemo } from "react";
 import { handleSignOut } from "../../Redux/UserSlice/UserSlice";
 import { handleUser } from "../../Data";
+import HeaderMenu from "./HeaderMenu";
+const preloadSidebar = () => import("../Sidebar/Sidebar");
 
 const Header = memo(() => {
   const dispatch = useDispatch();
-  const { selectedLocation } = useSelector((state) => state.selectedLocation);
-  const { currentUser } = useSelector((state) => state.user);
-  const { isSideBarModalActive } = useSelector((state) => state.modals);
+  const { selectedLocation } = useSelector(
+    (state) => state.selectedLocation,
+    shallowEqual,
+  );
+  const { currentUser } = useSelector((state) => state.user, shallowEqual);
+  const { isSideBarModalActive } = useSelector(
+    (state) => state.modals,
+    shallowEqual,
+  );
+  const location = useLocation();
 
   // Validate user only when currentUser changes
   useEffect(() => {
@@ -36,7 +45,7 @@ const Header = memo(() => {
       const timer = setTimeout(() => validateUser(), 100);
       return () => clearTimeout(timer);
     }
-  }, [currentUser, dispatch]);
+  }, [currentUser, location.pathname, dispatch]);
 
   // Memoize sideMenuList to avoid unnecessary recalculations
   const sideMenuList = useMemo(() => {
@@ -54,6 +63,8 @@ const Header = memo(() => {
           <button
             className="lg:hidden text-gray-100"
             type="button"
+            onMouseEnter={preloadSidebar}
+            onTouchStart={preloadSidebar}
             onClick={() => dispatch(toggleSideBarModal())}
           >
             <svg
@@ -75,29 +86,16 @@ const Header = memo(() => {
             <img
               src={newFullLightImg}
               className="w-full h-full object-contain"
-              alt="RENTOBIKES"
+              alt="RENTOBIKES_LOGO"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </Link>
         </div>
         {/* menu list, location & login options */}
         <div className="flex items-center gap-4">
-          <ul className="items-center gap-4 hidden lg:flex">
-            {sideMenuList.map((item, index) => (
-              <NavLink
-                to={`${item?.link}`}
-                key={index}
-                className={({ isActive }) =>
-                  `capitalize text-white transition-all duration-200 ease-in-out text-white ${
-                    isActive
-                      ? "bg-theme px-2 py-1.5 rounded-md hover:text-gray-100"
-                      : "hover:text-theme"
-                  }`
-                }
-              >
-                <li className="w-full">{item?.title}</li>
-              </NavLink>
-            ))}
-          </ul>
+          <HeaderMenu menu={sideMenuList} />
           <button
             className="border-2 border-theme px-4 py-2 text-gray-100 flex items-center gap-1.5 rounded-md uppercase"
             onClick={() => dispatch(toggleLocationModal())}

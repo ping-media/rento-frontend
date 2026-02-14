@@ -1,6 +1,9 @@
 import { useSelector } from "react-redux";
-import bikeImg from "../../assets/images/bike.png";
-import ScooterImg from "../../assets/images/rental.png";
+import { useMemo, useRef } from "react";
+import activaImg from "../../assets/images/activa.webp";
+import fascinoImg from "../../assets/images/fascino.webp";
+import cliqImg from "../../assets/images/cliq.webp";
+import hornetImg from "../../assets/images/Hornet.webp";
 import {
   addDaysToDateForRide,
   convertToISOString,
@@ -8,162 +11,171 @@ import {
   formatNumber,
   formatTimeWithoutSeconds,
 } from "../../utils";
-import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import { Link, useLocation } from "react-router-dom";
+
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Link } from "react-router-dom";
-import PreLoader from "../skeleton/PreLoader";
+import PackageSkeleton from "../skeleton/PackageSkeleton";
+
+// const images = [bikeImg, ScooterImg];
+const images = [activaImg, fascinoImg, cliqImg, hornetImg];
 
 const Package = () => {
   const { filter, filterLoading } = useSelector((state) => state.filter);
   const { selectedStation, stationLoading } = useSelector(
-    (state) => state.station
+    (state) => state.station,
   );
-  const [pickupDateAndTime, setPickupDateAndTime] = useState("");
-  const [currentTime, setCurrentTime] = useState("");
+
+  const location = useLocation();
   const prevRef = useRef(null);
   const nextRef = useRef(null);
-  const images = [bikeImg, ScooterImg];
 
-  useEffect(() => {
+  const { pickupDateAndTime, currentTime } = useMemo(() => {
     const now = new Date();
-    const formattedTime = formatTimeWithoutSeconds(
+    const time = formatTimeWithoutSeconds(
       now.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "numeric",
         hour12: true,
-      })
+      }),
     );
-    setCurrentTime(formattedTime);
-    setPickupDateAndTime(
-      convertToISOString(formatDate(new Date()), formattedTime)
-    );
+
+    return {
+      currentTime: time,
+      pickupDateAndTime: convertToISOString(formatDate(now), time),
+    };
   }, [location.pathname]);
 
-  if (!pickupDateAndTime || !currentTime || filterLoading || stationLoading) {
-    return <PreLoader />;
-  }
-  return (
-    filter?.length > 0 && (
-      <div className="w-full pt-8 pb-5 mt-5">
-        <h2 className="text-xl lg:text-3xl mb-5 text-center font-extrabold">
-          Long Duration Packages
-        </h2>
-        <div className="w-[95%] lg:w-[90%] px-2 lg:px-0 mx-auto">
-          <div className="relative w-full h-full">
-            <button
-              ref={prevRef}
-              className="absolute z-10 -left-4 md:-left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 19.5 8.25 12l7.5-7.5"
-                />
-              </svg>
-            </button>
-            <button
-              ref={nextRef}
-              className="absolute z-10 -right-4 md:-right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                />
-              </svg>
-            </button>
-            <Swiper
-              modules={[Navigation]}
-              spaceBetween={20}
-              slidesPerView={1}
-              breakpoints={{
-                640: { slidesPerView: 1 },
-                768: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 },
-                1280: { slidesPerView: 4 },
-              }}
-              navigation={{
-                prevEl: prevRef.current,
-                nextEl: nextRef.current,
-              }}
-              onBeforeInit={(swiper) => {
-                swiper.params.navigation.prevEl = prevRef.current;
-                swiper.params.navigation.nextEl = nextRef.current;
-              }}
-              className="w-full h-full"
-            >
-              {filter.map((pkg, index) => (
-                <SwiperSlide key={pkg._id} className="mb-4">
-                  <Link
-                    to={`/search/${
-                      selectedStation?.stationId
-                    }?BookingStartDateAndTime=${pickupDateAndTime}&BookingEndDateAndTime=${convertToISOString(
-                      addDaysToDateForRide(
-                        pkg?.planDuration,
-                        formatDate(new Date())
-                      ),
-                      currentTime
-                    )}&vehiclePlan=${pkg?._id}`}
-                  >
-                    <div className="relative rounded-md overflow-hidden shadow-md bg-white px-4 py-2 md:py-1 lg:py-1">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle,_#94a3b8_0.9px,_transparent_0.9px)] bg-[length:8px_8px] opacity-30 pointer-events-none"></div>
-                      {/* Foreground content */}
-                      <div className="flex items-center relative z-10">
-                        <div className="w-20 h-20">
-                          <img
-                            src={images[index % images.length]}
-                            loading="lazy"
-                            alt="Vehicle"
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
+  const baseDate = useMemo(() => new Date(), []);
 
-                        <div className="flex-1 p-3 flex flex-col justify-between">
-                          <div>
-                            <h2 className="text-lg font-extrabold uppercase text-gray-700">
-                              {pkg.planName}{" "}
-                              {pkg.planName?.toLowerCase()?.includes("package")
-                                ? ""
-                                : "Package"}
-                            </h2>
-                            <p className="text-sm mt-3">
-                              From{" "}
-                              <span className="text-lg font-bold text-theme">
-                                ₹{formatNumber(pkg.planPrice)}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        </div>
+  const slides = useMemo(
+    () =>
+      filter.slice(0, 8).map((pkg, index) => {
+        const endDate = convertToISOString(
+          addDaysToDateForRide(pkg.planDuration, formatDate(baseDate)),
+          currentTime,
+        );
+
+        return (
+          <SwiperSlide key={pkg._id} className="mb-4">
+            <Link
+              to={`/search/${selectedStation?.stationId}?BookingStartDateAndTime=${pickupDateAndTime}&BookingEndDateAndTime=${endDate}&vehiclePlan=${pkg._id}`}
+            >
+              <div className="relative rounded-md overflow-hidden shadow-md bg-white px-4 py-2">
+                <div className="absolute inset-0 bg-[radial-gradient(circle,_#94a3b8_0.9px,_transparent_0.9px)] bg-[length:8px_8px] opacity-30 pointer-events-none" />
+
+                <div className="flex items-center relative z-10">
+                  <div className="w-20 h-20">
+                    <img
+                      src={images[index % images.length]}
+                      loading="lazy"
+                      alt="Vehicle"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+
+                  <div className="flex-1 p-3">
+                    <h2 className="text-lg font-extrabold line-clamp-1 uppercase text-gray-700">
+                      {pkg.planName}
+                      {!pkg.planName?.toLowerCase().includes("package") &&
+                        " Package"}
+                    </h2>
+
+                    <p className="text-sm mt-3">
+                      Starting From{" "}
+                      <span className="text-lg font-bold text-theme">
+                        ₹{formatNumber(pkg.planPrice)}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </SwiperSlide>
+        );
+      }),
+    [filter, pickupDateAndTime, currentTime, selectedStation?.stationId],
+  );
+
+  if (filterLoading || stationLoading) {
+    return <PackageSkeleton />;
+  }
+
+  if (!filter?.length) return null;
+
+  return (
+    <div className="w-full pt-8 pb-5 mt-5">
+      <h2 className="text-xl lg:text-3xl mb-5 text-center font-bold">
+        Long Duration Packages
+      </h2>
+
+      <div className="w-[95%] lg:w-[90%] mx-auto relative">
+        {/* Navigation buttons */}
+        <button
+          ref={prevRef}
+          className="absolute z-10 -left-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 19.5 8.25 12l7.5-7.5"
+            />
+          </svg>
+        </button>
+
+        <button
+          ref={nextRef}
+          className="absolute z-10 -right-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m8.25 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </button>
+
+        <Swiper
+          modules={[Navigation]}
+          spaceBetween={20}
+          slidesPerView={1}
+          breakpoints={{
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+            1280: { slidesPerView: 4 },
+          }}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          onBeforeInit={(swiper) => {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+          }}
+        >
+          {slides}
+        </Swiper>
       </div>
-    )
+    </div>
   );
 };
 

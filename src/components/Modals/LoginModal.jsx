@@ -4,13 +4,14 @@ import {
   toggleRegisterModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import InputWithIcon from "../Input/InputwithIcon";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import VerifyOtp from "../Auth/VerifyOtp";
 import Spinner from "../Spinner/Spinner";
 import { handleUser } from "../../Data";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import { addTempContact } from "../../Redux/UserSlice/UserSlice";
 import { isValidPhoneNumber } from "../../utils";
+import useOutsideClick from "../../hooks/useOutsideClick";
 
 const LoginModal = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,14 @@ const LoginModal = () => {
   const [inputNumber, setInputNumber] = useState("");
   const [isInputEmpty, setIsInputEmpty] = useState(null);
   const [showVerifyOtp, setShowVerifyOtp] = useState(false);
+
+  const modalRef = useRef(null);
+
+  const onClose = () => {
+    dispatch(toggleLoginModal());
+  };
+
+  useOutsideClick(modalRef, onClose, isLoginModalActive);
 
   const handleChangeInputChange = (value) => {
     setIsInputEmpty(value);
@@ -86,13 +95,16 @@ const LoginModal = () => {
           !isLoginModalActive && "hidden"
         } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
       >
-        <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-md">
+        <div
+          className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-md"
+          ref={modalRef}
+        >
           <div className="flex items-center justify-between border-b border-gray-300 px-4 py-2">
             <h2 className="font-extrabold text-2xl uppercase">
               Sign <span className="text-theme">In</span>
             </h2>
             <button
-              onClick={() => dispatch(toggleLoginModal())}
+              onClick={onClose}
               type="button"
               className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             >
@@ -130,7 +142,7 @@ const LoginModal = () => {
                   </button>
                 </form>
 
-                <p className="text-left">
+                <p className="text-center">
                   Don't have an account?{" "}
                   <button
                     className="uppercase text-theme font-semibold text-sm hover:text-theme-dark transition duration-300 ease-in-out"
@@ -146,6 +158,7 @@ const LoginModal = () => {
                 otp={123456}
                 phone={inputNumber}
                 setOtpValue={setIsOtpSend}
+                setShowVerifyOtp={setShowVerifyOtp}
                 setInputValue={setInputNumber}
                 modalChange={toggleLoginModal}
                 setRestValue={setInputNumber}

@@ -1,141 +1,54 @@
-import { Link } from "react-router-dom";
-import {
-  quickLink,
-  socialIcons,
-  contactUsFooterLink,
-} from "../../Data/dummyData";
-import logoImg from "../../assets/rento-full-light.png";
-import playStore from "../../assets/playStore.png";
-import { memo } from "react";
-import { useSelector } from "react-redux";
+import { contactUsFooterLink } from "../../Data/dummyData";
+import { memo, useMemo } from "react";
+import { shallowEqual, useSelector } from "react-redux";
+import BrandSection from "./_components/BrandSection";
+import QuickLinks from "./_components/QuickLinks";
+import ContactLinks from "./_components/ContactLinks";
+import AppDownload from "./_components/AppDownload";
+import Copyright from "./_components/Copyright";
 
 const Footer = () => {
-  const { info, loading } = useSelector((state) => state.general);
+  const { info, loading } = useSelector(
+    (state) => ({
+      info: state.general.info,
+      loading: state.general.loading,
+    }),
+    shallowEqual,
+  );
 
-  const contact = (!loading && info?.contact) || "8884488891";
-  const email = (!loading && info?.email) || "support@rentobikes.com";
-  const address =
-    (!loading && info?.address) || "HSR Layout, Bangalore, 560016";
+  const footerData = useMemo(() => {
+    return {
+      contact: info?.contact || "8884488891",
+      email: info?.email || "support@rentobikes.com",
+      address: info?.address || "HSR Layout, Bangalore, 560016",
+      socialmedia: info?.socialmedia || {},
+      appLink: { android: info?.appLink?.Android, ios: info?.appLink?.IOS },
+    };
+  }, [info]);
 
-  const footerQuickLink = contactUsFooterLink({ contact, email, address });
+  const footerQuickLink = useMemo(
+    () =>
+      contactUsFooterLink({
+        contact: footerData.contact,
+        email: footerData.email,
+        address: footerData.address,
+      }),
+    [footerData],
+  );
+
+  if (loading) return null;
 
   return (
     <footer className="bg-theme-black crusor-default">
       <div className="w-[95%] lg:w-[90%] mx-auto pt-6 pb-3.5">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
-          <div>
-            <div className="w-4/5 mb-2">
-              <Link to={"/"} className="max-h-8 md:max-h-10 lg:max-h-16">
-                <img
-                  src={logoImg}
-                  className="w-full h-full object-contain"
-                  alt="RENTOBIKES"
-                />
-              </Link>
-            </div>
-            <p className="text-sm text-white text-left mb-3">
-              We have been successfully delivering bike rental services since
-              August 2016. We focus on making your travel plan come true by
-              offering you affordable with hygienic interior and maintained
-              services.
-            </p>
-            {/* social icons  */}
-            <div className="flex items-center gap-4">
-              {Object.entries(info?.socialmedia).map(([key, value], index) => {
-                if (value === "#") {
-                  return null;
-                }
-                return (
-                  <a
-                    href={value}
-                    target="_blank"
-                    key={index}
-                    className="size-5 group"
-                  >
-                    <img
-                      src={socialIcons[key]}
-                      className="w-full h-full object-cover invert group-hover:scale-110 transition-all duration-300 ease-in-out"
-                      alt={key}
-                    />
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-          {/* quick links  */}
-          <div>
-            <h2 className="text-xl text-white font-bold mb-3">Quick Links</h2>
-            <ul className="leading-10">
-              {quickLink?.map((item, index) => (
-                <li
-                  key={index}
-                  className="text-white hover:text-gray-300 hover:ml-2 transition-all ease-in-out duration-300"
-                >
-                  <Link to={`${item?.link}`}>{item?.name}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          {/* contact us links  */}
-          <div>
-            <h2 className="text-xl text-white font-bold mb-3">Contact Us</h2>
-            <ul className="leading-10">
-              {footerQuickLink?.map((item, index) => (
-                <li
-                  key={index}
-                  className="text-white hover:text-gray-300 transition-all ease-in-out duration-300"
-                >
-                  {item?.link ? (
-                    <a href={item.link} className="flex items-center gap-2">
-                      <div className="text-theme">{item.icon}</div>
-                      {item?.value}
-                    </a>
-                  ) : (
-                    <span
-                      className={`flex items-center gap-2 cursor-pointer capitalize`}
-                    >
-                      <div className="text-theme">{item.icon}</div>
-                      {item?.value}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <BrandSection socialmedia={footerData.socialmedia} />
+          <QuickLinks />
+          <ContactLinks links={footerQuickLink} />
+          <AppDownload link={footerData.appLink} />
+        </div>
 
-          <div>
-            <p className="text-gray-100 text-base">
-              Download the app by clicking the link below:
-            </p>
-            <Link to={info?.appLink?.Android} target="_blank">
-              <div className="w-36 my-5">
-                <img
-                  src={playStore}
-                  className="w-full h-full object-cover"
-                  alt="RENTO_PLAYSTORE"
-                />
-              </div>
-            </Link>
-          </div>
-        </div>
-        <div className="flex items-center justify-center lg:pt-0 mt-5 lg:mt-0 border-t border-gray-500 text-white">
-          <p className="order-2 lg:order-1 cursor-default pt-2">
-            <span className="font-bold cursor-pointer">
-              &copy; 2016 - {new Date().getFullYear()}
-              <Link
-                to={"/"}
-                className="hover:text-theme mx-1 transition-all duration-300 ease-in-out"
-              >
-                Rento Bikes.
-              </Link>
-            </span>
-            All Rights Reserved By{" "}
-            <span className="text-semibold">
-              Bongi Mobility Solutions Private Limited
-            </span>
-            .
-          </p>
-        </div>
+        <Copyright />
       </div>
     </footer>
   );

@@ -6,12 +6,13 @@ import {
 import InputWithIcon from "../Input/InputwithIcon";
 import Input from "../Input/Input";
 import { handleUser } from "../../Data";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Spinner from "../Spinner/Spinner";
 import { handleAsyncError } from "../../utils/handleAsyncError";
 import VerifyOtp from "../Auth/VerifyOtp";
 import { removeTempContact } from "../../Redux/UserSlice/UserSlice";
 import { useNavigate } from "react-router-dom";
+import useOutsideClick from "../../hooks/useOutsideClick";
 
 const RegisterModal = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,14 @@ const RegisterModal = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [inputNumber, setInputNumber] = useState(null);
   const [loadings, setLoadings] = useState(false);
+
+  const modalRef = useRef(null);
+
+  const onClose = () => {
+    dispatch(toggleRegisterModal());
+  };
+
+  useOutsideClick(modalRef, onClose, isRegisterModalActive);
 
   const handleRegisterUser = async (e) => {
     setLoadings(true);
@@ -79,7 +88,7 @@ const RegisterModal = () => {
     const handleInput = () => {
       const inputs = form.querySelectorAll("input");
       const allFilled = Array.from(inputs).every(
-        (input) => input.value.trim() !== ""
+        (input) => input.value.trim() !== "",
       );
       button.disabled = !allFilled;
     };
@@ -91,7 +100,7 @@ const RegisterModal = () => {
 
     return () => {
       inputs.forEach((input) =>
-        input.removeEventListener("input", handleInput)
+        input.removeEventListener("input", handleInput),
       );
     };
   }, []);
@@ -108,13 +117,16 @@ const RegisterModal = () => {
         !isRegisterModalActive && "hidden"
       } z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4`}
     >
-      <div className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-md">
+      <div
+        className="relative top-20 mx-auto shadow-xl rounded bg-white max-w-md"
+        ref={modalRef}
+      >
         <div className="flex items-center justify-between border-b border-gray-300 px-4 py-2">
           <h2 className="font-extrabold text-2xl uppercase">
             Sign <span className="text-theme">Up</span>
           </h2>
           <button
-            onClick={() => dispatch(toggleRegisterModal())}
+            onClick={onClose}
             type="button"
             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
           >
@@ -186,7 +198,7 @@ const RegisterModal = () => {
                 </p>
               </form>
 
-              <p className="text-left">
+              <p className="text-center">
                 Already have an account?{" "}
                 <button
                   className="uppercase text-theme font-semibold text-sm hover:text-theme-dark transition duration-300 ease-in-out"

@@ -1,20 +1,22 @@
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import { lazy, useEffect, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import TopHeader from "../Header/TopHeader";
 import Header from "../Header/Header";
-const LoginModal = lazy(() => import("../Modals/LoginModal"));
-const RegisterModal = lazy(() => import("../Modals/RegisterModal"));
-const LocationModal = lazy(() => import("../Modals/LocationModal"));
-const SignOutModal = lazy(() => import("../Modals/SignOutModal"));
-const Alert = lazy(() => import("../Alert/Alert"));
-const Sidebar = lazy(() => import("../Sidebar/Sidebar"));
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { handleCurrentUser } from "../../Redux/UserSlice/UserSlice";
-import Footer from "../Footer/Footer";
+// import Footer from "../Footer/Footer";
+const Footer = lazy(() => import("../Footer/Footer"));
 import { handleRestCoupon } from "../../Redux/CouponSlice/CouponSlice";
 import { toggleLocationModal } from "../../Redux/ModalSlice/ModalSlice";
 import CallToActionButton from "../CallToAction/CallToActionButton";
-import whatsapp from "../../assets/icons/whatsapp.png";
+import whatsapp from "../../assets/icons/whatsapp.webp";
 import { addAddOn, startLoading } from "../../Redux/AddOnSlice/AddOnSlice";
 import { fetchingData } from "../../Data";
 import { fetchingPlansFilters } from "../../Data/Functions";
@@ -23,59 +25,92 @@ import {
   addGeneralSettings,
   stopSettingLoading,
 } from "../../Redux/SettingSlice/SettingSlice";
+import LayoutModals from "./LayoutModals";
 
 const Layout = () => {
-  const { message, type } = useSelector((state) => state.error);
   const { maintenance, info, loading } = useSelector((state) => state.general);
   const [hasMounted, setHasMounted] = useState(false);
   const { user } = useSelector((state) => state.user);
   const { addon } = useSelector((state) => state.addon);
-  const { selectedLocation } = useSelector((state) => state.selectedLocation);
-  const { filter } = useSelector((state) => state.filter);
+  const { selectedLocation } = useSelector(
+    (state) => state.selectedLocation,
+    shallowEqual,
+  );
+  const { filter } = useSelector((state) => state.filter, shallowEqual);
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const waContact = (!loading && info?.waContact) || "8884488891";
+  const waContact = useMemo(
+    () => info?.waContact || "8884488891",
+    [info?.waContact],
+  );
+
+  // top header data
+  const topHeaderProps = useMemo(
+    () => ({
+      email: info?.email || "support@rentobikes.com",
+      phoneNumber: `+91 ${info?.contact || "8884488891"}`,
+    }),
+    [info?.email, info?.contact],
+  );
 
   useEffect(() => {
     // setting decrypt user data
-    if (user) {
-      dispatch(handleCurrentUser(user));
-    }
+    if (user) dispatch(handleCurrentUser(user));
+
     // if selectedLocation is not present than open popup modal
     if (selectedLocation === null) {
+      import("../Modals/LocationModal"); // preload chunk
       dispatch(toggleLocationModal(true));
     }
   }, [user, selectedLocation]);
 
-  useEffect(() => {
-    if (addon?.length > 0) return;
+  const fetchAddOns = useCallback(async () => {
+    if (addon?.length) return;
 
-    (async () => {
-      try {
-        dispatch(startLoading());
-        const response = await fetchingData("/addOn");
-        if (response?.status === 200) {
-          dispatch(addAddOn(response));
-          dispatch(addGeneralSettings(response));
-        }
-      } finally {
-        dispatch(stopSettingLoading());
+    try {
+      dispatch(startLoading());
+      const res = await fetchingData("/addOn");
+      if (res?.status === 200) {
+        dispatch(addAddOn(res));
+        dispatch(addGeneralSettings(res));
       }
-    })();
-  }, []);
-
-  useEffect(() => {
-    if (maintenance) {
-      navigate("/maintenance");
-    } else {
-      if (location.pathname === "/maintenance") {
-        navigate("/");
-      }
+    } finally {
+      dispatch(stopSettingLoading());
     }
-  }, []);
+  }, [addon?.length, dispatch]);
+
+  // useEffect(() => {
+  //   fetchAddOns();
+  // }, [fetchAddOns]);
+
+  // let first render happen without data to improve the performance
+  useEffect(() => {
+    if (addon?.length) return;
+
+    const idleCallback =
+      window.requestIdleCallback ||
+      function (cb) {
+        return setTimeout(cb, 1);
+      };
+
+    idleCallback(() => {
+      fetchAddOns();
+      import("../Modals/LocationModal");
+    });
+  }, [fetchAddOns, addon?.length]);
+
+  useEffect(() => {
+    if (maintenance && location.pathname !== "/maintenance") {
+      navigate("/maintenance", { replace: true });
+    }
+
+    if (!maintenance && location.pathname === "/maintenance") {
+      navigate("/", { replace: true });
+    }
+  }, [maintenance, location.pathname]);
 
   useEffect(() => {
     if (!hasMounted) {
@@ -88,44 +123,55 @@ const Layout = () => {
 
     // this will user to top of the screen whenever user change the page
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location.pathname, id, dispatch]);
+
+  // useEffect(() => {
+  //   if (!filter.length) {
+  //     fetchingPlansFilters(dispatch);
+  //   }
+  // }, [filter?.length, dispatch]);
 
   useEffect(() => {
-    if (!filter || filter.length === 0) {
+    if (filter?.length) return;
+
+    const idle =
+      window.requestIdleCallback ||
+      function (cb) {
+        return setTimeout(cb, 1);
+      };
+
+    idle(() => {
       fetchingPlansFilters(dispatch);
-    }
-  }, []);
+    });
+  }, [filter?.length, dispatch]);
 
   if (loading) {
-    return <PreLoader />;
+    return <PreLoader showLogo />;
   }
 
   return (
     <>
       {/* login & register modals */}
-      <LoginModal />
-      <SignOutModal />
-      <RegisterModal />
-      <LocationModal />
-      <Sidebar />
-      {/* for displaying error or success message  */}
-      {message != null && <Alert error={message} errorType={type} />}
+      <LayoutModals />
+
       {/* main section  */}
       <header className="sticky top-0 z-20">
-        <TopHeader
-          email={info?.email || "support@rentobikes.com"}
-          phoneNumber={`+91 ${info?.contact}` || "+91 8884488891"}
-        />
+        <TopHeader {...topHeaderProps} />
         <Header />
       </header>
+
       <main className="relative" style={{ minHeight: "calc(100vh - 108.8px)" }}>
         <Outlet />
+
         <CallToActionButton
           image={whatsapp}
           link={`https://wa.me/+91${waContact}`}
         />
       </main>
-      <Footer />
+
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </>
   );
 };

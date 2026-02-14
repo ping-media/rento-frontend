@@ -1,29 +1,32 @@
-import { useSelector } from "react-redux";
-import ActivaImage from "../assets/images/activa.png";
-import heroImage from "../assets/images/hero-banner.jpg";
+import { lazy, Suspense } from "react";
+import { shallowEqual, useSelector } from "react-redux";
 import HeroSection from "../components/HeroSection/HeroSection";
 import SearchRide from "../components/SearchRide/SearchRide";
-import PreLoader from "../components/skeleton/PreLoader";
-import Faq from "../components/Faq/Faq";
 import Slider from "../components/carousel/Slider";
-import Package from "../components/ProductCard/Package";
-import Testimonials from "../components/ProductCard/Testimonials";
+import Faq from "../components/Faq/Faq";
+const Package = lazy(() => import("../components/ProductCard/Package"));
+const Testimonials = lazy(
+  () => import("../components/ProductCard/Testimonials"),
+);
+import PackageSkeleton from "../components/skeleton/PackageSkeleton";
 
 const Home = () => {
-  const { stationLoading } = useSelector((state) => state.station);
-  const { slides } = useSelector((state) => state.general);
+  const { slides } = useSelector((state) => state.general, shallowEqual);
+
+  const isSlides = slides?.length > 0;
 
   return (
     <>
-      {stationLoading && <PreLoader />}
-      {slides?.length === 0 ? (
-        <HeroSection imageUrl={heroImage} secondImgeUrl={ActivaImage} />
-      ) : (
-        <Slider slides={slides} />
-      )}
+      {!isSlides ? <HeroSection /> : <Slider slides={slides} />}
       <SearchRide />
-      <Package />
-      <Testimonials />
+
+      <Suspense fallback={<PackageSkeleton />}>
+        <Package />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <Testimonials />
+      </Suspense>
       <Faq />
     </>
   );

@@ -1,5 +1,5 @@
-import bikeImg from "../assets/images/bike-image.png";
-import scooterImg from "../assets/images/scooter-image.png";
+import bikeImg from "../assets/images/bike-image.webp";
+import scooterImg from "../assets/images/scooter-image.webp";
 import CryptoJS from "crypto-js";
 
 const handleErrorImage = (type, ref) => {

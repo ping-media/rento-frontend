@@ -1,4 +1,4 @@
-import soldOutImage from "../../assets/logo/sold-out.svg";
+import soldOutImage from "../../assets/logo/sold-out.webp";
 import { formatTimeForProductCard } from "../../utils/index";
 
 const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {

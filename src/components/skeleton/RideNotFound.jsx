@@ -1,4 +1,4 @@
-import bikeImg from "../../assets/logo/road.png";
+import bikeImg from "../../assets/logo/road.webp";
 
 const RideNotFound = () => {
   return (

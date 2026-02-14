@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { showGreeting } from "../../utils";
-import RideImg from "../../assets/logo/road.png";
-import UserImg from "../../assets/logo/user.png";
+import RideImg from "../../assets/logo/road.webp";
+import UserImg from "../../assets/logo/user.webp";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 

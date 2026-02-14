@@ -4,11 +4,22 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Slider = ({ slides }) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const id = requestIdleCallback
+      ? requestIdleCallback(() => setIsReady(true))
+      : setTimeout(() => setIsReady(true), 0);
+
+    return () => cancelIdleCallback?.(id);
+  }, []);
+
   return (
     <div className="w-full relative">
       <button
@@ -49,34 +60,47 @@ const Slider = ({ slides }) => {
           />
         </svg>
       </button>
-      <Swiper
-        modules={[Navigation, Autoplay]}
-        spaceBetween={30}
-        slidesPerView={1}
-        loop={true}
-        autoplay={{ delay: 5000 }}
-        navigation={{
-          prevEl: prevRef.current,
-          nextEl: nextRef.current,
-        }}
-        onBeforeInit={(swiper) => {
-          swiper.params.navigation.prevEl = prevRef.current;
-          swiper.params.navigation.nextEl = nextRef.current;
-        }}
-        className="h-full lg:h-[72vh]"
-      >
-        {slides.map((slide, index) => (
-          <SwiperSlide key={slide._id}>
-            <div className="relative w-full h-full brightness-90">
-              <img
-                src={slide.link}
-                className="w-full h-full object-cover"
-                alt={`BANNER_${index + 1}`}
-              />
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {!isReady ? (
+        // Static hero image (LCP fast)
+        <div className="relative w-full h-full lg:h-[72vh]">
+          <img
+            src={slides[0].link}
+            className="w-full h-full object-cover"
+            alt="Hero"
+            loading="eager"
+            fetchPriority="high"
+          />
+        </div>
+      ) : (
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          spaceBetween={30}
+          slidesPerView={1}
+          loop={true}
+          autoplay={{ delay: 5000 }}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          onBeforeInit={(swiper) => {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+          }}
+          className="h-full lg:h-[72vh]"
+        >
+          {slides.map((slide, index) => (
+            <SwiperSlide key={slide._id}>
+              <div className="relative w-full h-full brightness-90">
+                <img
+                  src={slide.link}
+                  className="w-full h-full object-cover"
+                  alt={`BANNER_${index + 1}`}
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      )}
     </div>
   );
 };

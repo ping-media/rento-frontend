@@ -35,7 +35,7 @@ const RideCard = ({ item, id }) => {
         } flex flex-wrap justify-between mb-3`}
       >
         <div className="flex flex-wrap gap-4 order-2 lg:order-1">
-          <div className="w-full w-36 h-36 lg:w-48 lg:h-44">
+          <div className="w-36 h-36 lg:w-48 lg:h-44">
             <img
               src={item?.vehicleImage}
               className="w-full h-full object-contain"
@@ -72,7 +72,7 @@ const RideCard = ({ item, id }) => {
                       (item?.paymentStatus === "canceled" && "bg-theme") ||
                       (item?.paymentStatus === "paid" &&
                         "bg-green-500 bg-opacity-80")
-                    } text-gray-100 px-2 rounded-full cursor-pointer capitalize ml-2`}
+                    } text-white px-2 rounded-full cursor-pointer capitalize ml-2`}
                   >
                     {item?.paymentStatus.replace("_", " ")}
                   </span>
@@ -109,7 +109,7 @@ const RideCard = ({ item, id }) => {
               <p className="text-xs lg:text-sm text-gray-700">
                 {item?.bookingPrice &&
                   `Booking Amount: ₹${formatPrice(
-                    item?.bookingPrice?.bookingPrice
+                    item?.bookingPrice?.bookingPrice,
                   )}`}
               </p>
               <span className="mx-1 text-sm text-gray-400 hidden lg:inline">
@@ -118,7 +118,7 @@ const RideCard = ({ item, id }) => {
               <p className="text-xs lg:text-sm text-gray-700">
                 {item?.bookingPrice &&
                   `Refundable Deposit Amount: ₹${formatPrice(
-                    item?.vehicleBasic?.refundableDeposit
+                    item?.vehicleBasic?.refundableDeposit,
                   )}`}
               </p>
             </div>

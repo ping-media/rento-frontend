@@ -7,7 +7,7 @@ import {
   toggleSignOutModal,
 } from "../../Redux/ModalSlice/ModalSlice";
 import { menuList } from "../../Data/dummyData";
-import logoImg from "../../assets/rento-full-light.png";
+import logoImg from "../../assets/rento-full-light.webp";
 import SigninButton from "../Button/SigninButton";
 
 const Sidebar = () => {

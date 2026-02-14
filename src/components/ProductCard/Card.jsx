@@ -1,8 +1,8 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import bikeImage from "../../assets/logo/bike.png";
-import scooterImage from "../../assets/logo/scooter.png";
-import CarImage from "../../assets/images/car-image.png";
-import { useEffect, useRef, useState } from "react";
+import bikeImage from "../../assets/images/bike-image.webp";
+import scooterImage from "../../assets/logo/scooter.webp";
+import CarImage from "../../assets/images/car-image.webp";
+import React, { useMemo, useRef, useState } from "react";
 import {
   formatPrice,
   getEarliestDate,
@@ -11,6 +11,16 @@ import {
 } from "../../utils";
 import SoldOutCard from "./SoldOutCard";
 import { useSelector } from "react-redux";
+
+// for getting BookingEndDateAndTime when there is vehiclePlan id is present
+const addDaysToISOString = (dateStr, daysToAdd) => {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    return dateStr;
+  }
+  date.setUTCDate(date.getUTCDate() + daysToAdd);
+  return date.toISOString().replace(".000Z", "Z");
+};
 
 const Card = ({
   vehicleImage,
@@ -32,60 +42,39 @@ const Card = ({
 }) => {
   const [queryParms] = useSearchParams();
   const productImageRef = useRef(null);
-  const [bookingUrl, setBookingUrl] = useState("");
   const [isImgLoading, setIsImgLoading] = useState(true);
   const navigate = useNavigate();
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const { filter } = useSelector((state) => state.filter);
   const { testMode } = useSelector((state) => state.general);
-  const [selectedPlan, setSelectedPlan] = useState(null);
 
-  // for getting BookingEndDateAndTime when there is vehiclePlan id is present
-  const addDaysToISOString = (dateStr, daysToAdd) => {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) {
-      return dateStr;
-    }
-    date.setUTCDate(date.getUTCDate() + daysToAdd);
-    return date.toISOString().replace(".000Z", "Z");
-  };
+  const selectedPlan = useMemo(() => {
+    const planId = queryParmsData?.vehiclePlan;
+    if (!planId) return null;
 
-  useEffect(() => {
-    const planId = queryParmsData?.vehiclePlan || "";
+    return vehiclePlan?.find((p) => p._id === planId) || null;
+  }, [queryParmsData, vehiclePlan]);
+
+  const bookingUrl = useMemo(() => {
     let updatedQueryParams = { ...queryParmsData };
-    if (planId !== "") {
+
+    const planId = queryParmsData?.vehiclePlan;
+    if (planId) {
       const plan = filter?.find((p) => p?._id === planId);
 
       if (plan?.planDuration) {
         updatedQueryParams.BookingEndDateAndTime = addDaysToISOString(
           queryParmsData?.BookingStartDateAndTime,
-          Number(plan.planDuration)
+          Number(plan.planDuration),
         );
       }
     }
-    const url =
-      !BookingEndDate && !MaintenanceEndDate
-        ? updateQueryParams("/booking/summary/", _id, updatedQueryParams)
-        : `?${updatedQueryParams}`;
 
-    setBookingUrl(url);
-  }, []);
-
-  useEffect(() => {
-    const planId = queryParmsData?.vehiclePlan || "";
-
-    if (planId !== "") {
-      const plan =
-        vehiclePlan?.length > 0
-          ? vehiclePlan?.filter((plan) => plan._id === planId)
-          : null;
-
-      if (plan !== null) {
-        setSelectedPlan(plan[0]);
-      }
-    }
-  }, []);
+    return !BookingEndDate && !MaintenanceEndDate
+      ? updateQueryParams("/booking/summary/", _id, updatedQueryParams)
+      : `?${updatedQueryParams}`;
+  }, [queryParmsData, filter, _id, BookingEndDate, MaintenanceEndDate]);
 
   // sending to ride summary
   const sendToRideSummary = () => {
@@ -93,13 +82,13 @@ const Card = ({
     navigate(bookingUrl);
   };
 
-  const earliestBookingEndDate = getEarliestDate(
-    vehicleDetails,
-    "BookingEndDate"
+  const earliestBookingEndDate = useMemo(
+    () => getEarliestDate(vehicleDetails, "BookingEndDate"),
+    [vehicleDetails],
   );
-  const earliestMaintenanceEndDate = getEarliestDate(
-    vehicleDetails,
-    "MaintenanceEndDate"
+  const earliestMaintenanceEndDate = useMemo(
+    () => getEarliestDate(vehicleDetails, "MaintenanceEndDate"),
+    [],
   );
 
   return (
@@ -118,7 +107,7 @@ const Card = ({
           <div className="top-1 lg:top-4 left-0 absolute z-[1]">
             <p
               className="background-[rgba( 255, 255, 255, 0.25 )] shadow-md backdrop-blur-sm px-2 py-1 rounded-r-lg mb-1"
-              title="Vehicle_Count"
+              title="Vehicle Count"
             >
               {vehicleDetails?.length || "NA"} Left
             </p>
@@ -159,8 +148,8 @@ const Card = ({
                   vehicleMasterData?.vehicleCategory === "four-wheeler"
                     ? CarImage
                     : vehicleType === "gear"
-                    ? bikeImage
-                    : scooterImage
+                      ? bikeImage
+                      : scooterImage
                 }
                 loading="lazy"
                 alt={vehicleType}
@@ -170,7 +159,7 @@ const Card = ({
               <span className="font-semibold">
                 {selectedPlan !== null ? selectedPlan?.kmLimit : freeKms * 1}
               </span>{" "}
-              KM Limit
+              Km Limit
             </p>
           </div>
           <p className="text-xs mb-5 text-left">
@@ -205,4 +194,4 @@ const Card = ({
   );
 };
 
-export default Card;
+export default React.memo(Card);

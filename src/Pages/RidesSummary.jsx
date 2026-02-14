@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeISTForUser } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
-import { lazy, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   addRidesData,
   fetchingRides,
@@ -20,8 +20,8 @@ import Spinner from "../components/Spinner/Spinner";
 import ExtendBookingButton from "../components/Account/ExtendBookingButton";
 import { openRazorpayPayment } from "../utils/razorpay";
 import { pollBookingStatus } from "../Data/Functions";
-const ExtendBookingModal = lazy(() =>
-  import("../components/Modals/ExtendBookingModal")
+const ExtendBookingModal = lazy(
+  () => import("../components/Modals/ExtendBookingModal"),
 );
 
 const RidesSummary = () => {
@@ -43,14 +43,14 @@ const RidesSummary = () => {
         dispatch(addRidesData(result?.data));
         if (result?.status !== 200) return;
         const response = await fetchingData(
-          `/getPickupImage?bookingId=${result?.data[0]?.bookingId}`
+          `/getPickupImage?bookingId=${result?.data[0]?.bookingId}`,
         );
         if (response?.status === 200) {
           setImages(response?.data);
         }
         // formatting data for user readability
         setFormatedDateAndTime(
-          formatDateTimeISTForUser(result?.data[0]?.createdAt)
+          formatDateTimeISTForUser(result?.data[0]?.createdAt),
         );
       })();
     }
@@ -102,7 +102,7 @@ const RidesSummary = () => {
           handleAsyncError(
             dispatch,
             "Ride payment updated successfully",
-            "success"
+            "success",
           );
           return;
         }
@@ -114,10 +114,16 @@ const RidesSummary = () => {
     }
   };
 
+  if (loading) {
+    return <PreLoader />;
+  }
+
   return (
     <>
-      {loading && <PreLoader />}
-      <ExtendBookingModal />
+      <Suspense fallback={null}>
+        <ExtendBookingModal />
+      </Suspense>
+
       {rides?.length == 1 ? (
         <div className="border-2 rounded-lg p-2 lg:px-4 lg:py-2 shadow-md bg-white mb-3">
           <div className="mb-1 flex items-center gap-3">
@@ -203,10 +209,10 @@ const RidesSummary = () => {
                     {rides[0]?.rideStatus === "pending"
                       ? "Not Started"
                       : rides[0]?.rideStatus === "ongoing"
-                      ? "Started"
-                      : rides[0]?.rideStatus === "canceled"
-                      ? "Canceled"
-                      : "Completed"}
+                        ? "Started"
+                        : rides[0]?.rideStatus === "canceled"
+                          ? "Canceled"
+                          : "Completed"}
                   </span>
                 </p>
               </div>
@@ -339,7 +345,7 @@ const RidesSummary = () => {
                 </div>
               </div>
               <div className="px-2 lg:px-4 py-2 rounded-lg border-2 flex flex-wrap gap-4 mb-3">
-                {images && images?.length > 0 ? (
+                {images?.[0] && Object.keys(images[0]?.files)?.length ? (
                   <PickupImages data={images} />
                 ) : (
                   <p className="w-full text-gray-400 italic text-center">

@@ -1,4 +1,4 @@
-import scooterImg from "../../assets/images/scooter-image.png";
+import scooterImg from "../../assets/images/scooter-image.webp";
 
 const ErrorNotFound = ({ errorMessage }) => {
   return (

@@ -1095,6 +1095,7 @@ const handleBooking = async (
 const pollBookingStatus = async (
   bookingId,
   action,
+  extendId,
   maxAttempts = 10,
   interval = 2000,
 ) => {
@@ -1104,8 +1105,8 @@ const pollBookingStatus = async (
     try {
       let endpoint = `/check-booking-status/${bookingId}`;
 
-      if (action) {
-        endpoint = `/check-booking-status/${bookingId}/${action}`;
+      if (action && extendId) {
+        endpoint = `/check-booking-status/${bookingId}/${action}/${extendId}`;
       }
 
       const res = await fetchingData(endpoint);

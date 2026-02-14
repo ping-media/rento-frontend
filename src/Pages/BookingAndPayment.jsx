@@ -47,7 +47,7 @@ const BookingAndPayment = () => {
       removeTempDate,
       handlebooking,
       dispatch,
-      setBookingLoading
+      setBookingLoading,
     );
   };
 
@@ -78,7 +78,7 @@ const BookingAndPayment = () => {
             </div>
 
             <div className="flex flex-wrap col-span-3">
-              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full relative">
+              <div className="mb-3 border-2 bg-white border-gray-300 shadow-md rounded-lg py-2 px-4 relative order-2 w-full">
                 <div className="py-3 border-b-2 border-gray-300">
                   <h2 className="font-semibold">Total Price</h2>
                 </div>

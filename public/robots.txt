@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow admin or private areas
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /api/
+
+Sitemap: https://www.rentobikes.com/sitemap.xml

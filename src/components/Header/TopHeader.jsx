@@ -1,3 +1,5 @@
+import React from "react";
+
 const TopHeader = ({ email, phoneNumber }) => {
   return (
     <div className=" bg-theme">
@@ -50,4 +52,4 @@ const TopHeader = ({ email, phoneNumber }) => {
   );
 };
 
-export default TopHeader;
+export default React.memo(TopHeader);

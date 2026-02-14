@@ -1,9 +1,9 @@
-import scooterImage from "../assets/logo/scooter.png";
-import bikeImage from "../assets/logo/bike.png";
-import carImage from "../assets/images/car-image.png";
-import facebook from "../assets/icons/facebook.png";
-import instagram from "../assets/icons/instagram.png";
-import twitter from "../assets/icons/twitter.png";
+import scooterImage from "../assets/logo/scooter.webp";
+import bikeImage from "../assets/images/bike-image.webp";
+import carImage from "../assets/images/car-image.webp";
+import facebook from "../assets/icons/facebook.webp";
+import instagram from "../assets/icons/instagram.webp";
+import twitter from "../assets/icons/twitter.webp";
 
 export const isHomeLink = ["/", "/monthly-rental"];
 
@@ -218,7 +218,7 @@ export const faqList = [
   {
     question: "IS FUEL INCLUDED IN TARIFF?",
     answer:
-      "No, fuel is not included in the amount you pay for two wheeler rental.",
+      "No, fuel is not included in the amount you pay for two-wheeler rental in Bangalore, Hubli, or Gulbarga. Customers are responsible for fuel during their trip.",
   },
   {
     question: "CAN I RESCHEDULE MY BOOKING?",
@@ -247,55 +247,55 @@ export const faqList = [
 //   "The original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of dropping the vehicle.",
 // ];
 
-export const testimonials = [
-  {
-    id: 1,
-    name: "Ravi Sharma",
-    text: "I rented a scooter for a weekend trip and was genuinely impressed by the quality of service. The vehicle was clean, well-maintained, and ready on time. It made exploring the city so much more enjoyable!",
-  },
-  {
-    id: 2,
-    name: "Anjali Mehta",
-    text: "This was my first time renting a two-wheeler online, and it couldn’t have been easier. The pickup process was quick, and the scooter ran perfectly. I'll definitely be using this service again for my short getaways.",
-  },
-  {
-    id: 3,
-    name: "Amit Verma",
-    text: "A very convenient option for daily commuting. The rental process was simple, pricing was fair, and the scooter handled really well in traffic. Much better than depending on public transport!",
-  },
-  {
-    id: 4,
-    name: "Priya Desai",
-    text: "I was a bit skeptical at first, but the entire experience was flawless. The bike was delivered on time, in great condition, and customer support even helped me change my return time without any hassle.",
-  },
-  {
-    id: 5,
-    name: "Karthik Reddy",
-    text: "Fantastic service! I needed a bike for a last-minute errand, and the booking process was lightning fast. The bike had great mileage and was smooth to ride throughout the day.",
-  },
-  {
-    id: 6,
-    name: "Neha Joshi",
-    text: "What I loved the most was how easy everything was—from selecting a vehicle to making the payment. Plus, the condition of the scooter exceeded my expectations. Totally worth it!",
-  },
-  {
-    id: 7,
-    name: "Manoj Kumar",
-    text: "I used this service while visiting family in the city, and it made my travel so convenient. The pricing was transparent, and the whole experience felt professional and reliable.",
-  },
-  {
-    id: 8,
-    name: "Sneha Kapoor",
-    text: "As someone who travels often, I've tried multiple rental services—and this one really stands out. The vehicle was in great shape, and I appreciated the polite behavior of the staff.",
-  },
-  {
-    id: 9,
-    name: "Rohit Patil",
-    text: "Renting a bike through this platform saved me both time and money. I didn’t face a single issue with the vehicle during my 3-day trip. Highly recommend it for travelers and locals alike!",
-  },
-  {
-    id: 10,
-    name: "Divya Nair",
-    text: "I was genuinely impressed by how organized everything was. The app was user-friendly, the vehicle pickup was seamless, and the return was just as easy. Great experience overall!",
-  },
-];
+// export const testimonials = [
+//   {
+//     id: 1,
+//     name: "Ravi Sharma",
+//     text: "I rented a scooter for a weekend trip and was genuinely impressed by the quality of service. The vehicle was clean, well-maintained, and ready on time. It made exploring the city so much more enjoyable!",
+//   },
+//   {
+//     id: 2,
+//     name: "Anjali Mehta",
+//     text: "This was my first time renting a two-wheeler online, and it couldn’t have been easier. The pickup process was quick, and the scooter ran perfectly. I'll definitely be using this service again for my short getaways.",
+//   },
+//   {
+//     id: 3,
+//     name: "Amit Verma",
+//     text: "A very convenient option for daily commuting. The rental process was simple, pricing was fair, and the scooter handled really well in traffic. Much better than depending on public transport!",
+//   },
+//   {
+//     id: 4,
+//     name: "Priya Desai",
+//     text: "I was a bit skeptical at first, but the entire experience was flawless. The bike was delivered on time, in great condition, and customer support even helped me change my return time without any hassle.",
+//   },
+//   {
+//     id: 5,
+//     name: "Karthik Reddy",
+//     text: "Fantastic service! I needed a bike for a last-minute errand, and the booking process was lightning fast. The bike had great mileage and was smooth to ride throughout the day.",
+//   },
+//   {
+//     id: 6,
+//     name: "Neha Joshi",
+//     text: "What I loved the most was how easy everything was—from selecting a vehicle to making the payment. Plus, the condition of the scooter exceeded my expectations. Totally worth it!",
+//   },
+//   {
+//     id: 7,
+//     name: "Manoj Kumar",
+//     text: "I used this service while visiting family in the city, and it made my travel so convenient. The pricing was transparent, and the whole experience felt professional and reliable.",
+//   },
+//   {
+//     id: 8,
+//     name: "Sneha Kapoor",
+//     text: "As someone who travels often, I've tried multiple rental services—and this one really stands out. The vehicle was in great shape, and I appreciated the polite behavior of the staff.",
+//   },
+//   {
+//     id: 9,
+//     name: "Rohit Patil",
+//     text: "Renting a bike through this platform saved me both time and money. I didn’t face a single issue with the vehicle during my 3-day trip. Highly recommend it for travelers and locals alike!",
+//   },
+//   {
+//     id: 10,
+//     name: "Divya Nair",
+//     text: "I was genuinely impressed by how organized everything was. The app was user-friendly, the vehicle pickup was seamless, and the return was just as easy. Great experience overall!",
+//   },
+// ];

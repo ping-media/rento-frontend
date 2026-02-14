@@ -1,25 +1,28 @@
 import SearchRide from "../components/SearchRide/SearchRide";
-import Filters from "../components/Filters/Filters";
-import Card from "../components/ProductCard/Card";
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ProductSkeleton from "../components/skeleton/ProductSkeleton";
-import ErrorNotFound from "../components/Error/ErrorNotFound";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { toggleFilter } from "../Redux/ModalSlice/ModalSlice";
 import { handleSearchVehicleData } from "../Data/Functions";
 import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
 import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
-import Pagination from "../components/SearchRide/Pagination";
+import useIsMobile from "../hooks/useIsMobile";
+import VehicleGrid from "./_components/VehicleGrid";
+import FilterSkeleton from "../components/skeleton/FilterSkeleton";
+import ChoosePackagesSkeleton from "../components/skeleton/ChoosePackagesSkeleton";
+const Filters = lazy(() => import("../components/Filters/Filters"));
+const Pagination = lazy(() => import("../components/SearchRide/Pagination"));
 
 const Search = () => {
   const [queryParms] = useSearchParams();
   const dispatch = useDispatch();
   const { id } = useParams();
   const customLocation = useLocation();
+  const isMobile = useIsMobile();
 
   const { loading, vehicles, pagination } = useSelector(
     (state) => state.vehicles,
+    shallowEqual,
   );
   const { filter } = useSelector((state) => state.filter);
   const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
@@ -35,6 +38,7 @@ const Search = () => {
 
   useEffect(() => {
     if (!id) return;
+
     window.scrollTo({ top: 0 });
     //search data
     handleSearchVehicleData(
@@ -46,7 +50,14 @@ const Search = () => {
       selectedStation?.stationId || id,
       pagination?.page,
     );
-  }, [dispatch, customLocation.search, pagination?.page, selectedStation]);
+  }, [
+    id,
+    dispatch,
+    filter,
+    customLocation.search,
+    pagination?.page,
+    selectedStation,
+  ]);
 
   //removing this after we are going to booking
   useEffect(() => {
@@ -90,7 +101,9 @@ const Search = () => {
               </button>
             </div>
             <div className="px-4 py-2.5 lg:bg-white lg:shadow-xl lg:rounded-lg">
-              <Filters />
+              <Suspense fallback={<FilterSkeleton />}>
+                <Filters />
+              </Suspense>
             </div>
           </div>
 
@@ -103,32 +116,23 @@ const Search = () => {
             ) : (
               <div className="mb-3 ml-auto font-bold text-lg bg-gray-400/50 hidden lg:block rounded animate-pulse w-20 h-5"></div>
             )}
-            <div className="w-full md:hidden lg:hidden">
-              <Filters showPackage={true} />
-            </div>
+
+            {isMobile && (
+              <div className="w-full md:hidden lg:hidden">
+                <Suspense fallback={<ChoosePackagesSkeleton />}>
+                  <Filters showPackage={true} />
+                </Suspense>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {!loading ? (
-                Object.entries(vehicles)?.length > 0 ? (
-                  <>
-                    {vehicles?.availableVehicles?.map((item, index) => (
-                      <Card {...item} isSold={testMode} key={index} />
-                    ))}
-                    {vehicles?.excludedVehicles?.map((item, index) => (
-                      <Card {...item} isSold={true} key={index} />
-                    ))}
-                  </>
-                ) : (
-                  <div className="col-span-3">
-                    <ErrorNotFound errorMessage={"No Vehicles Found."} />
-                  </div>
-                )
-              ) : (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <ProductSkeleton key={i} />
-                ))
-              )}
+              <VehicleGrid
+                loading={loading}
+                vehicles={vehicles}
+                testMode={testMode}
+              />
             </div>
+
             {pagination?.totalPages > 1 && (
               <div className="flex w-full items-center justify-end mt-5">
                 <Pagination

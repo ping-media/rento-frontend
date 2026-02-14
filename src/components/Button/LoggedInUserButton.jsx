@@ -43,6 +43,7 @@ const LoggedInUserButton = () => {
   const handleLogoutUser = () => {
     dispatch(toggleSignOutModal());
     dispatch(closeSideBarModal());
+
     if (location.pathname.includes("/booking/payment/")) {
       return navigate("/");
     }

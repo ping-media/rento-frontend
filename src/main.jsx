@@ -8,8 +8,8 @@ import PreLoader from "./components/skeleton/PreLoader.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <PersistGate loading={<PreLoader />} persistor={persistor}>
+    <PersistGate loading={<PreLoader showLogo />} persistor={persistor}>
       <App />
     </PersistGate>
-  </Provider>
+  </Provider>,
 );

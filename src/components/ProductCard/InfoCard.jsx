@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
-import scooterImg from "../../assets/images/scooter-image.png";
-import bikeImg from "../../assets/images/bike-image.png";
+import scooterImg from "../../assets/images/scooter-image.webp";
+import bikeImg from "../../assets/images/bike-image.webp";
 import {
   formatDateTimeForUser,
   getDurationInDays,
@@ -195,7 +195,7 @@ const InfoCard = ({
               //   :
               getDurationInDays(
                 bookingStartDateTime?.date,
-                bookingEndDateTime?.date
+                bookingEndDateTime?.date,
               )
             }{" "}
             Day
