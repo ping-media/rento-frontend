@@ -27,26 +27,26 @@ export const openRazorpayPayment = ({
       });
     };
 
-    const deleteBooking = async () => {
-      try {
-        if (type === "ExtensionFromCustomer") return;
+    // const deleteBooking = async () => {
+    //   try {
+    //     if (type === "ExtensionFromCustomer") return;
 
-        const payload = {
-          bookingId: bookingData._id,
-          userId: bookingData.userId?._id || bookingData.userId,
-        };
+    //     const payload = {
+    //       bookingId: bookingData._id,
+    //       userId: bookingData.userId?._id || bookingData.userId,
+    //     };
 
-        if (type === "extend" && typeId !== "") {
-          payload.type = "extend";
-          payload.typeId = typeId || 0;
-        }
+    //     if (type === "extend" && typeId !== "") {
+    //       payload.type = "extend";
+    //       payload.typeId = typeId || 0;
+    //     }
 
-        await handlePostData("/delete-booking", payload);
-        console.log("Booking deleted due to payment cancel");
-      } catch (err) {
-        console.error("Error deleting booking on cancel:", err);
-      }
-    };
+    //     await handlePostData("/delete-booking", payload);
+    //     console.log("Booking deleted due to payment cancel");
+    //   } catch (err) {
+    //     console.error("Error deleting booking on cancel:", err);
+    //   }
+    // };
 
     try {
       await loadRazorpayScript();
