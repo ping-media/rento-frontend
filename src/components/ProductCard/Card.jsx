@@ -37,6 +37,7 @@ const Card = ({
   vehicleDetails,
   totalRentalCost,
   vehicleMasterData,
+  vehicleStatus,
   _id,
   isSold = false,
 }) => {
@@ -91,12 +92,16 @@ const Card = ({
     [],
   );
 
+  const isVehicleSoldOut =
+    vehicleStatus === "inactive" ||
+    (isSold && testMode) ||
+    (isSold && earliestBookingEndDate !== null) ||
+    (isSold && earliestMaintenanceEndDate !== null);
+
   return (
     <div onClick={sendToRideSummary} className="relative">
       <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
-        {((isSold && testMode) ||
-          (isSold && earliestBookingEndDate !== null) ||
-          (isSold && earliestMaintenanceEndDate !== null)) && (
+        {isVehicleSoldOut && (
           <SoldOutCard
             BookingEndDate={earliestBookingEndDate}
             MaintenanceEndDate={earliestMaintenanceEndDate}

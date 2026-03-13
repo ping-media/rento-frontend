@@ -1,7 +1,14 @@
+import React, { useMemo } from "react";
 import soldOutImage from "../../assets/logo/sold-out.webp";
 import { formatTimeForProductCard } from "../../utils/index";
 
 const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
+  const availabilityText = useMemo(() => {
+    if (BookingEndDate) return formatTimeForProductCard(BookingEndDate);
+    if (MaintenanceEndDate) return formatTimeForProductCard(MaintenanceEndDate);
+    return "Temporarily Unavailable";
+  }, [BookingEndDate, MaintenanceEndDate]);
+
   return (
     <div className="absolute w-full h-full bg-white bg-opacity-40 z-10 rounded-b-lg">
       <div className="w-full h-[78.5%] lg:h-[81%] flex items-center justify-center">
@@ -14,10 +21,7 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
       </div>
       <p
         className="flex items-center px-1 lg:px-2 py-1 h-[12%] lg:h-[10%] bg-theme-black text-gray-100 text-xs lg:text-sm truncate"
-        title={
-          (BookingEndDate && formatTimeForProductCard(BookingEndDate)) ||
-          (MaintenanceEndDate && formatTimeForProductCard(MaintenanceEndDate))
-        }
+        title={availabilityText}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -34,14 +38,10 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
           />
         </svg>
         <span className="mx-1 hidden lg:block">Next Availability:</span>
-        <span className="ml-1 lg:ml-0">
-          {(BookingEndDate && formatTimeForProductCard(BookingEndDate)) ||
-            (MaintenanceEndDate &&
-              formatTimeForProductCard(MaintenanceEndDate))}
-        </span>
+        <span className="ml-1 lg:ml-0">{availabilityText}</span>
       </p>
     </div>
   );
 };
 
-export default SoldOutCard;
+export default React.memo(SoldOutCard);

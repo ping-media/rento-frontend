@@ -66,7 +66,7 @@ const Package = () => {
             <Link
               to={`/search/${selectedStation?.stationId}?BookingStartDateAndTime=${pickupDateAndTime}&BookingEndDateAndTime=${endDate}&vehiclePlan=${pkg._id}`}
             >
-              <div className="relative rounded-md overflow-hidden shadow-md bg-white px-3.5 2xl:px-4 py-2">
+              {/* <div className="relative rounded-md overflow-hidden shadow-md bg-white px-3.5 2xl:px-4 py-2">
                 <div className="absolute inset-0 bg-[radial-gradient(circle,_#94a3b8_0.9px,_transparent_0.9px)] bg-[length:8px_8px] opacity-30 pointer-events-none" />
 
                 <div className="flex items-center relative z-10">
@@ -95,6 +95,47 @@ const Package = () => {
                       </span>
                     </p>
                   </div>
+                </div>
+              </div> */}
+
+              {/* new card layout  */}
+              <div className="relative rounded-lg overflow-hidden shadow-md bg-white">
+                {/* dotted pattern background */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,_#94a3b8_0.9px,_transparent_0.9px)] bg-[length:8px_8px] opacity-20 pointer-events-none" />
+
+                {/* image */}
+                <div className="p-4">
+                  <div className="relative z-10 w-full bg-white p-2.5 border rounded-lg h-44">
+                    <img
+                      src={images[index % images.length]}
+                      loading="lazy"
+                      alt="Vehicle"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* content */}
+                <div className="relative z-10 px-4 pb-4 text-center">
+                  <h2
+                    className="text-base capitalize font-semibold text-gray-800 line-clamp-1"
+                    title={pkg.planName}
+                  >
+                    {pkg.planName}
+                    {!isPackageTextInclude && " Package"}
+                  </h2>
+
+                  <p className="mt-2 text-sm text-gray-600">
+                    Starting From{" "}
+                    <span className="text-lg font-bold text-theme">
+                      ₹{formatNumber(pkg.planPrice)}
+                    </span>
+                  </p>
+
+                  {/* button */}
+                  <button className="mt-3 w-full bg-theme hover:bg-theme/95 text-white py-2 rounded-md font-medium transition">
+                    Book Now
+                  </button>
                 </div>
               </div>
             </Link>
