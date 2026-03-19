@@ -20,7 +20,7 @@ const LocationCard = ({
       (async () => {
         setStationLoading(true);
         const stationMasterResponse = await fetchingData(
-          `/getStationData?stationId=${stationId}`
+          `/getStationData?stationId=${stationId}`,
         );
         setStationUser({
           stationData: stationMasterResponse?.data[0],
@@ -39,8 +39,9 @@ const LocationCard = ({
             : `https://www.google.com/maps/place/${stationData?.latitude},${stationData?.longitude}`
         }
         target="_blank"
+        className="w-full"
       >
-        <div className="w-full lg:w-48 h-48">
+        <div className="w-full mx-auto lg:max-w-md h-48">
           <img
             src={`https://maps.googleapis.com/maps/api/staticmap?center=${
               stationData?.address

@@ -8,7 +8,7 @@ const PickupImages = ({ data }) => {
           return (
             <PhotoView
               item={value}
-              className="w-40 h-40 border-2 h-full"
+              className="w-24 h-24 border shadow-sm"
               uniqueId={key}
               key={key}
             />

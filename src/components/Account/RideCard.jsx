@@ -35,7 +35,7 @@ const RideCard = ({ item, id }) => {
         } flex flex-wrap justify-between mb-3`}
       >
         <div className="flex flex-wrap gap-4 order-2 lg:order-1">
-          <div className="w-36 h-36 lg:w-48 lg:h-44">
+          <div className="w-full h-36 lg:w-48 lg:h-44">
             <img
               src={item?.vehicleImage}
               className="w-full h-full object-contain"

@@ -49,6 +49,14 @@ const RideFareDetails = ({ rides }) => {
         )) ||
       0;
 
+  const totalExtendAmount =
+    rides?.bookingPrice?.extendAmount?.reduce((sum, item) => {
+      if (item.status === "paid") {
+        return sum + item.amount + (item?.tax || 0) + (item?.addonTax || 0);
+      }
+      return sum;
+    }, 0) || 0;
+
   return (
     <>
       {rides && (
@@ -58,10 +66,18 @@ const RideFareDetails = ({ rides }) => {
               <span className="font-bold">Package:</span>
               {`(${getDurationInDays(
                 rides?.BookingStartDateAndTime,
+                rides?.bookingPrice?.extendAmount?.[0]
+                  ?.originalBookingEndDateAndTime
+                  ? rides?.bookingPrice?.extendAmount?.[0]
+                      ?.originalBookingEndDateAndTime
+                  : rides?.BookingEndDateAndTime,
+              )} days Package Applied)`}
+              {/* {`(${getDurationInDays(
+                rides?.BookingStartDateAndTime,
                 rides?.extendBooking?.originalEndDate
                   ? rides?.extendBooking?.originalEndDate
                   : rides?.BookingEndDateAndTime,
-              )} days Package Applied)`}
+              )} days Package Applied)`} */}
             </div>
           )}
           <ul className="w-full leading-8">
@@ -73,9 +89,14 @@ const RideFareDetails = ({ rides }) => {
                     buttonMessage={"(?)"}
                     className="font-bold text-gray-500"
                     tooltipData={renderTooltipBreakdown(
-                      rides?.bookingPrice?.appliedPlans,
+                      rides?.bookingPrice?.appliedPlan ||
+                        rides?.bookingPrice?.appliedPlans,
                       rides?.bookingPrice?.daysBreakdown,
                     )}
+                    // tooltipData={renderTooltipBreakdown(
+                    //   rides?.bookingPrice?.appliedPlans,
+                    //   rides?.bookingPrice?.daysBreakdown,
+                    // )}
                   />
                 </div>
               </div>
@@ -214,7 +235,30 @@ const RideFareDetails = ({ rides }) => {
               })}
 
             {/* totalPrice */}
-            {rides?.bookingPrice?.discountTotalPrice === 0 &&
+            {rides?.bookingPrice?.discountPrice > 0 &&
+              rides?.bookingPrice?.discountTotalPrice === 0 &&
+              rides?.bookingPrice?.isDiscountZero !== true &&
+              rides?.bookingPrice?.totalPrice && (
+                <li className="flex items-center justify-between mt-1 my-1 text-sm">
+                  <p className="text-sm font-bold uppercase text-left">
+                    Subtotal
+                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                      {rides?.paymentMethod == "online" &&
+                      rides?.paySuccessId != "NA"
+                        ? "(Full Paid)"
+                        : rides?.paymentMethod == "partiallyPay"
+                          ? ""
+                          : rides?.bookingPrice?.payOnPickupMethod
+                            ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
+                            : "(need to pay at pickup)"}
+                    </small>
+                  </p>
+                  <p className="text-sm font-bold text-right">
+                    {`₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
+                  </p>
+                </li>
+              )}
+            {/* {rides?.bookingPrice?.discountTotalPrice === 0 &&
               rides?.bookingPrice?.isDiscountZero !== true &&
               rides?.bookingPrice?.totalPrice && (
                 <li className="flex items-center justify-between mt-1 my-1 text-sm">
@@ -241,7 +285,7 @@ const RideFareDetails = ({ rides }) => {
                     {`₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
                   </p>
                 </li>
-              )}
+              )} */}
 
             {/* total price  */}
             {(rides?.bookingPrice?.discountTotalPrice > 0 ||
@@ -295,46 +339,30 @@ const RideFareDetails = ({ rides }) => {
                 </>
               )}
 
-            {/* difference amount  */}
-            {rides?.bookingPrice?.diffAmount && (
-              <li className="flex items-center justify-between pt-1 mt-1 text-sm">
-                <p className="text-sm font-semibold uppercase text-left">
-                  Difference Amount
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    {rides?.bookingPrice?.diffAmount[
-                      rides?.bookingPrice?.diffAmount?.length - 1
-                    ]?.status === "paid"
-                      ? "(Paid)"
-                      : "(need to pay this amount)"}
+            {/* extend amount  */}
+            {totalExtendAmount > 0 && (
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
+                <div>
+                  <p className="text-sm font-semibold uppercase text-left">
+                    Extend Amount
+                  </p>
+                  <small className="font-semibold uppercase text-xs mx-1 block text-gray-400 italic">
+                    (Total Paid Extend)
                   </small>
-                </p>
+                </div>
                 <p className="text-sm font-bold text-right">
-                  {`₹${formatPrice(
-                    Number(
-                      rides?.bookingPrice?.diffAmount?.[
-                        rides?.bookingPrice?.diffAmount?.length - 1
-                      ]?.amount +
-                        (rides?.bookingPrice?.diffAmount[
-                          rides?.bookingPrice?.diffAmount?.length - 1
-                        ]?.tax || 0) +
-                        (rides?.bookingPrice?.diffAmount[
-                          rides?.bookingPrice?.diffAmount?.length - 1
-                        ]?.addonTax || 0),
-                    ),
-                  )}`}
+                  {`₹${formatPrice(totalExtendAmount)}`}
                 </p>
               </li>
             )}
-
-            {/* extend amount  */}
-            {rides?.bookingPrice?.extendAmount?.length > 0 && (
+            {/* {rides?.bookingPrice?.extendAmount?.length > 0 && (
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
                 <div>
                   <div className="flex items-center gap-1">
                     <p className="text-sm font-semibold uppercase text-left">
                       Extend Amount
                     </p>
-                    {/* <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-400">
                       <Tooltip
                         buttonMessage={"(?)"}
                         className="font-bold text-gray-500"
@@ -366,7 +394,7 @@ const RideFareDetails = ({ rides }) => {
                           ]?.addOnAmount,
                         )}
                       />
-                    </div> */}
+                    </div>
                   </div>
                   <small className="font-semibold uppercase text-xs mx-1 block text-gray-400 italic">
                     {rides?.bookingPrice?.extendAmount[
@@ -392,7 +420,60 @@ const RideFareDetails = ({ rides }) => {
                   )}`}
                 </p>
               </li>
+            )} */}
+
+            {/* difference amount  */}
+            {rides?.bookingPrice?.diffAmount > 0 && (
+              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
+                <p className="text-sm font-semibold uppercase text-left">
+                  Difference Amount
+                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                    {rides?.bookingPrice?.diffAmount[
+                      rides?.bookingPrice?.diffAmount?.length - 1
+                    ]?.status === "paid"
+                      ? "(Paid)"
+                      : "(need to pay this amount)"}
+                  </small>
+                </p>
+                <p className="text-sm font-bold text-right">
+                  {`₹${formatPrice(
+                    Number(
+                      rides?.bookingPrice?.diffAmount?.[
+                        rides?.bookingPrice?.diffAmount?.length - 1
+                      ]?.amount +
+                        (rides?.bookingPrice?.diffAmount[
+                          rides?.bookingPrice?.diffAmount?.length - 1
+                        ]?.tax || 0) +
+                        (rides?.bookingPrice?.diffAmount[
+                          rides?.bookingPrice?.diffAmount?.length - 1
+                        ]?.addonTax || 0),
+                    ),
+                  )}`}
+                </p>
+              </li>
             )}
+
+            <li className="flex items-center justify-between pt-1 mt-1 text-sm">
+              <p className="text-sm font-bold uppercase text-left">
+                Final Total
+              </p>
+              <p className="text-sm font-bold text-right">
+                {`₹${formatPrice(
+                  (rides?.bookingPrice?.discountTotalPrice ||
+                    rides?.bookingPrice?.totalPrice ||
+                    0) +
+                    totalExtendAmount +
+                    (rides?.bookingPrice?.diffAmount?.reduce((sum, item) => {
+                      return item.status === "paid"
+                        ? sum +
+                            item.amount +
+                            (item?.tax || 0) +
+                            (item?.addonTax || 0)
+                        : sum;
+                    }, 0) || 0),
+                )}`}
+              </p>
+            </li>
 
             {/* payable balance  */}
             {(rides?.paymentMethod === "cash" ||

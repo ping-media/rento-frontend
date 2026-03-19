@@ -9,8 +9,8 @@ const ExtendBookingButton = () => {
   const isDisabled = useMemo(
     () =>
       rides?.length > 0 &&
-      ["completed", "canceled"].includes(rides[0]?.bookingStatus),
-    [rides]
+      ["completed", "canceled"].includes(rides[0]?.rideStatus),
+    [rides],
   );
 
   return (

@@ -134,7 +134,7 @@ const Package = () => {
 
                   {/* button */}
                   <button className="mt-3 w-full bg-theme hover:bg-theme/95 text-white py-2 rounded-md font-medium transition">
-                    Book Now
+                    Rent Now
                   </button>
                 </div>
               </div>

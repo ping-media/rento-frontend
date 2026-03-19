@@ -6,13 +6,13 @@
 /* setting font for different screen size for  responsive layout */
 @media (max-width: 1366px) {
   html {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 
 @media (max-width: 1280px) {
   html {
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 
@@ -124,4 +124,21 @@ body {
     width: 32px !important;
     height: 32px !important;
   }
+}
+
+.policy-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+.policy-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.policy-content p {
+  margin-bottom: 0.1rem;
+  line-height: 1.6;
 }
