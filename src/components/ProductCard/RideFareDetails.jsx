@@ -72,18 +72,14 @@ const RideFareDetails = ({ rides }) => {
                       ?.originalBookingEndDateAndTime
                   : rides?.BookingEndDateAndTime,
               )} days Package Applied)`}
-              {/* {`(${getDurationInDays(
-                rides?.BookingStartDateAndTime,
-                rides?.extendBooking?.originalEndDate
-                  ? rides?.extendBooking?.originalEndDate
-                  : rides?.BookingEndDateAndTime,
-              )} days Package Applied)`} */}
             </div>
           )}
-          <ul className="w-full leading-8">
-            <li className="flex items-center justify-between border-b-2">
+          <ul className="w-full leading-7 divide-y-2 divide-gray-200">
+            <li className="flex items-center justify-between py-1.5">
               <div className="flex items-center gap-1">
-                <p className="text-sm font-semibold uppercase">Booking Price</p>
+                <p className="text-sm font-semibold capitalize">
+                  Booking Price
+                </p>
                 <div className="text-xs text-gray-400">
                   <Tooltip
                     buttonMessage={"(?)"}
@@ -106,9 +102,9 @@ const RideFareDetails = ({ rides }) => {
             {/* discount price  */}
             {rides?.bookingPrice?.discountPrice > 0 && (
               <li
-                className={`flex items-center justify-between my-1 text-sm border-b-2`}
+                className={`flex items-center justify-between py-1.5 text-sm`}
               >
-                <p className="text-sm font-semibold uppercase text-left">
+                <p className="text-sm font-semibold capitalize text-left">
                   Discount Price
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     Coupon: ({rides?.discountCuopon?.couponName})
@@ -156,13 +152,14 @@ const RideFareDetails = ({ rides }) => {
                     value?.map((item, index) => (
                       <li
                         key={`key-${index}`}
-                        className="flex items-center justify-between border-b-2 text-sm"
+                        className="flex items-center justify-between py-1.5 text-sm"
                       >
-                        <div className="my-1">
-                          <p className="text-sm font-semibold uppercase">
+                        {/* <div className="my-1"> */}
+                        <div>
+                          <p className="text-sm font-semibold capitalize">
                             {item?.name}
                           </p>
-                          <p className="text-xs text-gray-500 mb-1">
+                          <p className="text-xs text-gray-500">
                             (
                             {`₹${item?.amount} x ${getDurationInDays(
                               rides?.BookingStartDateAndTime,
@@ -217,10 +214,10 @@ const RideFareDetails = ({ rides }) => {
                   return (
                     <li
                       key={key}
-                      className="flex items-center justify-between border-b-2"
+                      className="flex items-center py-1.5 justify-between"
                     >
-                      <div className="my-1">
-                        <p className="text-sm font-semibold uppercase">
+                      <div>
+                        <p className="text-sm font-semibold capitalize">
                           {key == "tax"
                             ? `GST(${
                                 rides?.vehicleMasterId?.gstPercentage || "--"
@@ -239,8 +236,8 @@ const RideFareDetails = ({ rides }) => {
               rides?.bookingPrice?.discountTotalPrice === 0 &&
               rides?.bookingPrice?.isDiscountZero !== true &&
               rides?.bookingPrice?.totalPrice && (
-                <li className="flex items-center justify-between mt-1 my-1 text-sm">
-                  <p className="text-sm font-bold uppercase text-left">
+                <li className="flex items-center justify-between text-sm py-1.5">
+                  <p className="text-sm font-bold capitalize text-left">
                     Subtotal
                     <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                       {rides?.paymentMethod == "online" &&
@@ -262,7 +259,7 @@ const RideFareDetails = ({ rides }) => {
               rides?.bookingPrice?.isDiscountZero !== true &&
               rides?.bookingPrice?.totalPrice && (
                 <li className="flex items-center justify-between mt-1 my-1 text-sm">
-                  <p className="text-sm font-bold uppercase text-left">
+                  <p className="text-sm font-bold capitalize text-left">
                     {rides?.bookingPrice?.discountPrice &&
                     rides?.bookingPrice?.discountPrice != 0
                       ? "Subtotal"
@@ -291,14 +288,10 @@ const RideFareDetails = ({ rides }) => {
             {(rides?.bookingPrice?.discountTotalPrice > 0 ||
               rides?.bookingPrice?.isDiscountZero === true) && (
               <li
-                className={`flex items-center justify-between mt-1 my-1 text-sm ${
-                  rides?.bookingPrice?.userPaid &&
-                  rides?.paymentStatus !== "pending"
-                    ? "border-b-2"
-                    : ""
-                }`}
+                className={`flex items-center justify-between py-1.5 text-sm 
+                `}
               >
-                <p className="text-sm font-bold uppercase text-left">
+                <p className="text-sm font-bold capitalize text-left">
                   Total Price
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     {rides?.paymentMethod == "online" &&
@@ -328,8 +321,8 @@ const RideFareDetails = ({ rides }) => {
             {rides?.bookingPrice?.userPaid > 0 &&
               rides?.paymentStatus !== "pending" && (
                 <>
-                  <li className="flex items-center justify-between mt-1 my-1 text-sm">
-                    <p className="text-sm font-semibold uppercase text-left">
+                  <li className="flex items-center justify-between py-1.5 text-sm">
+                    <p className="text-sm font-semibold capitalize text-left">
                       Amount Paid
                     </p>
                     <p className="text-sm font-bold text-right">
@@ -341,12 +334,12 @@ const RideFareDetails = ({ rides }) => {
 
             {/* extend amount  */}
             {totalExtendAmount > 0 && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
+              <li className="flex items-center justify-between py-1.5 text-sm">
                 <div>
-                  <p className="text-sm font-semibold uppercase text-left">
+                  <p className="text-sm font-semibold capitalize text-left">
                     Extend Amount
                   </p>
-                  <small className="font-semibold uppercase text-xs mx-1 block text-gray-400 italic">
+                  <small className="font-semibold capitalize text-xs mx-1 block text-gray-400 italic">
                     (Total Paid Extend)
                   </small>
                 </div>
@@ -359,7 +352,7 @@ const RideFareDetails = ({ rides }) => {
               <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
                 <div>
                   <div className="flex items-center gap-1">
-                    <p className="text-sm font-semibold uppercase text-left">
+                    <p className="text-sm font-semibold capitalize text-left">
                       Extend Amount
                     </p>
                     <div className="text-xs text-gray-400">
@@ -396,7 +389,7 @@ const RideFareDetails = ({ rides }) => {
                       />
                     </div>
                   </div>
-                  <small className="font-semibold uppercase text-xs mx-1 block text-gray-400 italic">
+                  <small className="font-semibold capitalize text-xs mx-1 block text-gray-400 italic">
                     {rides?.bookingPrice?.extendAmount[
                       rides?.bookingPrice?.extendAmount?.length - 1
                     ]?.status === "paid"
@@ -424,8 +417,8 @@ const RideFareDetails = ({ rides }) => {
 
             {/* difference amount  */}
             {rides?.bookingPrice?.diffAmount > 0 && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
-                <p className="text-sm font-semibold uppercase text-left">
+              <li className="flex items-center justify-between py-1.5 text-sm">
+                <p className="text-sm font-semibold capitalize text-left">
                   Difference Amount
                   <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
                     {rides?.bookingPrice?.diffAmount[
@@ -453,8 +446,8 @@ const RideFareDetails = ({ rides }) => {
               </li>
             )}
 
-            <li className="flex items-center justify-between pt-1 mt-1 text-sm">
-              <p className="text-sm font-bold uppercase text-left">
+            <li className="flex items-center justify-between py-1.5 text-sm">
+              <p className="text-sm font-bold capitalize text-left">
                 Final Total
               </p>
               <p className="text-sm font-bold text-right">
@@ -478,8 +471,8 @@ const RideFareDetails = ({ rides }) => {
             {/* payable balance  */}
             {(rides?.paymentMethod === "cash" ||
               rides?.paymentStatus !== "pending") && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
-                <p className="text-sm font-semibold uppercase text-left">
+              <li className="flex items-center justify-between py-1.5 text-sm">
+                <p className="text-sm font-semibold capitalize text-left">
                   Payable Balance
                 </p>
                 <p className="text-sm font-bold text-right text-theme">

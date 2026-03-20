@@ -59,7 +59,7 @@ const Header = memo(() => {
   return (
     <div className="bg-theme-black">
       <div className="flex items-center justify-between w-[95%] lg:w-[90%] mx-auto py-2.5">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
           <button
             className="lg:hidden text-gray-100"
             type="button"
