@@ -29,7 +29,7 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-4 lg:size-5 ml-2"
+          className="md:hidden size-4 ml-2"
         >
           <path
             strokeLinecap="round"

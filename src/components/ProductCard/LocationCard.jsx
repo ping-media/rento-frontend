@@ -41,7 +41,7 @@ const LocationCard = ({
         target="_blank"
         className="w-full"
       >
-        <div className="w-full mx-auto lg:max-w-md h-48">
+        <div className="w-full mx-auto lg:max-w-lg h-48">
           <img
             src={`https://maps.googleapis.com/maps/api/staticmap?center=${
               stationData?.address
@@ -58,10 +58,13 @@ const LocationCard = ({
           />
         </div>
       </Link>
-      <div className="px-2 py-2 w-full lg:flex-1 text-sm">
+      {/* <div className="px-2 py-2 w-full lg:flex-1 text-sm"> */}
+      <div className="px-2 py-2 w-full mx-auto lg:max-w-lg text-sm">
         <ul className="leading-8">
           <li className="capitalize w-full break-words">
-            <span className="font-bold mr-2">Pickup Location:</span>
+            <span className="font-bold mr-2 leading-tight">
+              Pickup Location:
+            </span>
             {stationData?.address ||
               stationName ||
               selectedLocation?.locationName ||

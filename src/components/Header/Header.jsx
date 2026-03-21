@@ -82,10 +82,10 @@ const Header = memo(() => {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <Link to={"/"} className="h-9 lg:h-12">
+          <Link to={"/"} className="w-full h-9 lg:h-12">
             <img
               src={newFullLightImg}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain object-[left_center]"
               alt="RENTOBIKES_LOGO"
               loading="eager"
               fetchPriority="high"

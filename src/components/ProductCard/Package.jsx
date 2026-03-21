@@ -161,7 +161,7 @@ const Package = () => {
         {/* Navigation buttons */}
         <button
           ref={prevRef}
-          className="absolute z-10 -left-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
+          className="hidden md:block absolute z-10 -left-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -181,7 +181,7 @@ const Package = () => {
 
         <button
           ref={nextRef}
-          className="absolute z-10 -right-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
+          className="hidden md:block absolute z-10 -right-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

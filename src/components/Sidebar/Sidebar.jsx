@@ -34,10 +34,10 @@ const Sidebar = () => {
     >
       <div className="w-[80%] bg-white h-full">
         <div className="bg-theme-black px-4 py-2.5 flex items-center justify-between mb-3">
-          <Link to={"/"} className="h-9 lg:h-12">
+          <Link to={"/"} className="w-full h-9 lg:h-12">
             <img
               src={logoImg}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain object-[left_center]"
               alt="RENTOBIKES"
             />
           </Link>

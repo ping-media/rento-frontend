@@ -382,7 +382,8 @@ const ExtendBookingModal = () => {
             {isDisabled && (
               <p className="text-left text-xs lg:text-sm text-theme italic mb-2">
                 <span className="font-bold mr-1">Note:</span>
-                update the pending payment in order to extend the ride.
+                You can extend again after ~10 minutes. Unpaid extensions are
+                automatically removed after this period.
               </p>
             )}
             <div className="mb-2">
@@ -427,7 +428,7 @@ const ExtendBookingModal = () => {
                   {newDate !== ""
                     ? formatFullDateAndTime(newEndDateAndTime)
                     : // ? formatFullDateAndTime(newDate)
-                      "(Enter number of days to view the new date)"}
+                      "(Enter number of days to view the new end date)"}
                 </p>
               </div>
               <div className={`mb-2`}>

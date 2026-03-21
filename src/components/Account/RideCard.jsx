@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   formatDateTimeComingFromDatabase,
   formatDateTimeForUser,
@@ -7,24 +7,25 @@ import {
 } from "../../utils";
 
 const RideCard = ({ item, id }) => {
-  const [isPageActive, setIsPageActive] = useState(false);
-  const [bookingStart, setBookingStart] = useState("");
-  const [bookingEnd, setBookingEnd] = useState("");
-  const [createdOn, setCreatedOn] = useState("");
+  const location = useLocation();
+  const isPageActive = location.pathname === "/account/my-rides";
 
-  // this is to change the functionality based on url
-  useEffect(() => {
-    if (location.pathname == "/account/my-rides") {
-      setIsPageActive(true);
-    } else {
-      setIsPageActive(false);
-    }
-  }, [location.href]);
+  const bookingStart = useMemo(() => {
+    if (!item) return null;
 
-  useEffect(() => {
-    setBookingStart(formatDateTimeForUser(item?.BookingStartDateAndTime));
-    setBookingEnd(formatDateTimeForUser(item?.BookingEndDateAndTime));
-    setCreatedOn(formatDateTimeComingFromDatabase(item?.createdAt));
+    return formatDateTimeForUser(item.BookingStartDateAndTime);
+  }, [item]);
+
+  const bookingEnd = useMemo(() => {
+    if (!item) return null;
+
+    return formatDateTimeForUser(item.BookingEndDateAndTime);
+  }, [item]);
+
+  const createdOn = useMemo(() => {
+    if (!item) return null;
+
+    return formatDateTimeComingFromDatabase(item.createdAt);
   }, [item]);
 
   return (
@@ -79,7 +80,7 @@ const RideCard = ({ item, id }) => {
                 </>
               )}
             </div>
-            <p className="mb-2 text-xs lg:text-sm text-gray-700">
+            <p className="mb-2 text-sm text-gray-700">
               <span className="font-semibold">Booking ID:</span> #
               {item?.bookingId}
               <span className="mx-1 hidden lg:inline">|</span>
@@ -88,7 +89,7 @@ const RideCard = ({ item, id }) => {
               </span>
               {createdOn}
             </p>
-            <p className="mb-2 text-xs lg:text-sm text-gray-700">
+            <p className="mb-2 text-sm text-gray-700">
               <span className="block mb-2">
                 Booking Start Date{" "}
                 <span className="hidden lg:inline">And Time</span>:{" "}
@@ -102,11 +103,11 @@ const RideCard = ({ item, id }) => {
               ${bookingEnd?.time}`}
               </span>
             </p>
-            <p className="text-xs lg:text-sm text-gray-700 mb-2 capitalize">
+            <p className="text-sm text-gray-700 mb-2 capitalize">
               Station Details: {item?.stationName}
             </p>
             <div className="flex items-center flex-wrap gap-1 lg:gap-2 mb-2">
-              <p className="text-xs lg:text-sm text-gray-700">
+              <p className="text-sm text-gray-700">
                 {item?.bookingPrice &&
                   `Booking Amount: ₹${formatPrice(
                     item?.bookingPrice?.bookingPrice,
@@ -115,7 +116,7 @@ const RideCard = ({ item, id }) => {
               <span className="mx-1 text-sm text-gray-400 hidden lg:inline">
                 |
               </span>
-              <p className="text-xs lg:text-sm text-gray-700">
+              <p className="text-sm text-gray-700">
                 {item?.bookingPrice &&
                   `Refundable Deposit Amount: ₹${formatPrice(
                     item?.vehicleBasic?.refundableDeposit,
@@ -123,7 +124,7 @@ const RideCard = ({ item, id }) => {
               </p>
             </div>
             {id && (
-              <p className="text-xs lg:text-sm text-gray-500 italic">
+              <p className="text-sm text-gray-500 italic">
                 (Deposit Amount to be paid at the time of pickup and will be
                 refunded after the drop)
               </p>

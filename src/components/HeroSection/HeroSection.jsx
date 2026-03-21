@@ -38,16 +38,11 @@ const HeroSection = () => {
               weekly, and monthly rental plans. Since 2016, we have been helping
               customers travel conveniently with affordable pricing, flexible
               booking, and trusted service across major cities.
-              {/* India's premier two wheeler rental service provides a wide
-              selection of vehicles available for rent. Our company is
-              recognized as one of the top rental providers in India,
-              distinguished by our tailored services and strong dedication to
-              customer satisfaction. */}
             </p>
           </div>
         </div>
         <div className="relative flex-1 -mt-10">
-          <div className="relative w-72 lg:w-[26.5rem] mt-3 mx-auto bg-theme p-1 lg:p-2 rounded-full">
+          <div className="relative w-72 lg:w-[24.5rem] 2xl:w-[26.5rem] mt-3 mx-auto bg-theme p-1 lg:p-2 rounded-full">
             {/* static rating */}
             <div className="absolute w-28 lg:w-40 bg-white/20 top-3 lg:top-9 right-0 backdrop-blur-md border border-gray-100 rounded-md p-1 lg:p-2">
               <p className="italic font-semibold mb-1.5">Rating</p>
@@ -68,7 +63,6 @@ const HeroSection = () => {
               className="w-full h-full object-cover"
               loading="eager"
               fetchPriority="high"
-              // decoding="async"
               alt="BIKE"
             />
           </div>

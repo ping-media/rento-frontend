@@ -32,7 +32,7 @@ const NewPriceCard = ({
   const [totalPrice, setTotalPrice] = useState(0);
   const [isExtraChecked, setIsExtraChecked] = useState([]);
   const [vehicleRentCost, setVehicleRentCost] = useState(
-    Number(totalRentalCost)
+    Number(totalRentalCost),
   );
   const [extraAddOnCost, setExtraAddOnCost] = useState(0);
   const [discountedTotal, setDiscountedTotal] = useState(0);
@@ -46,7 +46,7 @@ const NewPriceCard = ({
 
   const duration = getDurationInDays(
     queryParmsData?.BookingStartDateAndTime,
-    queryParmsData?.BookingEndDateAndTime
+    queryParmsData?.BookingEndDateAndTime,
   );
 
   const vehicleCategory = data?.vehicleMasterData?.vehicleCategory;
@@ -88,7 +88,7 @@ const NewPriceCard = ({
     } else {
       const duration = getDurationInDays(
         bookingStartDateTime?.date,
-        bookingEndDateTime?.date
+        bookingEndDateTime?.date,
       );
       const { total: AddOnTotal, tax: AddOnTax } =
         isExtraChecked?.length > 0
@@ -145,7 +145,7 @@ const NewPriceCard = ({
           gst = calculateTax(disountPrice, taxPercentage);
           setGSTCost(isNaN(gst) ? 0 : Math.round(gst));
           setDiscountedTotal(
-            disountPrice + Number(extraAddOnCost) + gst + gSTAddonCost
+            disountPrice + Number(extraAddOnCost) + gst + gSTAddonCost,
           );
         } else {
           setDiscountedTotal(subTotal);
@@ -198,7 +198,7 @@ const NewPriceCard = ({
                   className="font-bold text-gray-500"
                   tooltipData={renderTooltipBreakdown(
                     appliedPlans,
-                    daysBreakDown
+                    daysBreakDown,
                   )}
                 />
               </div>
@@ -253,8 +253,8 @@ const NewPriceCard = ({
                   {item?.maxAmount === 0
                     ? formatPrice(item?.amount * duration)
                     : item?.amount * duration > item?.maxAmount
-                    ? formatPrice(item?.maxAmount)
-                    : formatPrice(item?.amount * duration)}
+                      ? formatPrice(item?.maxAmount)
+                      : formatPrice(item?.amount * duration)}
                 </span>
               </li>
             ))}
@@ -300,7 +300,7 @@ const NewPriceCard = ({
             <span className="font-semibold">
               ₹{formatPrice(Math.round(refundableDeposit))}
             </span>
-            <p className="text-xs text-gray-400 text-theme font-bold">
+            <p className="text-xs text-theme font-bold">
               (An additional security deposit is payable at pickup)
             </p>
           </div>

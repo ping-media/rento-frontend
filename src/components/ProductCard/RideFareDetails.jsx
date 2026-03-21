@@ -1,12 +1,130 @@
 import {
   camelCaseToSpaceSeparated,
+  formatDateTimeForUser,
   formatPrice,
   getDurationInDays,
 } from "../../utils";
 import Tooltip from "../Tooltip/Tooltip";
 import { renderTooltipBreakdown } from "../../utils/helper.jsx";
+import { useState } from "react";
+import DialogWrapper from "../Modals/DialogWrapper.jsx";
+
+const getDiffAmount = (rides, status = "unpaid") => {
+  return (
+    (rides.bookingPrice?.diffAmount &&
+      rides.bookingPrice?.diffAmount?.length > 0 &&
+      rides.bookingPrice?.diffAmount.reduce((sum, transaction) => {
+        return transaction.status === status
+          ? sum +
+              transaction.amount +
+              (transaction?.tax || 0) +
+              (transaction?.addonTax || 0)
+          : sum;
+      }, 0)) ||
+    0
+  );
+};
+
+const openBreakdownModal = (type, items = [], setModelContent, setOpen) => {
+  let content = null;
+
+  if (type === "extension") {
+    content = (
+      <div className="divide-y">
+        {items.map((item, i) => {
+          const startDate = item?.BookingStartDateAndTime
+            ? formatDateTimeForUser(item.BookingStartDateAndTime)
+            : null;
+          const endDate = item.bookingEndDateAndTime
+            ? formatDateTimeForUser(item.bookingEndDateAndTime)
+            : null;
+
+          return (
+            <div
+              key={i}
+              className="flex justify-between items-center py-3 text-sm"
+            >
+              {/* Left side */}
+              <div>
+                <p className="font-semibold text-left">
+                  {item.extendDuration} days
+                </p>
+                <p className="text-xs text-gray-500">
+                  {startDate !== null ? startDate?.date : "--"} →{" "}
+                  {endDate !== null ? endDate?.date : "--"}
+                </p>
+              </div>
+
+              {/* Right side */}
+              <p className="font-medium">
+                ₹
+                {formatPrice(
+                  item.amount + (item?.tax || 0) + (item?.addonTax || 0),
+                )}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (type === "vehicleChange") {
+    content = (
+      <div className="divide-y">
+        {items.map((item, i) => {
+          const isRefund = item.refundAmount > 0;
+          const isZero = item.amount === 0 && item.refundAmount === 0;
+
+          const amount = isRefund ? item.refundAmount : item.amount;
+
+          return (
+            <div
+              key={i}
+              className="flex justify-between items-center py-3 text-sm"
+            >
+              {/* Left */}
+              <p className="font-semibold">Vehicle Change</p>
+
+              {/* Right */}
+              <p
+                className={`font-medium ${
+                  isZero
+                    ? "text-black"
+                    : isRefund
+                      ? "text-green-600"
+                      : "text-theme"
+                }`}
+              >
+                {isZero
+                  ? `₹${formatPrice(0)}`
+                  : isRefund
+                    ? `₹${formatPrice(amount)}`
+                    : `₹${formatPrice(amount)}`}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  setModelContent({
+    title:
+      type === "extension" ? "Extension Breakdown" : "Vehicle Change Breakdown",
+    content,
+  });
+
+  setOpen(true);
+};
 
 const RideFareDetails = ({ rides }) => {
+  const [open, setOpen] = useState(false);
+  const [modelContent, setModelContent] = useState({
+    title: "",
+    content: null,
+  });
+
   const amountLeft =
     (rides?.bookingPrice?.AmountLeftAfterUserPaid &&
     rides?.bookingPrice?.AmountLeftAfterUserPaid?.status !== "paid"
@@ -24,18 +142,9 @@ const RideFareDetails = ({ rides }) => {
           : sum;
       }, 0)) ||
     0;
-  const diffAmountLeft =
-    (rides.bookingPrice?.diffAmount &&
-      rides.bookingPrice?.diffAmount?.length > 0 &&
-      rides.bookingPrice?.diffAmount.reduce((sum, transaction) => {
-        return transaction.status === "unpaid"
-          ? sum +
-              transaction.amount +
-              (transaction?.tax || 0) +
-              (transaction?.addonTax || 0)
-          : sum;
-      }, 0)) ||
-    0;
+
+  const diffAmountLeft = getDiffAmount(rides);
+  const diffAmount = getDiffAmount(rides, "paid");
 
   const payableBalance = rides?.bookingPrice?.payOnPickupMethod
     ? 0
@@ -59,6 +168,15 @@ const RideFareDetails = ({ rides }) => {
 
   return (
     <>
+      <DialogWrapper
+        open={open}
+        onOpenChange={() => setOpen(false)}
+        title={modelContent.title}
+        className="top-40 md:top-20"
+      >
+        {modelContent.content}
+      </DialogWrapper>
+
       {rides && (
         <>
           {rides?.bookingPrice.isPackageApplied && (
@@ -89,10 +207,6 @@ const RideFareDetails = ({ rides }) => {
                         rides?.bookingPrice?.appliedPlans,
                       rides?.bookingPrice?.daysBreakdown,
                     )}
-                    // tooltipData={renderTooltipBreakdown(
-                    //   rides?.bookingPrice?.appliedPlans,
-                    //   rides?.bookingPrice?.daysBreakdown,
-                    // )}
                   />
                 </div>
               </div>
@@ -335,113 +449,63 @@ const RideFareDetails = ({ rides }) => {
             {/* extend amount  */}
             {totalExtendAmount > 0 && (
               <li className="flex items-center justify-between py-1.5 text-sm">
-                <div>
+                <div className="flex items-center gap-1.5">
                   <p className="text-sm font-semibold capitalize text-left">
-                    Extend Amount
+                    Extension Price
                   </p>
-                  <small className="font-semibold capitalize text-xs mx-1 block text-gray-400 italic">
+                  {/* <small className="font-semibold capitalize text-xs mx-1 block text-gray-400 italic">
                     (Total Paid Extend)
-                  </small>
+                  </small> */}
+                  <button
+                    onClick={() =>
+                      openBreakdownModal(
+                        "extension",
+                        rides?.bookingPrice?.extendAmount?.filter(
+                          (i) => i.status === "paid",
+                        ),
+                        setModelContent,
+                        setOpen,
+                      )
+                    }
+                    className="text-sm underline underline-offset-1"
+                  >
+                    (?)
+                  </button>
                 </div>
-                <p className="text-sm font-bold text-right">
+                <p className="text-sm text-right">
                   {`₹${formatPrice(totalExtendAmount)}`}
                 </p>
               </li>
             )}
-            {/* {rides?.bookingPrice?.extendAmount?.length > 0 && (
-              <li className="flex items-center justify-between pt-1 mt-1 border-t-2 text-sm">
-                <div>
-                  <div className="flex items-center gap-1">
-                    <p className="text-sm font-semibold capitalize text-left">
-                      Extend Amount
-                    </p>
-                    <div className="text-xs text-gray-400">
-                      <Tooltip
-                        buttonMessage={"(?)"}
-                        className="font-bold text-gray-500"
-                        tooltipData={renderTooltipBreakdown(
-                          rides?.bookingPrice?.extendAmount[
-                            rides?.bookingPrice?.extendAmount?.length - 1
-                          ]?.appliedPlans,
-                          rides?.bookingPrice?.extendAmount[
-                            rides?.bookingPrice?.extendAmount?.length - 1
-                          ]?.daysBreakdown,
-                          {
-                            percentage: rides?.vehicleMasterId?.gstPercentage,
-                            amount:
-                              rides?.bookingPrice?.extendAmount[
-                                rides?.bookingPrice?.extendAmount?.length - 1
-                              ]?.tax,
-                          },
-                          {
-                            percentage:
-                              rides?.stationData?.extraAddOn?.[0]
-                                ?.gstPercentage,
-                            amount:
-                              rides?.bookingPrice?.extendAmount[
-                                rides?.bookingPrice?.extendAmount?.length - 1
-                              ]?.addonTax,
-                          },
-                          rides?.bookingPrice?.extendAmount[
-                            rides?.bookingPrice?.extendAmount?.length - 1
-                          ]?.addOnAmount,
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <small className="font-semibold capitalize text-xs mx-1 block text-gray-400 italic">
-                    {rides?.bookingPrice?.extendAmount[
-                      rides?.bookingPrice?.extendAmount?.length - 1
-                    ]?.status === "paid"
-                      ? "(Paid)"
-                      : "(New Price For Extend booking)"}
-                  </small>
-                </div>
-                <p className="text-sm font-bold text-right text-theme">
-                  {`₹${formatPrice(
-                    Number(
-                      rides?.bookingPrice?.extendAmount[
-                        rides?.bookingPrice?.extendAmount?.length - 1
-                      ]?.amount +
-                        (rides?.bookingPrice?.extendAmount[
-                          rides?.bookingPrice?.extendAmount?.length - 1
-                        ]?.tax || 0) +
-                        (rides?.bookingPrice?.extendAmount[
-                          rides?.bookingPrice?.extendAmount?.length - 1
-                        ]?.addonTax || 0),
-                    ),
-                  )}`}
-                </p>
-              </li>
-            )} */}
 
             {/* difference amount  */}
-            {rides?.bookingPrice?.diffAmount > 0 && (
+            {diffAmount > 0 && (
               <li className="flex items-center justify-between py-1.5 text-sm">
-                <p className="text-sm font-semibold capitalize text-left">
-                  Difference Amount
-                  <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    {rides?.bookingPrice?.diffAmount[
-                      rides?.bookingPrice?.diffAmount?.length - 1
-                    ]?.status === "paid"
-                      ? "(Paid)"
-                      : "(need to pay this amount)"}
-                  </small>
-                </p>
-                <p className="text-sm font-bold text-right">
-                  {`₹${formatPrice(
-                    Number(
-                      rides?.bookingPrice?.diffAmount?.[
-                        rides?.bookingPrice?.diffAmount?.length - 1
-                      ]?.amount +
-                        (rides?.bookingPrice?.diffAmount[
-                          rides?.bookingPrice?.diffAmount?.length - 1
-                        ]?.tax || 0) +
-                        (rides?.bookingPrice?.diffAmount[
-                          rides?.bookingPrice?.diffAmount?.length - 1
-                        ]?.addonTax || 0),
-                    ),
-                  )}`}
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-semibold capitalize text-left">
+                    Vehicle Change Price
+                    {/* <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
+                    (Paid)
+                  </small> */}
+                  </p>
+                  <button
+                    onClick={() =>
+                      openBreakdownModal(
+                        "vehicleChange",
+                        rides?.bookingPrice?.diffAmount?.filter(
+                          (i) => i.status === "paid",
+                        ),
+                        setModelContent,
+                        setOpen,
+                      )
+                    }
+                    className="text-sm underline underline-offset-1"
+                  >
+                    (?)
+                  </button>
+                </div>
+                <p className="text-sm text-right">
+                  {`₹${formatPrice(Number(diffAmount))}`}
                 </p>
               </li>
             )}
