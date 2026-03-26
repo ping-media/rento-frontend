@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeISTForUser } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import {
   addRidesData,
   fetchingRides,
@@ -33,6 +33,10 @@ const RidesSummary = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [images, setImages] = useState([]);
   const { rides, loading } = useSelector((state) => state.rides);
+
+  const isPayableStatus =
+    rides?.length > 0 &&
+    !["canceled", "ongoing", "completed"].includes(rides[0]?.rideStatus);
 
   // fetching booking data using booking id
   useEffect(() => {
@@ -166,7 +170,8 @@ const RidesSummary = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                {rides[0]?.bookingStatus == "pending" && (
+                {/* {rides[0]?.bookingStatus == "pending" && ( */}
+                {isPayableStatus && (
                   <button
                     className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 bg-theme/90 shadow-md text-white outline-none rounded-md capitalize disabled:bg-opacity-50"
                     type="button"
