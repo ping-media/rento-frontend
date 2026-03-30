@@ -38,7 +38,7 @@ const Profile = () => {
       (async () => {
         dispatch(handleLoadingUserData());
         const result = await fetchingData(
-          `/getAllUsers?_id=${currentUser && currentUser?._id}`
+          `/getAllUsers?_id=${currentUser && currentUser?._id}`,
         );
         if (result?.status == 200) {
           return dispatch(handleSignIn(result?.data[0]));
@@ -54,6 +54,7 @@ const Profile = () => {
     const response = new FormData(e.target);
     let result = Object.fromEntries(response.entries());
     let formEmail = result["email"];
+
     result = Object.assign(result, {
       _id: currentUser?._id,
       isEmailVerified:
@@ -62,6 +63,7 @@ const Profile = () => {
       kycApproved: currentUser?.kycApproved,
       userType: "customer",
     });
+
     if (!result)
       return handleAsyncError(dispatch, "unable to update! try again.");
     setFormLoading(true);

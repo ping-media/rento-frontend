@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { updateRidesData } from "../../Redux/RidesSlice/RideSlice";
 import debounce from "lodash/debounce";
 import { pollBookingStatus } from "../../Data/Functions";
+import ExtendStatusCheck from "./_components/ExtendStatusCheck";
 
 const ExtendBookingModal = () => {
   const { isBookingExtendModalActive } = useSelector((state) => state.modals);
@@ -380,12 +381,18 @@ const ExtendBookingModal = () => {
         <div className="p-6 pt-2 text-center">
           <form onSubmit={handleExtendBooking}>
             {isDisabled && (
+              <ExtendStatusCheck
+                rides={rides}
+                handleCloseModal={handleCloseModal}
+              />
+            )}
+            {/* {isDisabled && (
               <p className="text-left text-xs lg:text-sm text-theme italic mb-2">
                 <span className="font-bold mr-1">Note:</span>
                 You can extend again after ~10 minutes. Unpaid extensions are
                 automatically removed after this period.
               </p>
-            )}
+            )} */}
             <div className="mb-2">
               <p className="text-gray-400 text-left">
                 <span className="font-semibold text-black mr-1">

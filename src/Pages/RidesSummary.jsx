@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeISTForUser } from "../utils";
 import RideCard from "../components/Account/RideCard";
 import LocationCard from "../components/ProductCard/LocationCard";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   addRidesData,
   fetchingRides,

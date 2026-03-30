@@ -147,7 +147,8 @@ const getDurationInDays = (date1Str, date2Str) => {
   const differenceInMs = Math.abs(date2 - date1);
 
   // Convert milliseconds to days
-  const days = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+  // const days = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+  const days = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
   return Number(days);
 };

@@ -35,9 +35,12 @@ const openBreakdownModal = (type, items = [], setModelContent, setOpen) => {
           const startDate = item?.BookingStartDateAndTime
             ? formatDateTimeForUser(item.BookingStartDateAndTime)
             : null;
-          const endDate = item.bookingEndDateAndTime
-            ? formatDateTimeForUser(item.bookingEndDateAndTime)
-            : null;
+          const endDate =
+            item.bookingEndDateAndTime || item.BookingEndDateAndTime
+              ? formatDateTimeForUser(
+                  item.bookingEndDateAndTime || item.BookingEndDateAndTime,
+                )
+              : null;
 
           return (
             <div

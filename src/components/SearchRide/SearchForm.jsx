@@ -28,7 +28,7 @@ const SearchForm = ({
     >
       <div className="w-full">
         <label htmlFor="pickupLocation" className="text-gray-500 block mb-1">
-          Pick-up Location
+          Pick-up Station
         </label>
         <DropDownButtonWithIcon
           labelId={"pickupLocationId"}
