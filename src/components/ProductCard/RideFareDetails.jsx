@@ -1,5 +1,4 @@
 import {
-  camelCaseToSpaceSeparated,
   formatDateTimeForUser,
   formatPrice,
   getDurationInDays,
@@ -232,7 +231,8 @@ const RideFareDetails = ({ rides }) => {
                 </p>
               </li>
             )}
-            {Object.entries(rides?.bookingPrice)
+
+            {/* {Object.entries(rides?.bookingPrice)
               .filter(
                 ([key]) =>
                   key !== "totalPrice" &&
@@ -260,8 +260,9 @@ const RideFareDetails = ({ rides }) => {
                   key !== "extraAddonPrice" &&
                   key !== "daysBreakdown" &&
                   key !== "appliedPlan" &&
-                  key !== "rrnNumber",
-              ) // Exclude totalPrice
+                  key !== "rrnNumber" &&
+                  key !== "totalDrivenKm",
+              ) 
               .map(([key, value]) => {
                 if (typeof value === "object") {
                   return (
@@ -271,7 +272,6 @@ const RideFareDetails = ({ rides }) => {
                         key={`key-${index}`}
                         className="flex items-center justify-between py-1.5 text-sm"
                       >
-                        {/* <div className="my-1"> */}
                         <div>
                           <p className="text-sm font-semibold capitalize">
                             {item?.name}
@@ -346,7 +346,74 @@ const RideFareDetails = ({ rides }) => {
                     </li>
                   );
                 }
-              })}
+              })} */}
+
+            {/* Extra Addon Details */}
+            {rides?.bookingPrice?.extraAddonDetails?.length > 0 &&
+              rides?.bookingPrice?.extraAddonDetails?.map((item, index) => (
+                <li
+                  key={`addon-${index}`}
+                  className="flex items-center justify-between py-1.5 text-sm"
+                >
+                  <div>
+                    <p className="text-sm font-semibold capitalize">
+                      {item?.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {`₹${item?.amount} x ${getDurationInDays(
+                        rides?.BookingStartDateAndTime,
+                        rides?.extendBooking?.originalEndDate ||
+                          rides?.BookingEndDateAndTime,
+                      )} ${
+                        getDurationInDays(
+                          rides?.BookingStartDateAndTime,
+                          rides?.extendBooking?.originalEndDate ||
+                            rides?.BookingEndDateAndTime,
+                        ) === 1
+                          ? "day"
+                          : "days"
+                      }`}
+                    </p>
+                  </div>
+                  <p>{`₹${formatPrice(
+                    item?.maxAmount > 0
+                      ? Math.min(
+                          item?.amount *
+                            getDurationInDays(
+                              rides?.BookingStartDateAndTime,
+                              rides?.extendBooking?.originalEndDate ||
+                                rides?.BookingEndDateAndTime,
+                            ),
+                          item?.maxAmount,
+                        )
+                      : item?.amount *
+                          getDurationInDays(
+                            rides?.BookingStartDateAndTime,
+                            rides?.extendBooking?.originalEndDate ||
+                              rides?.BookingEndDateAndTime,
+                          ),
+                  )}`}</p>
+                </li>
+              ))}
+
+            {/* GST */}
+            {rides?.stationData?.isGstActive !== "inactive" &&
+              rides?.bookingPrice?.tax > 0 && (
+                <li className="flex items-center py-1.5 justify-between">
+                  <p className="text-sm font-semibold capitalize">
+                    {`GST(${rides?.vehicleMasterId?.gstPercentage || "--"}%)`}
+                  </p>
+                  <p>{`₹${formatPrice(rides?.bookingPrice?.tax)}`}</p>
+                </li>
+              )}
+
+            {/* Addon Tax */}
+            {rides?.bookingPrice?.addonTax > 0 && (
+              <li className="flex items-center py-1.5 justify-between">
+                <p className="text-sm font-semibold capitalize">Addon Tax</p>
+                <p>{`₹${formatPrice(rides?.bookingPrice?.addonTax)}`}</p>
+              </li>
+            )}
 
             {/* totalPrice */}
             {rides?.bookingPrice?.discountPrice > 0 &&

@@ -1,6 +1,6 @@
 import { handleAsyncError } from "./handleAsyncError";
 import favicon from "../assets/favicon.ico";
-import { handlePostData } from "../Data";
+// import { handlePostData } from "../Data";
 
 export const openRazorpayPayment = ({
   finalAmount,
@@ -8,8 +8,8 @@ export const openRazorpayPayment = ({
   bookingData,
   dispatch,
   navigate,
-  type = "",
-  typeId = "",
+  // type = "",
+  // typeId = "",
 }) => {
   return new Promise(async (resolve, reject) => {
     if (!finalAmount || !orderId || !bookingData) {
