@@ -100,7 +100,7 @@ const Card = ({
 
   return (
     <div onClick={sendToRideSummary} className="relative">
-      <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative">
+      <div className="bg-white rounded-lg cursor-pointer shadow-md hover:shadow-xl relative z-0">
         {isVehicleSoldOut && (
           <SoldOutCard
             BookingEndDate={earliestBookingEndDate}

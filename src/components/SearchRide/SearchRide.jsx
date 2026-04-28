@@ -119,7 +119,7 @@ const SearchRide = () => {
         return;
       }
 
-      // checking whether the minimum duration should be 24 hour or more
+      // checking whether the minimum duration should be 6 hour or more
       const isMinDuration = isMinimumDurationHours(
         result.pickup,
         result.dropoff,
@@ -271,6 +271,38 @@ const SearchRide = () => {
         const dropoffDate = dropoffDateAndTime.split("T")[0];
         setPickupDate(new Date(pickupDate));
         setDropoffDate(new Date(dropoffDate));
+
+        // const pickupDateObj = new Date(pickUpDateAndTime);
+        // const isPickupToday =
+        //   pickupDateObj.toDateString() === now.toDateString();
+
+        // if (
+        //   isPickupToday &&
+        //   timeStringToMillisecondsWithoutSeconds(currentTime) >
+        //     timeStringToMillisecondsWithoutSeconds(pickupTime)
+        // ) {
+        //   setQueryPickupTime(formatTimeWithoutSeconds(currentTime));
+        //   setQueryDropoffTime(formatTimeWithoutSeconds(currentTime));
+        //   queryParms.set(
+        //     "BookingStartDateAndTime",
+        //     updateTimeInISOString(
+        //       pickUpDateAndTime,
+        //       formatTimeWithoutSeconds(currentTime),
+        //     ).replace(".000Z", "Z"),
+        //   );
+        //   queryParms.set(
+        //     "BookingEndDateAndTime",
+        //     updateTimeInISOString(
+        //       dropoffDateAndTime,
+        //       formatTimeWithoutSeconds(currentTime),
+        //     ).replace(".000Z", "Z"),
+        //   );
+        //   setQueryParms(queryParms);
+        // } else {
+        //   setQueryPickupTime(searchFormatTimeOnly(pickUpDateAndTime));
+        //   setQueryDropoffTime(searchFormatTimeOnly(dropoffDateAndTime));
+        // }
+
         if (
           timeStringToMillisecondsWithoutSeconds(currentTime) >
           timeStringToMillisecondsWithoutSeconds(pickupTime)

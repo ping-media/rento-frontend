@@ -10,7 +10,7 @@ const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
   }, [BookingEndDate, MaintenanceEndDate]);
 
   return (
-    <div className="absolute w-full h-full bg-white bg-opacity-40 z-10 rounded-b-lg">
+    <div className="absolute w-full h-full bg-white bg-opacity-40 z-10 lg:z-5 rounded-b-lg">
       <div className="w-full h-[78.5%] lg:h-[81%] flex items-center justify-center">
         <img
           src={soldOutImage}

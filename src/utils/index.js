@@ -150,6 +150,7 @@ const getDurationInDays = (date1Str, date2Str) => {
   // const days = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
   const days = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
+  // return Number(days) > 0 ? Number(days) : 1;
   return Number(days);
 };
 
@@ -722,7 +723,11 @@ const isSecondTimeSmaller = (time1, time2) => {
   return convertTo24HourFormat(time2) < convertTo24HourFormat(time1);
 };
 
-const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
+const validateBookingDates = (
+  startDateTimeStr,
+  endDateTimeStr,
+  minDuration = 6,
+) => {
   // Parse the ISO datetime strings to Date objects
   const startDateTime = new Date(startDateTimeStr);
   const endDateTime = new Date(endDateTimeStr);
@@ -737,11 +742,12 @@ const validateBookingDates = (startDateTimeStr, endDateTimeStr) => {
   const timeDifference = endDateTime - startDateTime;
   // Convert to hours (1000ms * 60s * 60min = 3600000ms per hour)
   const hoursDifference = timeDifference / 3600000;
-  // Check if the difference is at least 24 hours
-  if (hoursDifference < 24) {
+  // Check if the difference is at least 6 hours
+  // if (hoursDifference < 24) {
+  if (hoursDifference < minDuration) {
     return {
       valid: false,
-      message: "Booking minimum duration should at least 24 hours.",
+      message: `Booking minimum duration should at least ${minDuration} hours.`,
     };
   }
 
