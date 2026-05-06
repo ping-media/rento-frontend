@@ -50,11 +50,14 @@ const BottomInstallBanner = () => {
       {/* Banner */}
       <div className="relative z-10 bg-white shadow-lg rounded-t-2xl overflow-hidden">
         {/* FULL BLEED IMAGE SECTION */}
-        <div className="w-full h-62 bg-theme pt-5">
+        <div className="w-full h-[240px] bg-theme pt-5">
           <img
             src={bannerImage}
             alt="app preview"
             className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
         </div>
 
@@ -64,7 +67,9 @@ const BottomInstallBanner = () => {
             <img
               src="/favicon.ico"
               alt="Rento Bikes"
-              className="w-12 h-12 rounded-full object-contain"
+              width={48}
+              height={48}
+              className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full object-contain"
             />
           </div>
 
@@ -77,8 +82,12 @@ const BottomInstallBanner = () => {
 
           <a
             href={storeLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = storeLink;
+            }}
+            // target="_blank"
+            // rel="noopener noreferrer"
             className="w-full bg-theme text-white py-2 rounded-lg font-medium"
           >
             Download Now
