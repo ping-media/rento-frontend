@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import activaImg from "../../assets/images/activa.webp";
 import fascinoImg from "../../assets/images/fascino.webp";
 import cliqImg from "../../assets/images/cliq.webp";
@@ -27,6 +27,8 @@ const Package = () => {
   const { selectedStation, stationLoading } = useSelector(
     (state) => state.station,
   );
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
 
   const location = useLocation();
   const prevRef = useRef(null);
@@ -66,38 +68,6 @@ const Package = () => {
             <Link
               to={`/search/${selectedStation?.stationId}?BookingStartDateAndTime=${pickupDateAndTime}&BookingEndDateAndTime=${endDate}&vehiclePlan=${pkg._id}`}
             >
-              {/* <div className="relative rounded-md overflow-hidden shadow-md bg-white px-3.5 2xl:px-4 py-2">
-                <div className="absolute inset-0 bg-[radial-gradient(circle,_#94a3b8_0.9px,_transparent_0.9px)] bg-[length:8px_8px] opacity-30 pointer-events-none" />
-
-                <div className="flex items-center relative z-10">
-                  <div className="w-36 h-36 2xl:w-40 2xl:h-40">
-                    <img
-                      src={images[index % images.length]}
-                      loading="lazy"
-                      alt="Vehicle"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-
-                  <div className="flex-1 p-3">
-                    <h2
-                      className="text-lg font-extrabold line-clamp-1 uppercase text-gray-700"
-                      title={pkg.planName}
-                    >
-                      {pkg.planName}
-                      {!isPackageTextInclude && " Package"}
-                    </h2>
-
-                    <p className="text-sm mt-3">
-                      Starting From{" "}
-                      <span className="text-lg font-bold text-theme">
-                        ₹{formatNumber(pkg.planPrice)}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div> */}
-
               {/* new card layout  */}
               <div className="relative rounded-lg overflow-hidden shadow-md bg-white">
                 {/* dotted pattern background */}
@@ -161,7 +131,10 @@ const Package = () => {
         {/* Navigation buttons */}
         <button
           ref={prevRef}
-          className="hidden md:block absolute z-10 -left-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
+          // hidden md:block
+          className={`absolute z-10 -left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow ${
+            isBeginning ? "opacity-0 pointer-events-none" : ""
+          }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -181,7 +154,10 @@ const Package = () => {
 
         <button
           ref={nextRef}
-          className="hidden md:block absolute z-10 -right-4 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow"
+          // hidden md:block
+          className={`absolute z-10 -right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow ${
+            isEnd ? "opacity-0 pointer-events-none" : ""
+          }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -214,9 +190,26 @@ const Package = () => {
             nextEl: nextRef.current,
           }}
           onBeforeInit={(swiper) => {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
+            // swiper.params.navigation.prevEl = prevRef.current;
+            // swiper.params.navigation.nextEl = nextRef.current;
+            setTimeout(() => {
+              if (swiper.params.navigation) {
+                swiper.params.navigation.prevEl = prevRef.current;
+                swiper.params.navigation.nextEl = nextRef.current;
+                swiper.navigation.init();
+                swiper.navigation.update();
+              }
+            });
           }}
+          onSwiper={(swiper) => {
+            setIsBeginning(swiper.isBeginning);
+            setIsEnd(swiper.isEnd);
+          }}
+          onSlideChange={(swiper) => {
+            setIsBeginning(swiper.isBeginning);
+            setIsEnd(swiper.isEnd);
+          }}
+          className="w-full h-full"
         >
           {slides}
         </Swiper>

@@ -48,7 +48,7 @@ const Card = ({
   // through this we can get all queryParms and than use it
   const [queryParmsData] = useState(Object.fromEntries(queryParms.entries()));
   const { filter } = useSelector((state) => state.filter);
-  const { testMode } = useSelector((state) => state.general);
+  const { testMode, showVehicleCount } = useSelector((state) => state.general);
 
   const selectedPlan = useMemo(() => {
     const planId = queryParmsData?.vehiclePlan;
@@ -108,7 +108,7 @@ const Card = ({
           />
         )}
         {/* vehicle left */}
-        {!isSold && (
+        {showVehicleCount && !isSold && (
           <div className="top-1 lg:top-4 left-0 absolute z-[1]">
             <p
               className="background-[rgba( 255, 255, 255, 0.25 )] shadow-md backdrop-blur-sm px-2 py-1 rounded-r-lg mb-1"
@@ -127,6 +127,7 @@ const Card = ({
             {vehicleModel}
           </p>
         </div>
+
         <div className="px-3 py-1.5">
           <div className="w-full h-32 lg:h-48 rounded-lg mb-2.5 relative">
             <img

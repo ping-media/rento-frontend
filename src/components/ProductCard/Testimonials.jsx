@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -9,6 +9,8 @@ import TestimonialCard from "./TestimonialCard";
 
 const Testimonials = () => {
   const { testimonial } = useSelector((state) => state.general, shallowEqual);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
 
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -25,7 +27,9 @@ const Testimonials = () => {
         <div className="relative w-full h-full">
           <button
             ref={prevRef}
-            className="absolute z-10 -left-4 md:-left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
+            className={`absolute z-10 -left-4 md:-left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 ${
+              isBeginning ? "opacity-0 pointer-events-none" : ""
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +48,9 @@ const Testimonials = () => {
           </button>
           <button
             ref={nextRef}
-            className="absolute z-10 -right-4 md:-right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200"
+            className={`absolute z-10 -right-4 md:-right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 ${
+              isEnd ? "opacity-0 pointer-events-none" : ""
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -76,8 +82,24 @@ const Testimonials = () => {
               nextEl: nextRef.current,
             }}
             onBeforeInit={(swiper) => {
-              swiper.params.navigation.prevEl = prevRef.current;
-              swiper.params.navigation.nextEl = nextRef.current;
+              // swiper.params.navigation.prevEl = prevRef.current;
+              // swiper.params.navigation.nextEl = nextRef.current;
+              setTimeout(() => {
+                if (swiper.params.navigation) {
+                  swiper.params.navigation.prevEl = prevRef.current;
+                  swiper.params.navigation.nextEl = nextRef.current;
+                  swiper.navigation.init();
+                  swiper.navigation.update();
+                }
+              });
+            }}
+            onSwiper={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+            onSlideChange={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
             }}
             className="w-full h-full"
           >

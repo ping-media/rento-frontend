@@ -1,40 +1,13 @@
-import { contactUsFooterLink } from "../../Data/dummyData";
-import { memo, useMemo } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { memo } from "react";
 import BrandSection from "./_components/BrandSection";
 import QuickLinks from "./_components/QuickLinks";
 import ContactLinks from "./_components/ContactLinks";
 import AppDownload from "./_components/AppDownload";
 import Copyright from "./_components/Copyright";
+import { useFooter } from "../../hooks/useFooter";
 
 const Footer = () => {
-  const { info, loading } = useSelector(
-    (state) => ({
-      info: state.general.info,
-      loading: state.general.loading,
-    }),
-    shallowEqual,
-  );
-
-  const footerData = useMemo(() => {
-    return {
-      contact: info?.contact || "8884488891",
-      email: info?.email || "support@rentobikes.com",
-      address: info?.address || "HSR Layout, Bangalore, 560016",
-      socialmedia: info?.socialmedia || {},
-      appLink: { android: info?.appLink?.Android, ios: info?.appLink?.IOS },
-    };
-  }, [info]);
-
-  const footerQuickLink = useMemo(
-    () =>
-      contactUsFooterLink({
-        contact: footerData.contact,
-        email: footerData.email,
-        address: footerData.address,
-      }),
-    [footerData],
-  );
+  const { loading, footerData, footerQuickLink } = useFooter();
 
   if (loading) return null;
 

@@ -22,7 +22,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-black/75 pointer-events-none" />
 
       {/* Content goes here */}
-      <div className="relative z-10 flex h-full text-white flex-wrap px-8 lg:px-20 py-10 gap-5 lg:gap-0">
+      <div className="relative z-10 flex 2xl:items-center h-full text-white flex-wrap px-8 lg:px-20 py-10 gap-5 lg:gap-0">
         <div className="flex flex-1 items-center justify-center">
           <div className="leading-relaxed px-6">
             <p className="text-md lg:text-lg font-semibold">

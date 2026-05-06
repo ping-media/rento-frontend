@@ -26,6 +26,7 @@ import {
   stopSettingLoading,
 } from "../../Redux/SettingSlice/SettingSlice";
 import LayoutModals from "./LayoutModals";
+import BottomInstallBanner from "../Banner/BottomInstallBanner";
 
 const Layout = () => {
   const { maintenance, info, loading } = useSelector((state) => state.general);
@@ -73,7 +74,7 @@ const Layout = () => {
 
     try {
       dispatch(startLoading());
-      const res = await fetchingData("/addOn");
+      const res = await fetchingData("/addOn?isWeb=true");
       if (res?.status === 200) {
         dispatch(addAddOn(res));
         dispatch(addGeneralSettings(res));
@@ -173,6 +174,8 @@ const Layout = () => {
       <Suspense fallback={null}>
         <Footer />
       </Suspense>
+
+      <BottomInstallBanner />
     </>
   );
 };

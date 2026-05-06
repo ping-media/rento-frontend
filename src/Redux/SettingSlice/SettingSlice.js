@@ -5,6 +5,7 @@ const SettingSlice = createSlice({
   initialState: {
     maintenance: false,
     testMode: false,
+    showVehicleCount: true,
     info: null,
     slides: [],
     testimonial: [],
@@ -15,13 +16,20 @@ const SettingSlice = createSlice({
       state.maintenance = !state.maintenance;
     },
     addGeneralSettings: (state, action) => {
-      const { info, slides, testimonial, maintenance, testMode } =
-        action.payload;
+      const {
+        info,
+        slides,
+        testimonial,
+        maintenance,
+        testMode,
+        showVehicleCount,
+      } = action.payload;
       state.info = info;
       state.slides = slides;
       state.testimonial = testimonial;
       state.maintenance = maintenance;
       state.testMode = testMode;
+      state.showVehicleCount = showVehicleCount;
     },
     stopSettingLoading: (state) => {
       state.loading = false;

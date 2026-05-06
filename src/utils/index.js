@@ -184,59 +184,6 @@ const calculateTax = (amount, taxPercentage) => {
   return Math.round(taxAmount);
 };
 
-// const convertToISOString = (dropoffDate, dropoffTime) => {
-//   const dateParts = dropoffDate.split(",")[1].trim().split(" ");
-//   const monthNames = [
-//     "Jan",
-//     "Feb",
-//     "Mar",
-//     "Apr",
-//     "May",
-//     "Jun",
-//     "Jul",
-//     "Aug",
-//     "Sept",
-//     "Oct",
-//     "Nov",
-//     "Dec",
-//   ];
-
-//   const day = parseInt(dateParts[0], 10);
-//   const month = monthNames.findIndex(
-//     (m) => m.toLowerCase() === dateParts[1].toLowerCase()
-//   );
-//   const year = parseInt(dateParts[2], 10);
-
-//   if (month === -1) {
-//     console.error("Invalid month:", dateParts[1]);
-//     return null;
-//   }
-
-//   // Create the initial date object in UTC time
-//   const date = new Date(Date.UTC(year, month, day));
-
-//   // Step 2: Parse the time string ("6:00 PM") into 24-hour format
-//   const [time, modifier] = dropoffTime.trim().split(/\s+/);
-//   let [hour, minute] = time.split(":").map(Number);
-//   let hours = parseInt(hour, 10);
-//   const ampm = modifier;
-
-//   // Convert 12-hour time to 24-hour time
-//   if (ampm === "PM" && hours !== 12) {
-//     hours += 12;
-//   } else if (ampm === "AM" && hours === 12) {
-//     hours = 0;
-//   }
-
-//   // Step 3: Set the time (hours and minutes) in the Date object in UTC
-//   date.setUTCHours(hours, parseInt(minute, 10), 0, 0);
-
-//   // Step 4: Convert the Date object to an ISO string and remove milliseconds
-//   const isoString = date?.toISOString().slice(0, 19) + "Z";
-
-//   return isoString;
-// };
-
 const convertToISOString = (dropoffDate, dropoffTime) => {
   try {
     const dateString = dropoffDate.includes(",")
@@ -306,33 +253,6 @@ const removeAfterSecondSlash = (pathname) => {
   // Otherwise, slice the pathname up to the second slash
   return pathname.slice(0, secondSlashIndex);
 };
-
-// const formatDateTimeForUser = (input) => {
-//   const [dateStr, timeStr] = input?.split(" ");
-
-//   // Parse the date string into a Date object
-//   const date = new Date(dateStr);
-
-//   // Format the date to the desired format (29 Nov, 2024)
-//   const dateOptions = { day: "2-digit", month: "short", year: "numeric" };
-//   const formattedDate = date.toLocaleDateString("en-GB", dateOptions);
-
-//   // Format the time to the desired format (5:00 PM)
-//   const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
-
-//   // Use UTC methods to get the time in UTC (not local time)
-//   const formattedTime = date.toLocaleTimeString("en-GB", {
-//     ...timeOptions,
-//     timeZone: "UTC",
-//   });
-
-//   // Return the formatted string
-//   // return `date:${formattedDate} time:${formattedTime}`;
-//   return {
-//     date: formattedDate,
-//     time: formattedTime,
-//   };
-// };
 
 const formatDateTimeForUser = (input) => {
   const date = new Date(input);
@@ -666,44 +586,6 @@ const isMinimumDurationHours = (date1, date2, duration = 12) => {
 
   return diffInMs >= duration * msInHour;
 };
-
-// const formatDateMobile = (inputDate) => {
-//   // Return early if input is invalid
-//   if (!inputDate || typeof inputDate !== "string") return "Invalid Date";
-
-//   try {
-//     // Explicitly split and construct the date to avoid any ambiguity
-//     const parts = inputDate.trim().split("/");
-//     if (parts.length !== 3) return "Invalid Date";
-
-//     // Get month, day, year - explicitly treating as mm/dd/yyyy format
-//     const month = parseInt(parts[0], 10) - 1; // 0-indexed months in JS
-//     const day = parseInt(parts[1], 10);
-//     const year = parseInt(parts[2], 10);
-
-//     // Validate the parts
-//     if (isNaN(month) || isNaN(day) || isNaN(year)) return "Invalid Date";
-//     if (month < 0 || month > 11 || day < 1 || day > 31) return "Invalid Date";
-
-//     // Create date manually to ensure proper interpretation
-//     const date = new Date(year, month, day);
-
-//     // Check if date is valid by verifying the components match what we set
-//     if (
-//       date.getFullYear() !== year ||
-//       date.getMonth() !== month ||
-//       date.getDate() !== day
-//     ) {
-//       return "Invalid Date";
-//     }
-
-//     // Format using date-fns with explicit formatting
-//     return format(date, "dd MMM yyyy");
-//   } catch (error) {
-//     console.error("Date formatting error:", error);
-//     return "Invalid Date";
-//   }
-// };
 
 const isSecondTimeSmaller = (time1, time2) => {
   const convertTo24HourFormat = (time) => {
