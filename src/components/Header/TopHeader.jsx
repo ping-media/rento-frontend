@@ -29,7 +29,7 @@ const TopHeader = ({ email, phoneNumber, altPhoneNumber }) => {
             className={`inline-flex items-center text-gray-100 text-sm`}
           >
             <span className="mr-1.5 font-semibold hidden md:inline-block">
-              CC -{" "}
+              Bangalore -{" "}
             </span>
             8884488891
           </a>

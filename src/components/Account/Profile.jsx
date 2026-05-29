@@ -90,6 +90,7 @@ const Profile = () => {
       <IdentityModal />
       <SelfieModal />
       <EmailVerifyModal />
+
       <div className="border-2 rounded-lg px-4 py-2 shadow-md bg-white mb-3">
         <div className="border-b-2 border-gray-400 mb-3 py-2 flex items-center justify-between">
           <h2 className="font-bold text-lg lg:text-xl uppercase">
@@ -211,6 +212,7 @@ const Profile = () => {
         </form>
       </div>
       {/* dcoument upload  */}
+      {/* <DigiLockerVerify /> */}
       <UserDocument />
     </>
   ) : (
