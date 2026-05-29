@@ -55,7 +55,7 @@ const Layout = () => {
       phoneNumber: `+91 ${info?.contact || "8884488891"}`,
       altPhoneNumber: `+91 ${info?.altContact || "--"}`,
     }),
-    [info?.email, info?.contact],
+    [info?.email, info?.contact, info?.altContact],
   );
 
   useEffect(() => {

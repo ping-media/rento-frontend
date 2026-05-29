@@ -1,40 +1,38 @@
 import React from "react";
 
+const Contact = [
+  { label: "Bangalore", value: "9743202202" },
+  { label: "Hubli", value: "8884988875" },
+  { label: "Bangalore", value: "8884488891" },
+];
+
 const TopHeader = ({ email, phoneNumber, altPhoneNumber }) => {
-  const isAltNumber = altPhoneNumber?.trim() !== "--";
   return (
     <div className=" bg-theme">
       <div className="py-1.5 w-[95%] lg:w-[90%] mx-auto">
         <div className="flex items-center justify-end gap-1 md:gap-2">
-          <a
-            href={`tel:9743202202`}
-            className="flex items-center justify-center text-gray-100 text-sm pr-2 border-r-2"
-          >
-            <span className="mr-1.5 font-semibold hidden md:inline-block">
-              Bangalore -{" "}
-            </span>
-            9743202202
-          </a>
-          <a
-            href={`tel:8884988875`}
-            className={`inline-flex items-center text-gray-100 text-sm pr-2 border-r-2`}
-          >
-            <span className="mr-1.5 font-semibold hidden md:inline-block">
-              Hubli -{" "}
-            </span>
-            8884988875
-          </a>
-          <a
-            href={`tel:8884488891`}
-            className={`inline-flex items-center text-gray-100 text-sm`}
-          >
-            <span className="mr-1.5 font-semibold hidden md:inline-block">
-              Bangalore -{" "}
-            </span>
-            8884488891
-          </a>
+          {Contact.map((c) => (
+            <a
+              key={c.value}
+              href={`tel:${c.value}`}
+              className="inline-flex items-center text-gray-100 text-sm pr-2 border-r-2 last:pr-0 last:border-r-0"
+            >
+              <span className="mr-1.5 font-semibold hidden md:inline-block">
+                {c.label} -{" "}
+              </span>
+              <span className="tabular-nums">{c.value}</span>
+            </a>
+          ))}
         </div>
-        {/* <div className="flex items-center justify-between lg:justify-end gap-2">
+      </div>
+    </div>
+  );
+};
+
+export default TopHeader;
+
+{
+  /* <div className="flex items-center justify-between lg:justify-end gap-2">
           <a
             href={`mailto:${email}`}
             className="flex items-center justify-center text-gray-100 text-sm pr-2 lg:border-r-2"
@@ -98,10 +96,5 @@ const TopHeader = ({ email, phoneNumber, altPhoneNumber }) => {
               {altPhoneNumber}
             </a>
           )}
-        </div> */}
-      </div>
-    </div>
-  );
-};
-
-export default React.memo(TopHeader);
+        </div> */
+}
