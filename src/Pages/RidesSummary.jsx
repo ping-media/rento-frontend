@@ -34,9 +34,11 @@ const RidesSummary = () => {
   const [images, setImages] = useState([]);
   const { rides, loading } = useSelector((state) => state.rides);
 
+  // const isPayableStatus =
+  //   rides?.length > 0 &&
+  //   !["canceled", "ongoing", "completed"].includes(rides[0]?.rideStatus);
   const isPayableStatus =
-    rides?.length > 0 &&
-    !["canceled", "ongoing", "completed"].includes(rides[0]?.rideStatus);
+    rides?.length > 0 && rides[0]?.razorpayPaymentId === "";
 
   // fetching booking data using booking id
   useEffect(() => {
@@ -181,6 +183,7 @@ const RidesSummary = () => {
                     {!paymentLoading ? "make payment" : <Spinner />}
                   </button>
                 )}
+
                 <div
                   className={`bg-theme hover:bg-opacity-80 text-gray-100 p-1.5 md:px-4 lg:px-6 lg:py-2.5 shadow-md outline-none border-0 rounded-md cursor-pointer`}
                 >
