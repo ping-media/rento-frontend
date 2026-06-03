@@ -9,7 +9,7 @@ const BookingPaymentCard = ({
   taxAmount,
 }) => {
   const { tempTotalPrice, tempCouponDiscountTotal } = useSelector(
-    (state) => state.coupon
+    (state) => state.coupon,
   );
   const { selectedAddOn } = useSelector((state) => state.addon);
   const { selectedStation } = useSelector((state) => state.station);
@@ -19,7 +19,7 @@ const BookingPaymentCard = ({
   const duration = useMemo(
     () =>
       getDurationInDays(bookingStartDateTime?.date, bookingEndDateTime?.date),
-    [bookingStartDateTime?.date, bookingEndDateTime?.date]
+    [bookingStartDateTime?.date, bookingEndDateTime?.date],
   );
 
   const finalPrice = useMemo(() => {
@@ -43,7 +43,7 @@ const BookingPaymentCard = ({
 
     if (priceToUse !== 0) {
       const amount = Math.round(
-        (priceToUse + taxAmount + extraAddonPrice) * 0.2
+        (priceToUse + taxAmount + extraAddonPrice) * 0.2,
       );
       return amount;
     }
@@ -108,10 +108,23 @@ const BookingPaymentCard = ({
           (No Need to select Payment Method because amount is ₹0)
         </p>
       )}
+
+      {finalPrice < 10 && (
+        <p className="text-xs text-left italic text-gray-500 mt-1">
+          Partial payment is available only when the amount is ₹10 or more.
+        </p>
+      )}
       <div className="w-full my-2">
         {/* 20% payment through online  */}
         {payments?.partiallyPay && (
-          <label className="has-[:checked]:bg-white/30 has-[:checked]:text-theme has-[:checked]:ring-theme has-[:checked]:ring-2 cursor-pointer bg-white/40 hover:bg-white/20 w-full p-3 rounded-md flex justify-between items-center shadow mb-1.5">
+          // <label className="has-[:checked]:bg-white/30 has-[:checked]:text-theme has-[:checked]:ring-theme has-[:checked]:ring-2 cursor-pointer bg-white/40 hover:bg-white/20 w-full p-3 rounded-md flex justify-between items-center shadow mb-1.5">
+          <label
+            className={`group w-full p-3 rounded-md flex justify-between items-center shadow mb-1.5 ${
+              finalPrice < 10 || isDiscountZeroApplied
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "cursor-pointer bg-white/40 hover:bg-white/20 has-[:checked]:bg-white/30 has-[:checked]:text-theme has-[:checked]:ring-theme has-[:checked]:ring-2"
+            }`}
+          >
             <div className="flex items-center space-x-5">
               <div className="flex items-center">
                 <svg
@@ -137,8 +150,8 @@ const BookingPaymentCard = ({
               type="radio"
               name="paymentMethod"
               value={"partiallyPay"}
-              disabled={isDiscountZeroApplied}
-              className="checked:border-theme h-4 w-4 accent-theme disabled:bg-gray-500"
+              disabled={isDiscountZeroApplied || finalPrice < 10}
+              className="checked:border-theme h-4 w-4 accent-theme disabled:bg-gray-500 disabled:cursor-not-allowed"
             />
           </label>
         )}

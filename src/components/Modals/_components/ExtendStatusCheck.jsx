@@ -8,6 +8,8 @@ import Spinner from "../../Spinner/Spinner";
 const ExtendStatusCheck = ({ rides, handleCloseModal }) => {
   const [retryLoading, setRetryLoading] = useState(false);
   const dispatch = useDispatch();
+  const isExtended =
+    (rides[0]?.bookingPrice?.extendAmount?.length || 0) > 0 || false;
 
   const handleCheckAndUpdate = async () => {
     try {
@@ -45,18 +47,22 @@ const ExtendStatusCheck = ({ rides, handleCloseModal }) => {
   return (
     <div className="text-left text-xs lg:text-sm text-theme italic mb-2 flex flex-wrap md:flex-nowrap items-center justify-between">
       <p>
-        <span className="font-bold mr-1">Note:</span>A pending payment was
-        found. Click below to check its status and retry.
+        <span className="font-bold mr-1">Note:</span>
+        {isExtended
+          ? "A pending payment was found. Click below to check its status and retry."
+          : "Main booking payment is pending."}
       </p>
 
-      <button
-        type="button"
-        disabled={retryLoading}
-        onClick={handleCheckAndUpdate}
-        className="w-2/6 mt-2 md:mt-0 text-white bg-theme px-3 py-1.5 rounded-md text-xs disabled:bg-theme/60"
-      >
-        {retryLoading ? <Spinner message="Checking..." /> : "Check Status"}
-      </button>
+      {isExtended && (
+        <button
+          type="button"
+          disabled={retryLoading}
+          onClick={handleCheckAndUpdate}
+          className="w-2/6 mt-2 md:mt-0 text-white bg-theme px-3 py-1.5 rounded-md text-xs disabled:bg-theme/60"
+        >
+          {retryLoading ? <Spinner message="Checking..." /> : "Check Status"}
+        </button>
+      )}
     </div>
   );
 };

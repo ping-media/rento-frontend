@@ -38,7 +38,8 @@ const RidesSummary = () => {
   //   rides?.length > 0 &&
   //   !["canceled", "ongoing", "completed"].includes(rides[0]?.rideStatus);
   const isPayableStatus =
-    rides?.length > 0 && rides[0]?.razorpayPaymentId === "";
+    (rides?.length > 0 && rides[0]?.paySuccessId === "") ||
+    rides[0]?.paySuccessId?.toLowerCase() === "na";
 
   // fetching booking data using booking id
   useEffect(() => {
@@ -172,10 +173,9 @@ const RidesSummary = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                {/* {rides[0]?.bookingStatus == "pending" && ( */}
                 {isPayableStatus && (
                   <button
-                    className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 bg-theme/90 shadow-md text-white outline-none rounded-md capitalize disabled:bg-opacity-50"
+                    className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 bg-theme shadow-md text-white outline-none rounded-md capitalize disabled:bg-opacity-50"
                     type="button"
                     onClick={handleMakePayment}
                     disabled={paymentLoading}

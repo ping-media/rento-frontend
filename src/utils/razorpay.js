@@ -1,6 +1,5 @@
 import { handleAsyncError } from "./handleAsyncError";
 import favicon from "../assets/favicon.ico";
-// import { handlePostData } from "../Data";
 
 export const openRazorpayPayment = ({
   finalAmount,
@@ -8,8 +7,7 @@ export const openRazorpayPayment = ({
   bookingData,
   dispatch,
   navigate,
-  // type = "",
-  // typeId = "",
+  booking_id,
 }) => {
   return new Promise(async (resolve, reject) => {
     if (!finalAmount || !orderId || !bookingData) {
@@ -26,27 +24,6 @@ export const openRazorpayPayment = ({
         document.body.appendChild(script);
       });
     };
-
-    // const deleteBooking = async () => {
-    //   try {
-    //     if (type === "ExtensionFromCustomer") return;
-
-    //     const payload = {
-    //       bookingId: bookingData._id,
-    //       userId: bookingData.userId?._id || bookingData.userId,
-    //     };
-
-    //     if (type === "extend" && typeId !== "") {
-    //       payload.type = "extend";
-    //       payload.typeId = typeId || 0;
-    //     }
-
-    //     await handlePostData("/delete-booking", payload);
-    //     console.log("Booking deleted due to payment cancel");
-    //   } catch (err) {
-    //     console.error("Error deleting booking on cancel:", err);
-    //   }
-    // };
 
     try {
       await loadRazorpayScript();
@@ -78,12 +55,17 @@ export const openRazorpayPayment = ({
         modal: {
           escape: false,
           ondismiss: async () => {
-            // await deleteBooking();
             if (
               navigate &&
               !location.pathname.includes("/account/my-rides/summary/")
-            )
-              navigate("/");
+            ) {
+              if (booking_id) {
+                navigate(`/account/my-rides/summary/${booking_id}`);
+              } else {
+                navigate("/");
+              }
+            }
+
             reject({ success: false, message: "Payment cancelled" });
           },
         },

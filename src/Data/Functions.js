@@ -1066,6 +1066,7 @@ const handleBooking = async (
           bookingData: currentUser,
           dispatch,
           navigate,
+          booking_id,
         });
 
         if (paymentSuccess) {
