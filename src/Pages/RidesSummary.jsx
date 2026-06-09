@@ -41,6 +41,10 @@ const RidesSummary = () => {
     (rides?.length > 0 && rides[0]?.paySuccessId === "") ||
     rides[0]?.paySuccessId?.toLowerCase() === "na";
 
+  const CashPayment =
+    rides?.length > 0 &&
+    rides[0]?.paymentgatewayOrderId?.toLowerCase() !== "na";
+
   // fetching booking data using booking id
   useEffect(() => {
     if (id) {
@@ -134,7 +138,6 @@ const RidesSummary = () => {
       <div className="relative">
         {rides?.length == 1 ? (
           <div className="border-2 rounded-lg p-2 lg:px-4 lg:py-2 shadow-md bg-white mb-3 overflow-visible">
-            {/* <div className="mb-1 flex items-center justify-between sticky top-[88px] z-40 bg-white  shadow-sm px-1 lg:px-0"> */}
             <div className="mb-1 flex items-center">
               <div className="flex items-center gap-1.5">
                 <button
@@ -173,7 +176,7 @@ const RidesSummary = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                {isPayableStatus && (
+                {CashPayment && isPayableStatus && (
                   <button
                     className="p-1.5 md:px-4 lg:px-6 lg:py-2.5 bg-theme shadow-md text-white outline-none rounded-md capitalize disabled:bg-opacity-50"
                     type="button"
