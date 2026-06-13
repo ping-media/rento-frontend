@@ -54,7 +54,10 @@ const ExtendBookingModal = () => {
           rides?.[0]?.vehicleTableId?._id
         }&BookingStartDateAndTime=${addOneMinute(
           rides[0]?.BookingEndDateAndTime,
-        ).replace(".000Z", "Z")}&BookingEndDateAndTime=${newDate}`,
+        ).replace(
+          ".000Z",
+          "Z",
+        )}&BookingEndDateAndTime=${newDate}&excludeBookingId=${rides?.[0]?._id}`,
       );
       if (isVehicleFree?.status === 200) {
         setFreeVehicle(
@@ -386,22 +389,12 @@ const ExtendBookingModal = () => {
                 handleCloseModal={handleCloseModal}
               />
             )}
-            {/* {isDisabled && (
-              <p className="text-left text-xs lg:text-sm text-theme italic mb-2">
-                <span className="font-bold mr-1">Note:</span>
-                You can extend again after ~10 minutes. Unpaid extensions are
-                automatically removed after this period.
-              </p>
-            )} */}
             <div className="mb-2">
               <p className="text-gray-400 text-left">
                 <span className="font-semibold text-black mr-1">
                   Current End Date:
                 </span>
                 {formatFullDateAndTime(rides[0]?.BookingEndDateAndTime)}
-                {/* {formatFullDateAndTime(
-                  addOneMinute(rides[0]?.BookingEndDateAndTime),
-                )} */}
               </p>
             </div>
             <div className="mb-2">

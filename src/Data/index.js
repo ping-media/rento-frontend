@@ -1,73 +1,96 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { request } from "./request";
 
-// const fetchingData = async (endpoint) => {
+// const fetchingData = async (endpoint, retries = 5, delay = 500) => {
+//   for (let attempt = 1; attempt <= retries; attempt++) {
+//     try {
+//       const response = await axios.get(
+//         `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+//       );
+//       return response?.data;
+//     } catch (error) {
+//       if (attempt < retries) {
+//         await new Promise((resolve) => setTimeout(resolve, delay));
+//       } else {
+//         console.error("All retry attempts failed.");
+//         const navigate = useNavigate();
+//         navigate("*");
+//         throw error;
+//       }
+//     }
+//   }
+// };
+const fetchingData = (endpoint) => {
+  return request({
+    endpoint,
+    method: "get",
+    // on404: () => navigate("*"),
+  });
+};
+
+// const createBooking = async (data) => {
 //   try {
-//     const response = await axios.get(
-//       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}/createBooking`,
+//       data,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       },
 //     );
-//     return response?.data;
+//     return response.data;
 //   } catch (error) {
 //     return {
-//       message: `no data found.`,
+//       message: `Something went wrong while renting vehicle`,
 //       type: "error",
 //     };
 //   }
 // };
 
-const fetchingData = async (endpoint, retries = 5, delay = 500) => {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
-      );
-      return response?.data;
-    } catch (error) {
-      if (attempt < retries) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      } else {
-        console.error("All retry attempts failed.");
-        const navigate = useNavigate();
-        navigate("*");
-        throw error;
-      }
-    }
-  }
-};
-
 const createBooking = async (data) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/createBooking`,
+    return await request({
+      endpoint: "/createBooking",
+      method: "post",
       data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
+    });
+  } catch {
     return {
-      message: `Something went wrong while renting vehicle`,
+      message: "Something went wrong while renting vehicle",
       type: "error",
     };
   }
 };
 
+// const handleUser = async (endpoint, data) => {
+//   try {
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+//       data,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       },
+//     );
+//     return response?.data || response;
+//   } catch (error) {
+//     return {
+//       message: "user not found.",
+//       type: "error",
+//     };
+//   }
+// };
+
 const handleUser = async (endpoint, data) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+    return await request({
+      endpoint,
+      method: "post",
       data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response?.data || response;
-  } catch (error) {
+    });
+  } catch {
     return {
       message: "user not found.",
       type: "error",
@@ -75,18 +98,33 @@ const handleUser = async (endpoint, data) => {
   }
 };
 
+// const handlePostData = async (endpoint, data) => {
+//   try {
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+//       data,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       },
+//     );
+//     return response?.data || response;
+//   } catch (error) {
+//     return {
+//       message: error?.message,
+//       type: "error",
+//     };
+//   }
+// };
+
 const handlePostData = async (endpoint, data) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+    return await request({
+      endpoint,
+      method: "post",
       data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response?.data || response;
+    });
   } catch (error) {
     return {
       message: error?.message,
@@ -94,20 +132,37 @@ const handlePostData = async (endpoint, data) => {
     };
   }
 };
+
+// const handlebooking = async (data, bookingId = "") => {
+//   try {
+//     const id = bookingId ? `?_id=${bookingId}` : "";
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}/createBooking${id}`,
+//       data,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       },
+//     );
+//     return response.data;
+//   } catch (error) {
+//     return {
+//       message: error?.message,
+//       type: "error",
+//     };
+//   }
+// };
 
 const handlebooking = async (data, bookingId = "") => {
   try {
     const id = bookingId ? `?_id=${bookingId}` : "";
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/createBooking${id}`,
+
+    return await request({
+      endpoint: `/createBooking${id}`,
+      method: "post",
       data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
+    });
   } catch (error) {
     return {
       message: error?.message,
@@ -116,19 +171,34 @@ const handlebooking = async (data, bookingId = "") => {
   }
 };
 
+// const handleupdateUser = async (data) => {
+//   try {
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}/signup`,
+//       data,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       },
+//     );
+//     return response.data;
+//   } catch (error) {
+//     return {
+//       message: "something went wrong while updating user",
+//       type: "error",
+//     };
+//   }
+// };
+
 const handleupdateUser = async (data) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/signup`,
+    return await request({
+      endpoint: "/signup",
+      method: "post",
       data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
+    });
+  } catch {
     return {
       message: "something went wrong while updating user",
       type: "error",
@@ -136,18 +206,36 @@ const handleupdateUser = async (data) => {
   }
 };
 
+// const handleuploadDocument = async (data) => {
+//   try {
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}/uploadDocument`,
+//       data,
+//       {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       },
+//     );
+//     return response.data;
+//   } catch (error) {
+//     return {
+//       message: error?.message,
+//       type: "error",
+//     };
+//   }
+// };
+
 const handleuploadDocument = async (data) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/uploadDocument`,
+    return await request({
+      endpoint: "/uploadDocument",
+      method: "post",
       data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    return response.data;
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   } catch (error) {
     return {
       message: error?.message,
@@ -159,35 +247,54 @@ const handleuploadDocument = async (data) => {
 const sendConfirmBookingToNumber = (data) => {
   return axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/sendBookingDetailesTosocial`,
-    data
+    data,
   );
 };
 
 const sendEmailForBookingDetails = (data) => {
   return axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/sendEmailForBookingDetails`,
-    data
+    data,
   );
 };
 
 const updateCouponCount = (id) => {
   return axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/updateCouponCount?_id=${id}`,
-    { _id: id }
+    { _id: id },
   );
 };
 
+// const getCouponData = async (couponCode, totalprice, isExtra) => {
+//   try {
+//     const response = await axios.post(
+//       `${import.meta.env.VITE_BACKEND_URL}/applyCoupon`,
+//       {
+//         couponName: couponCode,
+//         totalAmount: totalprice,
+//         isExtra: isExtra,
+//       },
+//     );
+//     return response?.data;
+//   } catch (error) {
+//     return {
+//       message: error?.message,
+//       type: "error",
+//     };
+//   }
+// };
+
 const getCouponData = async (couponCode, totalprice, isExtra) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/applyCoupon`,
-      {
+    return await request({
+      endpoint: "/applyCoupon",
+      method: "post",
+      data: {
         couponName: couponCode,
         totalAmount: totalprice,
-        isExtra: isExtra,
-      }
-    );
-    return response?.data;
+        isExtra,
+      },
+    });
   } catch (error) {
     return {
       message: error?.message,

@@ -1,10 +1,13 @@
 import React, { useMemo } from "react";
 import soldOutImage from "../../assets/logo/sold-out.webp";
-import { formatTimeForProductCard } from "../../utils/index";
+import {
+  formatTimeForProductCard,
+  productCardDateAndTime,
+} from "../../utils/index";
 
 const SoldOutCard = ({ BookingEndDate, MaintenanceEndDate }) => {
   const availabilityText = useMemo(() => {
-    if (BookingEndDate) return formatTimeForProductCard(BookingEndDate);
+    if (BookingEndDate) return productCardDateAndTime(BookingEndDate);
     if (MaintenanceEndDate) return formatTimeForProductCard(MaintenanceEndDate);
     return "Temporarily Unavailable";
   }, [BookingEndDate, MaintenanceEndDate]);

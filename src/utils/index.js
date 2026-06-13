@@ -516,6 +516,22 @@ const formatTimeForProductCard = (isoString) => {
   return `${day} ${month}, ${year}, ${hours}:${displayMinutes} ${amPm}`;
 };
 
+const productCardDateAndTime = (isoString) => {
+  let date = new Date(isoString);
+
+  const day = date.getUTCDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getUTCFullYear();
+
+  let hours = date.getUTCHours();
+  const displayMinutes = date.getUTCMinutes().toString().padStart(2, "0");
+  const amPm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12 || 12;
+
+  return `${day} ${month}, ${year}, ${hours}:${displayMinutes} ${amPm}`;
+};
+
 const addDaysToDateForRide = (daysToAdd, dateStr) => {
   // Split the input date string "Fri, 07 Mar 2025"
   const dateParts = dateStr.split(", ");
@@ -871,4 +887,5 @@ export {
   convertHourTo24HourTime,
   getCurrentLocalTime,
   validateTimes,
+  productCardDateAndTime,
 };
