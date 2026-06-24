@@ -55,18 +55,19 @@ export const openRazorpayPayment = ({
         modal: {
           escape: false,
           ondismiss: async () => {
-            if (
-              navigate &&
-              !location.pathname.includes("/account/my-rides/summary/")
-            ) {
-              if (booking_id) {
-                navigate(`/account/my-rides/summary/${booking_id}`);
-              } else {
-                navigate("/");
-              }
-            }
+            // if (
+            //   navigate &&
+            //   !location.pathname.includes("/account/my-rides/summary/")
+            // ) {
+            //   if (booking_id) {
+            //     navigate(`/account/my-rides/summary/${booking_id}`);
+            //   } else {
+            //     navigate("/");
+            //   }
+            // }
+            // reject({ success: false, message: "Payment cancelled" });
 
-            reject({ success: false, message: "Payment cancelled" });
+            reject(new Error("PAYMENT_CANCELLED"));
           },
         },
       };

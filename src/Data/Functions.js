@@ -1088,6 +1088,11 @@ const handleBooking = async (
       }
     }
   } catch (error) {
+    if (error?.message === "PAYMENT_CANCELLED") {
+      setBookingLoading(false);
+      return;
+    }
+
     handleAsyncError(dispatch, "Something went wrong while booking ride");
     setBookingLoading(false);
   }

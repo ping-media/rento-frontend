@@ -15,6 +15,8 @@ const BookingPaymentCard = ({
   const { selectedStation } = useSelector((state) => state.station);
 
   const payments = selectedStation?.payments || null;
+  const partiallyPayPercentage =
+    payments !== null ? payments?.partiallyPayPercentage : 20;
 
   const duration = useMemo(
     () =>
@@ -42,8 +44,9 @@ const BookingPaymentCard = ({
         : Number(tempTotalPrice);
 
     if (priceToUse !== 0) {
+      const percentage = (partiallyPayPercentage ?? 20) / 100;
       const amount = Math.round(
-        (priceToUse + taxAmount + extraAddonPrice) * 0.2,
+        (priceToUse + taxAmount + extraAddonPrice) * percentage,
       );
       return amount;
     }
@@ -55,6 +58,7 @@ const BookingPaymentCard = ({
     selectedAddOn,
     taxAmount,
     duration,
+    partiallyPayPercentage,
   ]);
 
   // fallback to online payment mode only
@@ -117,7 +121,6 @@ const BookingPaymentCard = ({
       <div className="w-full my-2">
         {/* 20% payment through online  */}
         {payments?.partiallyPay && (
-          // <label className="has-[:checked]:bg-white/30 has-[:checked]:text-theme has-[:checked]:ring-theme has-[:checked]:ring-2 cursor-pointer bg-white/40 hover:bg-white/20 w-full p-3 rounded-md flex justify-between items-center shadow mb-1.5">
           <label
             className={`group w-full p-3 rounded-md flex justify-between items-center shadow mb-1.5 ${
               finalPrice < 10 || isDiscountZeroApplied
@@ -143,7 +146,8 @@ const BookingPaymentCard = ({
                 </svg>
               </div>
               <h2 className="text-md">
-                Pay 20%(₹{formatPrice(finalPrice)} Advance)
+                Pay {partiallyPayPercentage ?? 20}%(₹{formatPrice(finalPrice)}{" "}
+                Advance)
               </h2>
             </div>
             <input
