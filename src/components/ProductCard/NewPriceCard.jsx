@@ -281,14 +281,18 @@ const NewPriceCard = ({
             <input
               type="hidden"
               name="discounttotalPrice"
-              value={Math.round(tempCouponDiscountTotal)}
+              value={
+                Math.round(tempCouponDiscountTotal) + Math.round(extraAddOnCost)
+              }
             />
             <span className="font-extrabold">Payable Amount</span>
             <span className="font-extrabold">
               ₹
               {tempCouponDiscountTotal != null &&
               (isDiscountZero === true || tempCouponDiscountTotal > 0)
-                ? formatPrice(Math.round(discountedTotal))
+                ? formatPrice(
+                    Math.round(discountedTotal) + Math.round(extraAddOnCost),
+                  )
                 : formatPrice(totalPrice)}
             </span>
           </div>

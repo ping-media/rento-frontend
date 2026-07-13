@@ -6,6 +6,7 @@ const SettingSlice = createSlice({
     maintenance: false,
     testMode: false,
     showVehicleCount: true,
+    vehicleLevelWeekendPrice: false,
     info: null,
     slides: [],
     testimonial: [],
@@ -23,6 +24,7 @@ const SettingSlice = createSlice({
         maintenance,
         testMode,
         showVehicleCount,
+        vehicleLevelWeekendPrice,
       } = action.payload;
       state.info = info;
       state.slides = slides;
@@ -30,6 +32,7 @@ const SettingSlice = createSlice({
       state.maintenance = maintenance;
       state.testMode = testMode;
       state.showVehicleCount = showVehicleCount;
+      state.vehicleLevelWeekendPrice = vehicleLevelWeekendPrice;
     },
     stopSettingLoading: (state) => {
       state.loading = false;
