@@ -925,7 +925,7 @@ const handleBooking = async (
   selectedAddOn,
 ) => {
   e.preventDefault();
-  // setBookingLoading(true);
+  setBookingLoading(true);
 
   if (!currentUser) {
     setBookingLoading(false);
@@ -941,9 +941,6 @@ const handleBooking = async (
 
   const formData = new FormData(e.target);
   const result = Object.fromEntries(formData.entries());
-
-  // console.log(result);
-  // return;
 
   if (!result?.paymentMethod) {
     setBookingLoading(false);
