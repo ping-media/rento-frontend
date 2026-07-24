@@ -966,15 +966,19 @@ const handleBooking = async (
           return sum + plan.kmLimit * plan.count;
         }, 0)
       : 0;
+  // const freeKmLimitForDays =
+  //   daysBreakdowns !== null
+  //     ? daysBreakdowns?.length * Number(vehicle?.freeKms)
+  //     : 0;
   const freeKmLimitForDays =
     daysBreakdowns !== null
-      ? daysBreakdowns?.length * Number(vehicle?.freeKms)
+      ? daysBreakdowns.reduce(
+          (sum, day) => sum + Number(vehicle.kmLimit || 0),
+          0,
+        )
       : 0;
 
   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
-
-  // const discountTotal = Number(result?.discounttotalPrice || 0);
-  // const extraAddonPrice = Number(result?.extraAddonPrice || 0);
 
   let data = {
     vehicleTableId: vehicle?._id,
@@ -999,24 +1003,7 @@ const handleBooking = async (
       addonTax: isNaN(Number(result?.addonTax)) ? 0 : Number(result?.addonTax),
       totalPrice: Math.round(Number(result?.totalPrice)),
       discountPrice: Math.round(Number(result?.discountPrice || 0)),
-      // discountTotalPrice: isDiscountZero
-      //   ? Math.round(
-      //       Number(result?.discounttotalPrice || 0) +
-      //         (Number(result?.extraAddonPrice) > 0
-      //           ? Number(result?.extraAddonPrice)
-      //           : 0),
-      //     )
-      //   : Number(result?.discounttotalPrice || 0) === 0
-      //     ? 0
-      //     : Number(result?.discounttotalPrice),
-      // discountTotalPrice: isDiscountZero
-      //   ? discountTotal > 0
-      //     ? Math.round(discountTotal + extraAddonPrice)
-      //     : 0
-      //   : discountTotal === 0
-      //     ? 0
-      //     : discountTotal,
-      // isDiscountZero: isDiscountZero,
+      isDiscountZero: isDiscountZero,
       discountTotalPrice: Number(result?.discounttotalPrice || 0),
       rentAmount: vehicle?.perDayCost,
       isPackageApplied: !!vehiclePlanData,

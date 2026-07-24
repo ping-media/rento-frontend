@@ -154,6 +154,39 @@ const getDurationInDays = (date1Str, date2Str) => {
   return Number(days);
 };
 
+const getFormattedDuration = (date1Str, time1Str, date2Str, time2Str) => {
+  const date1 = new Date(`${date1Str} ${time1Str}`);
+  const date2 = new Date(`${date2Str} ${time2Str}`);
+
+  if (isNaN(date1) || isNaN(date2)) {
+    return "Invalid date format";
+  }
+
+  const differenceInMs = Math.abs(date2 - date1);
+
+  const totalMinutes = Math.floor(differenceInMs / (1000 * 60));
+
+  const days = Math.floor(totalMinutes / (24 * 60));
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+  const minutes = totalMinutes % 60;
+
+  const parts = [];
+
+  if (days > 0) {
+    parts.push(`${days} Day${days !== 1 ? "s" : ""}`);
+  }
+
+  if (hours > 0) {
+    parts.push(`${hours} Hour${hours !== 1 ? "s" : ""}`);
+  }
+
+  if (minutes > 0) {
+    parts.push(`${minutes} Minute${minutes !== 1 ? "s" : ""}`);
+  }
+
+  return parts.length > 0 ? parts.join(" ") : "0 Minutes";
+};
+
 const formatDateToSlash = (dateStr) => {
   // Parse the input date string into a Date object
   const date = new Date(dateStr);
@@ -888,4 +921,5 @@ export {
   getCurrentLocalTime,
   validateTimes,
   productCardDateAndTime,
+  getFormattedDuration,
 };

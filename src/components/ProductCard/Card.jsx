@@ -40,6 +40,8 @@ const Card = ({
   vehicleStatus,
   _id,
   isSold = false,
+  daysBreakdown = [],
+  appliedPlans = [],
 }) => {
   const [queryParms] = useSearchParams();
   const productImageRef = useRef(null);
@@ -56,6 +58,22 @@ const Card = ({
 
     return vehiclePlan?.find((p) => p._id === planId) || null;
   }, [queryParmsData, vehiclePlan]);
+
+  const totalKmLimit = useMemo(() => {
+    if (selectedPlan !== null) return selectedPlan?.kmLimit;
+
+    const planKmLimit = appliedPlans.reduce(
+      (sum, plan) => sum + Number(plan.kmLimit || 0) * Number(plan.count || 1),
+      0,
+    );
+
+    const dayKmLimit = daysBreakdown.reduce(
+      (sum, day) => sum + Number(day.kmLimit || freeKms || 0),
+      0,
+    );
+
+    return planKmLimit + dayKmLimit || freeKms;
+  }, [selectedPlan, appliedPlans, daysBreakdown, freeKms]);
 
   const bookingUrl = useMemo(() => {
     let updatedQueryParams = { ...queryParmsData };
@@ -163,7 +181,8 @@ const Card = ({
             </div>
             <p>
               <span className="font-semibold">
-                {selectedPlan !== null ? selectedPlan?.kmLimit : freeKms * 1}
+                {/* {selectedPlan !== null ? selectedPlan?.kmLimit : freeKms * 1} */}
+                {totalKmLimit}
               </span>{" "}
               Km Limit
             </p>

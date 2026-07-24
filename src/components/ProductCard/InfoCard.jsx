@@ -4,6 +4,7 @@ import bikeImg from "../../assets/images/bike-image.webp";
 import {
   formatDateTimeForUser,
   getDurationInDays,
+  getFormattedDuration,
   handleErrorImage,
 } from "../../utils";
 
@@ -35,20 +36,6 @@ const InfoCard = ({
       : "";
   }, [queryParmsData?.BookingEndDateAndTime]);
 
-  // useEffect(() => {
-  //   if (
-  //     queryParmsData?.BookingStartDateAndTime &&
-  //     queryParmsData?.BookingEndDateAndTime
-  //   ) {
-  //     setBookingStartDateTime(
-  //       formatDateTimeForUser(queryParmsData?.BookingStartDateAndTime)
-  //     );
-  //     setBookingEndDateTime(
-  //       formatDateTimeForUser(queryParmsData?.BookingEndDateAndTime)
-  //     );
-  //   }
-  // }, []);
-
   // free limit logic
   const isPackage = appliedPlans?.length > 0 ? appliedPlans : null;
 
@@ -62,7 +49,12 @@ const InfoCard = ({
       : 0;
 
   const freeKmLimitForDays =
-    daysBreakdowns !== null ? daysBreakdowns?.length * Number(freeKms) : 0;
+    daysBreakdowns !== null
+      ? daysBreakdowns.reduce(
+          (sum, day) => sum + Number(day.kmLimit || freeKms || 0),
+          0,
+        )
+      : 0;
 
   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
 
@@ -189,16 +181,17 @@ const InfoCard = ({
           </span>
           Booking For:
           <span className="font-semibold">
-            {
-              // vehiclePlanData != null
-              //   ? vehiclePlanData?.planDuration
-              //   :
-              getDurationInDays(
-                bookingStartDateTime?.date,
-                bookingEndDateTime?.date,
-              )
-            }{" "}
-            Day
+            {/* {getDurationInDays(
+              bookingStartDateTime?.date,
+              bookingEndDateTime?.date,
+            )}{" "}
+            Day */}
+            {getFormattedDuration(
+              bookingStartDateTime?.date,
+              bookingStartDateTime?.time,
+              bookingEndDateTime?.date,
+              bookingEndDateTime?.time,
+            )}
           </span>
         </div>
         {freeKms ? (
