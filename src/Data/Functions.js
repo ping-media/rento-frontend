@@ -972,10 +972,7 @@ const handleBooking = async (
   //     : 0;
   const freeKmLimitForDays =
     daysBreakdowns !== null
-      ? daysBreakdowns.reduce(
-          (sum, day) => sum + Number(vehicle.kmLimit || 0),
-          0,
-        )
+      ? daysBreakdowns.reduce((sum, day) => sum + Number(day.kmLimit || 0), 0)
       : 0;
 
   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
