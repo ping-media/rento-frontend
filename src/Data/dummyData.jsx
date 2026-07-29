@@ -72,8 +72,8 @@ export const contactUsFooterLink = ({ contact, email, address }) => [
       </svg>
     ),
     name: "Contact Number",
-    value: `+91 ${contact}`,
-    link: `tel:+91${contact}`,
+    value: Array.isArray(contact) ? contact : `+91 ${contact}`,
+    link: Array.isArray(contact) ? contact : `tel:+91${contact}`,
   },
   {
     icon: (
@@ -185,7 +185,7 @@ export const contactUsLink = ({ contact, email, address }) => [
       </svg>
     ),
     name: "Contact Number",
-    value: `+91${contact}`,
+    value: Array.isArray(contact) ? contact : `+91${contact}`,
   },
   {
     icon: (

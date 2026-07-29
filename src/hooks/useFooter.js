@@ -13,7 +13,7 @@ export const useFooter = () => {
 
   const footerData = useMemo(() => {
     return {
-      contact: info?.contact || "8884488891",
+      contact: [info?.contact || 8884488891, 9743202202],
       email: info?.email || "support@rentobikes.com",
       address: info?.address || "HSR Layout, Bangalore, 560016",
       socialmedia: info?.socialmedia || {},

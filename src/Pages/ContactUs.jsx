@@ -6,7 +6,11 @@ import { useSelector } from "react-redux";
 const ContactUs = () => {
   const { info, loading } = useSelector((state) => state.general);
 
-  const contact = (!loading && info.contact) || "8884488891";
+  const contact = [
+    (!loading && info.contact) || 8884488891,
+    9743202202,
+    8884988875,
+  ];
   const email = (!loading && info.email) || "support@rentobikes.com";
   const address = (!loading && info.address) || "HSR Layout, Bangalore, 560016";
 
@@ -45,14 +49,29 @@ const ContactUs = () => {
                   <div className="text-sm lg:text-lg text-gray-500">
                     {item?.name.includes("Contact") ||
                     item?.name.includes("Email") ? (
-                      <Link
-                        to={`${
-                          item?.name.includes("Contact") ? "tel:" : "mailto:"
-                        }${item.value}`}
-                        className="hover:underline underline-offset-4"
-                      >
-                        {item?.value}
-                      </Link>
+                      Array.isArray(item?.value) ? (
+                        <>
+                          {item.value?.map((i, idx) => (
+                            <a
+                              href={`tel:+91 ${i}`}
+                              key={i}
+                              className="hover:underline underline-offset-4"
+                            >
+                              {`+91 ${i}`}
+                              {item.value?.length - 1 > idx ? ", " : ""}
+                            </a>
+                          ))}
+                        </>
+                      ) : (
+                        <a
+                          href={`${
+                            item?.name.includes("Contact") ? "tel:" : "mailto:"
+                          }${item.value}`}
+                          className="hover:underline underline-offset-4"
+                        >
+                          {item?.value}
+                        </a>
+                      )
                     ) : (
                       item?.value
                     )}
