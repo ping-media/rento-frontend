@@ -179,6 +179,12 @@ const ExtendBookingModal = () => {
         data,
       });
 
+      if (extension?.status === 409) {
+        // re-fetch booking to sync Redux with actual DB state
+        await dispatch(fetchRideById(rides[0]?._id));
+        return handleAsyncError(dispatch, extension?.message);
+      }
+
       if (extension?.success) {
         const { orderId, amount } = extension.data;
 
