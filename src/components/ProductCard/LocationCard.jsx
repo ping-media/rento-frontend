@@ -3,6 +3,7 @@ import PreLoader from "../skeleton/PreLoader";
 import { useEffect, useState } from "react";
 import { fetchingData } from "../../Data";
 import { useSelector } from "react-redux";
+import Spinner from "../Spinner/Spinner";
 
 const LocationCard = ({
   stationName,
@@ -12,6 +13,8 @@ const LocationCard = ({
   setStationLoading,
   stationLoading,
 }) => {
+  const [mapLoading, setMapLoading] = useState(true);
+  const [mapError, setMapError] = useState(false);
   const [stationUser, setStationUser] = useState([]);
   const { selectedLocation } = useSelector((state) => state.selectedLocation);
   // for fetching station master details
@@ -42,20 +45,48 @@ const LocationCard = ({
         className="w-full"
       >
         <div className="w-full mx-auto lg:max-w-lg h-48">
-          <img
-            src={`https://maps.googleapis.com/maps/api/staticmap?center=${
-              stationData?.address
-                ? stationData?.address
-                : stationUser?.stationData?.city
-            }&zoom=10&size=600x400&markers=color:red|label:A|${
-              stationData?.latitude || ""
-            },${stationData?.longitude || ""}&key=${
-              import.meta.env.VITE_MAP_KEY
-            }`}
-            className="rounded-lg w-full h-full object-cover"
-            loading="lazy"
-            alt="GOOGLE_MAP"
-          />
+          {!mapError ? (
+            <div className="relative w-full h-full">
+              {mapLoading && (
+                <div className="absolute inset-0 z-10 rounded-lg border flex flex-col items-center justify-center gap-2 bg-background">
+                  <Spinner
+                    message="Loading map..."
+                    customColor="text-gray-400 capitalize"
+                  />
+                </div>
+              )}
+              <img
+                // src={`https://maps.googleapis.com/maps/api/staticmap?center=${
+                //   stationData?.address
+                //     ? stationData?.address
+                //     : stationUser?.stationData?.city
+                // }&zoom=10&size=600x400&markers=color:red|label:A|${
+                //   stationData?.latitude || ""
+                // },${stationData?.longitude || ""}&key=${
+                //   import.meta.env.VITE_MAP_KEY
+                // }`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/station-map/${stationId}`}
+                className="rounded-lg w-full h-full object-cover"
+                loading="lazy"
+                alt="GOOGLE_MAP"
+                onLoad={() => setMapLoading(false)}
+                onError={() => {
+                  setMapLoading(false);
+                  setMapError(true);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="w-full h-full rounded-lg border flex flex-col items-center justify-center gap-2 text-center hover:bg-muted transition-colors">
+              <span className="font-medium text-gray-700">
+                Map view is currently unavailable
+              </span>
+
+              <span className="text-sm text-theme hover:underline">
+                Click here to view the location on Google Maps
+              </span>
+            </div>
+          )}
         </div>
       </Link>
       {/* <div className="px-2 py-2 w-full lg:flex-1 text-sm"> */}
