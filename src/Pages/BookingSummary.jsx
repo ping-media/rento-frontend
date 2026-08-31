@@ -26,6 +26,7 @@ import { handleAsyncError } from "../utils/handleAsyncError";
 import { useVehicleData } from "../hooks/useBookingSummary";
 import NewPriceCard from "../components/ProductCard/NewPriceCard";
 import PreLoader from "../components/skeleton/PreLoader";
+import usePolicy from "../hooks/usePolicy";
 
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
@@ -38,6 +39,9 @@ const BookingSummary = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [queryParms] = useSearchParams();
+
+  const { policy: termsPolicy, loading: termsLoading } =
+    usePolicy("booking_terms");
 
   const queryParmsData = useMemo(
     () => Object.fromEntries(queryParms.entries()),
@@ -134,7 +138,9 @@ const BookingSummary = () => {
   return (
     <>
       <BookingTermModal
-        {...memoizedVehicle}
+        // {...memoizedVehicle}
+        policy={termsPolicy}
+        loading={termsLoading}
         btnFn={() => dispatch(toggleBookingTermModal())}
       />
 

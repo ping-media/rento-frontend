@@ -1,38 +1,37 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleBookingTermModal } from "../../Redux/ModalSlice/ModalSlice";
-import { useState } from "react";
-import TermsAndCondition from "../../Pages/TermsAndCondition";
 
-const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit, btnFn }) => {
+const BookingTermModal = ({ btnFn, policy, loading }) => {
   const dispatch = useDispatch();
   const { isBookingTermActive } = useSelector((state) => state.modals);
-  const [isTermsVisible, setTermVisible] = useState(false);
 
   if (!isBookingTermActive) return;
 
-  const bookingTermsList = [
-    "Some bookings require an original Driving License. Rides won't start without document verification and may be cancelled if not provided.",
-    `Speed Limit for ${
-      vehicleBrand.charAt(0).toUpperCase() + vehicleBrand.slice(1).toLowerCase()
-    } ${
-      vehicleName.charAt(0).toUpperCase() + vehicleName.slice(1).toLowerCase()
-    } is ${speedLimit} kmph or speed limit specified by the governing authority, whichever is lesser.`,
-    "Rental package does not include Fuel, Toll, State Permits or Taxes. Unused Fuel left-out at the time of vehicle drop will not be refunded.",
-    "Original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of drop. (For Monthly Bookings Digi Locker will be accepted along with local address proof).",
-    "km’s included in the booking if exceeded are chargeable at a per km rate.",
-    "Some vehicle bookings have a refundable security deposit. Refund of the same, usually takes 3-7 working days, from the date of invoice, to reflect in the source account.",
-    <>
-      Overspeeding fine is applicable after 3 counts of overspeeding. This is
-      exclusive of taxes and any other fines applied by the governing authority.{" "}
-      <button
-        type="button"
-        onClick={() => setTermVisible(!isTermsVisible)}
-        className="hover:text-theme underline hover:no-underline"
-      >
-        Read more
-      </button>
-    </>,
-  ];
+  const cleanedPolicy = policy?.replace(/<p><br\s*\/?><\/p>/gi, "");
+
+  // const bookingTermsList = [
+  //   "Some bookings require an original Driving License. Rides won't start without document verification and may be cancelled if not provided.",
+  //   `Speed Limit for ${
+  //     vehicleBrand.charAt(0).toUpperCase() + vehicleBrand.slice(1).toLowerCase()
+  //   } ${
+  //     vehicleName.charAt(0).toUpperCase() + vehicleName.slice(1).toLowerCase()
+  //   } is ${speedLimit} kmph or speed limit specified by the governing authority, whichever is lesser.`,
+  //   "Rental package does not include Fuel, Toll, State Permits or Taxes. Unused Fuel left-out at the time of vehicle drop will not be refunded.",
+  //   "Original Driving license needs to be submitted at the time of pickup and the same will be returned at the time of drop. (For Monthly Bookings Digi Locker will be accepted along with local address proof).",
+  //   "km’s included in the booking if exceeded are chargeable at a per km rate.",
+  //   "Some vehicle bookings have a refundable security deposit. Refund of the same, usually takes 3-7 working days, from the date of invoice, to reflect in the source account.",
+  //   <>
+  //     Overspeeding fine is applicable after 3 counts of overspeeding. This is
+  //     exclusive of taxes and any other fines applied by the governing authority.{" "}
+  //     <button
+  //       type="button"
+  //       onClick={() => setTermVisible(!isTermsVisible)}
+  //       className="hover:text-theme underline hover:no-underline"
+  //     >
+  //       Read more
+  //     </button>
+  //   </>,
+  // ];
 
   return (
     <>
@@ -73,20 +72,28 @@ const BookingTermModal = ({ vehicleBrand, vehicleName, speedLimit, btnFn }) => {
           </div>
 
           <div
-            className={`p-6 pt-2 text-center max-h-96 ${
-              !isTermsVisible ? "no-scrollbar" : ""
-            } ${btnFn ? "overflow-y-auto pb-14" : ""}`}
+            className={`p-6 pt-2 text-center max-h-96 overflow-y-auto ${
+              btnFn ? "pb-14" : ""
+            }`}
           >
-            <ul className="leading-8 list-disc mb-2">
-              {bookingTermsList.map((term, index) => (
-                <li key={index} className="text-justify text-sm mb-1">
-                  {term}
-                </li>
-              ))}
-            </ul>
-            <div className={`${isTermsVisible ? "" : "hidden"}`}>
-              <TermsAndCondition isModal={true} />
-            </div>
+            {loading ? (
+              <div className="mb-2 space-y-3">
+                {[100, 90, 95, 60, 100, 85, 70].map((w, i) => (
+                  <div
+                    key={i}
+                    className="h-4 rounded-md bg-gray-200 animate-pulse"
+                    style={{ width: `${w}%` }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div
+                className="mb-2 text-sm text-justify leading-normal [&_li]:list-disc [&_ul]:pl-5 [&_ul]:mb-2 [&_a]:underline"
+                dangerouslySetInnerHTML={{
+                  __html: cleanedPolicy || "<p>No content available</p>",
+                }}
+              />
+            )}
           </div>
           {btnFn && (
             <div className="bg-white absolute bottom-0 left-0 w-full py-3 flex items-center justify-end px-4 border-t rounded-b">

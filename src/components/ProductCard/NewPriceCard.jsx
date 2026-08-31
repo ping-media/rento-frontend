@@ -341,7 +341,7 @@ const NewPriceCard = ({
                       checked={isExtraChecked?.some((i) => i._id === item._id)}
                       onChange={() => handleChangeExtraAddonPrice(item)}
                     />
-                    Need {item?.name}
+                    {item?.name}
                   </label>
                 </div>
                 <small className="text-gray-700">
