@@ -84,10 +84,6 @@ const Layout = () => {
     }
   }, [addon?.length, dispatch]);
 
-  // useEffect(() => {
-  //   fetchAddOns();
-  // }, [fetchAddOns]);
-
   // let first render happen without data to improve the performance
   useEffect(() => {
     if (addon?.length) return;
@@ -126,12 +122,6 @@ const Layout = () => {
     // this will user to top of the screen whenever user change the page
     window.scrollTo(0, 0);
   }, [location.pathname, id, dispatch]);
-
-  // useEffect(() => {
-  //   if (!filter.length) {
-  //     fetchingPlansFilters(dispatch);
-  //   }
-  // }, [filter?.length, dispatch]);
 
   useEffect(() => {
     if (filter?.length) return;

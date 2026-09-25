@@ -8,8 +8,8 @@ const Alert = ({ error, errorType = "error" }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setTimeout(() => dispatch(clearError()), 300);
-    }, 3000);
+      setTimeout(() => dispatch(clearError()), 500);
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, [dispatch]);

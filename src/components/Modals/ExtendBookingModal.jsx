@@ -49,8 +49,9 @@ const ExtendBookingModal = () => {
   const checkFreeVehicle = async () => {
     try {
       setPriceLoading(true);
+      // `/getAllVehiclesAvailable?_id=${
       const isVehicleFree = await fetchingData(
-        `/getAllVehiclesAvailable?_id=${
+        `/extension/check?_id=${
           rides?.[0]?.vehicleTableId?._id
         }&BookingStartDateAndTime=${addOneMinute(
           rides[0]?.BookingEndDateAndTime,
@@ -67,8 +68,17 @@ const ExtendBookingModal = () => {
           handleAsyncError(dispatch, isVehicleFree?.message);
           return;
         }
+      } else {
+        setFreeVehicle(null);
+        handleAsyncError(
+          dispatch,
+          isVehicleFree?.unavailabilityReasons?.[0]?.reason ||
+            isVehicleFree?.message ||
+            "Unable to get Vehicle Info! try again",
+        );
       }
     } catch (error) {
+      setFreeVehicle(null);
       handleAsyncError(dispatch, "Unable to get Vehicle Info! try again");
     } finally {
       setPriceLoading(false);

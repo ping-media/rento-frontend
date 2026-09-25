@@ -34,9 +34,6 @@ const RidesSummary = () => {
   const [images, setImages] = useState([]);
   const { rides, loading } = useSelector((state) => state.rides);
 
-  // const isPayableStatus =
-  //   rides?.length > 0 &&
-  //   !["canceled", "ongoing", "completed"].includes(rides[0]?.rideStatus);
   const isPayableStatus =
     (rides?.length > 0 && rides[0]?.paySuccessId === "") ||
     rides[0]?.paySuccessId?.toLowerCase() === "na";
