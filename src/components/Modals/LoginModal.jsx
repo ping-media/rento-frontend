@@ -53,13 +53,19 @@ const LoginModal = () => {
         try {
           const response = await handleUser("/otpGenerat", result);
 
-          if (response.status !== 200) {
-            dispatch(addTempContact(result?.contact));
-            handleRegisterModal();
-          } else if (response?.type === "error") {
+          if (response?.type === "error") {
             handleAsyncError(dispatch, response?.message);
           } else if (response.status === 500) {
             handleAsyncError(dispatch, "Unable to send OTP! Try again");
+          } else if (response.status === 400) {
+            handleAsyncError(
+              dispatch,
+              response?.message ||
+                "Unable to verify user! try again after sometime",
+            );
+          } else if (response.status !== 200) {
+            dispatch(addTempContact(result?.contact));
+            handleRegisterModal();
           } else if (response.status === 200) {
             setInputNumber(result?.contact);
             setIsOtpSend(true);
