@@ -38,6 +38,7 @@ const Card = ({
   totalRentalCost,
   vehicleMasterData,
   vehicleStatus,
+  stationMapLink,
   _id,
   isSold = false,
   daysBreakdown = [],
@@ -180,11 +181,7 @@ const Card = ({
               />
             </div>
             <p>
-              <span className="font-semibold">
-                {/* {selectedPlan !== null ? selectedPlan?.kmLimit : freeKms * 1} */}
-                {totalKmLimit}
-              </span>{" "}
-              Km Limit
+              <span className="font-semibold">{totalKmLimit}</span> Km Limit
             </p>
           </div>
           <p className="text-xs mb-5 text-left">
@@ -208,10 +205,19 @@ const Card = ({
             </button>
           </div>
           <p className="text-gray-600 text-left">
-            Pickup at{" "}
-            <span className="text-theme truncate capitalize">
+            Pickup Location{" "}
+            <a
+              href={stationMapLink?.trim() ? stationMapLink : "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!stationMapLink?.trim()) e.preventDefault();
+              }}
+              className="text-theme hover:font-semibold truncate capitalize hover:underline underline-offset-4 transition-transform ease-in"
+            >
               {stationName}
-            </span>
+            </a>
           </p>
         </div>
       </div>

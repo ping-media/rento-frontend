@@ -14,6 +14,7 @@ import useOutsideClick from "../../hooks/useOutsideClick";
 const LocationModal = () => {
   const dispatch = useDispatch();
   const { isLocationModalActive } = useSelector((state) => state.modals);
+  const { selectedLocation } = useSelector((state) => state.selectedLocation);
   const [loading, setLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
 
@@ -99,12 +100,12 @@ const LocationModal = () => {
           </div>
 
           <div className="p-6 pt-5 text-center">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 md:gap-6 lg:gap-4 w-full overflow-hidden h-96 overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-2 sm:grid-cols-3 content-start items-start gap-4 sm:gap-8 md:gap-6 lg:gap-4 w-full h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
               {!loading ? (
                 locationList?.length > 0 ? (
                   locationList.map((item) => (
                     <button
-                      className="w-full h-32 lg:h-40"
+                      className="w-full"
                       onClick={() =>
                         handleChangeLocation({
                           locationName: item?.locationName,
@@ -113,16 +114,68 @@ const LocationModal = () => {
                       }
                       key={item?._id}
                     >
-                      <img
-                        src={item?.locationImage}
-                        className="w-full h-full object-cover rounded-lg border-2 shadow-lg p-0.5 hover:scale-95 transition-all duration-200 ease-in-out"
-                        loading="lazy"
-                        alt="SEARCH_LOCATION"
-                      />
-                      {/* <h2 className="text-gray-600 font-semibold capitalize mt-2">
-                        {item?.locationName}
-                      </h2> */}
+                      <div
+                        className={`w-full overflow-hidden rounded-lg transition-all duration-200 ease-in-out hover:scale-95 ${
+                          item?._id === selectedLocation?.locationId
+                            ? "bg-theme shadow-lg"
+                            : "bg-white border border-gray-300 shadow-sm"
+                        }`}
+                      >
+                        <div
+                          className={`px-1.5 pt-1.5 ${item?.showLocationName ? "pb-0" : "pb-2"}`}
+                        >
+                          <div className="relative w-full aspect-[4/3] bg-white">
+                            <div className="pointer-events-none absolute inset-1.5" />
+                            <img
+                              src={item?.locationImage}
+                              className="w-full h-full object-cover p-3"
+                              loading="lazy"
+                              alt="SEARCH_LOCATION"
+                            />
+                          </div>
+                        </div>
+
+                        {item?.showLocationName && (
+                          <div
+                            className={`px-2 py-2.5 ${
+                              item?._id === selectedLocation?.locationId
+                                ? "bg-black"
+                                : "bg-gray-200"
+                            }`}
+                          >
+                            <h2
+                              className={`text-center text-base font-semibold capitalize truncate ${
+                                item?._id === selectedLocation?.locationId
+                                  ? "text-white"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {item?.locationName}
+                            </h2>
+                          </div>
+                        )}
+                      </div>
                     </button>
+                    // <button
+                    //   className="w-full h-32 lg:h-40"
+                    //   onClick={() =>
+                    //     handleChangeLocation({
+                    //       locationName: item?.locationName,
+                    //       locationId: item?._id,
+                    //     })
+                    //   }
+                    //   key={item?._id}
+                    // >
+                    //   <img
+                    //     src={item?.locationImage}
+                    //     className="w-full h-full object-cover rounded-lg border-2 shadow-lg p-0.5 hover:scale-95 transition-all duration-200 ease-in-out"
+                    //     loading="lazy"
+                    //     alt="SEARCH_LOCATION"
+                    //   />
+                    //   {/* <h2 className="text-gray-600 font-semibold capitalize mt-2">
+                    //     {item?.locationName}
+                    //   </h2> */}
+                    // </button>
                   ))
                 ) : (
                   <div className="col-span-full flex items-center justify-center h-full">
