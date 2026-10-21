@@ -9,7 +9,7 @@ import {
   addVehiclesData,
   fetchingVehicles,
 } from "../Redux/ProductSlice/ProductsSlice";
-import { addDaysToIsoDate } from "../utils";
+import { addDaysToIsoDate, NO_STATION_ID } from "../utils";
 import { openRazorpayPayment } from "../utils/razorpay";
 
 const handleSearchVehicleData = async (
@@ -35,35 +35,23 @@ const handleSearchVehicleData = async (
   try {
     let result;
     let url = "/getVehicleTblData?";
-    let finalEndDateAndTime = BookingEndDateAndTime;
+    // let finalEndDateAndTime = BookingEndDateAndTime;
+
+    if (id?.trim() !== "" && id === NO_STATION_ID) {
+      dispatch(addPaginationData(null));
+      return dispatch(addVehiclesData(null));
+    }
 
     // Common parameters
-    // const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&page=${page}&bypassLimit=true`;
     const commonParams = `BookingStartDateAndTime=${BookingStartDateAndTime}&BookingEndDateAndTime=${BookingEndDateAndTime}&page=${page}&bypassLimit=true`;
 
     if (location.pathname !== "/explore") {
       // For non-explore path
       url += `stationId=${id}&${commonParams}`;
 
-      // if (category) url += `&vehicleType=${category}`;
       if (category) url += `&vehicleCategory=${category}`;
       if (brand) url += `&vehicleBrand=${brand}`;
       if (vehiclePlan) {
-        // fetching filter using filter id so that can check data based on dates
-        // const currentFilter = filter.find((f) => f._id === vehiclePlan);
-
-        // if (currentFilter) {
-        //   const newEndDateAndTime = addDaysToIsoDate(
-        //     BookingEndDateAndTime,
-        //     currentFilter.planDuration,
-        //   );
-        //   if (
-        //     new Date(newEndDateAndTime).getTime() >
-        //     new Date(BookingEndDateAndTime).getTime()
-        //   ) {
-        //     finalEndDateAndTime = newEndDateAndTime;
-        //   }
-        // }
         // adding vehicle plan id
         url += `&vehiclePlan=${vehiclePlan}`;
       }
@@ -75,8 +63,6 @@ const handleSearchVehicleData = async (
       if (brand) url += `&vehicleBrand=${brand}`;
       if (vehiclePlan) url += `&vehiclePlan=${vehiclePlan}`;
     }
-
-    // url += `&BookingEndDateAndTime=${finalEndDateAndTime}`;
 
     // Fetch the data from API
     result = await fetchingData(url);

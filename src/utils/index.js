@@ -2,6 +2,8 @@ import bikeImg from "../assets/images/bike-image.webp";
 import scooterImg from "../assets/images/scooter-image.webp";
 import CryptoJS from "crypto-js";
 
+const NO_STATION_ID = "no-station";
+
 const handleErrorImage = (type, ref) => {
   if (type == "gear") {
     ref.current.src = bikeImg;
@@ -429,11 +431,20 @@ const formatNumber = (number) => {
 };
 
 const updateStationId = (location, newId) => {
+  // only the search page has a station id in its url
+  if (!location.pathname.startsWith("/search/")) return;
+
   const pathSegments = location.pathname.split("/");
   pathSegments[pathSegments.length - 1] = newId;
-  const newPathname = pathSegments.join("/");
-  const newUrl = `${newPathname}${location.search}`;
-  window.history.pushState({}, "", newUrl);
+  const newUrl = `${pathSegments.join("/")}${location.search}`;
+
+  // replace instead of push, and keep the router's own history state
+  window.history.replaceState(window.history.state, "", newUrl);
+  // const pathSegments = location.pathname.split("/");
+  // pathSegments[pathSegments.length - 1] = newId;
+  // const newPathname = pathSegments.join("/");
+  // const newUrl = `${newPathname}${location.search}`;
+  // window.history.pushState({}, "", newUrl);
 };
 
 const updateQueryParams = (endpoint, _id, queryParmsData) => {
@@ -922,4 +933,5 @@ export {
   validateTimes,
   productCardDateAndTime,
   getFormattedDuration,
+  NO_STATION_ID,
 };

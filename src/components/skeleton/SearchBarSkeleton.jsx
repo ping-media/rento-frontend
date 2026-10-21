@@ -1,7 +1,9 @@
 import { useLocation } from "react-router-dom";
 import { isHomeLink } from "../../Data/dummyData";
+import { useSelector } from "react-redux";
 
 const SearchBarSkeleton = () => {
+  const { isSearchUpdatesActive } = useSelector((state) => state.modals);
   const location = useLocation();
 
   return (
@@ -17,7 +19,6 @@ const SearchBarSkeleton = () => {
             : "relative hidden lg:block"
           : "relative rounded-lg z-10"
       }`}
-      //  className="w-full bg-white rounded-xl shadow-md p-4 animate-pulse"
     >
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         {/* Pickup Location */}

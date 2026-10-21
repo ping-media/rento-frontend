@@ -94,7 +94,7 @@ const Sidebar = () => {
               .map((item, index) => (
                 <li key={index}>
                   <button
-                    className="capitalize font-semibold flex items-center justify-between w-full"
+                    className={`capitalize font-semibold flex items-center justify-between w-full ${item?.title == "Logout" ? "bg-theme text-white px-2 rounded-md" : ""}`}
                     type="button"
                     onClick={
                       item?.title == "Logout"
@@ -103,22 +103,35 @@ const Sidebar = () => {
                     }
                   >
                     {item?.title}
-                    {item?.title !== "Logout" && (
-                      <span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
+                    {item?.title !== "Logout" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-4 h-4"
+                      >
+                        <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                        >
-                          <path d="M9 18l6-6-6-6" />
-                        </svg>
-                      </span>
+                          d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+                        />
+                      </svg>
                     )}
                   </button>
                 </li>

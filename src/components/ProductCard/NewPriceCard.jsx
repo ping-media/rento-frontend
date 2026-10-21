@@ -278,13 +278,6 @@ const NewPriceCard = ({
         <div className="pt-2 md:text-base pb-2">
           <div className="flex items-center justify-between">
             <input type="hidden" name="totalPrice" value={totalPrice} />
-            {/* <input
-              type="hidden"
-              name="discounttotalPrice"
-              value={
-                Math.round(tempCouponDiscountTotal) + Math.round(extraAddOnCost)
-              }
-            /> */}
             <input
               type="hidden"
               name="discounttotalPrice"

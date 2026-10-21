@@ -4,12 +4,17 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { toggleFilter } from "../Redux/ModalSlice/ModalSlice";
 import { handleSearchVehicleData } from "../Data/Functions";
-import { removeTempDate } from "../Redux/ProductSlice/ProductsSlice";
+import {
+  addPaginationData,
+  addVehiclesData,
+  removeTempDate,
+} from "../Redux/ProductSlice/ProductsSlice";
 import { removeTempBookingData } from "../Redux/BookingSlice/BookingSlice";
 import useIsMobile from "../hooks/useIsMobile";
 import VehicleGrid from "./_components/VehicleGrid";
 import FilterSkeleton from "../components/skeleton/FilterSkeleton";
 import ChoosePackagesSkeleton from "../components/skeleton/ChoosePackagesSkeleton";
+import { NO_STATION_ID } from "../utils";
 const Filters = lazy(() => import("../components/Filters/Filters"));
 const Pagination = lazy(() => import("../components/SearchRide/Pagination"));
 
@@ -38,6 +43,13 @@ const Search = () => {
 
   useEffect(() => {
     if (!id) return;
+
+    // no station for this location: don't fetch, show "no vehicle found"
+    if (id === NO_STATION_ID || selectedStation === null) {
+      dispatch(addPaginationData(null));
+      dispatch(addVehiclesData(null));
+      return;
+    }
 
     window.scrollTo({ top: 0 });
     //search data
@@ -125,13 +137,11 @@ const Search = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <VehicleGrid
-                loading={loading}
-                vehicles={vehicles}
-                testMode={testMode}
-              />
-            </div>
+            <VehicleGrid
+              loading={loading}
+              vehicles={vehicles}
+              testMode={testMode}
+            />
 
             {pagination?.totalPages > 1 && (
               <div className="flex w-full items-center justify-end mt-5">

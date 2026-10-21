@@ -38,7 +38,9 @@ const usePolicy = (id) => {
 
       setPolicy(res.content);
     } catch (error) {
-      handleAsyncError(dispatch, "Something went wrong!");
+      if (id !== "booking_terms") {
+        handleAsyncError(dispatch, error?.message ?? "Something went wrong!");
+      }
     } finally {
       setLoading(false);
     }

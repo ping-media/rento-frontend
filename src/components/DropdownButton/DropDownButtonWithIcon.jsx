@@ -4,14 +4,14 @@ import Spinner from "../Spinner/Spinner";
 import PreLoader from "../skeleton/PreLoader";
 import { handleCheckLocationChange } from "../../Redux/LocationSlice/LocationSlice";
 import { useLocation, useNavigate } from "react-router-dom";
-import { updateStationId } from "../../utils";
+import { updateStationId, NO_STATION_ID } from "../../utils";
 import { addCurrentStation } from "../../Redux/StationSlice/StationSlice";
 import { toggleSearchUpdate } from "../../Redux/ModalSlice/ModalSlice";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { loading, station, selectedStation } = useSelector(
-    (state) => state.station
+    (state) => state.station,
   );
   const { isLocationChange } = useSelector((state) => state.selectedLocation);
   const { isSearchUpdatesActive } = useSelector((state) => state.modals);
@@ -26,19 +26,40 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const firstRunOnSearchPage = useRef(false);
   const navigate = useNavigate();
 
+  // no station for this location: clear selection, and drop the station id from the search url
+  const clearStation = () => {
+    setSelectedValue("No Station Found");
+    setSelectedValueId("");
+    dispatch(addCurrentStation(null));
+
+    if (customLocation.pathname.includes("/search/")) {
+      const segments = customLocation.pathname.split("/");
+
+      // only navigate if the id isn't already the placeholder, so this can't loop
+      if (segments[segments.length - 1] !== NO_STATION_ID) {
+        segments[segments.length - 1] = NO_STATION_ID;
+        navigate(`${segments.join("/")}${customLocation.search}`, {
+          replace: true,
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     // we don't want to render for the first time on search page so just set the value
     if (location.pathname.includes("/search/")) {
-      if (!firstRunOnSearchPage.current) {
+      // if (!firstRunOnSearchPage.current) {
+      if (!firstRunOnSearchPage.current && station?.length > 0) {
         firstRunOnSearchPage.current = true;
         const stationDataById = station?.filter(
-          (item) => item?.stationId === value
+          (item) => item?.stationId === value,
         );
         setSelectedValue(stationDataById[0]?.stationName);
         setSelectedValueId(stationDataById[0]?.stationId);
         return;
       }
     }
+
     try {
       if (!loading) {
         setChangeLoading(true);
@@ -48,23 +69,27 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
           setSelectedValueId(station[0]?.stationId);
           // for updating the url based on new station
           updateStationId(customLocation, station[0]?.stationId);
-          dispatch(addCurrentStation(station[0]));
+          dispatch(addCurrentStation(station[0] ?? null));
           // changing the flag to false so that this function don't run every time
           dispatch(handleCheckLocationChange());
         } else if (station.length > 0 && value) {
           const stationDataById = station?.filter(
-            (item) => item?.stationId === value
+            (item) => item?.stationId === value,
           );
           setSelectedValue(stationDataById[0]?.stationName);
           setSelectedValueId(stationDataById[0]?.stationId);
-          dispatch(addCurrentStation(station[0]));
+          dispatch(addCurrentStation(station[0] ?? null));
         } else if (station.length > 0) {
           setSelectedValue(station[0]?.stationName);
           setSelectedValueId(station[0]?.stationId);
-          dispatch(addCurrentStation(station[0]));
+          dispatch(addCurrentStation(station[0] ?? null));
         } else {
-          setSelectedValue("No Station Found");
+          clearStation();
         }
+        // } else {
+        //   dispatch(addCurrentStation(null));
+        //   setSelectedValue("No Station Found");
+        // }
         setChangeLoading(false);
       }
     } catch (error) {
@@ -72,13 +97,36 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
     }
   }, [station]);
 
+  // If the selected station is not in the current list (e.g. location changed
+  // or stations finished loading later), select the first station.
+  useEffect(() => {
+    if (loading) return;
+
+    if (!station?.length) {
+      if (selectedStation !== null || selectedValueId) clearStation();
+      return;
+    }
+
+    const exists = station.some((item) => item?.stationId === selectedValueId);
+    if (exists) return;
+
+    const first = station[0];
+    setSelectedValue(first?.stationName);
+    setSelectedValueId(first?.stationId);
+    dispatch(addCurrentStation(first ?? null));
+
+    if (customLocation.pathname.includes("/search/")) {
+      updateStationId(customLocation, first?.stationId);
+    }
+  }, [station, loading, selectedValueId, selectedStation]);
+
   // when someone refresh the page
   useEffect(() => {
     if (selectedStation === null) {
       const stationDataById = station?.filter(
-        (item) => item?.stationId === value
+        (item) => item?.stationId === value,
       );
-      dispatch(addCurrentStation(stationDataById));
+      dispatch(addCurrentStation(stationDataById ?? null));
     }
   }, []);
 
@@ -138,7 +186,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
 
   return !changeStationLoading ? (
     <button
-      className="border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full"
+      className="border-2 px-1.5 py-2.5 focus:border-theme rounded-lg relative w-full disabled:bg-gray-100"
       onClick={() => {
         if (!isDisabled) {
           setIsOpened(!isOpened);
@@ -205,7 +253,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
                   station.map((item) => (
                     <li
                       key={item?.stationId}
-                      className="w-full text-left py-1 hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3 capitalize"
+                      className="w-full text-left hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3 capitalize"
                       onClick={() => {
                         handleLocationChange(item);
                       }}
@@ -214,7 +262,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
                     </li>
                   ))
                 ) : (
-                  <li className="w-full text-left py-1 hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3">
+                  <li className="w-full text-left hover:bg-gray-300 hover:bg-opacity-50 px-6 py-3">
                     No Station Found
                   </li>
                 )

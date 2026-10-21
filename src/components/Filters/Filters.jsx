@@ -72,7 +72,7 @@ const Filters = ({ showPackage = false }) => {
         {!showPackage && (
           <div className="mb-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold uppercase tracking-wider mb-3">
+              <h2 className="hidden lg:block text-lg font-semibold uppercase tracking-wider mb-3">
                 Filters
               </h2>
             </div>
@@ -83,7 +83,7 @@ const Filters = ({ showPackage = false }) => {
                   key={index}
                   type="button"
                   data-category={item?.CategoryTitle.toLowerCase()}
-                  className={`w-20 lg:w-24 xl:w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
+                  className={`w-1/2 md:w-32 lg:w-24 xl:w-28 border-2 rounded-lg hover:bg-theme group hover:border-theme transition duration-200 ease-in-out hover:shadow-md text-sm cursor-pointer ${
                     inputCategory === item?.CategoryTitle.toLowerCase()
                       ? "bg-theme text-gray-100 border-theme"
                       : ""

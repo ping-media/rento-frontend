@@ -7,7 +7,7 @@ const stars = [1, 2, 3, 4, 5];
 
 const HeroSection = () => {
   return (
-    <div className="relative w-full h-full lg:h-[72vh]">
+    <div className="relative w-full h-full md:h-[41vh] xl:h-[72vh]">
       <img
         width="600"
         height="400"
@@ -23,7 +23,7 @@ const HeroSection = () => {
 
       {/* Content goes here */}
       <div className="relative z-10 flex 2xl:items-center h-full text-white flex-wrap px-8 lg:px-20 py-10 gap-5 lg:gap-0">
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex flex-1 items-start lg:items-center justify-center">
           <div className="leading-relaxed px-6">
             <p className="text-md lg:text-lg font-semibold">
               Bike & Scooter Rental In Bangalore, Hubli & Gulbarga
@@ -32,7 +32,7 @@ const HeroSection = () => {
             <h2 className="text-md lg:text-xl mb-2">
               Ride your way, Anytime & Anywhere
             </h2>
-            <p className="hidden lg:block">
+            <p className="hidden md:block lg:block">
               Looking for bike rental in Bangalore, Hubli, or Gulbarga? Rento
               Bikes offers well-maintained scooters and motorcycles for daily,
               weekly, and monthly rental plans. Since 2016, we have been helping
@@ -41,7 +41,7 @@ const HeroSection = () => {
             </p>
           </div>
         </div>
-        <div className="relative flex-1 -mt-10">
+        <div className="relative flex-1 -mt-10 lg:mt-1 xl:-mt-10">
           <div className="relative w-72 lg:w-[24.5rem] 2xl:w-[26.5rem] mt-3 mx-auto bg-theme p-1 lg:p-2 rounded-full">
             {/* static rating */}
             <div className="absolute w-28 lg:w-40 bg-white/20 top-3 lg:top-9 right-0 backdrop-blur-md border border-gray-100 rounded-md p-1 lg:p-2">

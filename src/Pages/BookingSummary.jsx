@@ -27,6 +27,10 @@ import { useVehicleData } from "../hooks/useBookingSummary";
 import NewPriceCard from "../components/ProductCard/NewPriceCard";
 import PreLoader from "../components/skeleton/PreLoader";
 import usePolicy from "../hooks/usePolicy";
+import { checkStationWeeklyOff } from "../utils/stationWeeklyOff";
+const WeeklyOffModal = lazy(
+  () => import("../components/Modals/WeeklyOffModal"),
+);
 
 const BookingError = lazy(() => import("../components/Error/BookingError"));
 const CouponModal = lazy(() => import("../components/Modals/SuccessModal"));
@@ -78,17 +82,37 @@ const BookingSummary = () => {
   );
   const isAllFieldChecked = isTermsChecked;
 
+  const [showWeeklyOffModal, setShowWeeklyOffModal] = useState(false);
+
+  const weeklyOffCheck = useMemo(
+    () =>
+      checkStationWeeklyOff(
+        selectedStation,
+        queryParmsData?.BookingStartDateAndTime,
+      ),
+    [selectedStation, queryParmsData?.BookingStartDateAndTime],
+  );
+
+  // open the popup as soon as the page loads (or the date changes) on a weekly off day
+  useEffect(() => {
+    setShowWeeklyOffModal(weeklyOffCheck.isOff);
+  }, [weeklyOffCheck.isOff, queryParmsData?.BookingStartDateAndTime]);
+
   useEffect(() => {
     return () => {
       dispatch(handleSelectedAddOn([]));
     };
   }, [dispatch]);
 
-  // console.log(vehicles);
-
   // for creating new booking
   const handleCreateBookingSubmit = (e) => {
     e.preventDefault();
+
+    if (weeklyOffCheck.isOff) {
+      setShowWeeklyOffModal(true);
+      return handleAsyncError(dispatch, weeklyOffCheck.message);
+    }
+
     const openTime = convertHourTo24HourTime(
       selectedStation?.openStartTime || 0,
     );
@@ -138,7 +162,6 @@ const BookingSummary = () => {
   return (
     <>
       <BookingTermModal
-        // {...memoizedVehicle}
         policy={termsPolicy}
         loading={termsLoading}
         btnFn={() => dispatch(toggleBookingTermModal())}
@@ -147,15 +170,25 @@ const BookingSummary = () => {
       {/* coupon applied modal  */}
       <CouponModal />
 
-      <div className="w-[95%] lg:w-[90%] mx-auto my-5 lg:my-3 xl:my-4">
+      <WeeklyOffModal
+        open={showWeeklyOffModal}
+        message={weeklyOffCheck.message}
+        onClose={() => setShowWeeklyOffModal(false)}
+        onChangeDate={() => {
+          setShowWeeklyOffModal(false);
+          handlePreviousPage(navigate);
+        }}
+      />
+
+      <div className="w-[95%] xl:w-[90%] mx-auto my-5 lg:my-3 xl:my-4">
         <form onSubmit={handleCreateBookingSubmit}>
-          <div className="flex flex-col lg:grid lg:grid-cols-10 lg:gap-4">
-            <div className="col-span-7 mb-3 w-full lg:mb-0 flex-1">
-              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 lg:px-4 bg-white shadow-md order-1 h-full">
+          <div className="flex flex-col xl:grid xl:grid-cols-10 xl:gap-4">
+            <div className="col-span-7 mb-3 w-full xl:mb-0 flex-1">
+              <div className="mb-3 border-2 border-gray-300 rounded-lg py-2 px-2 xl:px-4 bg-white shadow-md order-1 h-full">
                 <div className="flex items-center justify-between py-3 border-b-2 border-gray-300">
                   <div className="flex items-center">
                     <button
-                      className="lg:hidden flex items-center gap-1 p-1"
+                      className="xl:hidden flex items-center gap-1 p-1"
                       type="button"
                       onClick={() => handlePreviousPage(navigate)}
                     >
@@ -239,7 +272,7 @@ const BookingSummary = () => {
                   />
                 </div>
               )}
-              <div className="w-full mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-left justify-center lg:max-h-48">
+              <div className="w-full mb-3 border-2 border-gray-300 rounded-lg py-2 px-4 bg-white shadow-md order-3 flex flex-col items-left justify-center xl:max-h-48">
                 <Checkbox
                   labelId={"terms"}
                   ref={termsRef}
@@ -249,7 +282,9 @@ const BookingSummary = () => {
               <div className="mt-1 order-5 w-full">
                 <button
                   className="bg-theme px-4 py-4 w-full text-white rounded-lg disabled:bg-theme/60"
-                  disabled={!isAllFieldChecked || bookingLoading}
+                  disabled={
+                    !isAllFieldChecked || bookingLoading || weeklyOffCheck.isOff
+                  }
                 >
                   {bookingLoading ? (
                     <Spinner message="Do not go back while booking..." />

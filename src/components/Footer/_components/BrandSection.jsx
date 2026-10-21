@@ -6,7 +6,7 @@ import { socialIcons } from "../../../Data/dummyData";
 const BrandSection = memo(({ socialmedia }) => {
   return (
     <div>
-      <div className="w-4/5 mb-2">
+      <div className="w-3/5 md:w-2/5 lg:w-4/5 mb-2">
         <Link to={"/"} className="max-h-8 md:max-h-10 lg:max-h-16">
           <img
             src={logoImg}

@@ -200,7 +200,7 @@ const Card = ({
                   : formatPrice(selectedPlan?.planPrice)}
               </p>
             )}
-            <button className="w-full md:w-3/5 lg:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
+            <button className="w-full md:w-3/5 xl:w-2/5 px-3 py-2 bg-theme-black hover:bg-theme transition duration-200 ease-in-out text-gray-100 rounded-lg cursor-pointer">
               Rent Now
             </button>
           </div>

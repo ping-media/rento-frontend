@@ -55,7 +55,7 @@ const SearchRide = () => {
   const { loading, selectedLocation } = useSelector(
     (state) => state.selectedLocation,
   );
-  // const [isPageLoad, setIsPageLoad] = useState(false);
+
   const [pickupDate, setPickupDate] = useState(null);
   const [dropoffDate, setDropoffDate] = useState(null);
   const [queryParms, setQueryParms] = useSearchParams();
@@ -78,25 +78,27 @@ const SearchRide = () => {
     }
   };
 
-  // for searching vehicles
+  // for navigating or updating the url params
   const handleSearchRide = useCallback(
     (e) => {
       e && e.preventDefault();
       const response = new FormData(e.target);
       const result = Object.fromEntries(response.entries());
 
+      if (selectedStation === null) {
+        return handleAsyncError(
+          dispatch,
+          "No station found! try selecting station first.",
+        );
+      }
+
       if (!result?.pickupLocationId) {
         return handleAsyncError(dispatch, "Unable to get Station Data!");
       }
 
-      // try {
-      // const pickupDate = result.pickup.substring(0, 16);
       const pickupDate = result.pickup.split(/\d{1,2}:\d{2}/)[0].trim();
       const pickupTime = result.pickup.substring(17, result.pickup.length);
-      // let dropoffDate = result?.dropoff?.substring(0, 16) || "";
       let dropoffDate = result?.dropoff?.split(/\d{1,2}:\d{2}/)[0].trim();
-      // let dropoffTime =
-      //   result?.dropoff?.substring(17, result.dropoff.length) || "";
       const dropoffTimeMatch = result?.dropoff?.match(
         /\d{1,2}:\d{2}\s?(AM|PM)/i,
       );
@@ -133,7 +135,7 @@ const SearchRide = () => {
         );
 
       const pickupDateTime = new Date(result.pickup);
-      // const now = new Date();
+
       if (
         pickupDateTime > now &&
         !isWithinOperatingHours(
@@ -156,10 +158,6 @@ const SearchRide = () => {
           pickupTime,
         )}&BookingEndDateAndTime=${convertToISOString(dropoffDate, dropoffTime)}`,
       );
-      // }
-      // catch (error) {
-      //   navigate(`/error-${error?.message}`);
-      // }
     },
     [selectedStation, location.pathname, now, dispatch, navigate],
   );
@@ -195,8 +193,6 @@ const SearchRide = () => {
       });
       setPickupDate(now);
       setDropoffDate(nextDayFromCurrent(now));
-      // setPickupDate(new Date());
-      // setDropoffDate(nextDayFromCurrent(new Date()));
       setQueryPickupTime(currentTime);
       setQueryDropoffTime(currentTime);
       if (pickupDate) {
@@ -212,16 +208,13 @@ const SearchRide = () => {
   useEffect(() => {
     if (selectedStation !== null) {
       const currentTime = now.getHours();
-      // const currentTime = new Date().getHours();
       const openEndTime = Number(selectedStation?.openEndTime);
       const openStartTime = Number(selectedStation?.openStartTime);
       // change date & time after end time
       if (currentTime >= openEndTime) {
         const nextday = nextDayFromCurrent(now);
-        // const nextday = nextDayFromCurrent(new Date());
         // changing date
         setPickupDate(nextDayFromCurrent(now));
-        // setPickupDate(nextDayFromCurrent(new Date()));
         setDropoffDate(nextDayFromCurrent(nextday));
         // changing time
         setQueryPickupTime(
@@ -245,17 +238,13 @@ const SearchRide = () => {
   useEffect(() => {
     if (!location.pathname.includes("/search/")) return;
     try {
-      // setIsPageLoad(true);
-      // const newQueryParmsData = Object.fromEntries(queryParms.entries());
       const newQueryParmsData = searchParamsObj;
       const pickUpDateAndTime = newQueryParmsData?.BookingStartDateAndTime;
       const dropoffDateAndTime = newQueryParmsData?.BookingEndDateAndTime;
       // for checking station time
       const currentHour = now.getHours();
-      // const currentHour = new Date().getHours();
       const openStartTime = Number(selectedStation?.openStartTime);
       const openEndTime = Number(selectedStation?.openEndTime);
-      // const currentTime = new Date().toLocaleTimeString("en-GB", {
       const currentTime = now.toLocaleTimeString("en-GB", {
         hour: "2-digit",
         minute: "2-digit",
@@ -312,20 +301,11 @@ const SearchRide = () => {
       }
     } catch (error) {
       navigate("/error");
-    } finally {
-      // setIsPageLoad(false);
     }
   }, [location.pathname, searchString, searchParamsObj]);
-  // }, [location.pathname, queryParms]);
 
   const isLoadingSkeleton =
     stationLoading && location.pathname.includes("/search/");
-
-  // show loading state
-  // if (isPageLoad && stationLoading) {
-  if (isLoadingSkeleton) {
-    return <SearchBarSkeleton />;
-  }
 
   const isMonthly = location.pathname === "/monthly-rental";
   const isExplore = location.pathname === "/explore";
@@ -360,6 +340,11 @@ const SearchRide = () => {
       isSearchUpdatesActive,
     ],
   );
+
+  // show loading state
+  if (isLoadingSkeleton) {
+    return <SearchBarSkeleton />;
+  }
 
   return (
     <>

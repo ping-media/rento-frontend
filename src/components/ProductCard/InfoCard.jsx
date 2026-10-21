@@ -3,7 +3,6 @@ import scooterImg from "../../assets/images/scooter-image.webp";
 import bikeImg from "../../assets/images/bike-image.webp";
 import {
   formatDateTimeForUser,
-  getDurationInDays,
   getFormattedDuration,
   handleErrorImage,
 } from "../../utils";
@@ -20,6 +19,7 @@ const InfoCard = ({
   queryParmsData,
   appliedPlans,
   daysBreakdown,
+  stationMapLink,
 }) => {
   const vehicleImageRef = useRef(null);
 
@@ -59,9 +59,9 @@ const InfoCard = ({
   const freeLimit = freeKmLimitForPlan + freeKmLimitForDays;
 
   return (
-    <div className="flex justify-between flex-wrap md:gap-5 lg:gap-10 mt-6 mb-4 cursor-default">
+    <div className="flex justify-between flex-wrap md:gap-5 xl:gap-10 mt-6 mb-4 cursor-default">
       {vehicleImage ? (
-        <div className="w-60 lg:w-62 h-40 mx-auto lg:mx-0">
+        <div className="w-60 xl:w-62 h-40 mx-auto lg:mx-0">
           <img
             src={vehicleImage}
             className="w-full h-full object-contain rounded-lg"
@@ -72,7 +72,7 @@ const InfoCard = ({
           />
         </div>
       ) : (
-        <div className="w-60 h-40 mx-auto lg:mx-0 bg-opacity-50 rounded-lg">
+        <div className="w-60 h-40 mx-auto xl:mx-0 bg-opacity-50 rounded-lg">
           <img
             src={vehicleType == "gear" ? bikeImg : scooterImg}
             className="w-full h-full object-cover"
@@ -88,7 +88,7 @@ const InfoCard = ({
           vehicleDetails &&
           vehicleDetails[0]?.vehicleNumber) ? (
           <div className="mb-1.5">
-            <h2 className="font-bold uppercase text-lg lg:text-xl">
+            <h2 className="font-bold uppercase text-lg xl:text-xl">
               {vehicleBrand} {vehicleName}
             </h2>
           </div>
@@ -114,7 +114,17 @@ const InfoCard = ({
             </span>
             <div>
               <p>Pickup Location</p>
-              <p className="capitalize">{stationName}</p>
+              <p className="capitalize font-bold text-lg sm:text-xl">
+                {stationName}{" "}
+                <a
+                  href={stationMapLink?.trim() ? stationMapLink : "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-theme hover:underline underline-offset-4 transition-all duration-150 ease-in-out"
+                >
+                  (view location)
+                </a>
+              </p>
             </div>
           </div>
         ) : (
@@ -181,11 +191,6 @@ const InfoCard = ({
           </span>
           Booking For:
           <span className="font-semibold">
-            {/* {getDurationInDays(
-              bookingStartDateTime?.date,
-              bookingEndDateTime?.date,
-            )}{" "}
-            Day */}
             {getFormattedDuration(
               bookingStartDateTime?.date,
               bookingStartDateTime?.time,
