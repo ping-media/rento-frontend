@@ -168,6 +168,23 @@ const RideFareDetails = ({ rides }) => {
       return sum;
     }, 0) || 0;
 
+  const isRideCompleted = rides?.rideStatus === "completed";
+
+  const paidExtensions =
+    rides?.bookingPrice?.extendAmount?.filter((i) => i.status === "paid") || [];
+  const lastPaidExtension = paidExtensions[paidExtensions.length - 1];
+
+  const lastExtendAmount = lastPaidExtension
+    ? lastPaidExtension.amount +
+      (lastPaidExtension?.tax || 0) +
+      (lastPaidExtension?.addonTax || 0)
+    : 0;
+
+  // completed: sum of all paid extensions, otherwise only the last paid one
+  const displayExtendAmount = isRideCompleted
+    ? totalExtendAmount
+    : lastExtendAmount;
+
   return (
     <>
       <DialogWrapper
@@ -231,122 +248,6 @@ const RideFareDetails = ({ rides }) => {
                 </p>
               </li>
             )}
-
-            {/* {Object.entries(rides?.bookingPrice)
-              .filter(
-                ([key]) =>
-                  key !== "totalPrice" &&
-                  key !== "vehiclePrice" &&
-                  key !== "bookingPrice" &&
-                  key !== "rentAmount" &&
-                  key !== "isPackageApplied" &&
-                  key !== "userPaid" &&
-                  key !== "discountPrice" &&
-                  key !== "discountTotalPrice" &&
-                  key !== "isInvoiceCreated" &&
-                  key !== "isPickupImageAdded" &&
-                  key !== "isDiscountZero" &&
-                  key !== "isChanged" &&
-                  key !== "extendAmount" &&
-                  key !== "diffAmount" &&
-                  key !== "AmountLeftAfterUserPaid" &&
-                  key !== "lateFeeBasedOnHour" &&
-                  key !== "lateFeeBasedOnKM" &&
-                  key !== "payOnPickupMethod" &&
-                  key !== "lateFeePaymentMethod" &&
-                  key !== "additionFeePaymentMethod" &&
-                  key !== "additionalPrice" &&
-                  key !== "refundAmount" &&
-                  key !== "extraAddonPrice" &&
-                  key !== "daysBreakdown" &&
-                  key !== "appliedPlan" &&
-                  key !== "rrnNumber" &&
-                  key !== "totalDrivenKm",
-              ) 
-              .map(([key, value]) => {
-                if (typeof value === "object") {
-                  return (
-                    value?.length > 0 &&
-                    value?.map((item, index) => (
-                      <li
-                        key={`key-${index}`}
-                        className="flex items-center justify-between py-1.5 text-sm"
-                      >
-                        <div>
-                          <p className="text-sm font-semibold capitalize">
-                            {item?.name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            (
-                            {`₹${item?.amount} x ${getDurationInDays(
-                              rides?.BookingStartDateAndTime,
-                              rides?.extendBooking?.originalEndDate ||
-                                rides?.BookingEndDateAndTime,
-                            )} ${
-                              getDurationInDays(
-                                rides?.BookingStartDateAndTime,
-                                rides?.extendBooking?.originalEndDate ||
-                                  rides?.BookingEndDateAndTime,
-                              ) == 1
-                                ? "day"
-                                : "days"
-                            }`}
-                            )
-                          </p>
-                        </div>
-                        <p>{`₹${formatPrice(
-                          item?.maxAmount > 0
-                            ? item?.amount *
-                                getDurationInDays(
-                                  rides?.BookingStartDateAndTime,
-                                  rides?.extendBooking?.originalEndDate ||
-                                    rides?.BookingEndDateAndTime,
-                                ) >
-                              item?.maxAmount
-                              ? item?.maxAmount
-                              : item?.amount *
-                                getDurationInDays(
-                                  rides?.BookingStartDateAndTime,
-                                  rides?.extendBooking?.originalEndDate ||
-                                    rides?.BookingEndDateAndTime,
-                                )
-                            : item?.amount *
-                                getDurationInDays(
-                                  rides?.BookingStartDateAndTime,
-                                  rides?.extendBooking?.originalEndDate ||
-                                    rides?.BookingEndDateAndTime,
-                                ),
-                        )}`}</p>
-                      </li>
-                    ))
-                  );
-                } else {
-                  if (
-                    (rides?.stationData?.isGstActive === "inactive" &&
-                      key == "tax") ||
-                    (key === "addonTax" && value === 0)
-                  ) {
-                    return null;
-                  }
-                  return (
-                    <li
-                      key={key}
-                      className="flex items-center py-1.5 justify-between"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold capitalize">
-                          {key == "tax"
-                            ? `GST(${
-                                rides?.vehicleMasterId?.gstPercentage || "--"
-                              }%)`
-                            : camelCaseToSpaceSeparated(key)}
-                        </p>
-                      </div>
-                      <p>{`₹${formatPrice(value)}`}</p>
-                    </li>
-                  );
-                }
-              })} */}
 
             {/* Extra Addon Details */}
             {rides?.bookingPrice?.extraAddonDetails?.length > 0 &&
@@ -439,34 +340,6 @@ const RideFareDetails = ({ rides }) => {
                   </p>
                 </li>
               )}
-            {/* {rides?.bookingPrice?.discountTotalPrice === 0 &&
-              rides?.bookingPrice?.isDiscountZero !== true &&
-              rides?.bookingPrice?.totalPrice && (
-                <li className="flex items-center justify-between mt-1 my-1 text-sm">
-                  <p className="text-sm font-bold capitalize text-left">
-                    {rides?.bookingPrice?.discountPrice &&
-                    rides?.bookingPrice?.discountPrice != 0
-                      ? "Subtotal"
-                      : "Total Price"}
-                    <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                      {rides?.bookingPrice?.discountPrice &&
-                      rides?.bookingPrice?.discountPrice != 0
-                        ? ""
-                        : rides?.paymentMethod == "online" &&
-                            rides?.paySuccessId != "NA"
-                          ? "(Full Paid)"
-                          : rides?.paymentMethod == "partiallyPay"
-                            ? ""
-                            : rides?.bookingPrice?.payOnPickupMethod
-                              ? `Payment Mode: (${rides?.bookingPrice?.payOnPickupMethod})`
-                              : "(need to pay at pickup)"}
-                    </small>
-                  </p>
-                  <p className="text-sm font-bold text-right">
-                    {`₹${formatPrice(rides?.bookingPrice?.totalPrice)}`}
-                  </p>
-                </li>
-              )} */}
 
             {/* total price  */}
             {(rides?.bookingPrice?.discountTotalPrice > 0 ||
@@ -516,47 +389,12 @@ const RideFareDetails = ({ rides }) => {
                 </>
               )}
 
-            {/* extend amount  */}
-            {totalExtendAmount > 0 && (
-              <li className="flex items-center justify-between py-1.5 text-sm">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-semibold capitalize text-left">
-                    Extension Price
-                  </p>
-                  {/* <small className="font-semibold capitalize text-xs mx-1 block text-gray-400 italic">
-                    (Total Paid Extend)
-                  </small> */}
-                  <button
-                    onClick={() =>
-                      openBreakdownModal(
-                        "extension",
-                        rides?.bookingPrice?.extendAmount?.filter(
-                          (i) => i.status === "paid",
-                        ),
-                        setModelContent,
-                        setOpen,
-                      )
-                    }
-                    className="text-sm underline underline-offset-1"
-                  >
-                    (?)
-                  </button>
-                </div>
-                <p className="text-sm text-right">
-                  {`₹${formatPrice(totalExtendAmount)}`}
-                </p>
-              </li>
-            )}
-
             {/* difference amount  */}
             {diffAmount > 0 && (
               <li className="flex items-center justify-between py-1.5 text-sm">
                 <div className="flex items-center gap-1.5">
                   <p className="text-sm font-semibold capitalize text-left">
                     Vehicle Change Price
-                    {/* <small className="font-semibold text-xs mx-1 block text-gray-400 italic">
-                    (Paid)
-                  </small> */}
                   </p>
                   <button
                     onClick={() =>
@@ -580,27 +418,62 @@ const RideFareDetails = ({ rides }) => {
               </li>
             )}
 
-            <li className="flex items-center justify-between py-1.5 text-sm">
-              <p className="text-sm font-bold capitalize text-left">
-                Final Total
-              </p>
-              <p className="text-sm font-bold text-right">
-                {`₹${formatPrice(
-                  (rides?.bookingPrice?.discountTotalPrice ||
-                    rides?.bookingPrice?.totalPrice ||
-                    0) +
-                    totalExtendAmount +
-                    (rides?.bookingPrice?.diffAmount?.reduce((sum, item) => {
-                      return item.status === "paid"
-                        ? sum +
-                            item.amount +
-                            (item?.tax || 0) +
-                            (item?.addonTax || 0)
-                        : sum;
-                    }, 0) || 0),
-                )}`}
-              </p>
-            </li>
+            {/* extend amount  */}
+            {displayExtendAmount > 0 && (
+              <li className="flex items-center justify-between py-1.5 text-sm">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-semibold capitalize text-left">
+                    {!isRideCompleted
+                      ? "Last Extension Price"
+                      : "Extension Price"}
+                  </p>
+                  {isRideCompleted && (
+                    <button
+                      onClick={() =>
+                        openBreakdownModal(
+                          "extension",
+                          rides?.bookingPrice?.extendAmount?.filter(
+                            (i) => i.status === "paid",
+                          ),
+                          setModelContent,
+                          setOpen,
+                        )
+                      }
+                      className="text-sm underline underline-offset-1"
+                    >
+                      (?)
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-right">
+                  {`₹${formatPrice(displayExtendAmount)}`}
+                </p>
+              </li>
+            )}
+
+            {isRideCompleted && (
+              <li className="flex items-center justify-between py-1.5 text-sm">
+                <p className="text-sm font-bold capitalize text-left">
+                  Final Total
+                </p>
+                <p className="text-sm font-bold text-right">
+                  {`₹${formatPrice(
+                    (rides?.bookingPrice?.discountTotalPrice ||
+                      rides?.bookingPrice?.totalPrice ||
+                      0) +
+                      totalExtendAmount +
+                      (rides?.bookingPrice?.diffAmount?.reduce((sum, item) => {
+                        return item.status === "paid"
+                          ? sum +
+                              item.amount +
+                              (item?.tax || 0) +
+                              (item?.addonTax || 0)
+                          : sum;
+                      }, 0) || 0),
+                  )}`}
+                </p>
+              </li>
+            )}
 
             {/* payable balance  */}
             {(rides?.paymentMethod === "cash" ||

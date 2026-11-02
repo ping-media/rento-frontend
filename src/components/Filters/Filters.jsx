@@ -42,13 +42,26 @@ const Filters = ({ showPackage = false }) => {
     else updatedQueryParams.delete("brand");
 
     if (selectedPlanId) {
-      // console.log(newQueryParamsData);
       const currentFilter = filter.find((f) => f._id === selectedPlanId);
       if (currentFilter) {
-        const newEndDateAndTime = addDaysToIsoDate(
-          newQueryParamsData?.BookingStartDateAndTime,
-          currentFilter.planDuration,
-        );
+        // const newEndDateAndTime = addDaysToIsoDate(
+        //   newQueryParamsData?.BookingStartDateAndTime,
+        //   currentFilter.planDuration,
+        // );
+        const startStr = newQueryParamsData?.BookingStartDateAndTime;
+        let searchDuration = currentFilter.planDuration;
+
+        if (startStr && searchDuration === 30) {
+          const startDt = new Date(startStr);
+          // UTC getters on purpose: the string is IST wall-clock time with a fake "Z"
+          const daysInStartMonth = new Date(
+            Date.UTC(startDt.getUTCFullYear(), startDt.getUTCMonth() + 1, 0),
+          ).getUTCDate();
+
+          if (daysInStartMonth === 31) searchDuration = 31;
+        }
+
+        const newEndDateAndTime = addDaysToIsoDate(startStr, searchDuration);
         updatedQueryParams.set("BookingEndDateAndTime", newEndDateAndTime);
       }
       updatedQueryParams.set("vehiclePlan", selectedPlanId);

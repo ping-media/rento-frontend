@@ -19,7 +19,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import PackageSkeleton from "../skeleton/PackageSkeleton";
 
-// const images = [bikeImg, ScooterImg];
 const images = [activaImg, fascinoImg, cliqImg, hornetImg];
 
 const Package = () => {
@@ -55,8 +54,25 @@ const Package = () => {
   const slides = useMemo(
     () =>
       filter.slice(0, 8).map((pkg, index) => {
+        // const endDate = convertToISOString(
+        //   addDaysToDateForRide(pkg.planDuration, formatDate(baseDate)),
+        //   currentTime,
+        // );
+
+        // 31-day month => search 31 days for the 30-day plan (backend charges the 30-day plan price only)
+        const daysInStartMonth = new Date(
+          baseDate.getFullYear(),
+          baseDate.getMonth() + 1,
+          0,
+        ).getDate();
+
+        const searchDuration =
+          pkg.planDuration === 30 && daysInStartMonth === 31
+            ? 31
+            : pkg.planDuration;
+
         const endDate = convertToISOString(
-          addDaysToDateForRide(pkg.planDuration, formatDate(baseDate)),
+          addDaysToDateForRide(searchDuration, formatDate(baseDate)),
           currentTime,
         );
         const isPackageTextInclude = pkg.planName
