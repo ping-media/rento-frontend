@@ -79,9 +79,7 @@ const App = () => {
             <Route path="/monthly-rental" element={<Home />} />
             <Route path="/search" element={<Search />} />
             <Route path="/search/:id" element={<Search />} />
-            <Route path="/explore" element={<Search />} />
             <Route path="/booking/summary/:id" element={<BookingSummary />} />
-            {/* <Route path="booking/payment/:id" element={<BookingAndPayment />} /> */}
             <Route path="/contact-us" element={Loadable(ContactUs)} />
             <Route path="/kyc" element={Loadable(Kyc)} />
             {/* protected routes start here  */}
