@@ -20,6 +20,7 @@ import Spinner from "../components/Spinner/Spinner";
 import ExtendBookingButton from "../components/Account/ExtendBookingButton";
 import { openRazorpayPayment } from "../utils/razorpay";
 import { pollBookingStatus } from "../Data/Functions";
+import VehicleDocuments from "../components/Account/VehicleDocuments";
 const ExtendBookingModal = lazy(
   () => import("../components/Modals/ExtendBookingModal"),
 );
@@ -316,6 +317,13 @@ const RidesSummary = () => {
               <div className="mb-5">
                 <ExtendBookingButton />
               </div>
+
+              <VehicleDocuments
+                bookingId={rides[0]?._id}
+                userId={rides[0]?.userId?._id || rides[0]?.userId}
+                rideStatus={rides[0]?.rideStatus}
+              />
+
               <div className="mb-5">
                 <h2 className="font-semibold mb-3 flex items-center gap-1">
                   <span>

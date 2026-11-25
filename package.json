@@ -20,6 +20,7 @@
     "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
+    "pdfjs-dist": "^6.5.438",
     "photoswipe": "^5.4.4",
     "razorpay": "^2.9.5",
     "react": "^19.0.0",
