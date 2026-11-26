@@ -389,7 +389,7 @@ const SearchRide = () => {
         <SearchForm {...formProps} />
       </div>
 
-      {/* mobile view  layout */}
+      {/* mobile view layout */}
       {location.pathname.includes("/search/") && (
         <MobileSearchRide pickup={pickupDate} dropoff={dropoffDate} />
       )}

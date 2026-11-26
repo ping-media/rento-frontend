@@ -10,7 +10,7 @@ import { toggleSearchUpdate } from "../../Redux/ModalSlice/ModalSlice";
 
 const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   const [isOpened, setIsOpened] = useState(false);
-  const { loading, station, selectedStation } = useSelector(
+  const { loading, stationLoading, station, selectedStation } = useSelector(
     (state) => state.station,
   );
   const { isLocationChange } = useSelector((state) => state.selectedLocation);
@@ -72,24 +72,30 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
           dispatch(addCurrentStation(station[0] ?? null));
           // changing the flag to false so that this function don't run every time
           dispatch(handleCheckLocationChange());
-        } else if (station.length > 0 && value) {
-          const stationDataById = station?.filter(
-            (item) => item?.stationId === value,
-          );
-          setSelectedValue(stationDataById[0]?.stationName);
-          setSelectedValueId(stationDataById[0]?.stationId);
-          dispatch(addCurrentStation(station[0] ?? null));
         } else if (station.length > 0) {
-          setSelectedValue(station[0]?.stationName);
-          setSelectedValueId(station[0]?.stationId);
-          dispatch(addCurrentStation(station[0] ?? null));
+          // keep the user's pick, else the station from the url, else the first one
+          const current =
+            station.find((item) => item?.stationId === selectedValueId) ??
+            station.find((item) => item?.stationId === value) ??
+            station[0];
+          setSelectedValue(current?.stationName);
+          setSelectedValueId(current?.stationId);
+          dispatch(addCurrentStation(current ?? null));
         } else {
+          // } else if (station.length > 0 && value) {
+          //   const stationDataById = station?.filter(
+          //     (item) => item?.stationId === value,
+          //   );
+          //   setSelectedValue(stationDataById[0]?.stationName);
+          //   setSelectedValueId(stationDataById[0]?.stationId);
+          //   dispatch(addCurrentStation(station[0] ?? null));
+          // } else if (station.length > 0) {
+          //   setSelectedValue(station[0]?.stationName);
+          //   setSelectedValueId(station[0]?.stationId);
+          //   dispatch(addCurrentStation(station[0] ?? null));
+          // } else {
           clearStation();
         }
-        // } else {
-        //   dispatch(addCurrentStation(null));
-        //   setSelectedValue("No Station Found");
-        // }
         setChangeLoading(false);
       }
     } catch (error) {
@@ -100,14 +106,16 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
   // If the selected station is not in the current list (e.g. location changed
   // or stations finished loading later), select the first station.
   useEffect(() => {
-    if (loading) return;
+    if (loading || stationLoading) return;
 
     if (!station?.length) {
       if (selectedStation !== null || selectedValueId) clearStation();
       return;
     }
 
-    const exists = station.some((item) => item?.stationId === selectedValueId);
+    // on first render selectedValueId is still "", so fall back to the url station
+    const currentId = selectedValueId || value;
+    const exists = station.some((item) => item?.stationId === currentId);
     if (exists) return;
 
     const first = station[0];
@@ -118,7 +126,7 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
     if (customLocation.pathname.includes("/search/")) {
       updateStationId(customLocation, first?.stationId);
     }
-  }, [station, loading, selectedValueId, selectedStation]);
+  }, [station, loading, stationLoading, selectedValueId, selectedStation]);
 
   // when someone refresh the page
   useEffect(() => {
@@ -126,7 +134,8 @@ const DropDownButtonWithIcon = ({ labelId, isDisabled, value }) => {
       const stationDataById = station?.filter(
         (item) => item?.stationId === value,
       );
-      dispatch(addCurrentStation(stationDataById ?? null));
+      dispatch(addCurrentStation(stationDataById?.[0] ?? null));
+      // dispatch(addCurrentStation(stationDataById ?? null));
     }
   }, []);
 
